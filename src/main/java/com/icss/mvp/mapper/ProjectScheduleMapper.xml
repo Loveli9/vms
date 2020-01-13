@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectScheduleDao">
+	<resultMap type="com.icss.mvp.entity.ProjectSchedule" id="projectSchedule">
+		<result property="no" column="NO"/>
+		<result property="node" column="NODE"/>
+		<result property="planDate" column="PLAN_DATE"/>
+		<result property="actualDate" column="ACTUAL_DATE"/>
+		<result property="deviationRate" column="DEVIATION_RATE"/>
+	</resultMap>
+	<select id="queryProjectScheduleNo" parameterType="java.lang.String"
+		resultMap="projectSchedule">
+		SELECT * from
+		project_schedule where no=#{no} 
+	</select>
+	<insert id="insertInfos" useGeneratedKeys="true" parameterType="java.util.List">
+		REPLACE INTO project_schedule
+		(NO,NODE,PLAN_DATE,ACTUAL_DATE,DEVIATION_RATE)
+		VALUES
+		<foreach collection="proj" item="item" index="index"
+			separator=",">
+			(
+			#{item.no},#{item.node},#{item.planDate},#{item.actualDate},#{item.deviationRate}
+			)
+		</foreach>
+	</insert>
+	<delete id="batchDeleteByNo"  parameterType="java.lang.String">
+        delete from project_schedule where no=#{no} 
+    </delete>
+	
+	<select id="projectScheduleList" parameterType="Map" resultType="java.util.Map">
+		SELECT DISTINCT
+		(t1.NO), t1.PDU
+		FROM
+		project_info t1
+		WHERE
+		1 = 1
+		<![CDATA[AND DATE_FORMAT(t1.END_DATE, '%Y-%m-%d') >= CURDATE()]]>
+		<if test="null != step and '' != step">
+			<![CDATA[AND DATE_FORMAT(t1.END_DATE, '%Y-%m-%d') <= DATE_ADD(CURDATE(), INTERVAL #{step} DAY)]]>
+		</if>
+		<if test="list != null and list.size() != 0">
+			AND t1.NO in
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		AND t1.PROJECT_STATE = '在行'
+	</select>
+</mapper>

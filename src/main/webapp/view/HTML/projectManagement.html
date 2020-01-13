@@ -1,0 +1,732 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/css/style.css" type="text/css" />
+	<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <link rel="stylesheet" href="css/swiper.min.css" type="text/css" />
+
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+
+<!--     <script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>      -->
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<!--     <script type="text/javascript" src="js/jquery-ui.min.js"></script> -->
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="js/projectManagement.js"></script>
+    <script type="text/javascript" src="../../resources/js/swiper/swiper.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/swiper/swiper.js"></script>
+    <style>
+	#nav {
+			width:30px; height: 65px;  position:fixed;right:2px;top:50%;z-index: 9999;
+		}
+	.retop{
+			width:30px;height:30px;float:right;margin-top: 2px;
+		}
+	.retop2{
+			float:right;margin-top: 2px;
+	}
+	.retop span{
+		color:white;
+	}
+	.trans {
+		display: none;
+		width: 54px;
+		height: 37px;
+		opacity: 0;
+		position: relative;
+		margin-top: -37px;
+		cursor: pointer;
+	}
+/* 	.datagrid-view{wb
+		height: 840px!important;
+	} */
+	.panel{
+		background-color: #ffffff!important;
+	}
+	a{
+    	text-decoration: none;
+    	color: rgba(255,255,255,.5);
+    }
+    a:hover{
+    	text-decoration: none;
+    	color: rgba(255,255,255,1);
+    	cursor: pointer;
+    }
+    .btn-default{
+    	height: 34px;
+    	line-height: 16px;
+    	border-radius: 0px;
+    }
+    .form-control{
+    	border-radius: 0px;
+    }
+	.but1{
+    	float: right;
+	    width: 60px;
+	    height: 30px;
+	    color: #ffffff;
+	    cursor: pointer;
+	    border: none;
+	    border-radius: 4px;
+	    font-size: 15px;
+	    margin-right: 15px;
+	    line-height: 30px;
+    }
+    .but1:hover{
+    	background-color: #ff0313;
+    }
+
+    .display-inline-block {
+    display: inline-block;
+	}
+	img {
+	    vertical-align: middle;
+	        border: 0;
+	}
+	.project-dev-no-data-content{
+    display: inline-block;
+    font-size: 20px;
+    color: #788da3;
+	}
+
+	 .my-all-projects {
+	    min-height: 156px;
+	}
+
+	.clear-fix{
+	    zoom: 1;
+	}
+	.project-card{
+	    height: 156px;
+	    margin-right: 10px;
+	    float: left;
+	    position: relative;
+	    overflow: hidden;
+	    border-radius: 3px;
+   		width: inherit;
+	}
+
+	.is-my-favorite-project{
+	    background: #f5f5f5;
+	    box-shadow: 1px 3px 4px 0 rgba(0, 0, 0, 0.10);
+	    height: 156px;
+	}
+	.project-card-header{
+	    cursor: pointer;
+	    height: 88px;
+	    width: 100%;
+	}
+
+	.project-card-info a{
+	    display: inline-block;
+	    vertical-align: middle;
+	    max-width: calc(100% - 30px);
+	    height: 38px;
+	    padding-right: 5px;
+	}
+
+	.project-card-background-image.card-scrum.color-1 {
+	    background: linear-gradient(to bottom right, #0DB08C, #4EF4CF);
+	}
+
+	.project-card-background-image .card-animation {
+	    width: 100%;
+	    height: 100%;
+	    background: url(/mvp/view/HTML/images/card-content.png) no-repeat bottom center;
+	    background-size: 100% auto;
+	}
+
+	.project-card-background-image .card-type-info.projectman-scrum{
+	    background: url(app/assets/img/projectman/common/common.png) no-repeat 0px -592px;
+	}
+	.project-card-info {
+	    text-align: center;
+	    padding: 0 5px;
+	}
+
+	.project-card-info h3 {
+	    display: inline-block;
+	    font-size: 12px;
+	    line-height: 38px;
+	    font-weight: normal;
+	    padding: 0 5px;
+	    margin: 0;
+	    vertical-align: middle;
+	    color:#95b8e7;
+	    width:150px;
+	}
+	.project-card-info h6 {
+	    line-height: 20px;
+	    font-weight: normal;
+	    padding: 0 5px;
+	    margin: 0;
+	    vertical-align: middle;
+	    color:#95b8e7;
+	    width:180px;
+	}
+
+	.project-card-more-info > h4 {
+	    display: inline-block;
+	    font-size: 12px;
+	    line-height: 12px;
+	    color: #333;
+	    text-align: center;
+	    height: 14px;
+	    margin: 0;
+	    padding-left: 10px;
+	    max-width: calc((100% - 10px)/2);
+	}
+
+
+	.over-flow-ellipsis {
+	    overflow: hidden;
+/* 	    white-space: nowrap;  */
+	     white-space: pre-wrap;
+	    text-overflow: ellipsis;
+	}
+
+	.project-card-favorite{
+	    width: 20px;
+	    height: 20px;
+	    display: inline-block;
+	    background-repeat: no-repeat;
+	    background-position: center;
+	    cursor: pointer;
+	    background-size: 100% 100%;
+	    position: relative;
+	    vertical-align: -webkit-baseline-middle;
+	}
+
+	.project-card-more-info {
+	    width: 100%;
+	    height: 20px;
+	    text-align: center;
+	}
+
+	.swiper-container {
+      width: 100%;
+      height: 100%;
+    }
+    .swiper-slide {
+    	width: 30%;
+      text-align: center;
+      background: #fff;
+
+    }
+    .dropdown-menu {
+	    min-width: 0px;
+	    width:82px;
+    }
+    .panel-header, .panel-body{
+    	width: 100% !important;
+    }
+   .swiper-button-prev{
+		height: 30px;
+        top: 163px;
+        left: 41px;
+        background-image: url(/mvp/view/HTML/images/leftIcon.png);
+ 		background-size: 50%;
+        background-position: 20% 40%;
+        outline:0 none !important; blr:expression(this.onFocus=this.blur());
+    }
+     .swiper-button-next{
+     	height: 30px;
+     	top:163px;
+     	right: 41px;
+        background-image: url(/mvp/view/HTML/images/rightIcon.png);
+ 		background-size: 50%;
+        background-position: 80%;
+        outline:0 none !important; blr:expression(this.onFocus=this.blur());
+     }
+     .datetimepicker{
+     	    left: 785.984px;
+		    z-index: 1060;
+		    top: 363px;
+		    width: 220px;
+     }
+	.btn{
+		border-radius: 5px;
+	}
+	.datagrid-header-row td{
+		background-color:#f3f7fe;
+	}
+
+	.datagrid-toolbar{
+		color: #0a0909;
+	}
+	.datagrid-header td, .datagrid-body td, .datagrid-footer td {
+		border: 0px;
+		border-top: 1px #eaebeb solid;
+	}
+	.datagrid-header, .datagrid-toolbar, .datagrid-pager, .datagrid-footer-inner {
+		border-color: #eaebeb;
+	}
+
+	.datagrid-toolbar, .datagrid-pager {
+		background: #ffffff;
+	}
+	.datagrid .datagrid-pager {
+		height: 52px;
+	}
+	.pagination table {
+		margin-top: 20px;
+	}
+	input{
+		text-align: center;
+	}
+	.pagination-info {
+		margin-top: 20px;
+	}
+    </style>
+
+    <script type="text/javascript">
+        function changeTab(obj) {
+            obj.className = 'tabs-a-current';
+            if (obj.id == "tab1") {
+                document.getElementById('tab2').className = '';
+                document.getElementById('tab1Page').style.display = 'block';
+                document.getElementById('tab2Page').style.display = 'none';
+            }
+            else {
+                document.getElementById('tab1').className = '';
+                document.getElementById('tab1Page').style.display = 'none';
+                document.getElementById('tab2Page').style.display = 'block';
+            }
+        }
+        $(document).ready(function(){
+      		$("#datepicker").datetimepicker({
+      			minView: "month", //选择日期后，不会再跳转去选择时分秒
+      		    language:  'zh-CN',
+      		    format: 'yyyy-mm-dd',
+      		    todayBtn:  1,
+      		    autoclose: 1,
+      		    todayHighlight:true
+      	    });
+
+			var queryCriteria = getQueryString("queryCriteria");
+			if(queryCriteria == 1){
+				$("#queryCriteria").css('display', 'block');
+			}
+		})
+    </script>
+</head>
+<body style="line-height: 24px; background: #eaebeb">
+   <div style="">
+        <div class="main-content" style="">
+            <div width="100%" border="0" cellspacing="0" cellpadding="0">
+        <div class=" clear-fix" style="background-color: #fff; border-radius: 5px;">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding-button:20px;">
+                <tr>
+                	<td colspan="2" style="background-color:rgb(234, 235, 235)">
+                        <div id="divTable" style="background-color:rgb(234, 235, 235)">
+                            <div id="queryCriteria" style="height: 30px;margin-bottom: 25px;display: none">
+								<a id="synchroBtn" class="but1" style="margin-right:0px;float: right;background-color: #e9a335;">同步</a>
+								<a id="imporstBtn" class="but1" style="margin-right: 10px;float: right;background-color: #7bdabe;">导入</a>
+								<a id="queryBtn" class="but1" style="margin-right: 10px;float: right;background-color: #1d90fd;">查询</a>
+								<input name="projName" type="text" class="s3 form-control" placeholder="项目名称" id="projName" style="width: 100px;float: left;margin-right: 10px;padding: 0px;height: 32px;border-radius: 5px;"/>
+								<div class="col-sm-12" style="width:110px;z-index:999;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+									<select id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									</select>
+								</div>
+								<div class="col-sm-12" style="width:85px;float: left;padding-right: 10px;padding-left: 0px;">
+			                        <select id="zrOrhwselect" name="usertype" style="width: 75px;padding: 0px 12px;" class="btn dropdown-toggle bs-placeholder btn-default" title="中软 &华为" >
+										 <option id="hwsel" value="0" selected>华为</option>
+										 <option id="zrsel" value="1">中软</option>
+									</select>
+								</div>
+								<div id="hwselect">
+									<div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+										<select id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+										</select>
+									</div>
+									<div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+				                        <select id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+										</select>
+									</div>
+									<div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+				                        <select id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+										</select>
+									</div>
+								</div>
+								<div id="zrselect" style="display: none;">
+									<div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+				                        <select id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+										</select>
+									</div>
+									<div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+				                        <select id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+										</select>
+									</div>
+									<div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+				                        <select id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+										</select>
+									</div>
+								</div>
+                            	<div class="col-sm-12" style="width:80px;float: left;padding-right: 10px;padding-left: 0px;">
+			                        <select id="usertype2" name="usertype" title="请选择状态" class="selectpicker show-tick form-control" multiple data-live-search="false">
+										 <option value="在行">在行</option>
+										 <option value="关闭">关闭</option>
+									</select>
+								</div>
+                            </div>
+                            <div style="width:100%; margin:30px auto 0 auto; ">
+                             	<div id="projSummaryTable" style="display:block;width:100%;"></div>
+                            </div>
+                        </div>
+                	</td>
+            	</tr>
+            </table>
+		</div></div>
+    </div>
+    <div class="modal fade" id="import" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:700px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 400px;">
+						导入信息配置
+					</h4>
+					<button type="button" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+					<button type="button" id="submitImport" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">确定</button>
+				</div>
+				<div style="padding-left: 20px;padding-top: 20px;font-size: 13px;color: #ababab;">导入顺序:项目信息-->361成熟度-->(关键角色-->RDPM)-->(项目成员-->档案信息)-->工时-->星级评估</div>
+				<div class="modal-body" style="height: 150px;width: 680px">
+					<div style="height: 25px;">
+						<div style="width:95%">
+			                <div class="input-group" style="display: flex;align-items: center;">
+	                    		<table style="width: 600px; height: 22px; margin-left: -10px;">
+	                    			<tr align="center" valign="middle" id ="select">
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="project" th_value="项目导入" templateName="project-info" value="/import/projects" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">项目信息</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="361"  th_value="361导入" templateName="361Maturity" value="/project/importMaturityAssessment" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="59" style="text-align: left; font-size: 8px;">361成熟度</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="role" th_value="角色导入" templateName="Key-roles" value="/import/keyRoles" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">关键角色</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="rdpm" th_value="RDPM导入" templateName="RDPM-test" value="/import/RDPM" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="40" style="text-align: left; font-size: 8px;">RDPM</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="people" th_value="成员导入" templateName="OMP-data" value="/import/OMP" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">项目成员</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="peopleadd" th_value="档案信息" templateName="Archives-information" value="/import/members" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">档案信息</th>
+	                    			    <th style="text-align: right;"><input type="radio" name="radio1" id="work" th_value="工时导入" templateName="Clock-data" value="/import/clock" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="30" style="text-align: center; font-size: 10px;">工时</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="star" th_value="星级评估" templateName="Star-data" value="/project/importstar" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: center; font-size: 10px;">星级评估</th>
+										<th style="text-align: right;"><input type="radio" name="radio1" id="361MaturityProblem" th_value="360评估问题" templateName="361MaturityProblem" value="/import/import361MaturityProblem" style="height: 18px; width: 18px;" /></th>
+										<th width="80" style="text-align: center; font-size: 10px;">问题及风险追踪</th>
+	                    			</tr>
+	                    		</table>
+			                </div><!-- /input-group -->
+			            </div><!-- /.col-lg-6 -->
+					</div>
+					 <div style="height: 80px;">
+						<div style="width:65%">
+			                <div class="input-group" style="display: flex;">
+			                   	 <div style="display:table-cell;width: 27%;margin-top: 27px;width: 89px">文件路径：</div><input type="text" readonly="readonly" id="filePathInfo" class="form-control" style="height: 20px;margin-top: 27px">
+			                    <span class="input-group-btn">
+			                    	<form method="post" id="importForm"  enctype="multipart/form-data">
+				                        <button class="btn btn-default" type="button" id="importBtn" style="margin-top: 28px;height: 30px;border-radius:0px;width: 51px">浏览</button>
+				                        <a class="btn btn-default"  id="templateDownload" style="margin-top: 29px;height: 16px;border-radius:0px;width: 84px">下载模板</a>
+				                        <input type="file" class="trans" id="importInput" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></input>
+				                        <span id="worktime" style="display: none;float: right; margin-right: 320px;margin-top: 20px;">工时日期:
+				                        <input type="text" id="datepicker" name="time" placeholder="请选择时间"
+											 class="form-control form-filter yearpicker"  style="height: 10px"/>
+										</span>
+										<div id="361time" style="display: none;float: right; margin-right: -20px;margin-top: 20px;">
+										<span>月份:
+										<!-- 选择月份	 -->
+		                                  <select id="datepickerCycle" name="datepickerCycle" style="margin-left: 10px;width:120px;height: 30px; background-position: 5px 5px; border: 1px #999999 solid; padding-left: 30px; background-image: url(images/dateicon.png);background-repeat: no-repeat;">
+				                                 <option></option>
+		                                  </select>
+										</span>
+										<span style="margin-left: 20px;">周期:
+										  <select id="datepickerCycle1" name="datepickerCycle1" style="margin-left: 10px;width:210px;height: 30px; background-position: 5px 5px; border: 1px #999999 solid; padding-left: 30px; background-image: url(images/dateicon.png);background-repeat: no-repeat;">
+		                                  </select>
+										</span>
+										</div>
+				                    </form>
+			                    </span>
+			                </div><!-- /input-group -->
+			            </div><!-- /.col-lg-6 -->
+					</div>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	<div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content" style="top: 300px;">
+					<div class="modal-body" style="padding: 15px;">
+						<div style="text-align: center;">
+							<span id="dataAcquisition" style="font-size: 14px;">查询中。。。</span>
+						</div>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+<div>
+    <script type="text/javascript">
+
+    	function moreBtn(){
+    		var n=document.getElementById("check");
+    		var ss=document.getElementById("search");
+    		var mb=document.getElementById("moreBtn");
+    		var jt=document.getElementById("jiantou");
+    		var fieldset=document.getElementById("fieldset");
+    		var more1=document.getElementById("more1");
+    		var more2=document.getElementById("more2");
+    		var more3=document.getElementById("more3");
+    		if(n.value==0){
+    			n.value=1;
+	    		ss.style.height="95%";
+	    		fieldset.style.height="93%";
+	    		mb.value="收起筛选";
+	    		more1.style.display="";
+	    		more2.style.display="none";
+	    		more3.style.display="";
+	    		jt.style.borderTop="0px #ffffff solid";
+	    		jt.style.borderBottom="8px #367FA9 solid";
+	    		jt.style.borderLeft="3px #ffffff solid";
+	    		jt.style.borderRight="3px #ffffff solid";
+    		}else if(n.value==1){
+    			n.value=0;
+    			ss.style.height="65%";
+    			fieldset.style.height="70%";
+    			mb.value="详细筛选";
+	    		more1.style.display="none";
+	    		more2.style.display="none";
+	    		more3.style.display="none";
+	    		jt.style.borderTop="8px #367FA9 solid";
+	    		jt.style.borderBottom="0px #ffffff solid";
+	    		jt.style.borderLeft="3px #ffffff solid";
+	    		jt.style.borderRight="3px #ffffff solid";
+    		}
+    	}
+
+		function showDateTime(){
+    	  var today=new Date();
+    	  var year=today.getYear()+1900;
+    	  var month=today.getMonth()+1;
+    	  var day=today.getDate();
+    	  var hour=today.getHours()>=0&&today.getHours()<10?"0"+today.getHours():today.getHours();
+    	  var minute=today.getMinutes()>=0&&today.getMinutes()<10?"0"+today.getMinutes():today.getMinutes();
+    	  var second=today.getSeconds()>=0&&today.getSeconds()<10?"0"+today.getSeconds():today.getSeconds();
+		  var date=year+"/"+month+"/"+day+"  "+hour+":"+minute+":"+second;
+    	  $("#localTime").html(date);
+		}
+
+		$("#clearBtn").click(function(){
+			$("#projName").val("");
+			$('#usertype1').selectpicker("val",[]);
+			$('#usertype2').selectpicker("val",["在行"]);
+			$('#usertype3').selectpicker("val",[]);
+			$('#usertype4').selectpicker("val",[]);
+			$("#usertype4").empty();
+			$('#usertype4').prev('div.dropdown-menu').find('ul').empty();
+			$('#usertype5').selectpicker("val",[]);
+			$("#usertype5").empty();
+			$('#usertype5').prev('div.dropdown-menu').find('ul').empty();
+			$('#usertype6').selectpicker("val",[]);
+			$('#usertype7').selectpicker("val",[]);
+			$("#usertype7").empty();
+			$('#usertype7').prev('div.dropdown-menu').find('ul').empty();
+			$('#usertype8').selectpicker("val",[]);
+			$("#usertype8").empty();
+			$('#usertype8').prev('div.dropdown-menu').find('ul').empty();
+		})
+
+		//回到顶部
+		function callback(){
+			$("html,body").animate({scrollTop:0}, 200);
+		};
+
+		function exportEvent(color){
+ 			var $eleForm = $("<form method='POST'></form>");
+	        $eleForm.attr("action",getRootPath() + "/project/export361");
+	        $eleForm.append($('<input type="hidden" name="color" value="'+ color +'">'));
+	        $eleForm.append($('<input type="hidden" name="area" value="'+ ($("#usertype1").selectpicker("val")==null?"":$("#usertype1").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="hwpdu" value="'+ ($("#usertype3").selectpicker("val")==null?"":$("#usertype3").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="hwzpdu" value="'+ ($("#usertype4").selectpicker("val")==null?"":$("#usertype4").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="pduSpdt" value="'+ ($("#usertype5").selectpicker("val")==null?"":$("#usertype5").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="bu" value="'+ ($("#usertype6").selectpicker("val")==null?"":$("#usertype6").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="pdu" value="'+ ($("#usertype7").selectpicker("val")==null?"":$("#usertype7").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="du" value="'+ ($("#usertype8").selectpicker("val")==null?"":$("#usertype8").selectpicker("val").join()) +'">'));
+	        $(document.body).append($eleForm);
+	        //提交表单，实现下载
+	        $eleForm.submit();
+		};
+		function datepickerCycle1(){
+			$("#datepickerCycle1").empty();
+			var month = $("#datepickerCycle").val();
+			var array=new Array();
+			array = month.split("-");
+			var myDate = new Date(array[0], array[1], 0);
+			var day = myDate.getDate();//当月有多少天
+			myDate.setDate(1);//当月1号
+			var week = myDate.getDay();
+			var weeks = Math.ceil((day - 8 + week)/7);
+			var startTime = new Array();
+			myDate.setDate(9-week);
+			datepickerTime(myDate,weeks,startTime);
+			myDate = new Date(array[0], array[1], 0);//重置时间避免跨月
+			myDate.setDate(15-week);
+			var endTime = new Array();
+			datepickerTime(myDate,weeks,endTime);
+			var cycle = new Array();
+			cycle.push(startTime[0]+" ~ "+endTime[0]);
+			$("#datepickerCycle1").append("<option selected='selected' value='"+cycle[0]+"'>"+cycle[0]+"</option>");
+			for(var allinfo = last_year_month(), i = 1; i < weeks; i++) {
+				cycle.push(startTime[i]+" ~ "+endTime[i]);
+				$("#datepickerCycle1").append("<option value='"+cycle[i]+"'>"+cycle[i]+"</option>");
+			}
+		}
+		var datepickerTime = function(myDate,weeks,time){//将时间填入数组
+			var times = myDate.getFullYear()+"-"+(myDate.getMonth() + 1)+"-"+myDate.getDate();
+			time.push(times);
+			for(var i=0;i<weeks-1;i++){
+				var day = myDate.getDate();
+				var date = day+7;
+				myDate.setDate(date);
+				times = myDate.getFullYear()+"-"+(myDate.getMonth() + 1)+"-"+myDate.getDate();
+				time.push(times);
+			}
+		}
+		var formatDate = function(myDate){//将时间格式化
+			var year = myDate.getFullYear();
+			var month = myDate.getMonth() + 1;//月份是从0开始的
+			var day = myDate.getDate();
+			return ;
+		}
+		var last_year_month = function() {
+			var d = new Date();
+			var result = [];
+			for(var i = 0; i < 2; i++) {
+				d.setMonth(d.getMonth() - 1);
+				var m = d.getMonth() + 1;
+				m = m < 10 ? "0" + m : m;
+				//在这里可以自定义输出的日期格式
+				result.push(d.getFullYear() + "-" + m);
+				//result.push(d.getFullYear() + "年" + m + '月');
+			}
+			return result;
+		}/* 以上是日期选择 */
+		$(document).ready(function(){
+			$("#datepickerCycle").change(function(){
+				datepickerCycle1();
+			});
+			var Menus = getCookie('Menulist');
+			/*if (Menus.indexOf("-11-") != -1) {
+				var tab0 = '<button type="button" style="border: none;border-radius: 4px;font-size: 15px;width: 82px;height: 30px;background-color: #e41f2b;color: #ffffff;" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">导出 <span class="caret"></span></button>';
+				$("#exportBtns").append(tab0);
+			}
+			if (Menus.indexOf("-10-") != -1) {
+				var tab = '<input name="" type="button" value="导入" class="but1" id="importBtn" data-toggle="modal" data-target="#import" />';
+				$("#foucsproject").append(tab);
+			}*/
+            if (Menus.indexOf("-41-") != -1) {
+                $("#synchroBtn").css("display","");
+            }else{
+                $("#synchroBtn").css("display","none");
+            }
+            if (Menus.indexOf("-42-") != -1) {
+                $("#imporstBtn").css("display","");
+            }else{
+                $("#imporstBtn").css("display","none");
+            }
+			if (Menus.indexOf("-43-") != -1) {
+				$("#queryBtn").css("display","");
+			}else{
+				$("#queryBtn").css("display","none");
+			}
+			//鼠标移入移出悬浮框事件
+		    $("#retop").mouseover(function() {
+		    	document.getElementById("retop").style.display="none";
+		    	document.getElementById("retop2").style.display="inline";
+		    });
+		    $("#retop2").mouseout(function() {
+		    	document.getElementById("retop").style.display="inline";
+		    	document.getElementById("retop2").style.display="none";
+		    });
+
+		    $("#feedback").mouseover(function() {
+		    	document.getElementById("back").style.color="#367FA9";
+		    });
+		    $("#feedback").mouseout(function() {
+		    	document.getElementById("back").style.color="white";
+		    });
+    //加载361周期选择
+		    var today=new Date();
+		  	var year=today.getYear()+1900;
+		  	var month=today.getMonth()+1;
+		  	if(month<10){
+		  		month="0"+month;
+		  	}
+			var date=year+"-"+month;
+			var sel = document.getElementById('datepickerCycle');
+            sel.options[0].value = date;
+            sel.options[0].text = date;//给options赋值
+
+			for(var allinfo = last_year_month(), i = 0; i < allinfo.length; i++) {
+				$("#datepickerCycle").append("<option value='" + allinfo[i] + "'>" + allinfo[i] + "</option>");
+			}
+			datepickerCycle1();
+/* 			$('#usertype1').selectpicker("selectAll");//页面加载时默认全选
+			$('#usertype3').selectpicker("selectAll");
+			$('#usertype4').selectpicker("selectAll");
+			$('#usertype5').selectpicker("selectAll");
+			$('#usertype6').selectpicker("selectAll");
+			$('#usertype7').selectpicker("selectAll");
+			$('#usertype8').selectpicker("selectAll"); */
+			/* var areaName=$(".list .active .areaActive",parent.document).text();
+			if(''!=areaName&&undefined!=areaName){
+				$('#usertype1').selectpicker('val',areaName);
+				$('#usertype1').selectpicker('refresh');
+				$('#queryBtn').click();
+			}
+			var depId=$(".crumbs .active",parent.document).attr("data-id");
+
+			if(''!=depId&&undefined!=depId){
+				moreBtn();
+				if(1==depId){
+
+				}else if(2==depId){
+					var yijiId=$(".list .yiji>.active",parent.document).attr("data-id");
+					var erjiId=$(".list .erji>.active",parent.document).attr("data-id");
+					var sanjiId=$(".list .sanji>.active",parent.document).attr("data-id");
+					if(''!=yijiId&&undefined!=yijiId){
+						$('#usertype3').selectpicker('val',yijiId);
+						$('#usertype3').selectpicker('refresh');
+						queryZCPX();
+						debugger
+						if(''!=erjiId&&undefined!=erjiId){
+							$('#usertype4').selectpicker('val',erjiId);
+							$('#usertype4').selectpicker('refresh');
+							queryPDUorSPDT();
+							if(''!=sanjiId&&undefined!=sanjiId){
+								$('#usertype5').selectpicker('val',sanjiId);
+								$('#usertype5').selectpicker('refresh');
+							}
+						}
+					}
+				}
+			}
+
+			showDateTime(); */
+		})
+    </script>
+</body>
+</html>

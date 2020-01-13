@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.VersionStrucDao">
+	<resultMap id="versionBulidMap" type="com.icss.mvp.entity.VersionStrucInfo">
+		<result property="id" column="id"/>
+		<result property="no" column="no"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="buildType" column="build_type"/>
+		<result property="buildResult" column="build_result"/>
+		<result property="isDeleted" column="is_deleted"/>
+		<result property="buildCount" column="build_count"/>
+	</resultMap>
+	
+	<select id="queryVersionStrucInfo" parameterType="java.lang.String" resultMap="versionBulidMap">
+		SELECT * FROM `version_bulid`
+	</select>
+	<insert id="saveVersionBuildInfo" parameterType="java.util.List" useGeneratedKeys="true">
+		REPLACE INTO version_bulid (id,no,create_time,update_time,start_time,end_time,build_type,build_result,build_Content) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.id},#{item.no},now(),now(),#{item.startTime},
+			#{item.endTime},#{item.buildType},#{item.buildResult},
+			#{item.buildContent})
+		</foreach>
+	</insert>
+	<select id="queryBuildTimes" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT IFNULL(A.minutes,0) AS minutes  FROM
+			(
+			SELECT 
+			  SUM(
+			    ROUND(
+			      (
+			        UNIX_TIMESTAMP(t.`end_time`) - UNIX_TIMESTAMP(t.`start_time`)
+			      ) / 60
+			    )
+			  ) AS minutes 
+			FROM
+			  `version_bulid` t WHERE DATE_FORMAT(t.`start_time`,'%Y%m') = #{ym} AND t.`no` =#{no}
+			) A
+	</select>
+	<select id="queryBuildCounts" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  `version_bulid` t 
+		WHERE DATE_FORMAT(t.`start_time`, '%Y%m') = #{ym} AND t.`no` =#{no} 
+	</select>
+	
+	<!-- 查询多个项目的icp-ci 配置repository -->
+	<select id="queryIcpCiConfig" parameterType="java.lang.String" resultType="com.icss.mvp.entity.RepositoryInfo">
+		SELECT A.`id`, B.`project_id` AS NO FROM `repository` A LEFT JOIN `project_config` B ON A.`id` = B.`repository_id` ,(select NO FROM code_gain_type where PARAMETER_ID=162 and TYPE=0) C
+		WHERE A.`type` = '5' AND A.is_deleted = 0 AND B.is_deleted = 0 AND B.`project_id`=C.NO
+	</select> 
+	
+	<!-- 根据选择条件查询项目编号 -->
+	<select id="querySelectedNos" parameterType = "java.util.HashMap" resultType="com.icss.mvp.entity.ProjectInfo">
+	<![CDATA[
+		SELECT NO AS NO FROM PROJECT_INFO WHERE 1=1
+	]]>
+	<if test="area != null and area.size() != 0">
+		 AND AREA IN (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		 AND HWPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		 AND HWZPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		 AND PDU_SPDT IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" bu != null and bu.size() != 0">
+		 AND BU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		 AND PDU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		 AND DU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=4 AND DEPT_ID IN 
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	</select>
+	
+	<select id="queryBuildTimesByNos" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT IFNULL(A.minutes,0) AS minutes  FROM
+			(
+			SELECT 
+			  SUM(
+			    ROUND(
+			      (
+			        UNIX_TIMESTAMP(t.`end_time`) - UNIX_TIMESTAMP(t.`start_time`)
+			      ) / 60
+			    )
+			  ) AS minutes 
+			FROM
+			  `version_bulid` t WHERE DATE_FORMAT(t.`start_time`,'%Y%m') = #{yearMonth} AND t.`no` in ${sqlStr}
+			) A
+	</select>
+	
+	<select id="queryBuildCountsByNos" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  `version_bulid` t 
+		WHERE DATE_FORMAT(t.`start_time`, '%Y%m') = #{yearMonth} AND t.`no` in ${sqlStr}
+	</select>
+	
+	
+</mapper>

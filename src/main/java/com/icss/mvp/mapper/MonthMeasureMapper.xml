@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.MonthMeasureDao">
+
+	<!-- 判断是否已经插入记录 -->
+	<select id="isFirstCalculate" parameterType="java.lang.String" resultType = "com.icss.mvp.entity.MonthMeasure">
+		SELECT * FROM `measure_value_history` t WHERE t.`label_measure_config_id` = #{lmcId} 
+		AND DATE_FORMAT(t.`copy_date`, '%Y-%m') = #{yearMonth} ;
+	</select>
+
+	<!-- 查询当年所有月份指标实际值 -->
+	<select id="geMonthtMeasureValue" parameterType="java.lang.String" resultType="com.icss.mvp.entity.MeasureValue">
+		SELECT * FROM `measure_value_history` t WHERE t.`label_measure_config_id` IN ${labMeasureIds}
+		AND YEAR(copy_date)=YEAR(NOW()); 
+	</select>
+	<!-- 查询当前月份指标实际值 -->
+	<select id="geMonthtMeasureValueLastMon" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT t.*,lm.MEASURE_ID as MEASURE_ID FROM measure_value_history t,label_measure_config lm
+		WHERE t.label_measure_config_id IN ${labMeasureIds}
+		and lm.ID = t.label_measure_config_id
+		and date_format( now() , '%Y%m' ) = date_format( t.copy_date, '%Y%m' ) order by lm.MEASURE_ID; 
+	</select>
+	<!-- 查询当年所有月份指标实际值 -->
+	<select id="geMonthtMeasureValueSum" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT sum(value) as sum,DATE_FORMAT(t.`copy_date`, '%Y-%m') as month FROM `measure_value_history` t WHERE t.`label_measure_config_id` IN ${labMeasureIds}
+		AND YEAR(copy_date)=YEAR(NOW()) group by DATE_FORMAT(t.`copy_date`, '%Y-%m'); 
+	</select>
+	<!-- 保存指标实际值 -->
+	<insert id="saveMonthMeasure" parameterType = "com.icss.mvp.entity.MonthMeasure">
+		INSERT INTO `measure_value_history`  (label_measure_config_id,VALUE,copy_date) VALUES
+		(#{monthMeasure.labMeasureConfigId},#{monthMeasure.value},#{monthMeasure.copyDate})
+	</insert>
+	<!-- 更新当前指标 -->
+	<update id="updateMonthMeasures" parameterType = "com.icss.mvp.entity.MonthMeasure"> 
+		UPDATE `measure_value_history`  SET `value` = #{monthMeasure.value}
+		WHERE `label_measure_config_id` = #{monthMeasure.labMeasureConfigId} AND `copy_date` = #{monthMeasure.copyDate}
+	</update>
+	
+	<!-- 查询该月份代码量 1-->
+	 <select id="getCodeNumByMonth" parameterType="java.lang.String" resultType="java.lang.Double">
+		<!-- select IFNULL(sum(MODIFYNUM),0) from svn_log where subString(AUTHOR,2) in 
+			(select HW_ACCOUNT from project_members_local where ROLE='开发工程师' and NO=#{proNo} and (svn_git_no="" or svn_git_no is null)) and NO=#{proNo} 
+			and DATE_FORMAT( COMMITTIME, '%Y-%m' ) = #{yearMonth} -->
+		select IFNULL(sum(MODIFYNUM),0) from svn_log where subString(AUTHOR,2) in 
+		(SELECT mb.HW_ACCOUNT AS HW_ACCOUNT
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ROLE='开发工程师' AND ps.IS_DELETED = 0 AND NO=#{proNo}
+		AND (svn_git_no="" OR svn_git_no IS NULL)) and NO=#{proNo}
+		and DATE_FORMAT( COMMITTIME, '%Y-%m' ) = #{yearMonth}
+	</select>
+	
+	<select id="getCodeNumByMonthWX" parameterType="java.lang.String" resultType="java.lang.Double">
+		<!-- select IFNULL(sum(MODIFYNUM),0) from svn_log where AUTHOR in 
+			(select svn_git_no from project_members_local where ROLE='开发工程师' and NO=#{proNo} and svn_git_no!="" and svn_git_no is not null) and NO=#{proNo}
+			and  DATE_FORMAT( COMMITTIME, '%Y-%m' ) = #{yearMonth} -->
+		select IFNULL(sum(MODIFYNUM),0) from svn_log where AUTHOR in
+		(select SVN_GIT_NO as svn_git_no from project_staff where ROLE='开发工程师'
+		and NO=#{proNo} and IS_DELETED = 0 and svn_git_no!="" and
+		svn_git_no is not null) and NO=#{proNo}
+		and DATE_FORMAT( COMMITTIME, '%Y-%m' ) = #{yearMonth}
+	</select> 
+	
+	<!-- 查询当前指标月投入工作量占比   -->
+	<select id="getPercentByYearMonth" parameterType = "java.lang.String" resultType = "java.lang.String">
+		SELECT  t1.`VALUE` AS val FROM `project_parameter_value_new` t1 
+		WHERE t1.`PARAMETER_ID` = (SELECT  id FROM `parameter_info` t WHERE t.`NAME` = #{type} LIMIT 1) 
+		AND t1.`NO` = #{proNo} AND DATE_FORMAT(t1.`month`, '%Y-%m') = #{yearMonth} LIMIT 1
+	</select>
+	
+	<!--查询项目投入月总工时  -->
+	<select id="getHoursByYearMonth" parameterType = "java.lang.String" resultType = "java.lang.String">
+		SELECT SUM(t.actual_labor_hour) FROM tbl_time_information t WHERE t.zr_account IN ${account} AND 
+		DATE_FORMAT(t.`statistical_time`, '%Y-%m') = #{yearMonth}
+	</select>
+	
+	<!-- 查询项目月测试用例总数 -->
+	<select id="getylNumByYearMonth" parameterType = "java.lang.String" resultType = "java.lang.String">
+		SELECT SUM(TESTCASE_VALUE) FROM  testcase_statistics WHERE TESTCASE_TYPE = 0 
+		AND PRO_NO = #{proNo} AND DATE_FORMAT(DATE,'%Y-%m') = #{yearMonth};
+	</select>
+	
+	<!-- 查询当前项目配置的所有指标 -->
+	<select id="getMeasuresByProject" parameterType = "java.lang.String" resultType ="java.util.HashMap">
+		SELECT t1.*,s.name FROM `label_measure_config` t1,`measure` s WHERE t1.`PROJECT_LABLE_ID` IN 
+		(SELECT t.`id` FROM `project_label_config` t WHERE `project_id` = #{proNo}) 
+		AND s.`ID` = t1.`MEASURE_ID`
+	</select>
+	<!-- 查询当前项目配置的所有指标 -->
+	<select id="getMeasuresByProjectAndMeasure" parameterType = "java.lang.String" resultType ="java.util.HashMap">
+		SELECT t1.*,s.name,s.UPPER as upper,s.LOWER as lower,s.TARGET as target FROM `label_measure_config` t1,`measure` s WHERE t1.`PROJECT_LABLE_ID` IN 
+		(SELECT t.`id` FROM `project_label_config` t WHERE `project_id` in ${proNos}) 
+		AND s.`ID` = t1.`MEASURE_ID` and s.`ID` in ${ids} Order by s.`ID`;
+	</select>
+	
+	<!-- 执行用例数 -->
+	<select id="startTestCaseNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT SUM(TESTCASE_VALUE) FROM testcase_statistics WHERE TESTCASE_TYPE = 1 AND PRO_NO = #{proNo} AND #{yearMonth} >=  DATE_FORMAT(DATE,'%Y-%m')
+	</select>
+	
+	<!-- 总用例数 -->
+	<select id="testCaseCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT SUM(TESTCASE_VALUE) FROM testcase_statistics WHERE TESTCASE_TYPE = 0 
+  		AND PRO_NO = #{proNo} AND  #{yearMonth} >= DATE_FORMAT(DATE,'%Y-%m')
+	</select>
+	
+	<!-- 自动化用例数 -->
+	<select id="autoTestCaseNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM tbl_tmss_info WHERE auto_execution_type = 'True' 
+ 		 AND NO = #{proNo} AND #{yearMonth} >= DATE_FORMAT(creation_date,'%Y-%m')
+	</select>
+	
+	<!-- 问题单总数 关闭类型仅为（Closure After Correction） -->
+	<select id="dtsCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM dts_log WHERE (
+		    colse_Type IS NULL 
+		    OR colse_Type = '' 
+		    OR colse_Type = 'Closure After Correction'
+		  ) AND curent_Status != 'Cancel' AND NO = #{proNo}
+		  AND #{yearMonth}>= DATE_FORMAT(created_Time,'%Y-%m')
+	</select>
+	<!--已解决问题总数  -->
+	<select id="solvedDtsCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT 
+		  COUNT(*) FROM dts_log WHERE (
+		    colse_Type IS NULL 
+		    OR colse_Type = '' 
+		    OR colse_Type = 'Closure After Correction'
+		  ) AND curent_Status != 'Cancel' AND curent_Status = 'Close' 
+		  AND NO = #{proNo} AND DATE_FORMAT(last_Updated_Time,'%Y-%m')= #{yearMonth}
+	</select>
+	
+	<!-- 手工执行测试用例总数 -->
+	<select id="manualStartTestCaseCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT  SUM(TESTCASE_VALUE) FROM testcase_statistics WHERE  TESTCASE_TYPE = 1 
+  		AND PRO_NO = #{proNo}  AND DATE_FORMAT(DATE,'%Y-%m')= #{yearMonth}
+	</select>
+	
+	<!--自动化用例执行成功数  -->
+	<select id="autoTestCaseStartPassedCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		 SELECT COUNT(*) FROM tbl_tmss_info WHERE 
+		 auto_execution_type='True' AND last_result='Passed' AND NO=#{proNo} 
+		  AND #{yearMonth} >=  DATE_FORMAT(creation_date,'%Y-%m')
+	</select> 
+	
+	<select id="newLocWx" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(MODIFYNUM) from svn_log where subString(AUTHOR,2) in 
+			(select HW_ACCOUNT from project_members_local where ROLE='开发工程师' and 
+			NO=#{proNo}  and (svn_git_no="" or svn_git_no is null)) 
+			AND  #{yearMonth}>= DATE_FORMAT(COMMITTIME,'%Y-%m') and NO=#{proNo} -->
+		select sum(MODIFYNUM) from svn_log where subString(AUTHOR,2) in 
+		(SELECT mb.HW_ACCOUNT AS HW_ACCOUNT
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ROLE='开发工程师' AND ps.IS_DELETED = 0 AND NO=#{proNo}
+		AND (svn_git_no="" OR svn_git_no IS NULL)) 
+		AND  #{yearMonth}>= DATE_FORMAT(COMMITTIME,'%Y-%m') and NO=#{proNo}
+	</select>
+	
+	<select id="newLoc" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(MODIFYNUM) from svn_log where AUTHOR in 
+			(select svn_git_no from project_members_local where ROLE='开发工程师' and 
+			NO=#{proNo} and svn_git_no!="" and svn_git_no is not null) 
+			AND  #{yearMonth}>= DATE_FORMAT(COMMITTIME,'%Y-%m') and NO=#{proNo} -->
+		select sum(MODIFYNUM) from svn_log where AUTHOR in 
+		(select SVN_GIT_NO as svn_git_no from project_staff where ROLE='开发工程师'
+		and NO=#{proNo} and IS_DELETED = 0 and svn_git_no!="" and
+		svn_git_no is not null) 
+		AND  #{yearMonth}>= DATE_FORMAT(COMMITTIME,'%Y-%m') and NO=#{proNo}
+	</select>
+	
+	<!-- 新增测试用例数 -->
+	<select id="newTestCaseNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT SUM(TESTCASE_VALUE) FROM testcase_statistics 
+			WHERE TESTCASE_TYPE=0 AND PRO_NO=#{proNo}
+			AND  #{yearMonth}>= DATE_FORMAT(DATE,'%Y-%m')
+	</select>
+	
+	<select id="testCaseAutoLocWx" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(MODIFYNUM) from svn_log where 
+			DATE_FORMAT(COMMITTIME,'%Y-%m')= #{yearMonth} and subString(AUTHOR,2) in 
+			(select HW_ACCOUNT from project_members_local 
+			where ROLE='测试工程师' and NO=#{proNo} and (svn_git_no="" or svn_git_no is null)) 
+			and NO=#{proNo} -->
+		select sum(MODIFYNUM) from svn_log where 
+		DATE_FORMAT(COMMITTIME,'%Y-%m')= #{yearMonth} and subString(AUTHOR,2) in 
+		(SELECT mb.HW_ACCOUNT AS HW_ACCOUNT
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ROLE='测试工程师' AND ps.IS_DELETED = 0 AND NO=#{proNo}
+		AND (svn_git_no="" OR svn_git_no IS NULL))
+		and NO=#{proNo}
+	</select>
+	
+	<select id="testCaseAutoLoc" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(MODIFYNUM) from svn_log where 
+			DATE_FORMAT(COMMITTIME,'%Y-%m')= #{yearMonth} and AUTHOR in 
+			(select svn_git_no from project_members_local 
+			where ROLE='测试工程师' and NO=#{proNo} and svn_git_no!="" and svn_git_no is not null) 
+			and NO=#{proNo} -->
+		select sum(MODIFYNUM) from svn_log where 
+		DATE_FORMAT(COMMITTIME,'%Y-%m')= #{yearMonth} and AUTHOR in 
+		(select SVN_GIT_NO as svn_git_no from project_staff where ROLE='测试工程师'
+		and NO=#{proNo} and IS_DELETED = 0 and svn_git_no!="" and
+		svn_git_no is not null)	and NO=#{proNo}
+	</select>
+	
+	<!-- 投入工作量百分比 -->
+	<select id="solveHours" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT VALUE FROM project_parameter_value_new WHERE PARAMETER_ID = 
+		  (SELECT  id FROM parameter_info WHERE NAME = #{type}) 
+		    AND DATE_FORMAT(MONTH,'%Y-%m')= #{yearMonth} AND NO = #{proNo} 
+	</select>
+	
+	<!-- 查询当月工时  -->
+	<select id="workTimes" parameterType="java.lang.String" resultType="java.lang.Double">
+		select IFNULL (actual_labor_hour,0) from tbl_time_information 
+			where DATE_FORMAT( statistical_time, '%Y-%m' ) = #{yearMonth}
+				and zr_account=(select ZR_ACCOUNT from project_members where AUTHOR=#{HWid}) group by zr_account
+	</select>
+	
+	<!-- 项目月半本数量 -->
+	<select id = "getVersionNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM `project_schedule` t WHERE t.`NO` = #{proNo} AND 
+		DATE_FORMAT(t.`ACTUAL_DATE`,'%Y-%m') = #{yearMonth}
+	</select>
+	
+	<!-- 查询c++代码量 -->
+	<select id="queryCodeNumByc" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT IFNULL (SUM(FILE_MODIFYNUM),0) FROM `svn_log_file_modifynum` WHERE `FILE_TYPE` IN ${codeType}
+		AND `AUTHOR` IN ${authors} and  DATE_FORMAT( COMMITTIME, '%Y-%m' ) = #{yearMonth}
+	</select>
+	
+	<select id="queryCodeNumBycWX" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT IFNULL (SUM(FILE_MODIFYNUM),0) FROM `svn_log_file_modifynum` WHERE `FILE_TYPE` IN ${codeType}
+		AND `AUTHOR` IN ${authors} and  DATE_FORMAT( COMMITTIME, '%Y-%m' ) = #{yearMonth}
+	</select>
+</mapper>

@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.GeneralSituationDao">
+	<resultMap type="com.icss.mvp.entity.ProjectKeyroles" id="projectKeyroles">
+		<id property="no" column="NO"/>
+		<result property="name" column="NAME"/>
+		<result property="zrAccount" column="ZR_ACCOUNT"/>
+<!-- 		<result property="hwAccount" column="HR_ACCOUNT"/> -->
+		<result property="hwAccount" column="HW_ACCOUNT"/>
+<!-- 		<result property="position" column="POSITION"/> -->
+		<result property="role" column="ROLE"/>
+		<result property="rdpmExam" column="RDPM_EXAM"/>
+		<result property="replyResults" column="REPLY_RESULTS"/>
+		<result property="proCompetence" column="PRO_COMPETENCE"/>
+		<result property="status" column="STATUS"/>
+		<result property="author" column="AUTHOR"/>
+		<result property="superior" column="SUPERIOR"/>
+	</resultMap>
+	<resultMap type="com.icss.mvp.entity.ProjectMembersLocal" id="projectMembersLocal">
+		<id property="no" column="NO"/>
+		<result property="name" column="NAME"/>
+		<result property="zrAccount" column="ZR_ACCOUNT"/>
+		<result property="hwAccount" column="HW_ACCOUNT"/>
+		<result property="svnGitNo" column="svn_git_no"/>
+		<result property="role" column="ROLE"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+	</resultMap>
+	<resultMap type="com.icss.mvp.entity.TeamMembers" id="teamMembers">
+		<id property="id" column="ID"/>
+		<result property="name" column="NAME"/>
+		<result property="zrAccount" column="ZR_ACCOUNT"/>
+		<result property="hwAccount" column="HW_ACCOUNT"/>
+		<result property="svnGitNo" column="SVN_GIT_NO"/>
+		<result property="role" column="ROLE"/>
+		<result property="teamId" column="TEAM_ID"/>
+		<result property="status" column="STATUS"/>
+		<result property="rank" column="RANK"/>
+	</resultMap>
+	
+	<resultMap type="com.icss.mvp.entity.ProjectCost" id="projectCost">
+		<result property="no" column="NO"/>
+		<result property="name" column="NAME"/>
+		<result property="zrAccount" column="ZR_ACCOUNT"/>
+		<result property="hwAccount" column="HW_ACCOUNT"/>
+		<result property="attendence" column="ATTENDENCE"/>
+		<result property="overtime" column="OVERTIME"/>
+		<result property="day" column="DAY"/>
+		<result property="status" column="STATUS"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+	</resultMap>
+	
+	<!-- <select id="queryProjectKeyroles" resultMap="projectKeyroles">
+	       SELECT a.*,b.AUTHOR from
+		project_keyroles a LEFT JOIN project_members b on a.ZR_ACCOUNT=b.AUTHOR 
+		where a.no=#{proNo}
+		<if test="null != page.queryMap.position and '' !=page.queryMap.position">角色
+        	and a.position = #{page.queryMap.position}
+      	</if>
+      	<if test="null != page.queryMap.name and '' !=page.queryMap.name">姓名
+        	and a.NAME = #{page.queryMap.name}
+      	</if>
+      	<if test="null != page.queryMap.name and '' !=page.queryMap.name">姓名
+        	and a.NAME like CONCAT('%',#{page.queryMap.name},'%')
+      	</if>
+      	<if test="null != page.queryMap.zrAccount and '' !=page.queryMap.zrAccount">中软工号
+        	and a.ZR_ACCOUNT = #{page.queryMap.zrAccount}
+      	</if>
+      	<if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+        	order by ${sort} ${sortOrder}
+      	</if>     
+      	<if test="null != page.page and  null != page.rows">
+	    	LIMIT ${page.page},${page.rows}     
+      	</if>  
+	</select> -->
+	
+	<select id="queryProjectKeyroles" resultMap="projectKeyroles">
+		select t.* from (SELECT
+		  mb.ZR_ACCOUNT AS ZR_ACCOUNT,
+		  mb.NAME AS NAME,
+		  mb.HW_ACCOUNT AS HW_ACCOUNT,
+		  mb.RDPM_EXAM AS RDPM_EXAM,
+		  mb.REPLY_RESULTS,
+		  mb.PRO_COMPETENCE,
+		  ps.SUPERIOR AS SUPERIOR,
+		  ps.ROLE AS ROLE,
+		  ps.STATUS AS STATUS,
+		  ps.NO AS NO
+		FROM member_base mb
+		  LEFT JOIN project_staff ps
+		    ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		    where ps.IS_KEY_STAFFS = 0
+		    AND ps.IS_DELETED = 0)t
+		    left join project_info p on p.NO = t.NO
+		WHERE p.PMID = #{pmid}
+		AND p.PROJECT_STATE = '在行'
+		<if test="null != page.queryMap.position and '' !=page.queryMap.position"><!-- 角色 -->
+        	and t.ROLE = #{page.queryMap.position}
+      	</if>
+      	<!-- <if test="null != page.queryMap.name and '' !=page.queryMap.name">姓名
+        	and a.NAME = #{page.queryMap.name}
+      	</if> -->
+      	<if test="null != page.queryMap.name and '' !=page.queryMap.name"><!-- 姓名 -->
+        	and t.NAME like CONCAT('%',#{page.queryMap.name},'%')
+      	</if>
+      	<if test="null != page.queryMap.zrAccount and '' !=page.queryMap.zrAccount"><!-- 中软工号 -->
+        	and t.ZR_ACCOUNT = #{page.queryMap.zrAccount}
+      	</if>
+      	<if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+        	order by ${sort} ${sortOrder}
+      	</if>
+		  group by t.ZR_ACCOUNT
+      	<if test="null != page.page and  null != page.rows">
+	    	LIMIT ${page.page},${page.rows}     
+      	</if>
+
+	</select>
+	<!--项目中关键角色查询-->
+	<select id="getProjectKeyroles" resultMap="projectKeyroles">
+		select t.* from (SELECT
+		mb.ZR_ACCOUNT AS ZR_ACCOUNT,
+		mb.NAME AS NAME,
+		mb.HW_ACCOUNT AS HW_ACCOUNT,
+		mb.RDPM_EXAM AS RDPM_EXAM,
+		mb.REPLY_RESULTS,
+		mb.PRO_COMPETENCE,
+		ps.SUPERIOR AS SUPERIOR,
+		ps.ROLE AS ROLE,
+		ps.STATUS AS STATUS,
+		ps.NO AS NO
+		FROM member_base mb
+		LEFT JOIN project_staff ps
+		ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		where ps.IS_KEY_STAFFS = 0
+		AND ps.IS_DELETED = 0)t
+		WHERE 1=1
+		<if test="null != page.queryMap.proNo and '' !=page.queryMap.proNo"><!-- 项目编号 -->
+			and t.NO = #{page.queryMap.proNo}
+		</if>
+		<if test="null != page.queryMap.position and '' !=page.queryMap.position"><!-- 角色 -->
+			and t.ROLE = #{page.queryMap.position}
+		</if>
+		<if test="null != page.queryMap.name and '' !=page.queryMap.name"><!-- 姓名 -->
+			and t.NAME like CONCAT('%',#{page.queryMap.name},'%')
+		</if>
+		<if test="null != page.queryMap.zrAccount and '' !=page.queryMap.zrAccount"><!-- 中软工号 -->
+			and t.ZR_ACCOUNT = #{page.queryMap.zrAccount}
+		</if>
+		<if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+			order by ${sort} ${sortOrder}
+		</if>
+		group by t.ZR_ACCOUNT
+		<if test="null != page.page and  null != page.rows">
+			LIMIT ${page.page},${page.rows}
+		</if>
+
+	</select>
+	
+	<!-- 新增关键角色 -->
+	<insert id="addOldProjectKeyroles" parameterType="java.lang.String">
+		REPLACE INTO  `project_keyroles` (`NO`, `NAME`, `ZR_ACCOUNT`, `HR_ACCOUNT`, `POSITION`, `RDPM_EXAM`, `REPLY_RESULTS`, `PRO_COMPETENCE`, `STATUS`)
+		SELECT #{newNo},`NAME`, `ZR_ACCOUNT`, `HR_ACCOUNT`, `POSITION`, `RDPM_EXAM`, `REPLY_RESULTS`, `PRO_COMPETENCE`, `STATUS` FROM
+		project_keyroles pk WHERE NO = #{oldNo}
+	</insert>	
+	
+	<!-- <select id="querySysDictItemVal" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT val FROM `sys_dict_item` WHERE `is_deleted` = 0
+			AND `sys_dict_id` = (
+			SELECT id FROM `sys_dict` WHERE CODE = #{code})
+			AND name = #{name}
+	</select> -->
+	
+	<!-- <resultMap id="sysDictItem" type="com.icss.mvp.entity.SysDictItem">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="val" column="val" />
+		<result property="creator" column="creator" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="sysDictId" column="sys_dict_id" />
+		<result property="order" column="order" />
+		<result property="isDeleted" column="is_deleted" />
+	</resultMap> -->
+	
+	<!-- 根据编号查询字典列表 -->
+	<!-- <select id="querySysDictItemBycode" parameterType="java.lang.String" resultMap="sysDictItem">
+		SELECT * FROM `sys_dict_item` WHERE `is_deleted` = 0
+			AND `sys_dict_id` = (
+			SELECT `id` FROM `sys_dict` WHERE CODE = #{code})
+			ORDER BY `ORDER`
+	</select> -->
+	
+	<!-- 新增信息 -->
+	<insert id="addImportantRole" parameterType = "com.icss.mvp.entity.ProjectKeyroles">
+		INSERT INTO 
+			`project_keyroles` 
+			(NO,`NAME`,`ZR_ACCOUNT`,
+			`HR_ACCOUNT`,`POSITION`,`RDPM_EXAM`, 
+			`REPLY_RESULTS`,`PRO_COMPETENCE`,`STATUS`)
+			 VALUES
+			 (#{proj.no},#{proj.name}, #{proj.zrAccount},
+			  #{proj.hwAccount},#{proj.position},#{proj.rdpmExam},
+			  #{proj.replyResults},#{proj.proCompetence},#{proj.status})
+	</insert>
+	
+	<!-- 查询关键角色总记录数 -->
+	<select id="queryTotalCount" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM (SELECT COUNT(*)FROM (
+		SELECT mb.ZR_ACCOUNT AS ZR_ACCOUNT , mb.NAME AS NAME, mb.HW_ACCOUNT AS HW_ACCOUNT, mb.RDPM_EXAM AS RDPM_EXAM , mb.REPLY_RESULTS AS REPLY_RESULTS, mb.PRO_COMPETENCE AS PRO_COMPETENCE, ps.SUPERIOR AS SUPERIOR, ps.ROLE AS ROLE , ps.STATUS AS STATUS,
+		ps.`NO`AS NO  FROM member_base mb
+		LEFT JOIN project_staff ps ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		WHERE  ps.IS_KEY_STAFFS = 0 AND ps.IS_DELETED = 0)t LEFT JOIN project_info p ON p.`NO`=t.NO
+		WHERE p.PMID = #{pmid} AND p.PROJECT_STATE ='在行' GROUP BY t.ZR_ACCOUNT
+		<if test="null != page.queryMap.position and '' !=page.queryMap.position"><!-- 角色 -->
+        	and t.ROLE = #{page.queryMap.position}
+      	</if>
+      	<!-- <if test="null != page.queryMap.name and '' !=page.queryMap.name">姓名
+        	and a.NAME = #{page.queryMap.name}
+      	</if> -->
+      	<if test="null != page.queryMap.name and '' !=page.queryMap.name"><!-- 姓名 -->
+        	and t.NAME like CONCAT('%',#{page.queryMap.name},'%')
+      	</if>
+      	<if test="null != page.queryMap.zrAccount and '' !=page.queryMap.zrAccount"><!-- 中软工号 -->
+        	and t.ZR_ACCOUNT = #{page.queryMap.zrAccount}
+      	</if>) res
+	</select>
+
+	<!-- 查询项目中关键角色总记录数 -->
+	<select id="getTotalCount" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM (SELECT COUNT(*)FROM (
+		SELECT mb.ZR_ACCOUNT AS ZR_ACCOUNT , mb.NAME AS NAME, mb.HW_ACCOUNT AS HW_ACCOUNT, mb.RDPM_EXAM AS RDPM_EXAM , mb.REPLY_RESULTS AS REPLY_RESULTS, mb.PRO_COMPETENCE AS PRO_COMPETENCE, ps.SUPERIOR AS SUPERIOR, ps.ROLE AS ROLE , ps.STATUS AS STATUS,
+		ps.`NO`AS NO  FROM member_base mb
+		LEFT JOIN project_staff ps ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		WHERE  ps.IS_KEY_STAFFS = 0 AND ps.IS_DELETED = 0)t
+		WHERE 1=1
+		<if test="null != page.queryMap.proNo and '' !=page.queryMap.proNo"><!-- 项目编号 -->
+			and t.NO = #{page.queryMap.proNo}
+		</if>
+		<if test="null != page.queryMap.position and '' !=page.queryMap.position"><!-- 角色 -->
+			and t.ROLE = #{page.queryMap.position}
+		</if>
+		<if test="null != page.queryMap.name and '' !=page.queryMap.name"><!-- 姓名 -->
+			and t.NAME like CONCAT('%',#{page.queryMap.name},'%')
+		</if>
+		<if test="null != page.queryMap.zrAccount and '' !=page.queryMap.zrAccount"><!-- 中软工号 -->
+			and t.ZR_ACCOUNT = #{page.queryMap.zrAccount}
+		</if>
+		GROUP BY t.ZR_ACCOUNT
+		) res
+	</select>
+
+	<!-- 删除信息 -->
+	<delete id="deleteProjectKeyroles" parameterType="java.lang.String">
+		DELETE FROM  `project_keyroles` WHERE NO=#{no} AND ZR_ACCOUNT=#{zrAccount}
+	</delete>
+
+	<!-- 编辑回显查询信息 -->
+	<select id="openEditPage" parameterType="java.lang.String" resultMap="projectKeyroles">
+		SELECT * from project_keyroles where  NO =#{no} and ZR_ACCOUNT=#{zrAccount}
+	</select>
+	
+	<!-- 团队成员 -->
+	<select id="queryTeamMembers" resultMap="teamMembers">
+		SELECT mb.ZR_ACCOUNT, mb.NAME, mb.HW_ACCOUNT, ts.ROLE,
+		ts.SVN_GIT_NO, ts.TEAM_ID, ts.STATUS, ts.RANK
+		FROM member_base mb
+		LEFT JOIN team_staff ts
+		ON mb.ZR_ACCOUNT = ts.ZR_ACCOUNT
+		WHERE ts.TEAM_ID = #{teamId}
+		AND ts.IS_DELETED = 0
+		ORDER BY ts.ROLE
+	    <!-- SELECT * FROM team_members
+		WHERE TEAM_ID=#{teamId}
+		ORDER BY ROLE -->
+		<!-- <if test="null != page.queryMap.position and '' !=page.queryMap.position">角色
+        	and a.position = #{page.queryMap.position}
+      	</if> -->
+      	<!-- <if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+        	order by ${sort} ${sortOrder}
+      	</if> -->     
+      	<if test="null != page.page and  null != page.rows">
+	    	LIMIT ${page.page},${page.rows}     
+      	</if>  
+	</select>
+	
+	<select id="queryMembersCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT mb.ZR_ACCOUNT, mb.NAME, mb.HW_ACCOUNT, ts.ROLE, ts.STATUS, ts.SVN_GIT_NO FROM member_base mb
+		LEFT JOIN team_staff ts
+		ON mb.ZR_ACCOUNT = ts.ZR_ACCOUNT
+		WHERE ts.TEAM_ID = #{teamId}
+		AND ts.IS_DELETED = 0 ) res
+	</select>
+	
+	<select id="organizationalStructure" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT a.`POSITION`,a.STATUS,b.`ROLE` FROM project_keyroles a LEFT JOIN project_members b ON a.ZR_ACCOUNT=b.AUTHOR WHERE a.no=#{proNo}
+	</select>
+	
+	<select id="organizationalHierarchical" parameterType="java.lang.String" resultMap="ProjectPost">
+	<!-- SELECT p.NAME,IFNULL(p.`SUPERIOR`,a.name) AS
+	SUPERIOR,p.`POSITION`,s.superior_supervisor FROM `project_keyroles` p
+	LEFT JOIN `sys_dict_item` i ON p.POSITION = i.name
+	LEFT JOIN `sys_dict_post` s ON s.dict_item_id = i.id
+	LEFT JOIN (SELECT k.name,d.order FROM project_keyroles k
+	LEFT JOIN `sys_dict_item` d ON k.POSITION=d.name
+	WHERE k.NO=#{proNo}) a ON a.order = s.`superior_supervisor`
+	WHERE p.NO=#{proNo} AND
+	i.is_deleted = '0' AND s.is_deleted = '0' AND s.`superior_supervisor` IS NOT NULL -->
+		SELECT mb.NAME,IFNULL(ps.SUPERIOR,a.name) AS SUPERIOR,
+		ps.ROLE AS POSITION,sdp.superior_supervisor FROM `member_base` mb
+		LEFT JOIN `project_staff` ps ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT AND ps.NO=#{proNo} AND ps.IS_DELETED = 0 AND ps.IS_KEY_STAFFS = 0
+		LEFT JOIN `sys_dict_item` sdi ON sdi.`name` = ps.ROLE
+		LEFT JOIN `sys_dict_post` sdp ON sdp.dict_item_id = sdi.id
+		LEFT JOIN (
+		SELECT b.NAME,d.order FROM project_staff s
+		LEFT JOIN `member_base` b ON b.ZR_ACCOUNT = s.ZR_ACCOUNT
+		LEFT JOIN `sys_dict_item` d ON s.ROLE= d.name
+		WHERE s.NO=#{proNo} AND d.sys_dict_id = '11'
+		) a ON a.order = sdp.`superior_supervisor`
+		WHERE sdi.is_deleted = '0' AND sdi.sys_dict_id = '11'
+		AND sdp.is_deleted = '0' AND sdp.`superior_supervisor` IS NOT NULL
+	</select>
+	
+	<insert id="projectPostHierarchyInsert" parameterType="java.util.HashMap">
+		INSERT INTO project_post_hierarchy
+		(`PMID`,`POSITION`,`NAME`,`DEMAND`,`dict_item_id`)
+		VALUES (#{data.pmid},#{data.POSITION},#{data.NAME},#{data.DEMAND},#{data.dict_item_id})
+	</insert>
+	<resultMap id="ProjectPost" type="com.icss.mvp.entity.ProjectPost">
+	    <id property="id" column="id" />
+		<result property="pmid" column="PMID" />
+		<result property="position" column="POSITION" />
+		<result property="name" column="NAME" />
+		<result property="demand" column="DEMAND" />
+		<result property="onDuty" column="ON_DUTY" />
+		<result property="superior" column="SUPERIOR" />
+		<result property="superiorSequence" column="superior_supervisor" />
+		<result property="dictItemId" column="dict_item_id" />
+	</resultMap>
+	<select id="projectPostHierarchySelect" parameterType="java.lang.String" resultMap="ProjectPost">
+	<!-- SELECT h.*,s.ON_DUTY FROM `project_post_hierarchy` h LEFT JOIN
+	(SELECT NO,POSITION, COUNT(NAME) AS ON_DUTY FROM project_keyroles WHERE
+	NO=#{proNo}
+	AND STATUS='在岗'
+	GROUP BY NO,POSITION) s
+	ON s.no = h.no AND s.POSITION = h.POSITION
+	LEFT JOIN `sys_dict_post` p ON p.dict_item_id = h.dict_item_id
+	WHERE h.NO=#{proNo} AND p.`is_keyRole` = '0' -->
+	SELECT h.*,s.ON_DUTY FROM `project_post_hierarchy` h LEFT JOIN
+	(SELECT PMID,ROLE AS POSITION, COUNT(NAME) AS ON_DUTY FROM project_staff LEFT JOIN member_base
+	ON project_staff.ZR_ACCOUNT = member_base.ZR_ACCOUNT AND project_staff.IS_KEY_STAFFS = 0
+	AND project_staff.IS_DELETED = 0
+	WHERE
+	PMID=#{pmid}
+	AND STATUS='在岗'
+	GROUP BY ROLE) s
+	ON s.PMID = h.PMID AND s.POSITION = h.POSITION
+	LEFT JOIN `sys_dict_post` p ON p.dict_item_id = h.dict_item_id
+	WHERE h.PMID=#{pmid} AND p.`is_keyRole` = '0'
+	</select>
+	
+	<update id="demandUpdata" parameterType="java.lang.String">
+		UPDATE project_post_hierarchy SET DEMAND = #{value} WHERE id = #{id}
+	</update>
+	<!--<select id="sysDictItemSelect" resultType="java.util.HashMap">-->
+	<!--SELECT val,id FROM sys_dict_item WHERE sys_dict_id = #{id} AND NAME = #{position} AND is_deleted = '0'-->
+	<!--</select>-->
+	<delete id="delDemandPopulation" parameterType="java.lang.String">
+        DELETE FROM `project_post_hierarchy` WHERE id = #{id}
+    </delete>
+    <select id="getSelectNames" resultType="java.lang.String">
+<!-- 	    SELECT NAME FROM `project_keyroles` WHERE NO = #{projNo} -->
+		select t.NAME from (SELECT mb.NAME as NAME ,mb.ZR_ACCOUNT as ZR_ACCOUNT, ps.NO as NO FROM project_staff ps LEFT JOIN member_base mb
+		ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.IS_KEY_STAFFS = 0
+		AND ps.IS_DELETED = 0)t left join  project_info p
+		on p.NO = t.NO
+		where p.PMID = #{pmid}
+		AND p.PROJECT_STATE = '在行'
+		group by t.ZR_ACCOUNT
+	</select>
+
+	<select id="getSelectPost" resultType="java.util.HashMap">
+SELECT d.`key` AS text,
+       d.`key` AS value,
+       p.`id`
+FROM   `v_dictionary` d
+       LEFT JOIN `project_post_hierarchy` p
+              ON d.`id` = p.`dict_item_id`
+                 AND p.`PMID` = #{pmid}
+WHERE  d.`code` = 'position'
+        <choose>
+            <when test='type == "1"'>
+                AND p.`id` IS NOT NULL
+            </when>
+            <when test='type == "2"'>
+                AND p.`id` IS NULL
+            </when>
+        </choose>
+	</select>
+
+	<!--<select id="getSelectPost" resultType="java.util.HashMap">-->
+	<!--SELECT p.POSITION AS `text`,p.POSITION AS `value` FROM `project_post_hierarchy` p,`sys_dict_item` s-->
+    <!--WHERE p.`dict_item_id` = s.`id` AND s.`sys_dict_id` = '11' AND NO = #{projNo}-->
+	<!--</select>-->
+	<!--<select id="getSelectDict" resultType="java.util.HashMap">-->
+	<!--SELECT NAME AS `text`,NAME AS `value` FROM `sys_dict_item`-->
+	<!--WHERE sys_dict_id = '11' AND is_deleted = '0'-->
+	<!--AND NAME NOT IN (SELECT p.POSITION FROM `project_post_hierarchy`-->
+	<!--p,`sys_dict_item` s-->
+	<!--WHERE p.`dict_item_id` = s.`id` AND NO = #{projNo} AND s.`sys_dict_id` =-->
+	<!--'11')-->
+	<!--</select>-->
+	
+	<!-- 查询项目起止结束时间 -->
+	<select id="queryProjectDate" resultType="java.util.HashMap">
+	    SELECT START_DATE, END_DATE FROM project_info WHERE NO = #{projNo}
+	</select>
+	
+	<!-- 新增关键角色 -->
+	<insert id="addKeyRoleToMemberBase" parameterType = "com.icss.mvp.entity.ProjectKeyroles">
+		INSERT INTO
+		`member_base`
+		(CREATE_TIME, MODIFY_TIME, ZR_ACCOUNT, NAME, HW_ACCOUNT,
+		 RDPM_EXAM, REPLY_RESULTS, PRO_COMPETENCE)
+		VALUES
+		(NOW(), NOW(), #{proj.zrAccount}, #{proj.name}, #{proj.hwAccount}, 
+		 #{proj.rdpmExam}, #{proj.replyResults}, #{proj.proCompetence})
+	</insert>
+	
+	<insert id="addKeyRoleToProjectStaff" parameterType = "com.icss.mvp.entity.ProjectKeyroles">
+		INSERT INTO
+		`project_staff`
+		(CREATE_TIME, MODIFY_TIME, NO , ZR_ACCOUNT, ROLE, IS_KEY_STAFFS,
+		 STATUS, START_DATE, END_DATE, RANK)
+		VALUES
+		(NOW(), NOW(), #{proj.no}, #{proj.zrAccount}, #{proj.role}, 0,
+		 #{proj.status}, #{proj.startDate}, #{proj.endDate}, #{proj.rank})
+	</insert>
+	
+	<!-- 删除关键角色 -->
+	<update id="deleteProjectStaff" parameterType="com.icss.mvp.entity.ProjectKeyroles">
+		UPDATE
+		project_staff SET
+		IS_KEY_STAFFS = 1
+		WHERE NO = #{proNo} AND ZR_ACCOUNT = #{zrAccount}
+	</update>
+	
+	<!-- 关键角色页面回显 -->
+	<select id="queryMemberEchoDisplay" parameterType="java.lang.String" resultMap="projectKeyroles">
+	SELECT t.* FROM (SELECT
+		  mb.ZR_ACCOUNT AS ZR_ACCOUNT ,
+		  mb.NAME AS NAME,
+		  mb.HW_ACCOUNT AS HW_ACCOUNT ,
+		  mb.RDPM_EXAM AS RDPM_EXAM,
+		  mb.REPLY_RESULTS AS REPLY_RESULTS,
+		  mb.PRO_COMPETENCE AS PRO_COMPETENCE,
+		  ps.MODIFY_TIME AS MODIFY_TIME,
+		  ps.SUPERIOR AS SUPERIOR,
+		  ps.`NO` AS NO,
+		  ps.ROLE AS ROLE
+		FROM member_base mb
+		  LEFT JOIN project_staff ps
+		    ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		    AND ps.IS_DELETED = 0) t LEFT JOIN project_info p
+		    ON p.`NO`=t.NO
+		    WHERE p.PMID = #{pmid}
+		    AND t.ZR_ACCOUNT = #{zrAccount}
+		<if test="null != no">
+			AND t.NO = #{no};
+		</if>
+		<if test="null == no">
+			order by t.MODIFY_TIME desc
+			limit 1;
+		</if>
+	</select>
+
+	<!-- 项目中关键角色页面回显 -->
+	<select id="getProjectKeyrole" parameterType="java.lang.String" resultMap="projectKeyroles">
+	SELECT t.* FROM (SELECT
+		  mb.ZR_ACCOUNT AS ZR_ACCOUNT ,
+		  mb.NAME AS NAME,
+		  mb.HW_ACCOUNT AS HW_ACCOUNT ,
+		  mb.RDPM_EXAM AS RDPM_EXAM,
+		  mb.REPLY_RESULTS AS REPLY_RESULTS,
+		  mb.PRO_COMPETENCE AS PRO_COMPETENCE,
+		  ps.MODIFY_TIME AS MODIFY_TIME,
+		  ps.SUPERIOR AS SUPERIOR,
+		  ps.`NO` AS NO,
+		  ps.ROLE AS ROLE
+		  FROM member_base mb
+		  LEFT JOIN project_staff ps
+		    ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		    AND ps.IS_DELETED = 0) t
+		    WHERE t.ZR_ACCOUNT = #{zrAccount}
+		<if test="null != no">
+			AND t.NO = #{no};
+		</if>
+		<if test="null == no">
+			order by t.MODIFY_TIME desc
+			limit 1;
+		</if>
+	</select>
+
+	<!-- 更新关键角色 -->
+	<update id="updateKeyRoleToMemberBase" parameterType="com.icss.mvp.entity.ProjectKeyroles">
+		UPDATE
+		member_base SET
+		MODIFY_TIME = NOW(), NAME = #{proj.name}, HW_ACCOUNT = #{proj.hwAccount}, RDPM_EXAM = #{proj.rdpmExam},
+		REPLY_RESULTS = #{proj.replyResults}, PRO_COMPETENCE = #{proj.proCompetence}
+		WHERE ZR_ACCOUNT = #{proj.zrAccount}
+	</update>
+	
+	<update id="updateKeyRoleToProjectStaff" parameterType="com.icss.mvp.entity.ProjectKeyroles">
+		UPDATE
+		project_staff SET
+		MODIFY_TIME = NOW(), ROLE = #{proj.role}, IS_KEY_STAFFS = 0, STATUS = #{proj.status},
+		IS_DELETED = 0, SUPERIOR = #{proj.superior}, RANK = #{proj.rank}
+		WHERE NO = #{proj.no} AND ZR_ACCOUNT = #{proj.zrAccount}
+	</update>
+	
+	<!-- 关键角色查重 -->
+	<select id="selectRepeatMemberBase" parameterType="com.icss.mvp.entity.ProjectKeyroles" resultType = "java.lang.Integer">
+		SELECT COUNT(*) FROM member_base WHERE ZR_ACCOUNT = #{proj.zrAccount} AND IS_DELETED = 0
+	</select>
+	
+	<select id="selectRepeatProjectStaff" parameterType="com.icss.mvp.entity.ProjectKeyroles" resultType = "java.lang.Integer">
+		SELECT COUNT(*) FROM project_staff WHERE NO = #{proj.no} AND ZR_ACCOUNT = #{proj.zrAccount}
+	</select>
+	
+	<update id="updateProjectKeyRoleCount" parameterType="java.lang.String">
+		UPDATE manpower_budget SET
+		keyRoleCount = #{count}
+		WHERE pmid = #{pmid}
+	</update>
+	
+	<select id = "getProjectCost" parameterType = "java.lang.String" resultMap = "projectCost">
+		SELECT t1.ZR_ACCOUNT, pc.ATTENDENCE, pc.OVERTIME, pc.DAY FROM 
+		(SELECT ps.ZR_ACCOUNT, ps.ROLE FROM member_base mb
+		LEFT JOIN project_staff ps ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		WHERE ps.NO = #{projNo}
+		AND ps.IS_DELETED = 0
+<!-- 		AND (ps.STATUS = "在岗" OR ps.STATUS = "后备" OR ps.STATUS = "离职") -->
+		AND (ps.START_DATE &lt;= #{nextTime} AND ps.END_DATE &gt;= #{statisticalTime})
+		<if test=" '' != flag">
+			AND ps.ZR_ACCOUNT = #{flag}
+		</if>
+		AND ps.ROLE != 'QA'
+		) t1
+		LEFT JOIN project_cost pc ON t1.ZR_ACCOUNT = pc.ZR_ACCOUNT
+		AND pc.TIME BETWEEN #{statisticalTime} AND #{nextTime}
+		AND pc.NO = #{projNo}
+		ORDER BY t1.ROLE, pc.ZR_ACCOUNT, pc.DAY
+	</select>
+	
+	<select id="getMemberList" resultMap = "projectCost">
+		SELECT mb.NAME, mb.ZR_ACCOUNT, mb.HW_ACCOUNT, ps.STATUS, ps.START_DATE, ps.END_DATE FROM project_staff ps 
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.NO = #{projNo} AND ps.is_deleted = 0
+<!-- 		AND (ps.STATUS = "在岗" OR ps.STATUS = "后备" OR ps.STATUS = "离职") -->
+		AND (ps.START_DATE &lt;= #{nextTime} AND ps.END_DATE &gt;= #{statisticalTime})
+		<if test=" '' != flag">
+			AND ps.ZR_ACCOUNT = #{flag}
+		</if>
+		AND ps.ROLE != 'QA'
+		ORDER BY ps.ROLE, ps.ZR_ACCOUNT
+		<if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset}, ${page.pageSize}
+		</if>
+	</select>
+	
+	<select id="getMemberSize" resultType = "java.lang.Integer">
+		SELECT COUNT(*) FROM project_staff WHERE NO = #{projNo} AND is_deleted = 0 
+<!-- 		AND (STATUS = "在岗" OR STATUS = "后备" OR STATUS = "离职") -->
+		AND (START_DATE &lt;= #{nextTime} AND END_DATE &gt;= #{statisticalTime})
+		<if test=" '' != flag">
+			AND ZR_ACCOUNT = #{flag}
+		</if>
+		AND ROLE != 'QA'
+	</select>
+	
+	<update id="updateMemberCost" parameterType="com.icss.mvp.entity.ProjectCost">
+		REPLACE INTO project_cost
+		(CREATE_TIME, MODIFY_TIME, ZR_ACCOUNT, ATTENDENCE, OVERTIME, DAY, TIME, NO)
+		VALUES
+		(NOW(), NOW(), #{projCost.zrAccount}, #{projCost.attendence}, #{projCost.overtime}, 
+		#{projCost.day}, #{projCost.time}, #{projCost.no})
+	</update>
+	
+	<update id="updateProjectBudget" parameterType="java.lang.String">
+		REPLACE INTO project_budget
+		(CREATE_TIME, MODIFY_TIME, NO, PROJECT_BUDGET)
+		VALUES
+		(NOW(), NOW(), #{projNo}, #{projectBudget})
+	</update>
+	
+	<select id="getMemberByDay" resultMap="projectCost">
+		SELECT NO, ZR_ACCOUNT
+		FROM project_staff
+		WHERE NO = #{projNo}
+		AND IS_DELETED = 0
+		<if test="null != day">
+			AND START_DATE &lt;= #{day}
+			AND END_DATE &gt;= #{day}
+		</if>
+		<if test="'' != flag">
+			AND ZR_ACCOUNT = #{flag}
+		</if>
+	</select>
+	
+	<insert id="updateHour" parameterType="java.util.List">
+		REPLACE INTO project_cost(CREATE_TIME, MODIFY_TIME, IS_DELETED, ZR_ACCOUNT, ATTENDENCE, OVERTIME, DAY, TIME, NO)
+		VALUES
+		<foreach collection="memberHour" item="item" index="index" separator="," >  
+	        (NOW(), NOW(), 0, #{item.zrAccount}, #{item.attendence}, "0.0", #{item.day}, #{item.time}, #{item.no})  
+	    </foreach> 
+	</insert>
+	
+	<select id="getPayroll" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM project_staff
+		WHERE NO = #{projNo}
+		AND IS_DELETED = 0
+		AND ZR_ACCOUNT = #{zrAccount}
+		AND START_DATE &lt;= #{week}
+		AND END_DATE &gt;= #{week}
+	</select>
+	
+	<select id="getMemberAccount" resultMap="projectMembersLocal">
+		SELECT ps.ZR_ACCOUNT, mb.HW_ACCOUNT FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.NO = #{projNo}
+		AND ps.IS_DELETED = 0
+	</select>
+	
+	<select id="getHWAccount" resultType="java.lang.Integer">
+		SELECT COUNT(ZR_ACCOUNT) FROM member_base WHERE HW_ACCOUNT = #{username}
+	</select>
+	<select id="getzrAccount" resultType="java.lang.Integer">
+		SELECT COUNT(ZR_ACCOUNT) FROM member_base WHERE ZR_ACCOUNT = #{zrAccount}
+	</select>
+
+	<select id="queryzrbyhw" resultType="java.lang.String">
+		SELECT ZR_ACCOUNT FROM member_base WHERE  HW_ACCOUNT = #{hwAccount}
+	</select>
+	<update id="addZRAccount" parameterType="java.lang.String">
+		INSERT INTO member_base
+		(CREATE_TIME, MODIFY_TIME, ZR_ACCOUNT, HW_ACCOUNT)
+		VALUES(NOW(), NOW(), #{zrAccount}, #{hwAccount})
+	</update>
+	
+	<select id="getPMZRAccountByNo" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT PMID FROM project_info WHERE NO = #{projNo}
+	</select>
+	
+	<select id="getPMZRAccountByHW" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT ZR_ACCOUNT FROM member_base WHERE HW_ACCOUNT = #{hwAccount}
+	</select>
+	
+	<select id="selfRank" parameterType="java.lang.String" resultType="java.util.HashMap">   
+		SELECT *
+		FROM (
+			SELECT MODIFY_TIME, RANK, STATUS
+			FROM project_staff
+			WHERE is_deleted = 0
+				AND ZR_ACCOUNT = #{zrAccount}
+			ORDER BY MODIFY_TIME DESC
+			LIMIT 1
+		) t
+		UNION
+		SELECT *
+		FROM (
+			SELECT MODIFY_TIME, RANK, STATUS
+			FROM team_staff
+			WHERE is_deleted = 0
+				AND ZR_ACCOUNT = #{zrAccount}
+			ORDER BY MODIFY_TIME DESC
+			LIMIT 1
+		) s
+		ORDER BY MODIFY_TIME DESC
+		LIMIT 1
+	</select>
+	
+	<select id="importRank" parameterType="java.lang.String" resultType="java.util.HashMap">   
+		SELECT RANK, STATUS FROM archive WHERE ZR_ACCOUNT = #{zrAccount}
+	</select>
+	
+	<select id="memberInfo" parameterType="java.lang.String" resultType="java.util.HashMap">   
+	    SELECT ts.ROLE, ts.SVN_GIT_NO FROM
+	    <if test=" 'project' == mark">
+	    	project_staff ts left join project_info p
+	    	on ts.NO = p.NO
+	    	WHERE p.PMID = #{id}
+	    </if>
+		<if test=" 'projectRoleKey' == mark">
+			project_staff ts
+			WHERE ts.NO = #{id}
+		</if>
+	    <if test=" 'team' == mark">
+	    	team_staff ts
+	    	WHERE ts.TEAM_ID = #{id}
+	    </if> 
+		AND ts.IS_DELETED = 0
+		AND ts.ZR_ACCOUNT = #{zrAccount}
+	</select>
+	
+	<select id="memberBasic" parameterType="java.lang.String" resultType="java.util.HashMap">   
+	    SELECT NAME, HW_ACCOUNT FROM member_base 
+		WHERE zr_account = #{zrAccount}
+		AND is_deleted = 0
+	</select>
+	
+	<update id="alterRankOfProjectStaff" parameterType="java.lang.String">
+		UPDATE project_staff SET
+		MODIFY_TIME = NOW(), RANK = #{rank}
+		<if test=" 'two' == mark">
+			,STATUS = #{status}
+		</if>
+		WHERE ZR_ACCOUNT = #{zrAccount}
+		AND IS_DELETED = 0
+	</update>
+	
+	<update id="alterRankOfTeamStaff" parameterType="java.lang.String">
+		UPDATE team_staff SET
+		MODIFY_TIME = NOW(), RANK = #{rank}
+		<if test=" 'two' == mark">
+			,STATUS = #{status}
+		</if>
+		WHERE ZR_ACCOUNT = #{zrAccount}
+		AND IS_DELETED = 0
+	</update>
+	<select id="getvalueBykey" parameterType="java.lang.String" resultType="java.lang.String">
+     SELECT v.value FROM v_dictionary v WHERE v.name = '角色' AND v.`key`= #{key};
+	</select>
+</mapper>

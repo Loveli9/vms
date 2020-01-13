@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectOverviewDao">
+	<resultMap id="schedulePlan" type="com.icss.mvp.entity.SchedulePlan">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="description" column="description" />
+		<result property="scheduleIcon" column="schedule_icon" />
+		<result property="scheduleState" column="schedule_state" />
+	</resultMap>
+	<resultMap id="projectInfo" type="com.icss.mvp.entity.ProjectInfo">
+		<result property="startDate" column="START_DATE" />
+		<result property="endDate" column="END_DATE" />
+	</resultMap>
+	<select id="getPeriodName" parameterType="java.lang.String" resultMap="schedulePlan">
+		SELECT sp.name FROM schedule_plan sp
+		LEFT JOIN project_schedule_plan ps
+		ON sp.project_schedule_id = ps.id
+		WHERE ps.NO = #{no} AND ps.plan_name = '里程碑'
+		ORDER BY sp.actual_finish_date DESC LIMIT 1
+	</select>
+	<select id="getStartStopTime" resultType="java.util.HashMap">
+		SELECT START_DATE,END_DATE FROM project_info WHERE NO = #{no} LIMIT 1
+	</select>
+	<select id="queryFirstFiveWeekDate" resultType="java.lang.String">
+		SELECT END_DATE FROM project_cycle
+		<![CDATA[ 
+			WHERE DATE_FORMAT(`END_DATE`,'%Y-%m-%d') <= #{statisticalTime}
+		]]>	
+		ORDER BY end_date DESC LIMIT 5
+	</select>
+	
+	<select id="queryProInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		<!-- select pi.BU,pi.PDU,pi.DU,pi.AREA,pi.`TYPE`,pi.PM,pk.HR_ACCOUNT from project_info pi 
+			left join project_keyroles pk on pi.PMID=pk.ZR_ACCOUNT and pi.`NO`=pk.`NO`
+			where pi.`NO`=#{no} -->
+			SELECT
+			  pi.BU,
+			  pi.PDU,
+			  pi.DU,
+			  pi.AREA,
+			  pi.`TYPE`,
+			  pi.PM,
+			  pk.HW_ACCOUNT AS HR_ACCOUNT
+			FROM project_info PI
+			  LEFT JOIN (SELECT
+			               mb.HW_ACCOUNT,
+			               ps.IS_KEY_STAFFS,
+			               ps.ZR_ACCOUNT,
+			               ps.NO,
+			               ps.IS_DELETED
+			             FROM project_staff ps
+			               LEFT JOIN member_base mb
+			                 ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+			                 AND ps.IS_KEY_STAFFS = 0 AND ps.IS_DELETED = 0) pk
+			    ON pi.PMID = pk.ZR_ACCOUNT
+			      AND pi.`NO` = pk.`NO`
+			WHERE pi.`NO` = #{no}
+	</select>
+	
+	<select id="queryKeyRoles" parameterType="java.lang.String" resultType="java.util.HashMap">
+		<!-- SELECT a.`NO`,a.NAME,IFNULL(a.HR_ACCOUNT,b.AUTHOR) as HW_ACCOUNT,a.POSITION from
+			project_keyroles a LEFT JOIN project_members b on a.ZR_ACCOUNT=b.AUTHOR 
+			where a.no=#{no} and a.POSITION in('PM','QA') -->
+			
+		SELECT
+		  a.`NO`,
+		  a.NAME,
+		  IFNULL(a.HR_ACCOUNT,b.AUTHOR) AS HW_ACCOUNT,
+		  a.POSITION
+		FROM (SELECT
+		        ps.NO,
+		        mb.NAME,
+		        mb.ZR_ACCOUNT,
+		        mb.HW_ACCOUNT AS HR_ACCOUNT,
+		        ps.ROLE       AS POSITION,
+		        ps.IS_DELETED,
+		        ps.IS_KEY_STAFFS
+		      FROM project_staff ps
+		        LEFT JOIN member_base mb
+		          ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT) a
+		  LEFT JOIN project_members b
+		    ON a.ZR_ACCOUNT = b.AUTHOR
+		WHERE a.no = #{no} AND a.IS_DELETED = 0 AND a.IS_KEY_STAFFS = 0
+		    AND a.POSITION IN('PM','QA')
+	</select>
+	
+	<select id="getKXversion" resultType="java.lang.Integer">
+<!-- 		select VERSION from measure m where m.LABLE_ID=46 order by ID -->
+		SELECT iti.VERSION FROM in_tmpl_label itl
+		LEFT JOIN in_tmpl_label_index itli
+		ON itl.ID = itli.label_id
+		LEFT JOIN in_tmpl_index iti
+		ON itli.index_id = iti.ID
+		WHERE itl.ID = 630
+	</select>
+	
+	<select id="getKnotProjectDate" resultType="java.lang.String">
+		SELECT statistical_time FROM project_review WHERE pro_no =
+		#{no} AND is_close = #{knotMark}
+	</select>
+	
+</mapper>

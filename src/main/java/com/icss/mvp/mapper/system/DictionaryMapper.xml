@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.system.IDictionaryDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.system.DictEntryItemEntity">
+        <result column="id" property="id" javaType="int"/>
+        <result column="name" property="key"/>
+        <result column="val" property="value"/>
+        <result column="order" property="order"/>
+        <result column="sys_dict_id" property="entryId"/>
+        <result column="entryName" property="entryName"/>
+        <result column="code" property="entryCode"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="modifyTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <resultMap id="EntryResultMap" type="com.icss.mvp.entity.system.EntryEntity">
+        <result column="id" property="id" javaType="int"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="desc_cription" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="modifyTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="DictEntryBaseColumn">
+        d.`id`,
+        d.`name`, d.`code`, d.`desc_cription`,
+        d.`create_time`, d.`update_time`, d.`is_deleted`
+    </sql>
+
+    <sql id="DictItemBaseColumn">
+        i.`id`,
+        i.`name`, i.`val`, i.`sys_dict_id`, IF(i.`order` = -1, i.`id`, i.`order`) AS `order`,
+        i.`create_time`, i.`update_time`, i.`is_deleted`
+    </sql>
+
+    <select id="getEntries" parameterType="Map" resultMap="EntryResultMap">
+        SELECT
+        <include refid="DictEntryBaseColumn"/>
+        FROM `sys_dict` d
+        WHERE d.`is_deleted` = 0
+        <if test="code != null and code != ''">
+            AND d.`code` = #{code}
+        </if>
+        <if test="name != null and name != ''">
+            AND d.`name` like concat('%', #{name} ,'%')
+        </if>
+        <if test="id != null and id != ''">
+            AND d.`id` = #{id}
+        </if>
+        <if test="sort!=null and sort!='' and order!=null and order!=''">
+            ORDER BY ${order} ${sort}
+        </if>
+        , d.`id` desc
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <select id="getEntryItems" parameterType="Map" resultMap="BaseResultMap">
+        <!-- SELECT
+        d.`name` AS `entryName`,
+        d.`code`,
+        <include refid="DictItemBaseColumn"/>
+        FROM `sys_dict_item` i
+        LEFT JOIN `sys_dict` d
+        ON i.`sys_dict_id` = d.`id`
+        WHERE i.`is_deleted` = 0
+        AND d.`is_deleted` = 0 -->
+		select v.name as entryName, v.code, v.id, v.`key` as name, v.value as val, v.sys_dict_id,
+		IF(v.`order` = -1, v.id, v.`order`) AS `order`, v.update_time
+		from v_dictionary v where 1 = 1
+        <if test="id != null and id != ''">
+            AND v.`id` = #{id}
+        </if>
+        <if test="key != null and key != ''">
+            AND v.`key` like concat('%', #{key} ,'%')
+        </if>
+        <if test="entryCode != null and entryCode != ''">
+            AND v.`code` = #{entryCode}
+        </if>
+        <if test="entryName != null and entryName != ''">
+            AND v.`name` like concat('%', #{entryName} ,'%')
+        </if>
+        <if test="entryId != null and entryId != ''">
+            AND v.`sys_dict_id` = #{entryId}
+        </if>
+        <if test="sort!=null and sort!='' and order!=null and order!=''">
+            ORDER BY ${order} ${sort}
+        </if>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+
+    <insert id="insertEntry">
+        INSERT INTO `sys_dict` (`name`, `code`, `desc_cription`, `create_time`, `update_time`, `is_deleted`, `creator`)
+        VALUES
+        <foreach collection="entries" item="item" index="index" separator=",">
+            (
+            #{item.name},#{item.code},#{item.description},#{item.createTime},#{item.modifyTime},0,#{userId}
+            )
+        </foreach>
+        ;
+    </insert>
+
+    <update id="updateEntry" parameterType="Map">
+        UPDATE `sys_dict`
+        SET `update_time` = #{modifyTime}
+        <if test="name != null and name != ''">
+            , `name` = #{name}
+        </if>
+        <if test="code != null and code != ''">
+            , `code` = #{code}
+        </if>
+        <if test="description != null">
+            , `desc_cription` = #{description}
+        </if>
+        <if test="isDeleted != null">
+            , `is_deleted` = #{isDeleted}
+        </if>
+        WHERE
+        <choose>
+            <when test="ids != null and ids.size > 0">
+                `id` IN
+                <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                `id` = #{id}
+            </otherwise>
+        </choose>
+        ;
+    </update>
+
+    <insert id="insertEntryItem">
+        INSERT INTO `sys_dict_item` (`name`, `val`, `sys_dict_id`, `order`, `create_time`, `update_time`,
+        `is_deleted`, `creator`)
+        VALUES
+        <foreach collection="items" item="item" index="index" separator=",">
+            (
+            #{item.key},#{item.value},#{item.entryId},-1,#{item.createTime},#{item.modifyTime},0,
+            #{userId}
+            )
+        </foreach>
+        ;
+    </insert>
+
+    <update id="updateEntryItem" parameterType="Map">
+        UPDATE `sys_dict_item`
+        SET `update_time` = #{modifyTime}
+        <if test="key != null and key != ''">
+            , `name` = #{key}
+        </if>
+        <if test="value != null">
+            , `val` = #{value}
+        </if>
+        <if test="order != null and order != 0">
+            , `order` = #{order}
+        </if>
+        <if test="isDeleted != null">
+            , `is_deleted` = #{isDeleted}
+        </if>
+        WHERE
+        <choose>
+            <when test="ids != null and ids.size > 0">
+                `id` IN
+                <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </when>
+            <otherwise>
+                `id` = #{id}
+            </otherwise>
+        </choose>
+        ;
+    </update>
+
+    <update id="adjustItemOrder" parameterType="java.util.List">
+        <foreach collection="list" item="item" index="index" open="" close="" separator=";">
+            UPDATE `sys_dict_item` set `order` = #{item.order}, `update_time` = #{item.modifyTime}
+            WHERE `id` = #{item.id}
+        </foreach>
+        ;
+    </update>
+</mapper>

@@ -1,0 +1,156 @@
+﻿﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>可视化度量平台</title>
+	<link rel="stylesheet" href="../../resources/ztree/zTreeStyle.css" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../../resources/bootstrap/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="../../resources/bootstrap/bootstrap-switch.min.css" />
+	<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/Icp-ci-Input.css" type="text/css" />
+	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css"/>
+	<script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+	<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+	<link rel="stylesheet" href="../../resources/css/jquery.orgchart.css" type="text/css" />
+
+	<!-- 消息提示插件 -->
+	<script type="text/javascript" src="js/toastr.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+	<script type="text/javascript" src="js/echarts.common.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+	<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-switch.min.js"></script>
+
+	<!--<script type="text/javascript" src="js/label-measure.js"></script>-->
+	<script type="text/javascript" src="../../resources/ztree/jquery.ztree.all.min.js"></script>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+	<script src="js/extendPagination.js"></script>
+	<script type="text/javascript" src="js/projectPersonnel.js"></script>
+	<script type="text/javascript" src="js/comm/fishBone.js"></script>
+
+	<style></style>
+
+</head>
+<body class="mvp-body">
+<div class="mvp-main" style="margin:0px 25px 25px 25px;"id="personManage">
+	<div style="overflow: hidden;"id="personManage">
+		<div style="width: 60%;float: left;">
+			<div style="width: 100%;height: 110px;margin-bottom: 25px;background-color: #fff;border-radius: 4px;">
+				<div class="a-right" style="width: 33%;height: 100%;font-size: 12px;float: left;position:relative;padding:30px 23px 0 20px">
+					<span style=" margin-left: 10%;color: #909599">总人力(人)</span>
+					<img src="../HTML/images/zongrenli.png" style="right: 20px;top: 32px;position:absolute;">
+					<div id="zrl" style="margin-left: 11%;font-size: 20px;margin-top: 3px">0</div>
+				</div>
+				<div class="a-right" style="width: 33%;height: 100%;float: left;position:relative;padding:30px 23px 0 20px">
+					<span style="margin-left: 10%;color: #909599">关键角色(人)</span>
+					<img src="../HTML/images/guanjianjuese.png" style="right: 20px;top: 32px;position:absolute;">
+					<div id="gjjs" style="margin-left: 11%;font-size: 20px;margin-top: 3px;">0</div>
+				</div>
+				<div style="width: 33%;height: 100%;float: left;position:relative;padding:30px 23px 0 20px">
+					<span style="margin-left: 10%;color: #909599">问题人员(人)</span>
+					<img src="../HTML/images/wentirenyuan.png" style="right: 20px;top: 32px;position:absolute;">
+					<div id="wtry" style="margin-left: 11%;font-size: 20px;margin-top: 3px;">0</div>
+				</div>
+			</div>
+			<div style="width: 100%;height: 400px;background-color: #fff;border-radius: 4px;padding-top: 3%;">
+				<span style="margin-left: 1%;color: #8495A9">人员稳定度</span>
+				<div style="margin: -7% 0% 0% 92%;padding-bottom: 1%;padding-top: 2%;font-size: 9px;"id="percet1">0%</div>
+				<div style="width: 80%;height: 6px;background-color: #E6EFFE;margin-left: 15%;margin: -2% 0% 2% 15%;" class="progress">
+					<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" id="width1" style="background-color: #0092FF;">
+						<span class="sr-only"></span>
+					</div>
+				</div>
+				<span style="margin-left: 1%;color: #8495A9">关键角色稳定度</span>
+				<div style="margin: -6% 0% 0% 92%;padding-bottom: 1%;padding-top: 2%;font-size: 9px;"id="percet2">25%</div>
+				<div style="width: 80%;height: 6px;background-color: #E6EFFE;margin-left: 15%;margin-top: -1%;margin: -2% 0% 2% 15%;" class="progress">
+					<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" id="width2" style="background-color: #FFB961;">
+						<span class="sr-only"></span>
+					</div>
+				</div>
+				<span style="margin-left: 1%;color: #8495A9">问题人员占比</span>
+				<div style="margin: -6% 0% 0% 92%;padding-bottom: 1%;padding-top: 2%;font-size: 9px;">50%</div>
+				<div style="width: 80%;height: 6px;background-color: #E6EFFE;margin-left: 15%;margin-top: -1%;margin: -2% 0% 2% 15%;" class="progress">
+					<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 50%;background-color: #FF7070;">
+						<span class="sr-only"></span>
+					</div>
+				</div>
+				<span style="margin-left: 1%;color: #8495A9">出勤率</span>
+				<div style="margin: -6% 0% 0% 92%;padding-bottom: 1%;padding-top: 2%;font-size: 9px;">75%</div>
+				<div style="width: 80%;height: 6px;background-color: #E6EFFE;margin-left: 15%;margin-top: -2%;margin: -2% 0% 1% 15%;" class="progress">
+					<div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 75%;background-color: #01E8C8;">
+						<span class="sr-only"></span>
+					</div>
+				</div>
+				<div style="margin: 3% 0% 0% 15%;font-size: 9px;">0%</div>
+				<div style="margin: -3.8% 0% 0% 34%;font-size: 9px;">25%</div>
+				<div style="margin: -3.7% 0% 0% 54%;font-size: 9px;">50%</div>
+				<div style=" margin: -3.7% 0% 0% 74%;font-size: 9px;">75%</div>
+				<div style="margin: -3.7% 0% 0% 92%;font-size: 9px;">100%</div>
+			</div>
+		</div>
+		<div style="width: 37.7%;margin-left:25px ;height:535px;background-color: #fff;border-radius: 4px;float: left;">
+			<div class="headTitle" style="height: 15px;">
+				<img src="../HTML/images/wentirentop.png" style="float: left;margin-left: 4%;margin-top: 2%;width: 1%;">
+				<span id="zongLanTitle" style="font-size: 12px;font-weight: 600;float: left;margin-top: 1%;margin-left: 9px;">问题人员TOP5</span>
+			</div>
+			<div style="width: 100%;height: 10%;background-color: #fff;margin-top: 4%;border-top: 1px solid #e2e3e4;">
+				<div style=" margin-left: 5%; font-size: 11px; margin-top: 2%;">Test项目12148</div>
+				<div style=" margin-left: 5%;font-size: 10px;margin-top: -2%;color: #B4B5B9;">问题人员 : <span>张三、</span><span>李四、</span><span>王五、</span><span>赵六、</span><span>侯琦、</span></div>
+				<div style="margin: -8% 0% 0% 87%;font-size: 10px;background-color: #0093FD; width: 6%;height: 34%;color: white;padding-left: 2.3%;padding-top: -13%;">6</div>
+			</div>
+			<div style="width: 100%;height: 10%;background-color: #fff;border-top: 1px dashed #e2e3e4;">
+				<div style="margin-left: 5%;font-size: 11px;margin-top: 2%;">Test项目12148</div>
+				<div style="margin-left: 5%;font-size: 10px;margin-top: -2%;color: #B4B5B9;">问题人员 : <span>张三、</span><span>李四、</span><span>王五、</span><span>赵六、</span><span>侯琦、</span></div>
+				<div style="margin: -8% 0% 0% 87%;font-size: 10px;background-color: #0093FD;width: 6%;height: 34%;color: white;padding-left: 2.3%;padding-top: -13%;">6</div>
+			</div>
+			<div style="width: 100%;height: 10%;background-color: #fff;border-top: 1px dashed #e2e3e4;">
+				<div style="margin-left: 5%;font-size: 11px;margin-top: 2%;">Test项目12148</div>
+				<div style="margin-left: 5%;font-size: 10px;margin-top: -2%;color: #B4B5B9;">问题人员 : <span>张三、</span><span>李四、</span><span>王五、</span><span>赵六、</span><span>侯琦、</span></div>
+				<div style="margin: -8% 0% 0% 87%;font-size: 10px;background-color: #0093FD;width: 6%;height: 34%;color: white;padding-left: 2.3%;padding-top: -13%;">6</div>
+			</div>
+			<div style="width: 100%;height: 10%;background-color: #fff;border-top: 1px dashed #e2e3e4;">
+				<div style="margin-left: 5%;font-size: 11px; margin-top: 2%;">Test项目12148</div>
+				<div style="margin-left: 5%;font-size: 10px; margin-top: -2%;color: #B4B5B9;">问题人员 : <span>张三、</span><span>李四、</span><span>王五、</span><span>赵六、</span><span>侯琦、</span></div>
+				<div style="margin: -8% 0% 0% 87%;font-size: 10px;background-color: #0093FD; width: 6%; height: 34%;color: white; padding-left: 2.3%;padding-top: -13%;">6</div>
+			</div>
+			<div style="width: 100%;height: 10%;background-color: #fff;border-top: 1px dashed #e2e3e4;border-radius: 4px;">
+				<div style=" margin-left: 5%;font-size: 11px;margin-top: 2%;">Test项目12148</div>
+				<div style=" margin-left: 5%;font-size: 10px;margin-top: -2%;color: #B4B5B9;">问题人员 : <span>张三、</span><span>李四、</span><span>王五、</span><span>赵六、</span><span>侯琦、</span></div>
+				<div style="margin: -8% 0% 0% 87%;font-size: 10px;background-color: #0093FD; width: 6%;height: 34%;color: white;padding-left: 2.3%;padding-top: -13%;border-radius: 0px;">6</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+<script type="text/javascript">
+	function check(){
+		var allcheck=document.getElementById("checkbox");
+		var othercheck=document.getElementsByName("checkbox");
+		for(var i=0;i<othercheck.length;i++){
+			if(allcheck.checked){
+				othercheck[i].checked=true;
+			}else{
+				othercheck[i].checked=false;
+			}
+		}
+	}
+
+</script>
+</html>

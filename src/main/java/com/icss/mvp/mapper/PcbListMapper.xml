@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IPcbListDao">
+	<select id="getParameterByProjectAndIds" parameterType = "java.lang.String" resultType ="java.util.HashMap">
+		select * from 
+			(select b.no as no,b.month as month ,a.parameter_id as parameterId,b.value as value from 
+				(select distinct parameter_id from project_parameter_value_new where no in 
+					${proNos}
+					and parameter_id in ${ids} order by month desc) as a 
+		left join 
+			(select distinct no,month,parameter_id,value from project_parameter_value_new where no in 
+				${proNos}
+				and parameter_id in ${ids} order by month desc) as b 
+		on a.parameter_id=b.parameter_id group by a.parameter_id) c
+		left join parameter_info_new s on c.parameterId=s.ID
+	</select>
+	
+	<select id="getParameterByProjectAndIdsSum" parameterType = "java.lang.String" resultType ="java.util.HashMap">
+		select sum(c.value) as sum,DATE_FORMAT(month,'%Y-%m') as month from 
+			(select b.no as no,b.month as month ,a.parameter_id as parameterId,b.value as value from 
+				(select distinct parameter_id from project_parameter_value_new where no in 
+					${proNos}
+					and parameter_id in ${ids} order by month desc) as a 
+		left join 
+			(select distinct no,month,parameter_id,value from project_parameter_value_new where no in 
+				${proNos}
+				and parameter_id in ${ids} order by month desc) as b 
+		on a.parameter_id=b.parameter_id group by a.parameter_id) c
+		left join parameter_info_new s on c.parameterId=s.ID
+	</select>
+	
+	<insert id="editPcbProjectConfig" parameterType="java.lang.String">
+		replace into pcb_project_config(pro_no, pcb_category, measure_id, status) values
+		<foreach collection="list" item="item" separator=",">
+			(#{item.proNo}, #{item.pcbCategory}, #{item.measureId}, #{item.status})
+		</foreach>
+	</insert>
+	
+	<insert id="insertPcbProjectConfig" parameterType="java.lang.String">
+		insert into pcb_project_config(pro_no, measure_id, status, create_time) values
+		<foreach collection="list" item="item" separator=",">
+			(#{item.proNo}, #{item.measureId}, #{item.status}, now())
+		</foreach>
+	</insert>
+
+	<select id="queryPcbProjectConfigList" parameterType="Map" resultType="java.lang.String">
+		select distinct(pro_no) proNo from pcb_project_config
+		where status=0 and pcb_category = #{pcbCategory}
+		<if test="measureId != null and measureId != ''">
+			and measure_id = #{measureId}
+		</if>
+		and pro_no in
+		<foreach collection="proNos" open="(" close=")" separator="," item="proNo">
+			#{proNo}
+		</foreach>
+		order by pro_no
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+		
+	</select>
+	
+	<select id="queryPcbProjectConfigCount" parameterType="Map" resultType="java.lang.Integer">
+		select count(distinct(pro_no)) from pcb_project_config 
+		where status=0 and pcb_category = #{pcbCategory}
+		and pro_no in
+		<foreach collection="proNos" open="(" close=")" separator="," item="proNo"> 
+			#{proNo}
+		</foreach>
+	</select>
+
+	<select id="queryPcbProjectConfigListByNo" parameterType="Map" resultType="java.util.HashMap">
+		select  t.pro_no, t.measure_id,t.`status` 
+		from 		
+		(select * from pcb_project_config
+			where measure_id in 
+			<foreach collection="measureIds" open="(" close=")" separator="," item="measureId">
+				#{measureId}
+			</foreach>
+			 	and pro_no in
+			<foreach collection="proNos" open="(" close=")" separator="," item="proNo">
+				#{proNo}
+			</foreach>
+			order by pro_no, measure_id,create_time desc) t 
+		group by t.pro_no, t.measure_id
+	</select>
+
+	<select id="queryPcbProjectConfigIdList" parameterType="Map" resultType="java.lang.String">
+		select measure_id from pcb_project_config
+		where status=0 and pcb_category = #{pcbCategory}
+		and pro_no = #{proNo}
+	</select>
+	
+	<select id="exportResearch" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT * FROM 
+       (SELECT c.measure_id AS ids,i.`NO` AS nos,i.PDU_SPDT AS pdu,i.name AS nam 
+        FROM project_info i
+        LEFT JOIN pcb_project_config c ON c.pro_no = i.no
+        WHERE i.no IN ${no} AND c.pcb_category = #{category}) p
+        INNER JOIN
+       (SELECT * FROM 
+       (SELECT h.`no` AS nos,h.measure_id AS id,m.`TARGET` AS target,m.`LOWER` AS low,m.`UPPER` AS upp,h.measure_value AS var
+        FROM measure_history_detail h 
+        LEFT JOIN measure m ON m.ID = h.measure_id WHERE h.NO IN ${no}
+        ORDER BY h.create_time DESC ) a GROUP BY a.id) d ON d.id = p.ids
+	</select>
+</mapper>

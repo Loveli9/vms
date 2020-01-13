@@ -1,0 +1,375 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+	<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+	<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" />
+	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript"
+		src="../../resources/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+	<script type="text/javascript"
+		src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+	<script type="text/javascript" src="js/echarts.common.min.js"></script>
+	<script type="text/javascript"
+		src="../../resources/underscore/underscore.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+	<!-- <script type="text/javascript" src="js/measureCalcu.js"></script> -->
+	<script type="text/javascript" src="js/testmeasures.js"></script>
+<style>
+	.namespan {
+		display: inline-block;
+		width: 100px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	
+	.flag {
+		border-radius: 35%;
+		width: 70%;
+		height: 60%;
+		border: 2px #c9c9c9 solid;
+	}
+	
+	.maturity-tr {
+		height: 30px;
+	}
+	
+	.maturity-td {
+		background-color: #e8e8e8 !important;
+		font-size: 14px;
+		padding-left: 10px;
+	}
+	
+	.maturity-td1 {
+		background-color: #f8f8f8 !important;
+		width: 70%;
+		font-size: 16px;
+		padding-left: 10px;
+	}
+	
+	.maturity-td2 {
+		background-color: #f8f8f8 !important;
+		font-size: 16px;
+		padding-left: 30px;
+	}
+	#qualityTarget th,#qualityTarget td{
+		text-align: center; font-size: 14px;
+	}
+	#qualityTarget tr{
+		height: 40px; line-height: 40px;
+	}
+	.breadcrumb>.active {
+		color:  #EBF3FF;
+	}
+	.active {
+		color:#EBF3FF;
+	}
+	.breadcrumb {
+		background-color: #EBF3FF;
+		margin-left: 20px;
+		margin-right: 20px;
+		margin-bottom: 0px;
+		padding: 8px 0px;
+	}
+	.change-chart table{
+	    border: 1px #000 solid;
+	}
+	.table {
+		table-layout:fixed;
+		overflow:hidden;
+	}
+	.table th, .table td { 
+		text-align: center;
+		vertical-align: middle !important;
+	}
+	.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover {
+	    border-bottom: 0px #3399ff solid;
+	    font-weight: normal;
+	    padding-top: 0px;
+	    padding-bottom: 0px;
+	    background-color: #eaebeb;
+	    color:#3399ff;
+    }
+    .fixed-table-body {
+	    overflow-x: auto;
+	    overflow-y: auto;
+	    height: 100%;
+	    /* min-height: 600px; */
+	}
+</style>
+<script type="text/javascript">
+        $(document).on("click", "ul.navbar-nav li", function () {
+        	$("ul.navbar-nav li").removeClass("active");
+        	_.each($("ul.navbar-nav li"), function(tab, index){
+        		$("#"+$(tab).attr("tabname")).css('display','none');
+        	});
+        	$(this).addClass("active");
+        	var id = $(this).attr("tabname");
+        	$("#"+id).css('display','block');
+        });
+    </script>
+</head>
+<body class="mvp-body">
+<div class="mvp-main" style="width:fit-content;">
+	<div style="height: 40px;border-bottom: 2px #e2e3e4 solid;margin: -5px 10px 10px 0px;">
+		<ul class="nav navbar-nav" style="font-size: 12px;">
+			<li tabname="tab-zdhkfxl" class="active"><a href="###" onclick="changeTest('zdhkfxl')">自动化开发效率</a></li>
+			<li tabname="tab-ylsj"><a href="###" onclick="changeTest('ylsj')">用例设计</a></li>
+			<li tabname="tab-ylzxs"><a href="###" onclick="changeTest('ylzxs')">用例执行数</a></li>
+			<!-- <li tabname="qualityTargetTable"><a href="#">度量指标</a></li> -->
+		</ul>
+	</div>
+	<table border="0" cellspacing="0" cellpadding="0" style="background-color: #fff;margin:-15px 0px -20px 0px;">
+		<tr>
+			<td>
+				<div id="tab-zdhkfxl">
+					<div style="padding:0px 0.3% 0px 0.3%;">
+						<!-- <div class="chart-title" style="line-height: 40px;">
+							<div style="float: left;">
+								<span style="font-size: 16px;">自动化开发效率</span>
+							</div>
+							<div
+								style="border-right: 1px #367FA9 solid; height: 33px; width: 15px; float: left;"></div>
+							<div
+								style="border-right: 2px #367FA9 solid; height: 33px; width: 4px; float: left;"></div>
+						</div> -->
+						<div class="main-button" style="height: 19px;line-height: 34px;">
+							<!-- <span style="font-size: 16px; padding-left: 10px;float: left;">自动化用例开发代码量</span> -->
+							<!-- 条件筛选 -->
+							<div class="col-sm-12" style="width:260px;margin-top: 2px;float: right;padding-right: 0px;padding-left: 0px;">
+								<select id="userRole" name="userRole" title="请选择岗位" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									<option value="测试工程师">测试工程师</option>
+									<option value="TC">TC</option>
+									<option value="TSE">TSE</option>
+									<option value="TL">TL</option>
+									<option value="开发工程师">开发工程师</option>
+									<option value="PM">PM</option>
+									<option value="产品经理">产品经理</option>
+									<option value="SE">SE</option>
+									<option value="MDE">MDE</option>
+					                <option value="BA">BA</option>
+					                <option value="IA">IA</option>
+					                <option value="运维工程师">运维工程师</option>
+								</select>
+							</div>
+							<!-- <select id="personal-code-count" class="btn btn-default"
+								style="margin-left: 10px;margin-top: 2px;float: right;">
+								<option selected="selected" style="color: black" value='0'>Commit</option>
+								<option style="color: black" value='1'>Message</option>
+							</select> -->
+						</div>
+						<!-- <table width="100%" border="0" cellspacing="0" cellpadding="0"
+							class="data-table" id="gerenCode">
+							<thead>
+								<tr bgcolor="#b4aeb5">
+									<td style="line-height: 30px;width: 5.5%;">姓名</td>
+									<td style="line-height: 30px;width: 6%;">工号</td>
+									<td style="line-height: 30px;width: 8%;">岗位</td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jan"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Feb"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Mar"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Apr"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="May"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jun"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jul"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Aug"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Sep"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Oct"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Nov"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Dec"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="X0">合计</span></td>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+							<tfoot>
+							</tfoot>
+						</table> -->
+						
+						<div class="myTab">
+							<table id="gerenCode" class="table text-nowrap"></table>
+						</div>
+					</div>
+				</div>
+				<div id="tab-ylsj" style="display: none;">
+					<div style="padding:0px 0.3% 0px 0.3%;">
+						<div class="main-button"  style="height: 19px;line-height: 34px;">
+							<div class="col-sm-12" style="float: right;width:260px;margin-top: 2px;padding-right: 0px;padding-left: 0px;">
+								<select id="submitTestCasesRole" name="submitTestCasesRole" title="请选择岗位" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									<option value="测试工程师">测试工程师</option>
+									<option value="TC">TC</option>
+									<option value="TSE">TSE</option>
+									<option value="TL">TL</option>
+									<option value="开发工程师">开发工程师</option>
+									<option value="PM">PM</option>
+									<option value="产品经理">产品经理</option>
+									<option value="SE">SE</option>
+									<option value="MDE">MDE</option>
+					                <option value="BA">BA</option>
+					                <option value="IA">IA</option>
+					                <option value="运维工程师">运维工程师</option>
+								</select>
+							</div>
+							<!-- <div id="edit" data_obj="1" style="margin-left: 18px;float: left;">
+	                    		<a onclick="tableEdit('edit','caozuodo','submitTestCases')" style="font-size: 14px;color: #367FA9;cursor: pointer;">
+	                    			<i><img  style="margin: 2px;" src="images/editicon.png" alt="编辑" width="17px" height="17px"/></i><span style="padding-left: 2px;">编辑</span>
+	                    		</a>
+                    		</div>
+                    		<div id="caozuodo" style="float: left;margin-left: 16px;display:none;">
+	                    		<a id="tablesave" onclick="tableSave('edit','caozuodo','submitTestCases')" class="btn btn-danger" style="padding: 3px 10px 3px 10px;">保存</a>
+	                    		<a onclick="tableCancel('edit','caozuodo','submitTestCases')" class="btn btn-default" style="margin: 0px 10px 0px 0px;;padding: 3px 10px 3px 10px;">取消</a>
+                    		</div> -->
+						</div>
+						<!-- <table id="submitTestCases" width="100%" border="0" cellspacing="0" cellpadding="0"
+							class="data-table">
+							<thead>
+								<tr bgcolor="#b4aeb5">
+									<td style="line-height: 30px;width: 5.5%;">姓名</td>
+									<td style="line-height: 30px;width: 6%;">工号</td>
+									<td style="line-height: 30px;width: 8%;">岗位</td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jan1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Feb1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Mar1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Apr1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="May1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jun1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jul1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Aug1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Sep1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Oct1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Nov1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Dec1"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="X1">合计</span></td>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+							<tfoot>
+							</tfoot>
+						</table> -->
+						
+						<div class="myTab">
+							<table id="submitTestCases" class="table text-nowrap"></table>
+						</div>
+					</div>
+				</div>
+				<div id="tab-ylzxs" style="display: none;">
+					<div style="padding:0px 0.3% 0px 0.3%;">
+						<div class="main-button" style="height: 19px;line-height: 34px;">
+							<div class="col-sm-12" style="float: right;width:260px;margin-top: 2px;padding-right: 0px;padding-left: 0px;">
+								<select id="executeTestCasesRole" name="submitTestCasesRole" title="请选择岗位" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									<option value="测试工程师">测试工程师</option>
+									<option value="TC">TC</option>
+									<option value="TSE">TSE</option>
+									<option value="TL">TL</option>
+									<option value="开发工程师">开发工程师</option>
+									<option value="PM">PM</option>
+									<option value="产品经理">产品经理</option>
+									<option value="SE">SE</option>
+									<option value="MDE">MDE</option>
+					                <option value="BA">BA</option>
+					                <option value="IA">IA</option>
+					                <option value="运维工程师">运维工程师</option>
+								</select>
+							</div>
+							<!-- <div id="edit1" data_obj="1" style="margin-left: 18px;float: left;">
+	                    		<a onclick="tableEdit('edit1','caozuodo1','executeTestCases')" style="font-size: 14px;color: #367FA9;cursor: pointer;">
+	                    			<i><img  style="margin: 2px;" src="images/editicon.png" alt="编辑" width="17px" height="17px"/></i><span style="padding-left: 2px;">编辑</span>
+	                    		</a>
+                    		</div>
+                    		<div id="caozuodo1" style="float: left;margin-left: 16px;display:none;">
+	                    		<a id="tablesave" onclick="tableSave('edit1','caozuodo1','executeTestCases')" class="btn btn-danger" style="padding: 3px 10px 3px 10px;">保存</a>
+	                    		<a onclick="tableCancel('edit1','caozuodo1','executeTestCases')" class="btn btn-default" style="margin: 0px 10px 0px 0px;;padding: 3px 10px 3px 10px;">取消</a>
+                    		</div> -->
+							</div>
+						<!-- <table id="executeTestCases" width="100%" border="0" cellspacing="0" cellpadding="0"
+							class="data-table">
+							<thead>
+								<tr bgcolor="#b4aeb5">
+									<td style="line-height: 30px;width: 5.5%;">姓名</td>
+									<td style="line-height: 30px;width: 6%;">工号</td>
+									<td style="line-height: 30px;width: 8%;">岗位</td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jan2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Feb2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Mar2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Apr2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="May2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jun2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Jul2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Aug2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Sep2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Oct2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Nov2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="Dec2"></span></td>
+									<td style="line-height: 30px;width: 6%;"><span id="X2">合计</span></td>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+							<tfoot>
+							</tfoot>
+						</table> -->
+						
+						<div class="myTab">
+							<table id="executeTestCases" class="table text-nowrap"></table>
+						</div>
+					</div>
+				</div>
+                <div id="qualityTargetTable" style="display: none;margin: 0px 10px 10px 10px;">
+					<!-- <div class="chart-title" style="line-height: 40px;">
+					      <div style="float: left;"><span style="font-size: 16px;line-height: 35px;">度量指标</span></div>
+					      <div style="border-right: 1px #367FA9 solid;height: 33px;width: 15px;float: left;"></div>
+					      <div style="border-right: 2px #367FA9 solid;height: 33px;width: 2px;float: left;margin-left: 2px;"></div>
+					</div>
+					<div class="change-chart">  -->
+			            <table id="qualityTarget" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table">
+			                 <thead>
+			                     <tr bgcolor="#e8e8e8">
+			                         <td style="width:15%;">指标名称</td>
+			                         <td style="width:10%;">单位Unit</td>
+			                         <td style="width:10%;">上限值USL</td>
+			                         <td style="width:10%;">下限值LSL</td>
+			                         <td style="width:10%;">目标值Goal</td>
+			                         <td style="width:10%;">实际值</td>
+			                         <td style="width:10%;">采集方式</td>
+			                         <td>计算公式</td>
+			                     </tr>
+			                 </thead>
+			            </table>
+					<!-- </div> -->
+        		</div>
+				<div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content" style="top: 100px;">
+							<div class="modal-body" style="padding: 15px;">
+								<div style="text-align: center;">
+									<span id="dataAcquisition" style="font-size: 14px;">保存成功</span>
+									<div class="modal-footer" id="submitImportmodalfooter" style="margin-top: 10px;padding: 5px;">
+										<button type="button" class="btn btn-primary" id="submitImport" style="display: initial" onclick="hidePopover()">
+										确定	
+										</button>
+									</div>
+								</div>
+							</div>
+						</div><!-- /.modal-content -->
+					</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+ 			</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

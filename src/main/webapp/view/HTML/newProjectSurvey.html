@@ -1,0 +1,842 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>可视化度量平台</title>
+
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css"/>
+    <link rel="stylesheet" href="css/newProjectSurver.css" type="text/css"/>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css"/>
+    <link rel="stylesheet" href="css/fishBone.css"/>
+    <script type="text/javascript" src="js/comm/commonJs.js"></script><!--公共js-->
+    <script type="text/javascript" src="js/comm/commonCss.js"></script><!--公共css-->
+    <script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="js/projectZonglan.js"></script>
+    <script type="text/javascript" src="js/newProjectSurvey.js"></script>
+    <style>
+        .clearfix{
+            background-color: aliceblue;
+        }
+
+    </style>
+
+</head>
+<body style="line-height: 24px;background: #eaebeb;width:100%;">
+
+<div style="height:204px;padding: 2.8% 3% 2.8% 3%;">
+    <div class="visit">
+        <div class="totalView">
+            <div style="font-size: 18px;">浏览量(累计)</div>
+            <div id="totalNum" style="font-size: 31px;padding-top: 15px;"></div>
+        </div>
+        <div class="currentView">
+            <span id="current"></span>
+            <span id="lastMonth" class="lastView"></span>
+        </div>
+    </div>
+    <div class="projects">
+        <div class="ProjectView">
+            <div style="font-size: 18px;">在行项目数</div>
+            <div id="configProject" style="font-size: 31px;padding-top: 15px;"></div>
+        </div>
+        <div class="lineView">
+            <span id="lineProjects"></span>
+            <span id="totalProject" class="totalViewPro"></span>
+        </div>
+    </div>
+    <div class="collectPros">
+        <div class="doneView">
+            <div style="font-size: 18px;">完成采集项目数</div>
+            <div id="doneProject" style="font-size: 31px;padding-top: 15px;"></div>
+        </div>
+        <div class="outView">
+            <span id="outProjects"></span>
+            <span id="addProjects" class="addView"></span>
+        </div>
+    </div>
+</div>
+<!-- 近5次评估状态 -->
+<div class="modal fade" id="assessStatus" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content"
+             style="top: 60px; width: 1000px; margin-left: -200px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 2px; padding-top: 10px; padding-bottom: 10px; line-height: 100%; padding: 6px; padding-left:420px; background-color:#26AB8E;">
+                <div class="row">
+                    <div class="col-md-9" style="width:85%">
+                        <h4 class="modal-title" id="uploadModalLabel"
+                            style="display: inline;padding-bottom:5px;color:white;">最近5次项目状态明细</h4>
+                    </div>
+                    <div class="col-md-3" style="width:15%;height:15%;">
+                        <button type="button" class="btn btn-default btn-block" id="closeBtn">关闭</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body" style="width: 100%; height:290px; margin-bottom:-20px; background-color:#E7E6E6;">
+                <div class="row"
+                     style="width:100%;margin-left:1px;border:1px solid black;background-color:#0070C0;color:white;">
+                    <div class="col-md-3" style="width:20%;height:34px;border-right:1px solid white;line-height:34px;">
+                        <div class="row">
+                            <div class="col-md-6" style="font-size:21px;">
+                                <p>前1周</p>
+                            </div>
+                            <div class="col-md-6" id="oneWeekStatus">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" style="width:20%;height:34px;border-right:1px solid white;line-height:34px;">
+                        <div class="row">
+                            <div class="col-md-6" style="font-size:21px;">
+                                <p>前2周</p>
+                            </div>
+                            <div class="col-md-6" id="twoWeekStatus">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" style="width:20%;height:34px;border-right:1px solid white;line-height:34px;">
+                        <div class="row">
+                            <div class="col-md-6" style="font-size:21px;">
+                                <p>前3周</p>
+                            </div>
+                            <div class="col-md-6" id="threeWeekStatus">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" style="width:20%;height:34px;border-right:1px solid white;line-height:34px;">
+                        <div class="row">
+                            <div class="col-md-6" style="font-size:21px;">
+                                <p>前4周</p>
+                            </div>
+                            <div class="col-md-6" id="fourWeekStatus">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3" style="width:20%;height:34px;line-height:34px;">
+                        <div class="row">
+                            <div class="col-md-6" style="font-size:21px;">
+                                <p>前5周</p>
+                            </div>
+                            <div class="col-md-6" id="fiveWeekStatus">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="width:100%;height:214px;margin-left:1px;border:1px solid black;">
+                    <div class="col-md-3" style="width:20%;height:212px;border-right:1px solid white;">
+                        <ul style="list-style:none">
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>质量:</span>
+                                    </div>
+                                    <div class="col-md-6" id="oneWeekQuality">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>进度:</span>
+                                    </div>
+                                    <div class="col-md-6" id="oneWeekPlan">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>资源:</span>
+                                    </div>
+                                    <div class="col-md-6" id="oneWeekRole">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-4" style="">
+                                        <span>点评:</span>
+                                    </div>
+                                    <div class="col-md-8" style="margin-top: -23px;margin-left: 34px;width: 84%;">
+                                        <span id="oneWeekComment"
+                                              style="float: left;max-width: 98%;max-height: 127px;word-break: break-all;overflow: hidden;white-space: normal;text-overflow: ellipsis;"></span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3" style="width:20%;height:212px;border-right:1px solid white;">
+                        <ul style="list-style:none">
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>质量:</span>
+                                    </div>
+                                    <div class="col-md-6" id="twoWeekQuality">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>进度:</span>
+                                    </div>
+                                    <div class="col-md-6" id="twoWeekPlan">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>资源:</span>
+                                    </div>
+                                    <div class="col-md-6" id="twoWeekRole">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-4" style="">
+                                        <span>点评:</span>
+                                    </div>
+                                    <div class="col-md-8" style="margin-top: -23px;margin-left: 34px;width: 84%;">
+                                        <span id="twoWeekComment"
+                                              style="float: left;max-width: 98%;max-height: 127px;word-break: break-all;overflow: hidden;white-space: normal;text-overflow: ellipsis;"></span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3" style="width:20%;height:212px;border-right:1px solid white;">
+                        <ul style="list-style:none">
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>质量:</span>
+                                    </div>
+                                    <div class="col-md-6" id="threeWeekQuality">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>进度:</span>
+                                    </div>
+                                    <div class="col-md-6" id="threeWeekPlan">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>资源:</span>
+                                    </div>
+                                    <div class="col-md-6" id="threeWeekRole">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-4" style="">
+                                        <span>点评:</span>
+                                    </div>
+                                    <div class="col-md-8" style="margin-top: -23px;margin-left: 34px;width: 84%;">
+                                        <span id="threeWeekComment"
+                                              style="float: left;max-width: 98%;max-height: 127px;word-break: break-all;overflow: hidden;white-space: normal;text-overflow: ellipsis;"></span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3" style="width:20%;height:212px;border-right:1px solid white;">
+                        <ul style="list-style:none">
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>质量:</span>
+                                    </div>
+                                    <div class="col-md-6" id="fourWeekQuality">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>进度:</span>
+                                    </div>
+                                    <div class="col-md-6" id="fourWeekPlan">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>资源:</span>
+                                    </div>
+                                    <div class="col-md-6" id="fourWeekRole">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-4" style="">
+                                        <span>点评:</span>
+                                    </div>
+                                    <div class="col-md-8" style="margin-top: -23px;margin-left: 34px;width: 84%;">
+                                        <span id="fourWeekComment"
+                                              style="float: left;max-width: 98%;max-height: 127px;word-break: break-all;overflow: hidden;white-space: normal;text-overflow: ellipsis;"></span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3" style="width:20%;height:212px;">
+                        <ul style="list-style:none">
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>质量:</span>
+                                    </div>
+                                    <div class="col-md-6" id="fiveWeekQuality">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>进度:</span>
+                                    </div>
+                                    <div class="col-md-6" id="fiveWeekPlan">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-6" style="">
+                                        <span>资源:</span>
+                                    </div>
+                                    <div class="col-md-6" id="fiveWeekRole">
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="row">
+                                    <div class="col-md-4" style="">
+                                        <span>点评:</span>
+                                    </div>
+                                    <div class="col-md-8" style="margin-top: -23px;margin-left: 34px;width: 84%;">
+                                        <span id="fiveWeekComment"
+                                              style="float: left;max-width: 98%;max-height: 127px;word-break: break-all;overflow: hidden;white-space: normal;text-overflow: ellipsis;"></span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--消息发送modal-->
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="sendMessTitle">
+                    收件人：<span id="receiveAccount"></span>
+                </h4>
+            </div>
+            <div class="modal-body">
+                        <textarea id="messageContext" class="form-control" rows="3"  placeholder="请输入消息内容..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消
+                </button>
+                <button type="button" onclick="sendMessage()" class="btn btn-primary">
+                    发送
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tab-xmzl" class="mains" style="margin: 4.5% 3%;margin-bottom: 15px;">
+    <div style="display: none">
+        <select id="dateSection" title="当前日期" class="selectpicker show-tick form-control"
+                data-live-search="false"></select>
+    </div>
+        <table id="mytable" class="table" style="white-space: nowrap;"></table>
+    <div class="wrapper" style="display: none">
+        <div class="inner1">
+            <div class="inner-left">
+                <div style="height: 100%;" id="zonglan" class="item show">
+                    <div class="ztstate">
+                        <div class="xiebian navigation" style="width:115px;margin-left: -16px;">
+                            <span style="display:inline-block;margin-left: 8px;-webkit-transform:skew(-30deg);">总览</span>
+                        </div>
+                        <div class="xiebian">
+                            <span style="display:inline-block;-webkit-transform:skew(-30deg);">质量</span>
+                        </div>
+                        <div class="xiebian" style="display: none;">
+                            <span style="display:inline-block;-webkit-transform:skew(-30deg);">进度</span>
+                        </div>
+                        <div class="xiebian" style="display: none;">
+                            <span style="display:inline-block;-webkit-transform:skew(-30deg);">人力</span>
+                        </div>
+                        <div class="xiebian" style="display: none;">
+                            <span style="display:inline-block;-webkit-transform:skew(-30deg);">问题</span>
+                        </div>
+                        <div class="xiebian">
+                            <span style="display:inline-block;-webkit-transform:skew(-30deg);">评估</span>
+                        </div>
+                        <div class="xiebian">
+                            <span style="display:inline-block;-webkit-transform:skew(-30deg);">可信质量</span>
+                        </div>
+                        <button style="float: right;font-size: 16px;border: 0px;margin-right: 1.7%;font-weight: bold;margin-top: 1%;"
+                                onclick="screenSave()" type="button" class="btn btn-default">
+                            筛选&nbsp;<span id="screen" class="glyphicon glyphicon-triangle-bottom"
+                                          aria-hidden="true"></span>
+                        </button>
+                    </div>
+                    <div style="margin: 2% 2% 0;">
+                        <!-- 中软 -->
+                        <div id="shaixuan"
+                             style="margin-top: 20px;margin-left: 3.3%;width:95%;height:40px;display:none;">
+                            <div class="homeSelect" id="select8" style="display: none;">
+                                <select onchange="selectOnchange()" id="usertype8" name="usertype" title="请选择交付部"
+                                        class="selectpicker show-tick form-control" multiple
+                                        data-live-search="false"></select>
+                            </div>
+                            <div class="homeSelect" id="select7">
+                                <select onchange="selectOnchange()" id="usertype7" name="usertype" title="请选择事业部"
+                                        class="selectpicker show-tick form-control" multiple
+                                        data-live-search="false"></select>
+                            </div>
+                            <div class="homeSelect" id="select6">
+                                <select onchange="selectOnchange()" id="usertype6" name="usertype" title="请选择业务线"
+                                        class="selectpicker show-tick form-control" multiple
+                                        data-live-search="false"></select>
+                            </div>
+                            <!-- 华为 -->
+                            <div class="homeSelect" style="display: none;" id="select5">
+                                <select onchange="selectOnchange()" id="usertype5" name="usertype" title="请选择PDU/SPDT"
+                                        class="selectpicker show-tick form-control" multiple
+                                        data-live-search="false"></select>
+                            </div>
+                            <div class="homeSelect" style="display: none;" id="select4">
+                                <select onchange="selectOnchange()" id="usertype4" name="usertype" title="请选择子产品线"
+                                        class="selectpicker show-tick form-control" multiple
+                                        data-live-search="false"></select>
+                            </div>
+                            <div class="homeSelect" style="display: none;" id="select3">
+                                <select onchange="selectOnchange()" id="usertype3" name="usertype" title="请选择华为产品线"
+                                        class="selectpicker show-tick form-control" multiple
+                                        data-live-search="false"></select>
+                            </div>
+                            <!-- 地域 -->
+                            <div class="homeSelect" style="display: none;" id="select1">
+                                <select onchange="selectOnchange()" id="usertype1" name="usertype" title="请选择地域"
+                                        class="selectpicker show-tick form-control" multiple
+                                        data-live-search="false"></select>
+                            </div>
+                            <div class="homeSelect" style="display: none;">
+                                <select id="usertype2" name="usertype" title="请选择状态"
+                                        class="selectpicker show-tick form-control" multiple data-live-search="false">
+                                    <option value="在行">在行</option>
+                                    <option value="关闭">关闭</option>
+                                </select>
+                            </div>
+                            <div class="homeSelect" id="select">
+                                <select onchange="selectChange()" id="selectBig" name="select" title="中软&华为"
+                                        class="selectpicker show-tick form-control" data-live-search="false">
+                                    <option value='1' selected="selected">中软</option>
+                                    <option value='2'>华为</option>
+                                    <option value='3'>地域</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="actual" class="state"></div>
+                        <div id="estimate" class="state" style="display:none;">
+                            <div class="tor1 curent">
+                                <div class="top-child" style="font-size:15px;">平均值(100分制)</div>
+                                <div class="top-child" id="average" style="font-size:27px;margin-bottom: 5px;"></div>
+                                <div class="top-child" style="margin-bottom: -5px;">
+                                    <span>比上一个月:</span>
+                                    <span id="lastMonthAverage"></span>
+                                </div>
+                                <div class="top-child">
+                                    <span>比上一个周期:</span>
+                                    <span id="lastAverage"></span>
+                                </div>
+                            </div>
+                            <div class="tor1">
+                                <div class="top-child" style="font-size:15px;">过程交付质量(15分制)</div>
+                                <div class="top-child" id="process" style="font-size:27px;margin-bottom: 5px;"></div>
+                                <div class="top-child" style="margin-bottom: -5px;">
+                                    <span>比上一个月:</span>
+                                    <span id="lastMonthProcess"></span>
+                                </div>
+                                <div class="top-child">
+                                    <span>比上一个周期:</span>
+                                    <span id="lastProcess"></span>
+                                </div>
+                            </div>
+                            <div class="tor1">
+                                <div class="top-child" style="font-size:15px;">交付及时性(10分制)</div>
+                                <div class="top-child" style="font-size:27px;margin-bottom: 5px;" id="deliver"></div>
+                                <div class="top-child" style="margin-bottom: -5px;">
+                                    <span>比上一个月:</span>
+                                    <span id="lastMonthDeliver"></span>
+                                </div>
+                                <div class="top-child">
+                                    <span>比上一个周期:</span>
+                                    <span id="lastDeliver"></span>
+                                </div>
+                            </div>
+                            <div class="tor1">
+                                <div class="top-child" style="font-size:15px;">人员稳定度(25分制)</div>
+                                <div class="top-child" style="font-size:27px;margin-bottom: 5px;" id="personnel"></div>
+                                <div class="top-child" style="margin-bottom: -5px;">
+                                    <span>比上一个月:</span>
+                                    <span id="lastMonthPersonnel"></span>
+                                </div>
+                                <div class="top-child">
+                                    <span>比上一个周期:</span>
+                                    <span id="lastPersonnel"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="state clearfix" id="quality" style="width: 94.3%;margin-left: 2.9%;">
+                        <!-- <div class="swiper-button-prev" style="margin-left: -4%;"></div>
+                        <div class="state-inner clearfix swiper-container" >
+                            <div class="content clearfix swiper-wrapper" id="option"></div>
+                        </div>
+                        <div class="swiper-button-next"></div> -->
+                    </div>
+                    <div class="ztstate1">
+                        <span id="time"></span>
+                    </div>
+                    <div id="myechars" class="echars"></div>
+                </div>
+            </div>
+            <div class="inner-right" style="color: #333333;border-radius: 16px;">
+                <div id="zongLan">
+                    <div class="headTitle" style="height: 50px;">
+                        <img src="../HTML/images/top.png"
+                             style="float: left;margin-left: 4%;margin-right: 5px;margin-top: 4.6%;width: 4%;"/>
+                        <span id="zongLanTitle"
+                              style="font-size: 16px;font-weight: 600;float: left;margin-top: 3%;"></span>
+                        <a href="#" onclick="HomePageJump(1)"
+                           style="cursor:pointer;float: right;margin-right: 4%;color: black;margin-top: 3%;">全部项目</a>
+                    </div>
+                    <div id="table">
+                        <table id="zongLanTable" class="table text-nowrap"></table>
+                    </div>
+                </div>
+                <div id="zhiLiang" style="display: none;">
+                    <div class="headTitle" style="height: 50px;">
+                        <img src="../HTML/images/top.png"
+                             style="float: left;margin-left: 4%;margin-right: 5px;margin-top: 4.6%;width: 4%;"/>
+                        <span id="zhiLiangTitle"
+                              style="font-size: 16px;font-weight: 600;float: left;margin-top: 3%;"></span>
+                        <a href="#" onclick="HomePageJump(1)"
+                           style="cursor:pointer;float: right;margin-right: 4%;color: black;margin-top: 3%;">全部项目</a>
+                    </div>
+                    <div id="table">
+                        <table id="zhiLiangTable" class="table text-nowrap"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--项目评估情况-->
+<div id="projectAssess" class="bootstrap-table" style="margin-left: 3%;margin-right: 3%;background-color: #f7f8f8;margin-bottom: -10px;display: none">
+    <div class="fixed-table-container">
+        <table class="table table-hover table-striped">
+            <thead>
+            <tr>
+                <th style="text-align: left; " colspan="10" tabindex="0">
+                    <div class="th-inner ">
+                        <div class="div-shu"></div>
+                        <span style="	padding-left: inherit;">项目评估情况</span></div>
+                    <div class="fht-cell"></div>
+                </th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<div id="asessSquer" style="width: 100%;padding-left: 3%;padding-right: 3%;display: none">
+
+    <ul>
+        <li class="li-square" style="width:24%;margin-right: 1%;">
+            <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                <div style="width: 100%;">
+                    <span style="font-size: 16px;">过程交付质量（红/黄/绿）</span>
+                    <div id="qualityLamp"
+                         style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                    <span style="float: right; padding-right: 0px;">
+						 		<button id="quality001"
+                                        style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;"
+                                        name="lampEdit" onclick="lampEdit(this.id)">
+                                	<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+                            	</button>
+						 	</span>
+                </div>
+                <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                    <span id="qualityMark"></span>(
+                    <span style="color: #ff0000;" id="redLight">0</span>/
+                    <span style="color: #ffc000;" id="yellowLight">0</span>/
+                    <span style="color: #00b050;" id="greenLight">0</span>)
+                </div>
+            </div>
+            <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                <div id="measures" style="font-size: 14px;height:90%"></div>
+                <div style="height:10%">
+                    <div style="float: right;padding-right: 25px;height:26px;"><a id="measureCommentTree" href="measureCommentTree.html">全部指标</a></div>
+                </div>
+            </div>
+        </li>
+        <li class="li-square" style="width:24%;margin-right: 1%;">
+            <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                <div style="width: 100%;">
+                    <span style="font-size: 16px;">交付及时性</span>
+                    <div id="progressLamp"
+                         style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                    <span style="float: right; padding-right: 0px; ;">
+						 		<button id="progress"
+                                        style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;"
+                                        name="lampEdit" onclick="lampEdit(this.id)">
+                                	<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+                            	</button>
+						 	</span>
+                </div>
+                <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                    <span id="progressMark"></span>(<span id="progressDeviation">0</span><span style="font-size: 14px;">%</span>)
+                </div>
+            </div>
+            <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                <div style="font-size: 14px;height:90%">
+                    <div><span>需求完成率：</span><span id="demandCompletion">0</span><span style="font-size: 10px"> %</span>
+                    </div>
+                    <div><span>进度完成率：</span><span id="progressCompletion">0</span><span
+                            style="font-size: 10px"> %</span></div>
+                </div>
+                <div style="height:10%">
+                    <div style="float: right;padding-right: 25px;visibility:hidden;" id="progressEdit1"><a
+                            id="progressEdit" name="edit" href="javascript:void(0);">修改</a></div>
+                </div>
+            </div>
+        </li>
+        <li class="li-square" style="width:24%;margin-right: 1%;">
+            <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                <div style="width: 100%;">
+                    <span style="font-size: 16px;">人员稳定度</span>
+                    <div id="resourcesLamp"
+                         style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                    <span style="float: right; padding-right: 0px;">
+						 		<button id="resources"
+                                        style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;"
+                                        name="lampEdit" onclick="lampEdit(this.id)">
+                                	<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+                            	</button>
+						 	</span>
+                </div>
+                <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                    <span id="resourcesMark"></span>(<span id="resourcesText">0</span><span
+                        style="font-size: 14px;">%</span>)
+                </div>
+            </div>
+            <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                <div style="font-size: 14px;height:90%">
+                    <div><span>总人力缺口：</span><span id="memberDiffer">0</span></div>
+                    <div><span>总人力到位率：</span><span id="memberArrival">0</span><span style="font-size: 10px"> %</span>
+                    </div>
+                    <div><span>关键角色缺口：</span><span id="keyRolesDiffer">0</span></div>
+                    <div><span>关键角色到位率：</span><span id="keyRolesArrival">0</span><span style="font-size: 10px"> %</span>
+                    </div>
+                    <div><span>待答辩人数：</span><span id="keyRolesfail">0</span></div>
+                </div>
+                <div style="height:10%">
+                    <div style="float: right;padding-right: 25px;"><a href="gaikuang.html?taleId='tab-gjjs'">具体详情</a>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="li-square" style="width:25%;">
+            <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                <div style="width: 100%;">
+                    <span style="font-size: 16px;">变更（变更率）</span>
+                    <div id="changesLamp"
+                         style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                    <span style="float: right; padding-right: 0px;">
+						 		<button id="changes"
+                                        style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;"
+                                        name="lampEdit" onclick="lampEdit(this.id)">
+                                	<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+                            	</button>
+						 	</span>
+                </div>
+                <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                    <span id="changesMark"></span>(<span id="changesText">0</span><span
+                        style="font-size: 14px;">%</span>)
+                </div>
+            </div>
+            <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                <div style="font-size: 14px;height:90%">
+                    <div><span>需求变更工作量：</span><span id="changeNumber">0</span></div>
+                    <div><span>需求总工作量：</span><span id="demandNumber">0</span></div>
+                </div>
+                <div style="height:10%">
+                    <div style="float: right;padding-right: 25px;visibility:hidden" id="changeEdit1"><a id="changeEdit"
+                                                                                                        name="edit"
+                                                                                                        href="javascript:void(0);">修改</a>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li style="width:99.9%;">
+            <div class="bordercss sortable2div" style="height: 300px;">
+                <div style="height: 40px;line-height: 40px;background-color: #26aa8d;">
+                    <span style="float: left;margin-left: 5px;font-size: 16px;color: #fff;font-weight: 600;">预评估得分&项目点评</span>
+                    <!--<button id="publishReview">发布</button>-->
+                    <!--<button id="editReview">编辑</button>-->
+                    <!--<button id="closeReview">结项</button>-->
+                    <button id="saveReview">保存</button>
+                    <button id="cancelReview">返回</button>
+                </div>
+                <div style="height:270px;width: 100%;border-top: 1px solid #DEDDDD;">
+                    <div style="float: left;width:24%;margin-right: 1%;background-color: #fff;">
+                        <div>
+                            <div id="statusColor" class="status" style="background-color: #C0C0C0;">
+                                <span id="statusText">未评估</span>
+                                <div style="margin-top: 15px;font-size: 15px;">
+                                    <span id="status"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="float: left;width:75%;background-color: #fff;height: 310px;">
+                        <div style="border: 1px  #000000; width: 95%; margin: 0 auto;">
+                            <span id="review" class="wordWrap" style="font-size: 18px;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<!--问题风险-->
+<div id="problemRisk" style="margin-right: 3%;margin-left: 3%;margin-bottom: 20px;display: none">
+    <table id="problem-risk-tab" class="table"></table>
+</div>
+
+<!--关注人员-->
+<div style="margin-right: 3%;margin-left: 3%">
+    <div style="float: left;width: 40%;">
+        <table id="concernPerson" class="table" style="white-space: nowrap;"></table>
+    </div>
+    <div style="float: left;width: 60%;padding-left: 10px;">
+        <table id="myMessage" border="0" cellspacing="0" cellpadding="0" class="table"></table>
+    </div>
+</div>
+
+
+<!-- 补充中软工号 -->
+<div class="modal fade" id="zrModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">中软工号信息配置</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="zr_account" class="col-sm-4 control-label">中软工号:</label>
+                    <div class="col-md-4">
+                        <input placeholder="请输入中软工号" class="form-control" type="text" id="zrAccount" name="zrAccount"
+                               style="margin-top: -3%;margin-left: -75%;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="zr_close" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                <button id="zr_confirm" type="button" class="btn btn-primary" onclick="addZRAccount()">保存</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<script type="text/javascript">
+    //回到顶部
+    function callback() {
+        $("html,body").animate({scrollTop: 0}, 200);
+    };
+
+    $(document).on("click", "ul.navbar-nav li", function () {
+        $("ul.navbar-nav li").removeClass("active");
+        _.each($("ul.navbar-nav li"), function (tab, index) {
+            $("#" + $(tab).attr("tabname")).css('display', 'none');
+        });
+        $(this).addClass("active");
+        var id = $(this).attr("tabname");
+        $("#" + id).css('display', 'block');
+    });
+
+    function changeFrameHeightById(id) {
+        var ifm = document.getElementById(id);
+        ifm.height = 850;
+    };
+
+    function loadIframe(id, page) {
+        document.getElementById(id).src = page;
+        changeFrameHeightById(id);
+    }
+    !function (a) {
+        "use strict";
+        a.fn.bootstrapTable.locales["zh-CN"] = {
+            formatLoadingMessage: function () {
+                return "正在努力地加载数据中，请稍候……"
+            },
+            formatRecordsPerPage: function (a) {
+                return "每页显示 " + a + " 条记录"
+            },
+            formatShowingRows: function (a, b, c) {
+                return "总共 " + c + " 条记录"
+            },
+            formatSearch: function () {
+                return "搜索"
+            }, formatNoMatches: function () {
+                return "没有找到匹配的记录"
+            },
+            formatPaginationSwitch: function () {
+                return "隐藏/显示分页"
+            }, formatRefresh: function () {
+                return "刷新"
+            },
+            formatToggle: function () {
+                return "切换"
+            }, formatColumns: function () {
+                return "列"
+            },
+            formatExport: function () {
+                return "导出数据"
+            }, formatClearFilters: function () {
+                return "清空过滤"
+            }
+        },
+            a.extend(a.fn.bootstrapTable.defaults, a.fn.bootstrapTable.locales["zh-CN"])
+    }(jQuery);
+</script>
+
+</body>
+</html>

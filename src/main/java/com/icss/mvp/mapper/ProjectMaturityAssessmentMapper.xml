@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectMaturityAssessmentDAO">
+	<resultMap type="com.icss.mvp.entity.ProjectMaturityAssessment" id="maturity">
+		<result property="no" column="NO"/>
+		<result property="bu" column="BU"/>
+		<result property="pdu" column="PDU"/>
+		<result property="du" column="DU"/>
+		<result property="hwpdu" column="HWPDU"/>
+		<result property="hwzpdu" column="HWZPDU"/>
+		<result property="pduSpdt" column="PDU_SPDT"/>
+		<result property="proName" column="PRO_NAME"/>
+		<result property="hwVersion" column="HW_VERSION"/>
+		<result property="type" column="TYPE"/>
+		<result property="area" column="AREA"/>
+		<result property="pmName" column="PM_NAME"/>
+		<result property="pmNo" column="PM_NO"/>
+		<result property="qaName" column="QA_NAME"/>
+		<result property="qaNo" column="QA_NO"/>
+		<result property="proResource" column="PRO_RESOURCE"/>
+		<result property="needInterface" column="NEED_INTERFACE"/>
+		<result property="acceptStandard" column="ACCEPT_STANDARD"/>
+		<result property="baseVersion" column="BASE_VERSION"/>
+		<result property="workloadNeed" column="WORKLOAD_NEED"/>
+		<result property="sowReview" column="SOW_REVIEW"/>
+		<result property="plan" column="PLAN"/>
+		<result property="need" column="NEED"/>
+		<result property="scheme" column="SCHEME"/>
+		<result property="rpReview" column="RP_REVIEW"/>
+		<result property="testCase" column="TEST_CASE"/>
+		<result property="codeReview" column="CODE_REVIEW"/>
+		<result property="developerTest" column="DEVELOPER_TEST"/>
+		<result property="sdvTest" column="SDV_TEST"/>
+		<result property="iteratorTest" column="ITERATOR_TEST"/>
+		<result property="sitTest" column="SIT_TEST"/>
+		<result property="testEvaluation" column="TEST_EVALUATION"/>
+		<result property="iteraorExport" column="ITERAOR_EXPORT"/>
+		<result property="uatTest" column="UAT_TEST"/>
+		<result property="rrTest" column="RR_TEST"/>
+		<result property="proPlan" column="PRO_PLAN"/>
+		<result property="structureChart" column="STRUCTURE_CHART"/>
+		<result property="strategyPlan" column="STRATEGY_PLAN"/>
+		<result property="scenariosCase" column="SCENARIOS_CASE"/>
+		<result property="testProcedure" column="TEST_PROCEDURE"/>
+		<result property="testDeliverables" column="TEST_DELIVERABLES"/>
+		<result property="scheduleManagement" column="SCHEDULE_MANAGEMENT"/>
+		<result property="requirementsManagement" column="REQUIREMENTS_MANAGEMENT"/>
+		<result property="changeManagement" column="CHANGE_MANAGEMENT"/>
+		<result property="riskManagement" column="RISK_MANAGEMENT"/>
+		<result property="engineAbility" column="ENGINE_ABILITY"/>
+		<result property="keyRoleStability" column="KEY_ROLE_STABILITY"/>
+		<result property="pm" column="PM"/>
+		<result property="baSe" column="BA_SE"/>
+		<result property="mde" column="MDE"/>
+		<result property="tse" column="TSE"/>
+		<result property="tc" column="TC"/>
+		<result property="keyRole" column="KEY_ROLE"/>
+		<result property="phaseAccept" column="PHASE_ACCEPT"/>
+		<result property="deliveryPreparation" column="DELIVERY_PREPARATION"/>
+		<result property="processTrace" column="PROCESS_TRACE"/>
+		<result property="projectAccept" column="PROJECT_ACCEPT"/>
+		<result property="totalScore" column="TOTAL_SCORE"/>
+		<result property="difference" column="DIFFERENCE"/>
+		<result property="mark" column="MARK"/>
+	</resultMap>
+	<resultMap id="CommentsListMap" type="com.icss.mvp.entity.ProjectCommentsListInfo">
+		<result property="id" column="id"/>
+        <result property="no" column="NO"/>
+        <result property="version" column="version"/>
+        <result property="question" column="question"/>
+        <result property="imprMeasure" column="impr_measure"/>
+        <result property="progressDesc" column="progress_desc"/>
+        <result property="finishTime" column="actual_finish_time"/>
+        <result property="actualFinishTime" column="finish_time"/>
+        <result property="personLiable" column="person_liable"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="is361" column="is_361"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifyTime" column="modify_time"/>
+        <result property="state" column="state"/>
+        
+        <result property="topic" column="topic"/>
+        <result property="severity" column="severity"/>
+        <result property="prior" column="prior"/>
+        <result property="probability" column="probability"/>
+        <result property="speed" column="speed"/>
+        <result property="iteId" column="ite_id"/>
+    </resultMap>
+	
+	<select id="getProjectNo" parameterType="java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		SELECT NO FROM PROJECT_INFO WHERE NAME=#{proName}
+	]]>
+	</select>
+		
+	<select id="getProjectName" parameterType="java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		SELECT NAME FROM PROJECT_INFO WHERE NO=#{proNo}
+	]]>
+	</select>
+		
+ 	<select id="initMaturityAssessment" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT NO AS NO,TOTAL_SCORE AS TOTALSCORE FROM PROJECT_MATURITY_ASSESSMENT WHERE 1=1
+	]]>
+	<include refid="sql_where"/>
+	</select>
+	<select id="assessmentChart" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT NO,TOTAL_SCORE AS TOTALSCORE FROM PROJECT_MATURITY_ASSESSMENT 
+		WHERE 1=1 and start_time > #{start} and end_time <= #{end}
+	]]>
+	<include refid="sql_where"/>
+	</select>
+	<select id="hwDepartment" resultType="java.util.HashMap">
+		select * from v_dept_triple_hw a
+		where  a.DEPT_LEVEL = #{level}
+		<if test='level == "2"'>
+			<if test="hwpdu != null and hwpdu.size() != 0">
+		       AND a.branch_id in
+		    <foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+	        <if test=" hwzpdu != null and hwzpdu.size() != 0">
+		       AND a.dept_id in
+		    <foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+		</if>
+		<if test='level == "3"'>
+			<if test="hwzpdu != null and hwzpdu.size() != 0">
+		       AND a.branch_id in
+		    <foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+	        <if test=" pduSpdt != null and pduSpdt.size() != 0">
+		       AND a.dept_id in
+		    <foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+	       <if test="hwpdu != null and hwpdu.size() != 0">
+	            AND a.trunk_id in
+		    <foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+		</if>
+	</select>
+	<select id="zrDepartment" resultType="java.util.HashMap">
+		select * from v_dept_triple_op a
+		where  a.DEPT_LEVEL = #{level}
+		<if test='level == "2"'>
+			<if test="bu != null and bu.size() != 0">
+		       AND a.branch_id in
+		    <foreach collection="bu" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+	        <if test=" pdu != null and pdu.size() != 0">
+		       AND a.dept_id in
+		    <foreach collection="pdu" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+		</if>
+		<if test='level == "3"'>
+			<if test="pdu != null and pdu.size() != 0">
+		       AND a.branch_id in
+		    <foreach collection="pdu" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+	        <if test=" du != null and du.size() != 0">
+		       AND a.dept_id in
+		    <foreach collection="du" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+	        <if test="bu != null and bu.size() != 0">
+	            AND a.trunk_id in
+		    <foreach collection="bu" item="item" separator="," open="(" close=")">
+			       #{item}
+		    </foreach>
+	        </if>
+		</if>
+	</select>
+	<select id="DepartmentData" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT * FROM PROJECT_MATURITY_ASSESSMENT
+        WHERE 1=1 and start_time > #{start} and end_time <= #{end}
+	]]>
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		 AND HWPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		 AND HWZPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" bu != null and bu.size() != 0">
+		 AND BU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		 AND PDU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	</select>
+	
+    <sql id="sql_where">
+    <if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>		
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		 AND HWPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		 AND HWZPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		and PDU_SPDT in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" bu != null and bu.size() != 0">
+		 AND BU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		 AND PDU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		and DU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=4 AND DEPT_ID IN 
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+    </sql>
+	<!-- <delete id="deleteProjectMaturityAssessment">
+		DELETE FROM PROJECT_MATURITY_ASSESSMENT
+	</delete> -->
+	
+	<select id="selectProjectMaturityAssessment" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	   SELECT DIFFERENCE FROM PROJECT_MATURITY_ASSESSMENT
+          WHERE NO = #{proNo} AND  start_time = #{start} AND end_time = #{end}
+	</select>
+	
+	<insert id="replaceProjectMaturityAssessment"  parameterType="java.util.List">
+		REPLACE INTO PROJECT_MATURITY_ASSESSMENT(NO,BU,PDU,DU,HWPDU,HWZPDU,PDU_SPDT,PRO_NAME,HW_VERSION,
+        TYPE,AREA,PM_NAME,PM_NO,QA_NAME,QA_NO,PRO_RESOURCE,NEED_INTERFACE,ACCEPT_STANDARD,WORKLOAD_NEED,
+        SOW_REVIEW,PLAN,RP_REVIEW,TEST_CASE,CODE_REVIEW,DEVELOPER_TEST,TEST_EVALUATION,ITERATOR_TEST,
+        ITERAOR_EXPORT,SDV_TEST,SIT_TEST,UAT_TEST,RR_TEST,PRO_PLAN,STRUCTURE_CHART,STRATEGY_PLAN,
+        SCENARIOS_CASE,TEST_PROCEDURE,TEST_DELIVERABLES,SCHEDULE_MANAGEMENT,REQUIREMENTS_MANAGEMENT,
+        CHANGE_MANAGEMENT,RISK_MANAGEMENT,COSTCARE,KEY_ROLE_STABILITY,PM,BA_SE,MDE,TSE,TC,KEY_ROLE,PHASE_ACCEPT,
+        DELIVERY_PREPARATION,PROCESS_TRACE,PROJECT_ACCEPT,TOTAL_SCORE,DIFFERENCE,MARK,start_time,end_time) 
+        VALUES
+		<foreach collection="pmas" item="item" index="index" separator=",">
+			(#{item.no},#{item.bu},#{item.pdu},#{item.du},#{item.hwpdu},#{item.hwzpdu},#{item.pduSpdt},
+			#{item.proName},#{item.hwVersion},#{item.type},#{item.area},#{item.pmName},#{item.pmNo},
+			#{item.qaName},#{item.qaNo},#{item.proResource},#{item.needInterface},#{item.acceptStandard},
+			#{item.workloadNeed},#{item.sowReview},#{item.plan},
+			#{item.rpReview},#{item.testCase},#{item.codeReview},#{item.developerTest},#{item.testEvaluation},
+			#{item.iteratorTest},#{item.iteraorExport},#{item.sdvTest},#{item.sitTest},#{item.uatTest},
+			#{item.rrTest},#{item.proPlan},#{item.structureChart},#{item.strategyPlan},#{item.scenariosCase},
+			#{item.testProcedure},#{item.testDeliverables},#{item.scheduleManagement},
+			#{item.requirementsManagement},#{item.changeManagement},#{item.riskManagement},#{item.costCare},
+			#{item.keyRoleStability},#{item.pm},#{item.baSe},#{item.mde},#{item.tse},#{item.tc},#{item.keyRole},
+			#{item.phaseAccept},#{item.deliveryPreparation},#{item.processTrace},#{item.projectAccept},
+			#{item.totalScore},#{item.difference},#{item.mark},#{item.startTime},#{item.endTime})
+		</foreach>
+	</insert>
+	
+	<!-- <update id="updateProjectMaturityAssessment"  parameterType="com.icss.mvp.entity.ProjectMaturityAssessment">
+		UPDATE PROJECT_MATURITY_ASSESSMENT 
+		<set>
+		BU= #{p.bu},PDU=#{p.pdu},DU=#{p.du},HWPDU=#{p.hwpdu},HWZPDU=#{p.hwzpdu},PDU_SPDT=#{p.pduSpdt},
+		PRO_NAME=#{p.proName},HW_VERSION=#{p.hwVersion},TYPE=#{p.type},AREA=#{p.area},PM_NAME=#{p.pmName},PM_NO=#{p.pmNo},
+		QA_NAME=#{p.qaName},QA_NO=#{p.qaNo},PRO_RESOURCE=#{p.proResource},NEED_INTERFACE=#{p.needInterface},ACCEPT_STANDARD=#{p.acceptStandard},
+		WORKLOAD_NEED=#{p.workloadNeed},SOW_REVIEW=#{p.sowReview},PLAN=#{p.plan},RP_REVIEW=#{p.rpReview},TEST_CASE=#{p.testCase},
+		CODE_REVIEW=#{p.codeReview},DEVELOPER_TEST=#{p.developerTest},TEST_EVALUATION=#{p.testEvaluation},ITERATOR_TEST=#{p.iteratorTest},
+        ITERAOR_EXPORT=#{p.iteraorExport},SDV_TEST=#{p.sdvTest},SIT_TEST=#{p.sitTest},UAT_TEST=#{p.uatTest},RR_TEST=#{p.rrTest},
+        PRO_PLAN=#{p.proPlan},STRUCTURE_CHART=#{p.structureChart},STRATEGY_PLAN=#{p.strategyPlan},
+        SCENARIOS_CASE=#{p.scenariosCase},TEST_PROCEDURE=#{p.testProcedure},TEST_DELIVERABLES=#{p.testDeliverables},SCHEDULE_MANAGEMENT=#{p.scheduleManagement},
+        REQUIREMENTS_MANAGEMENT=#{p.requirementsManagement},CHANGE_MANAGEMENT=#{p.changeManagement},RISK_MANAGEMENT=#{p.riskManagement},COSTCARE=#{p.costCare},
+        KEY_ROLE_STABILITY=#{p.keyRoleStability},PM=#{p.pm},BA_SE=#{p.baSe},MDE=#{p.mde},TSE=#{p.tse},TC=#{p.tc},
+        KEY_ROLE=#{p.keyRole},PHASE_ACCEPT=#{p.phaseAccept},DELIVERY_PREPARATION=#{p.deliveryPreparation},PROCESS_TRACE=#{p.processTrace},
+        PROJECT_ACCEPT=#{p.projectAccept},TOTAL_SCORE=#{p.totalScore},DIFFERENCE=#{p.difference},MARK=#{p.mark}
+        </set>
+        where NO=#{p.no} and start_time=#{p.startTime} and end_time=#{p.endTime}
+	</update> -->
+
+ 	<select id="everyScore" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+			NEED_INTERFACE AS NEEDINTERFACE, ACCEPT_STANDARD AS ACCEPTSTANDARD,
+			WORKLOAD_NEED AS WORKLOADNEED, PHASE_ACCEPT AS PHASEACCEPT, PROJECT_ACCEPT AS PROJECTACCEPT, PLAN AS PLAN,
+			TEST_CASE AS TESTCASE, CODE_REVIEW AS CODEREVIEW, DEVELOPER_TEST AS DEVELOPERTEST, 
+			ITERATOR_TEST AS ITERATORTEST, SDV_TEST AS SDVTEST, SIT_TEST AS SITTEST, 
+			SCHEDULE_MANAGEMENT AS SCHEDULEMANAGEMENT, REQUIREMENTS_MANAGEMENT AS REQUIREMENTSMANAGEMENT, 
+			CHANGE_MANAGEMENT AS CHANGEMANAGEMENT, RISK_MANAGEMENT AS RISKMANAGEMENT, COSTCARE AS COSTCARE,
+			KEY_ROLE_STABILITY AS KEYROLESTABILITY, PM AS PM, BA_SE AS BASE, MDE AS MDE, TSE AS TSE, TC AS TC 
+		FROM PROJECT_MATURITY_ASSESSMENT WHERE PRO_NAME=#{proName} 
+		    AND end_time = (SELECT MAX(end_time) FROM PROJECT_MATURITY_ASSESSMENT 
+           WHERE PRO_NAME=#{proName})
+	</select>
+	
+ 	<select id="comments" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+			TOTAL_SCORE AS TOTALSCORE, DIFFERENCE AS DIFFERENCE, MARK AS MARK FROM 
+		PROJECT_MATURITY_ASSESSMENT WHERE PRO_NAME=#{proName}
+	</select>
+	
+	<select id="searchCommentsList" parameterType="java.lang.String" resultMap="CommentsListMap">
+		SELECT 
+			id as id, NO as no,version, create_time as createTime, modify_time as modifyTime, is_deleted as isDeleted, question as question,
+			impr_measure as imprMeasure, progress_desc as progressDesc, finish_time as finishTime, actual_finish_time as actualFinishTime, 
+			person_liable as personLiable, is_361 as is361, state as state
+		FROM PROJECT_MATURITY_COMMENTS WHERE NO=#{proNo} AND is_361=1 AND is_deleted=0
+	</select>
+	
+	<select id="searchCommentsListById" parameterType="java.lang.String" resultMap="CommentsListMap">
+		SELECT 
+			id as id, NO as no,version, create_time as createTime, modify_time as modifyTime, is_deleted as isDeleted, question as question,
+			impr_measure as imprMeasure, progress_desc as progressDesc, finish_time as finishTime, actual_finish_time as actualFinishTime, 
+			person_liable as personLiable, is_361 as is361, state as state
+		FROM PROJECT_MATURITY_COMMENTS WHERE id=#{id} AND is_deleted=0
+	</select>
+	
+	<insert id="replaceCommentsList" parameterType="com.icss.mvp.entity.ProjectCommentsListInfo" useGeneratedKeys="true" keyProperty="data.id">
+      REPLACE INTO PROJECT_MATURITY_COMMENTS (
+      id, NO,version, create_time, modify_time, is_deleted, question, impr_measure, progress_desc, actual_finish_time, finish_time, person_liable, is_361, state,
+      topic,severity,prior,probability,speed,ite_id
+      )
+      VALUE (
+      #{data.id},#{data.no},#{data.version},#{data.createTime},#{data.modifyTime},#{data.isDeleted},#{data.question},#{data.imprMeasure},
+      #{data.progressDesc},#{data.actualFinishTime},#{data.finishTime},#{data.personLiable},#{data.is361},#{data.state},#{data.topic},
+      #{data.severity},#{data.prior},#{data.probability},#{data.speed},#{data.iteId}
+      )
+    </insert>
+	<insert id="replaceCommentsLists" parameterType="java.util.List">
+      REPLACE INTO PROJECT_MATURITY_COMMENTS (
+      id, NO,version, create_time, modify_time, is_deleted, question, impr_measure, progress_desc, actual_finish_time, finish_time, person_liable, is_361, state
+      ) VALUES
+		<foreach collection="pmas" item="data" index="index" separator=",">
+		  (
+			  #{data.id},#{data.no},#{data.version},#{data.createTime},#{data.modifyTime},#{data.isDeleted},#{data.question},#{data.imprMeasure},
+			  #{data.progressDesc},#{data.actualFinishTime},#{data.finishTime},#{data.personLiable},#{data.is361},#{data.state}
+		  )
+		</foreach>
+    </insert>
+	
+ 	<select id="export361" parameterType="java.lang.String" resultMap="maturity">
+		SELECT * FROM PROJECT_MATURITY_ASSESSMENT WHERE NO =#{no}
+	</select>
+	<select id="loadTabsByTypes" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT * FROM (SELECT * FROM project_maturity_assessment WHERE NO IN ${strSql}) A
+ 		LEFT JOIN (SELECT NO, PROJECT_STATE FROM project_info ) B ON A.NO = B.NO
+	</select>
+	
+	<select id="loadProInfoByColor" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT * FROM project_info 
+		
+		WHERE NO IN ${strSql}
+		
+	</select>
+	<delete id="deleteProjectMaturityComments">
+		DELETE FROM project_maturity_comments where NO = #{data.no} and is_361 = #{data.is361} and create_time = #{data.createTime} and question = #{data.question}
+	</delete>
+	<resultMap type="com.icss.mvp.entity.ProjectStatus" id="ProjectStatus">
+	    <result property="no" column="NO" />
+	    <result property="id" column="id" />
+	    <result property="name" column="NAME" />
+	    <result property="pm" column="PM" />
+	    <result property="hwzpdu" column="HWZPDU" />
+	    <result property="pduSpdt" column="PDU_SPDT" />
+	    <result property="pdu" column="PDU" />
+	    <result property="du" column="DU" />
+	    <result property="area" column="AREA" />
+	    <result property="hwpduId" column="HWPDUID" />
+	    <result property="hwzpduId" column="HWZPDUID" />
+	    <result property="pduSpdtId" column="PDU_SPDTID" />
+	    <result property="buId" column="BUID" />
+	    <result property="pduId" column="PDUID" />
+	    <result property="duId" column="DUID" />
+	    <result property="statusReview" column="project_status" />
+	    <result property="review" column="project_review" />
+	    <result property="progressLamp" column="progress_lamp" />
+		<result property="resourcesLamp" column="resources_lamp" />
+		<result property="qualityLamp" column="quality_lamp" />
+	</resultMap>
+    <select id="projectOverview" parameterType="Map" resultMap="ProjectStatus">
+	    SELECT pa.`id`,pa.progress_lamp,pa.resources_lamp,pa.quality_lamp,pa.project_status,pa.project_review,t1.*
+        FROM project_info t1 RIGHT JOIN `project_review` pa ON t1.`NO`=pa.`pro_no` 
+        WHERE pa.`statistical_time` = #{date}
+        <if test="project_status != null">
+        AND pa.`project_status` != '0'
+        </if>
+        <include refid="sql_status"/>
+        ORDER BY pa.project_status
+    </select>
+    <sql id="sql_status">
+        <if test="areas != null and areas.size() != 0">
+            AND `t1`.`AREAID` in
+            <foreach collection="areas" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="status != null and status.size() != 0">
+            AND `t1`.`PROJECT_STATE` IN
+            <foreach collection="status" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwpduId != null and hwpduId.size() != 0">
+            AND `t1`.`HWPDUID` IN
+            <foreach collection="hwpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwzpduId != null and hwzpduId.size() != 0">
+            AND `t1`.`HWZPDUID` IN
+            <foreach collection="hwzpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduSpdtId != null and pduSpdtId.size() != 0">
+            AND `t1`.`PDU_SPDTID` IN
+            <foreach collection="pduSpdtId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="buId != null and buId.size() != 0">
+            AND `t1`.`BUID` IN
+            <foreach collection="buId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduId != null and pduId.size() != 0">
+            AND `t1`.`PDUID` IN
+            <foreach collection="pduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="duId != null and duId.size() != 0">
+            AND `t1`.`DUID` IN
+            <foreach collection="duId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <update id="assessUpdata" parameterType="java.lang.String">
+		UPDATE project_assess SET quality_comment = #{comment} WHERE id = #{id}
+	</update>
+	<update id="updateProjectAssessState" parameterType="java.lang.String">
+		UPDATE project_assess SET state = #{state} WHERE id = #{id}
+	</update>
+</mapper>

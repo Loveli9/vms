@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ICodeCheckDao">
+
+ 	<insert id="insertCodeCheck" parameterType="java.util.List">
+ 		insert into codecheck VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+				#{item.adviceId},#{item.taskId},#{item.versionName},#{item.assigneer},#{item.reporter},#{item.needConfirm},
+				#{item.parentCurse},#{item.parentCurseEName},#{item.childCurse},#{item.childCurseEName},#{item.content},#{item.createTime},
+				#{item.updateTime},#{item.endTime},#{item.criticalLevel},#{item.fileFullPath},#{item.firstLine},#{item.lineRange},
+				#{item.solution},#{item.status},#{item.issueKey},#{item.isDelete}
+			)
+		</foreach>
+ 	</insert>
+ 	
+ 	<select id="getLastday" parameterType="java.lang.String" resultType="java.lang.String">
+ 		select max(subStr(updateTime,1,10)) from codecheck where versionName=(select pbiName from smartide where no=#{no})
+			order by updateTime
+ 	</select>
+</mapper>

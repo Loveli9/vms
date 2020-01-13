@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ICodeMasterDao">
+	<select id="getCodeNameListbyKey" resultType="com.icss.mvp.entity.CodeMasterInfo" >
+		<!-- SELECT *
+		FROM code_master_info
+		<where>
+			<if test="key!=null and key!=''">
+				AND CODEKEY = #{key}
+			</if>
+		</where> -->
+		SELECT v.code as CODEKEY, v.`key` as NAME, v.value as VALUE, v.name as NOTE 
+		from v_dictionary v 
+		<where>
+			<if test="key!=null and key!=''">
+				AND v.code = #{key}
+			</if>
+		</where>
+	</select>
+	
+</mapper>

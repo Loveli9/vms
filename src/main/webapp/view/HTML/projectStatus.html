@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />	
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/ft-carousel.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/ft-carousel.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/staticPage.js"></script>
+    <script type="text/javascript" src="js/projectStatus.js"></script>
+    <style>
+.homeSelect {
+	float: right;
+	width: 153px;
+	height: 32px;
+	margin-left: 10px;
+}
+
+.fixed-table-container {
+	border: 0px solid #ddd;
+}
+
+.spanTitle {
+	float: left;
+	width: 80%;
+	font-size: 18px;
+	font-weight: bold;
+	line-height: 32px;
+	color: #666;
+	margin-top: 10px;
+	margin-left: 20px;
+}
+.table>thead:first-child>tr:first-child>th {
+	border-right: 1px solid transparent !important;
+}
+
+.bootstrap-table .table:not (.table-condensed ) >tbody>tr>td {
+	border-right: 1px solid transparent !important;
+}
+.fixed-table-container tbody td .th-inner, .fixed-table-container thead th .th-inner{
+    text-align: center;
+}
+.bootstrap-table .table{
+    border-bottom: 0px solid #ddd;
+}
+.table-striped>tbody>tr:nth-of-type(odd){
+    border-bottom: 1px solid #ddd;
+}
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td{
+    border-left: 0px solid;
+}
+.bootstrap-table .table:not(.table-condensed){
+    padding: 0px;
+}
+.table>tbody>tr>.wordWrap{
+	word-break: normal;
+	display: block;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow: hidden;
+}
+</style>
+</head>
+<body style="line-height: 24px;background: #f7f8f8;">
+	<div style="width:100%;">
+	    <div class="main" style="padding:0;border-left: 0px #e2e3e4 solid;position: unset;">
+	    	<div style="margin-top: 10px;margin-left: 30px;width:95%;height:53px;">
+	    	    <div style="float:left;width:90px;font-size: 20px;font-weight: bold;line-height: 32px;color: #666;margin-left:15px;">风险项目</div>
+				<!-- 中软 -->
+				<div class="homeSelect" id="select8" style="display: none;">
+					<select onchange="selectOnchange()" id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+					</select>
+				</div>
+				<div class="homeSelect" id="select7">
+	    			<select onchange="selectOnchange()" id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+					</select>
+	    		</div>
+				<div class="homeSelect" id="select6">
+		    		<select onchange="selectOnchange()" id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+					</select>
+	    		</div>
+	    		<!-- 华为 -->
+	    		<div class="homeSelect" style="display: none;" id="select5">
+					<select onchange="selectOnchange()" id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+					</select>
+				</div>
+				<div class="homeSelect" style="display: none;" id="select4">
+	    			<select onchange="selectOnchange()" id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+					</select>
+	    		</div>
+				<div class="homeSelect" style="display: none;" id="select3">
+		    		<select onchange="selectOnchange()" id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+					</select>
+	    		</div>
+	    		<!-- 地域 -->
+	    		<div class="homeSelect" style="display: none;" id="select1">
+		    		<select onchange="selectOnchange()" id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+					</select>
+	    		</div>
+	    		<div class="homeSelect" style="display: none;">
+		            <select id="usertype2" name="usertype" title="请选择状态" class="selectpicker show-tick form-control" multiple data-live-search="false">
+		                <option value="在行">在行</option>
+		                <option value="关闭">关闭</option>
+		       		</select>
+				</div>
+				<div class="homeSelect" id="select">
+					<select onchange="selectChange()" id="selectBig" name="select" title="中软&华为" class="selectpicker show-tick form-control"  data-live-search="false">
+						<option value='1' selected="selected">中软</option>
+						<option value='2'>华为</option>
+						<option value='3'>地域</option>
+					</select>
+				</div>
+				<!-- 当前日期 -->
+	        <div class="homeSelect" id="select9" style="float:right;margin-left:3px;">
+				<select onchange="selectOnchange()" id="currentDate" title="当前日期" class="selectpicker show-tick form-control" data-live-search="false">
+				</select>
+			</div>
+	    	</div>
+		 </div>
+		<div style="width:96%;height:430px;margin-left:2%;">
+		    <div style="background:#fff;width: 23%;height: 350px;float: left;">
+		        <span id="titleStatus" class="spanTitle"></span>
+			    <div id="projectStatus" style="width: 100%; height: 300px; float: left;"></div>
+			</div>
+			<div style="padding-left: 1%;width:76%; float: left; margin-left: 1%;font-size: 16px;background: #fff;height: 350px;">
+			    <span id="titleStatus" class="spanTitle" style="font-size: 14px;padding-left: 42%;">风险项目</span>
+			    <a href="#" onclick="HomePageJump(1)" style="font-size: 14px;float: right;margin-right:3%;margin-top: 17px;">全部项目</a>
+			    <a href="#" onclick="HomePageJump(2)" style="font-size: 14px;float: right;margin-right:3%;margin-top: 17px;">部门看板</a>
+				<div style="width:99%">
+				<table id="projectOverview"></table>
+				</div>
+				
+			</div>
+			</div>
+			
+		</div>
+		<!-- <div style="width:48%;height:400px;margin-left:2%;background: #fff;margin-top:20px;">
+		    <span id="progressStatus" class="spanTitle"></span>
+		</div> -->
+	</div>
+</body>
+</html>

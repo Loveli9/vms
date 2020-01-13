@@ -1,0 +1,1362 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />	
+<link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+
+
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<script type="text/javascript" src="js/selectComm.js"></script>
+<!-- <script type="text/javascript" src="js/wentifengxian.js"></script> -->
+<style>
+	#reportFormTable1 th,#reportFormTable1 td,
+	#reportFormTable2 th,#reportFormTable2 td,
+	#reportFormTable3 th,#reportFormTable3 td,
+	#reportFormTable4 th,#reportFormTable4 td{
+		text-align: center; font-size: 14px; height: 30px;
+	}
+	.breadcrumb > .active {
+    	color: #333333;
+	}
+	.breadcrumb {
+	    background-color: #f7f8f8;
+	    margin-left: 50px;
+	    margin-right: 50px;
+	    margin-bottom: 0px;
+	    padding: 8px 0px;
+	}
+	.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+		color: #3399ff;
+	    background-color: #f7f8f8;
+	    border-bottom: 5px #3399ff solid;
+	}
+	.nav>li>a:hover{
+		color: #3399ff;
+	    background-color: #f7f8f8;
+	}
+	.nav>li>a {
+	    color: #000000;
+	    background-color: #f7f8f8;
+	    text-decoration: none;
+	}
+	.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+		padding-bottom: 10px;
+	}
+	.change-chart table.data-table tbody td{
+	    line-height: 16px;
+	}
+	.change-chart table.data-table thead td {
+		line-height: 16px;
+	}
+	.home-content{
+    	
+    }
+	.homeSelect{
+    	float:right;
+    	width:153px;
+    	height:32px;
+		margin-left: 10px;
+		    	
+    }
+    /* .fixed-table-container {
+    border: 0px solid #ddd;
+	} */
+    #reportFormTable2 {
+		table-layout: fixed;
+		text-overflow:ellipsis;
+		overflow:hidden;
+		white-space:nowrap;
+    }
+    #reportFormTable3 {
+		table-layout: fixed;
+		text-overflow:ellipsis;
+		overflow:hidden;
+		white-space:nowrap;
+    }
+    a {
+     cursor:pointer;
+    }
+    .ui-datepicker-calendar {
+    display: none;
+    }
+</style>
+<script type="text/javascript"> 
+	    $(document).on("click", "ul.navbar-nav li", function () {
+	    	$("ul.navbar-nav li").removeClass("active");
+	    	_.each($("ul.navbar-nav li"), function(tab, index){
+	    		$("#"+$(tab).attr("tabname")).css('display','none');
+	    	});
+	    	$(this).addClass(  "active");
+	    	var id = $(this).attr("tabname");
+	    	$("#"+id).css('display','block');
+	    });
+	    function gotopage(currentpage){    
+	     var pagesize=document.getElementById("pagesize").value;    
+	    window.location.href='${pageContext.request.contextPath}/servlet/ListCustomer currentpage='+currentpage+'&pagesize='+pagesize;    }
+    </script>
+</head>
+<body style="line-height: 24px;background: #f7f8f8;">
+    <ol class="breadcrumb" style="background:#F6F6F6;" >
+	    <li style="margin-left: 15px;">报表</li>
+	    <li>月报</li>
+	    <li class="active">低产出分析</li>
+	</ol>
+	<div style="height: 50px;border-bottom: 2px #e2e3e4 solid;margin: 10px 50px;">
+	    <ul class="nav navbar-nav" style="font-size: 16px;">
+			<li id="view" tabname="tab-zl" class="active"><a style="background-color: #f7f8f8;" href="#">总览</a></li>
+		</ul>
+<div style="float:right;">
+        <!-- 中软 -->
+		<div class="homeSelect" id="select8" style="display: none;">
+			<select onchange="selectOnchange()" id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+		</div>
+		<div class="homeSelect" id="select7">
+   			<select onchange="selectOnchange()" id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+		<div class="homeSelect" id="select6">
+    		<select onchange="selectOnchange()" id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+   		<!-- 华为 -->
+   		<div class="homeSelect" style="display: none;" id="select5">
+			<select onchange="selectOnchange()" id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+		</div>
+		<div class="homeSelect" style="display: none;" id="select4">
+   			<select onchange="selectOnchange()" id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+		<div class="homeSelect" style="display: none;" id="select3">
+    		<select onchange="selectOnchange()" id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+   		<!-- 地域 -->
+   		<div class="homeSelect" style="display: none;" id="select1">
+    		<select onchange="selectOnchange()" id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+		<div class="homeSelect" id="select">
+			<select onchange="selectChange()" id="selectBig" name="select" title="中软&华为" class="selectpicker show-tick form-control"  data-live-search="false">
+				<option value='1' selected="selected">中软</option>
+				<option value='2'>华为</option>
+				<option value='3'>地域</option>
+			</select> 
+		</div>
+</div>
+<!-- 1 -->
+		<div style="float:right;margin-right:10px;">
+		<!-- 选择月份	 -->
+		<select id="datepicker" name="datepicker" onchange="changeDate()" style="width:120px;height: 30px; background-position: 5px 5px; border: 1px #999999 solid; padding-left: 30px; background-image: url(images/dateicon.png);background-repeat: no-repeat;">
+				<option></option>
+		</select>
+		<select id="reportFormSel" style="margin-left: 6px;border: 1px solid #999999;outline: none;width: 120px;height: 30px;">
+			  			  <option value="1" >产出分析汇总</option>
+			  			  <option value="2">无产出汇总</option>
+			  			  <option value="3">低产出汇总</option>
+			  			  <option value="4">月度进展统计</option>
+		</select>
+		<!-- 导出 -->
+		<button id="exportLowloc" style=" right: -8px;width: 70px;height: 30px;border: 0;background-color: #e41f2b;color: #ffffff;border-radius: 4px;line-height: 30px;margin-top: 2px;position: relative;">导出</button>
+        </div>
+	</div>
+<div  style="color: #333333;margin: 10px 50px;background-color: white;">
+		<div id="tab-zl" style="margin: 10px 0px;width:100%;">
+<table width="99.5%" border="0" cellspacing="0" cellpadding="0" style="margin: 20px 5px 0px 5px;">
+	<tr>
+		<td>
+			<div id="div1" style="float: left; width: 30%; height: 300px;"></div>
+			<div id="div2" style="float: left; width: 70%; height: 300px;"></div>
+		</td>
+	</tr>
+	<tr>
+	    <td id="Chart">
+			<span style="margin-left:10%">图1：当月产出分析汇总</span>
+			<span style="margin-left:40%">图2：每月产出分析汇总</span>
+		</td>
+	</tr>
+	<tr>
+		<td>
+        	<div style="margin: 20px;" >
+				<div class="modal-body change-chart" style="width: 100%;padding: 0px;">
+				<div id="reportFormTablez">
+		            <table id="reportFormTable1" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" style="border: 0px white solid;">
+		                 
+		            </table>
+		        </div>
+		     </div>
+		     </div>
+		 </td>
+	</tr>
+</table> 
+		        <div id="reportFormTablew" style="display: none;width:100%;padding-left:26px;padding-right:26px;">
+		            <table id="reportFormTable2" width="100%" border="1" cellspacing="0" cellpadding="0" class="data-table">
+		                 <tbody></tbody>
+		            </table>
+		        </div>
+		        <div id="reportFormTabled" style="display: none;width:100%;padding-left:26px;padding-right:26px;">
+		            <table id="reportFormTable3" width="100%" border="1" cellspacing="0" cellpadding="0" class="data-table" >
+		                 <tbody></tbody>
+		            </table>
+		        </div>
+		        <div id="reportFormTabley" style="display: none;width:100%;padding-left:26px;padding-right:26px;">
+		            <table id="reportFormTable4" width="100%" border="1" cellspacing="0" cellpadding="0" class="data-table" >
+		                 <tbody></tbody>
+		            </table>
+		        </div>
+			</div>
+      </div>
+</div>
+<!-- 详情页面 -->
+<div id="cover" ondblclick="myFunction()"
+style="display: none; position: absolute; top: 0%; left: 0%; width: 100%; height: 100%; z-index: 1001; opacity: 1;">
+<div id="tab-xm" align="center" class="modal-body change-chart" style="border-radius:10px;top:50%;margin: 0 auto;border:3px solid #7A7878;background-color: #F6F6F6;width: 90%;padding: 0px;display: none; z-index:9999;">	
+		<button onclick="call()" style="background-color:#F7F7F7;float:right;margin-left:10px;" type="button" class="btn btn-default btn-sm editable-cancel"><i class="glyphicon glyphicon-remove"></i></button>
+		<span style="float:right;margin-right: 10px;color: #999999;font-family: Microsoft Yahei;font-size: 10px;">双击隐藏该页面</span>
+		<table id="tab-details" align="center" cellspacing="0" cellpadding="0" class="data-table" style="top:20%;background-position: 5px 5px; width:100%;border: 0px white solid;">
+        </table>			    	
+</div>
+</div>
+<script type="text/javascript">
+	var projNo = window.parent.projNo;
+	var nos = "";
+	function myFunction(){
+		document.getElementById("cover").style.display = "none";
+		document.getElementById("tab-xm").style.display = "none";
+	}
+	function call(){
+		document.getElementById("cover").style.display = "none";
+		document.getElementById("tab-xm").style.display = "none";
+	}
+	function li(q){
+		document.getElementById("input").value= q;
+	}
+	function exportLowloc(){
+		$("#exportLowloc").click(function(){
+			if(!nos){
+				toastr.warning('导出信息为空');
+			}else{
+			var $eleForm = $("<form method='POST'></form>");
+			var month = $("#datepicker").val();
+            $eleForm.attr("action",getRootPath() + "/LowLoc/exportLowloc");
+            $eleForm.append($('<input type="hidden" name="nos" value="'+ nos +'">'));
+            $eleForm.append($('<input type="hidden" name="month" value="'+ month +'">'));
+            $(document.body).append($eleForm);
+            $eleForm.submit();
+			}
+		})
+	}
+
+	function loadreportFormTable1(){
+		$("#div1").css("display","");
+		$("#div2").css("display","");
+		loadreportFormcharts1();
+		$('#reportFormTable1').bootstrapTable({
+			method: 'post',
+	    	contentType: "application/x-www-form-urlencoded",
+	        url : getRootPath() + '/LowLoc/loadreportFormTable1',
+	     	editable:false,// 可行内编辑
+	    	striped: true, // 是否显示行间隔色
+	    	dataField: "rows",
+	    	pageNumber: 1, // 初始化加载第一页，默认第一页
+	    	pagination:true,// 是否分页
+	    	queryParamsType:'limit',
+	    	sidePagination:'client',
+	    	pageSize:5,// 单页记录数
+	    	pageList:[5,10,20,30],// 分页步进值
+	    	showColumns:false,
+	    	toolbar:'#toolbar',// 指定工作栏
+	    	toolbarAlign:'right',
+	        dataType: "json",
+	        queryParams : function(params){
+				var param = {
+	    	        projNo : projNo,
+	    	        'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串*/
+    				'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+    				'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+    				'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串 
+    				'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+    				'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+    				'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+    				'client': $("#selectBig").val(),
+    				'month': $("#datepicker").val(),
+					}
+				return param;
+			},
+		    columns:[
+		    	      [
+		    		{title: 'PDU',field: '',rowspan: 2,colspan: 1,align: "center",valign: 'middle',width: 340,
+		    			formatter:function(value,row,index){
+		    				nos += row.no+",";
+	            			return row.department;
+		        		} 
+		    		},
+		    		{title: '总人数',field: 'totalMemberCount',rowspan: 2,colspan: 1,align: "center",valign: 'middle',width:125 },
+		    		{title: '无产出',colspan: 2,align: 'center',rowspan: 1,},
+		    		{title: '低产出',colspan: 2,align: 'center',rowspan: 1,}
+		    		  ],
+		    		  [
+		    		{title: '无产出人数',field: '',align: "center",valign: 'middle' ,sortable: true,width:180,
+		    			formatter:function(value,row,index){
+	            			return '<a style="color: #721b77;" onclick="zerolowMember(\''+row.no+'\',\''+this.title+'\');">'+row.zeroMemberCount+'</a>';
+		        		} 
+		    			},
+		    		{title: '无产出占比(%)',field: 'zeroRate',align: "center",valign: 'middle', sortable: true,width:180,
+		    			formatter:function(value,row,index){	
+		        			var zeroRate = row.zeroMemberCount * 100.00 / row.totalMemberCount;
+	            			return zeroRate.toFixed(2);
+		        		} 
+		    		},
+		    		{title: '低产出人数',field: '',align: "center",valign: 'middle' ,sortable: true,width:180,
+		    			formatter:function(value,row,index){
+	            			return '<a style="color: #721b77;" onclick="zerolowMember(\''+row.no+'\',\''+this.title+'\');">'+row.lowMemberCount+'</a>';
+		        		} 
+		    		},
+		    		{title: '低产出占比(%)',field: 'lowRate',align: "center",valign: 'middle',sortable: true,width:180,	
+		    			formatter:function(value,row,index){	
+		        			var lowRate = row.lowMemberCount * 100.00 / row.totalMemberCount;
+	            			return lowRate.toFixed(2);
+		        		} 
+		    		},
+		    		  ]
+		    	],
+		    	locale:'zh-CN',//中文支持,
+		    });
+	}
+	function loadreportFormTable2(){
+		$("#div1").css("display","none");
+		$("#div2").css("display","none");
+		$('#reportFormTable2').bootstrapTable({
+			method: 'post',
+	    	contentType: "application/x-www-form-urlencoded",
+	        url : getRootPath() + '/LowLoc/loadreportFormTable2',
+	     	editable:false,// 可行内编辑
+	    	striped: true, // 是否显示行间隔色
+	    	dataField: "rows",
+	    	pageNumber: 1, // 初始化加载第一页，默认第一页
+	    	pagination:true,// 是否分页
+	    	queryParamsType:'limit',
+	    	sidePagination:'client',
+	    	pageSize:5,// 单页记录数
+	    	pageList:[5,10,20,30],// 分页步进值
+	    	showColumns:false,
+	    	toolbar:'#toolbar',// 指定工作栏
+	    	toolbarAlign:'right',
+	        dataType: "json",
+	        queryParams : function(params){
+	        	var param = {
+		    	        projNo : projNo,
+		    	        'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串*/
+	    				'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+	    				'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+	    				'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串 
+	    				'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+	    				'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+	    				'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+	    				'client': $("#selectBig").val(),
+	    				'month': $("#datepicker").val(),
+						}
+					return param;
+			},
+		    columns:[
+		    		{title: 'PDU',field: 'pdu',align: "center", width:200,valign:'middle'},
+		    		{title: '无产出人数',field: 'noLocNum',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+	            			return '<a style="color: #721b77;" onclick="zerolowMember(\''+row.no+'\',\''+this.title+'\');">'+row.noLocNum+'</a>';
+		        		} 	
+		    		},
+		    		{title: '安全编码审计',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason1?row.reason1:"-";
+		    				if(row.reason1)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '实验室操作员',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason2?row.reason2:"-";
+		    				if(row.reason2)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '开发工程师',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason3?row.reason3:"-";
+		    				if(row.reason3){
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+ val +'</a>';
+		    				}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '开发语言统计不到',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason4?row.reason4:"-";
+		    				if(row.reason4)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}
+		    		},
+		    		{title: '新员工',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason5?row.reason5:"-";
+		    				if(row.reason5)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '模块设计工程师',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason6?row.reason6:"-";
+		    				if(row.reason6)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '测试协调员',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason7?row.reason7:"-";
+		    				if(row.reason1)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '测试工程师',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason8?row.reason8:"-";
+		    				if(row.reason8)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '离职',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason9?row.reason9:"-";
+		    				if(row.reason9)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '系统测试工程师',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason10?row.reason10:"-";
+		    				if(row.reason10)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '系统设计工程师',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason11?row.reason11:"-";
+		    				if(row.reason11)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '统计有误',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason12?row.reason12:"-";
+		    				if(row.reason12)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '维护工程师',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason13?row.reason13:"-";
+		    				if(row.reason13)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '美工',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason14?row.reason14:"-";
+		    				if(row.reason14)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '质量工程师',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason15?row.reason15:"-";
+		    				if(row.reason15)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '资料工程师',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason16?row.reason16:"-";
+		    				if(row.reason16)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}
+		    		},
+		    		{title: '配置库遗留',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason17?row.reason17:"-";
+		    				if(row.reason17)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '项目经理',field: '',align: "center",width: 160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason18?row.reason18:"-";
+		    				if(row.reason18)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="zeroMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		}
+		    	],
+		    	locale:'zh-CN',//中文支持,
+		    });
+	}
+ function loadreportFormTable3(){
+		$("#div1").css("display","none");
+		$("#div2").css("display","none");
+		$('#reportFormTable3').bootstrapTable({
+			method: 'post',
+	    	contentType: "application/x-www-form-urlencoded",
+	        url : getRootPath() + '/LowLoc/loadreportFormTable3',
+	     	editable:false,// 可行内编辑
+	    	striped: true, // 是否显示行间隔色
+	    	dataField: "rows",
+	    	pageNumber: 1, // 初始化加载第一页，默认第一页
+	    	pagination:true,// 是否分页
+	    	queryParamsType:'limit',
+	    	sidePagination:'client',
+	    	pageSize:5,// 单页记录数
+	    	pageList:[5,10,20,30],// 分页步进值
+	    	showColumns:false,
+	    	toolbar:'#toolbar',// 指定工作栏
+	    	toolbarAlign:'right',
+	        dataType: "json",
+	        queryParams : function(params){
+	        	var param = {
+		    	        projNo : projNo,
+		    	        'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串*/
+	    				'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+	    				'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+	    				'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串 
+	    				'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+	    				'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+	    				'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+	    				'client': $("#selectBig").val(),
+	    				'month': $("#datepicker").val(),
+						}
+					return param;
+			},
+		    columns:[
+		    		{title: 'PDU',field: 'pdu',align: "center",width:200,valign:'middle'},
+		    		{title: '低产出人数',field: 'noLocNum',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+	            			return '<a style="color: #721b77;" onclick="zerolowMember(\''+row.no+'\',\''+this.title+'\');">'+row.noLocNum+'</a>';
+		        		} 	
+		    		},
+		    		{title: 'PM有部分项目管理工作',field: '',align: "center",width:170,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason1?row.reason1:"-";
+		    				if(row.reason1)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '业务需求量小',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason2?row.reason2:"-";
+		    				if(row.reason2)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '代码有专人提交',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason3?row.reason3:"-";
+		    				if(row.reason3)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '导出数据异常',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason4?row.reason4:"-";
+		    				if(row.reason4)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '工具开发兼顾工具维护',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason5?row.reason5:"-";
+		    				if(row.reason5)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '投入CI',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason6?row.reason6:"-";
+		    				if(row.reason6)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '新员工',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason7?row.reason7:"-";
+		    				if(row.reason7)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '离职',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason8?row.reason8:"-";
+		    				if(row.reason8)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '部分投入技术攻关预研',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason9?row.reason9:"-";
+		    				if(row.reason9)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '部分投入测试',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason10?row.reason10:"-";
+		    				if(row.reason10)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '部分投入系统部署',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason11?row.reason11:"-";
+		    				if(row.reason11)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    		{title: '配置库遗漏',field: '',align: "center",width:160,valign:'middle',
+		    			formatter:function(value,row,index){
+		    				var val = row.reason12?row.reason12:"-";
+		    				if(row.reason12)
+	            			{
+		    					return '<a style="color: #721b77;" onclick="lowMember(\''+row.no+'\',\''+this.title+'\');">'+val+'</a>';
+	            			}else{
+		    					return val;
+		    				}
+		        		}	
+		    		},
+		    	],
+		    	locale:'zh-CN',//中文支持,
+		    });
+	} 
+
+	function loadreportFormTable4(){
+		$("#div1").css("display","none");
+		$("#div2").css("display","none");
+		$('#reportFormTable4').bootstrapTable({
+			method: 'post',
+	    	contentType: "application/x-www-form-urlencoded",
+	        url : getRootPath() + '/LowLoc/loadreportFormTable4',
+	        editable:false,// 可行内编辑
+	    	striped: true, // 是否显示行间隔色
+	    	dataField: "rows",
+	    	pageNumber: 1, // 初始化加载第一页，默认第一页
+	    	pagination:true,// 是否分页
+	    	queryParamsType:'limit',
+	    	sidePagination:'client',
+	    	pageSize:5,// 单页记录数
+	    	pageList:[5,10,20,30],// 分页步进值
+	    	showColumns:false,
+	    	toolbar:'#toolbar',// 指定工作栏
+	    	toolbarAlign:'right',
+	        dataType: "json",
+	        queryParams : function(params){
+	        	var param = {
+		    	        projNo : projNo,
+		    	        'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串*/
+	    				'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+	    				'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+	    				'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串 
+	    				'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+	    				'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+	    				'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+	    				'client': $("#selectBig").val(),
+	    				'month': $("#datepicker").val(),
+						}
+					return param;
+			},
+		    columns:[
+		    		{
+		    			title: '项目名称',
+		    			field: '',
+		    			align: "center",
+		    			width: 560,
+		    			valign:'middle',	        
+		    			formatter:function(value,row,index){	
+		        			var path1 = getRootPath() + '/view/HTML/page.html?url='+
+		        						getRootPath()+'/bu/projView?projNo=' + row.no;
+	            			return '<a target="_blank" style="color: #721b77;" title="'+
+	            					row.name +'" href="'+path1+'">'+row.name+'</a>';
+		        		}
+		    			},
+		    		{title: '项目经理',field: 'pm',align: "center",width:200,},
+		    		{title: 'PDU',field: 'pdu',align: "center",width:260,},
+		    		{title: '已进行低产出分析人数',field: 'num',align: "center",width:260,},
+		    	],
+		    	locale:'zh-CN',//中文支持,
+		    });
+	}	
+	function reportFormSel(){
+		$("#reportFormSel").change(function(){
+			var tis=$(this).val();
+			if(tis==1){
+				loadreportFormTable1();
+				$("#reportFormTablez").css("display","");
+				$("#Chart").css("display","");
+				$("#reportFormTablew").css("display","none");
+				$("#reportFormTabled").css("display","none");
+				$("#reportFormTabley").css("display","none");
+				$("#exportLowloc").css("right","-8px");
+			}else if(tis==2){
+				loadreportFormTable2();
+				$("#reportFormTablez").css("display","none");
+				$("#Chart").css("display","none");
+				$("#reportFormTablew").css("display","");
+				$("#reportFormTabled").css("display","none");
+				$("#reportFormTabley").css("display","none");
+			}else if(tis==3){
+				loadreportFormTable3();
+				$("#reportFormTablez").css("display","none");
+				$("#Chart").css("display","none");
+				$("#reportFormTablew").css("display","none");
+				$("#reportFormTabled").css("display","");
+				$("#reportFormTabley").css("display","none");
+			}else if(tis==4){
+				loadreportFormTable4();
+				$("#reportFormTablez").css("display","none");
+				$("#Chart").css("display","none");
+				$("#reportFormTablew").css("display","none");
+				$("#reportFormTabled").css("display","none");
+				$("#reportFormTabley").css("display","");
+			}
+		})
+	}
+	
+    function changeDate(){
+    	var nos = "";
+			var tis=$("#reportFormSel").val();
+			if(tis==1){
+				loadreportFormcharts1();
+				$('#reportFormTable1').bootstrapTable('refresh');
+			}else if(tis==2){
+				$('#reportFormTable2').bootstrapTable('refresh');
+			}else if(tis==3){
+				$('#reportFormTable3').bootstrapTable('refresh');
+			}else if(tis==4){
+				$('#reportFormTable4').bootstrapTable('refresh');
+			}
+	}
+
+	function loadreportFormcharts1(){
+		$.ajax({
+			url: getRootPath() + '/LowLoc/loadreportFormcharts1',
+			type: 'post',
+			data: {
+				 projNo : projNo,
+	    	    'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串*/
+ 				'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+ 				'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+ 				'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串 
+ 				'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+ 				'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+ 				'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+ 				'client': $("#selectBig").val(),
+ 				'month': $("#datepicker").val(),
+				 },
+			async: false,//是否异步，true为异步
+			success: function (data) {
+				var array1=new Array();
+				for(var i=0;i<data[0].length;i++){
+					array1[i]=data[0][i];
+				}
+				var array2=new Array();
+				for(var i=0;i<data[1].length;i++){
+					array2[i]=data[1][i];
+				}
+				var array3=new Array();
+				for(var i=0;i<data[2].length;i++){
+					array3[i]=data[2][i];
+				}
+				var array4=new Array();
+				for(var i=0;i<data[3].length;i++){
+					array4[i]=data[3][i];
+				}
+				var array5=new Array();
+				for(var i=0;i<data[4].length;i++){
+					array5[i]=data[4][i];
+				}
+				var array6=new Array();
+				array6[0]='无产出月度数据';
+				array6[1]='低产出月度数据';
+				reportFormcharts1(array1,array2);
+				reportFormcharts2(array6,array3,array4,array5);
+			}
+		});
+	}
+	
+	function loadreportFormcharts2(){
+		$.ajax({
+			url: getRootPath() + '/LowLoc/loadreportFormcharts2',
+			type: 'post',
+			async: false,//是否异步，true为异步
+			success: function (data) {
+				var array1=new Array();
+				for(var i=0;i<data[0].length;i++){
+					array1[i]=data[0][i];
+				}
+				var array2=new Array();
+				for(var i=0;i<data[1].length;i++){
+					array2[i]=data[1][i];
+				}
+				$("#div1").empty();//清空内容
+				reportFormchartsNo1(array1,array2);
+			}
+		});
+	}
+	
+	var myCharts1=echarts.init(document.getElementById("div1"));//初始化图表
+	var myCharts2=echarts.init(document.getElementById("div2"));
+	
+	function reportFormcharts1(rate,num){
+		//饼图
+		var options1={
+			//定义标题
+			title:{
+				
+			},	
+			//鼠标悬停
+			tooltip: {
+	        	trigger: 'item',
+				formatter: '{a} <br/>{b} : {c} ({d}%)'
+	    	},
+			//图标
+			legend:{
+				data:[rate[0],rate[1]]
+			},
+			//指定图表类型
+			series:[
+				{
+					type: 'pie',
+	            	radius : '65%',
+	            	center: ['50%', '50%'],
+	            	selectedMode: 'single',
+					data:[
+						{
+							value:num[0],
+	                    	name: rate[0]
+						},{
+							value:num[1],
+	                    	name: rate[1]
+						}
+					]
+				}
+			]
+		}
+		myCharts1.setOption(options1);
+	}
+	
+	function reportFormcharts2(type,month,val1,val2){
+		//折线图
+		var options2={
+				//定义标题
+				title:{
+					
+				},	
+				//鼠标悬停
+				tooltip: {
+					trigger: 'axis'
+				},
+				//图标
+				legend:{
+					data:type
+				},
+				//x轴设置
+				xAxis:{
+					name:'月份',
+					splitLine:{show: false},//去除网格线			
+					data:month,
+					nameTextStyle:{//设置x轴标题属性
+						color:'#000000',
+						fontSize:14
+					},
+					axisTick:{//x轴刻度
+						show:false
+					},
+					axisLabel:{//x轴标示属性
+						textStyle:{
+							color:'#000000',
+							fontSize:14
+						}
+					},
+					axisLine:{//设置轴线属性
+						lineStyle:{
+							color:'#2e8afc',
+							width:2					
+						}
+					}
+				},
+				//y轴设置
+				yAxis:{
+					name:'人数',
+					splitLine:{show: false},//去除网格线
+					nameTextStyle:{//设置y轴标题属性
+						color:'#000000',
+						fontSize:16
+					},
+					axisTick:{//y轴刻度
+						show:false
+					},
+					axisLabel:{//y轴标示属性
+						textStyle:{
+							color:'#000000',
+							fontSize:16
+						}
+					},
+					axisLine:{//设置轴线属性
+						lineStyle:{
+							color:'#2e8afc',
+							width:2						
+						}
+					}
+				},
+				//指定图表类型
+				series:[
+					{
+						name:type[1],
+						type:'line',
+						symbolSize: 5,//拐点大小
+						data:val2
+					},{
+						name:type[0],
+						type:'line',
+						symbolSize: 5,//拐点大小
+						data:val1
+					}
+				]
+		}
+		myCharts2.setOption(options2);
+	}
+	
+	function reportFormchartsNo1(rate,num){
+		//饼图
+		var options1={
+			//定义标题
+			title:{
+				
+			},	
+			//鼠标悬停
+			tooltip: {
+	        	trigger: 'item',
+				formatter: '{a} <br/>{b} : {c} ({d}%)'
+	    	},
+			//图标
+			legend:{
+				data:[rate[0],rate[1]]
+			},
+			//指定图表类型
+			series:[
+				{
+					type: 'pie',
+	            	radius : '65%',
+	            	center: ['50%', '50%'],
+	            	selectedMode: 'single',
+					data:[
+						{
+							value:num[0],
+	                    	name: rate[0]
+						},{
+							value:num[1],
+	                    	name: rate[1]
+						}
+					]
+				}
+			]
+		}
+		myCharts1.setOption(options1);
+	}
+	//详情页面链接
+	function zerolowMember(line,column) {
+		if(column == "无产出人数"){
+			column = 1;
+		}else{column = 2;}
+		document.getElementById("cover").style.display = "block";
+		//document.getElementById("tab-zl").style.display = "none";
+		document.getElementById("tab-xm").style.display = "block";
+		$("#tab-details").bootstrapTable('destroy');
+        $("#tab-details").bootstrapTable({
+        	method: 'post',
+	    	contentType: "application/x-www-form-urlencoded",
+	        url : getRootPath() + '/LowLoc/AnalysisSummary',
+	     	editable:false,// 可行内编辑
+	    	striped: true, // 是否显示行间隔色
+	    	dataField: "rows",
+	    	pageNumber: 1, // 初始化加载第一页，默认第一页
+	    	pagination:true,// 是否分页
+	    	queryParamsType:'limit',
+	    	sidePagination:'client',
+	    	pageSize:5,// 单页记录数
+	    	pageList:[5,10,20,30],// 分页步进值
+	    	showColumns:false,
+	    	toolbar:'#toolbar',// 指定工作栏
+	    	toolbarAlign:'right',
+	        dataType: "json",
+	        queryParams : function(params){
+	        	var param = {
+		    	        projNo : projNo,
+		    	        'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串*/
+			    		'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+			    		'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+			    		'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串 
+			    		'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+			    		'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+			    		'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+			    		'client': $("#selectBig").val(),
+			    		'month': $("#datepicker").val(),
+	    				'line': line,
+	    				'column': column,
+						}
+					return param;
+			},
+		    columns:[
+		    	    {title: '华为产品线',field: 'subproduct',align: "center", width:160,valign:'middle'},
+	    		    {title: '子产品',field: 'project',align: "center",width: 160,valign:'middle'},
+		    		{title: 'PDU',field: 'spdu',align: "center",width: 160,valign:'middle'},
+		    		{title: '项目',field: 'department',align: "center",width: 470,valign:'middle'},
+		    		{title: '姓名',field: 'staff',align: "center",width: 100,valign:'middle'},
+		    		{title: '工号',field: 'account',align: "center",width: 100,valign:'middle'},
+		    		{title: '本月总代码量',field: 'sum',align: "center",width: 115,valign:'middle'},
+		    		{title: '提交次数',field: 'num',align: "center",width: 80,valign:'middle'},
+		    		{title: '详情',field: '',align: "center",width: 170,valign:'middle',
+		    			formatter:function(value,row,index){
+	            			return "[java:"+row.javaNum+",js:"+row.jsNum+",c++:"+row.ccNum+"]";
+		        		}
+		    		},
+		    	],
+		    	locale:'zh-CN',//中文支持,
+		    });
+	}
+	function zeroMember(line,column) {
+		if(column == "安全编码审计"){column = 1;
+		}else if(column == "实验室操作员"){column = 2;
+		}else if(column == "开发工程师"){column = 3;
+		}else if(column == "开发语言统计不到"){column = 4;
+		}else if(column == "新员工"){column = 5;
+		}else if(column == "模块设计工程师"){column = 6;
+		}else if(column == "测试协调员"){column = 7;
+		}else if(column == "测试工程师"){column = 8;
+		}else if(column == "离职"){column = 9;
+		}else if(column == "系统测试工程师"){column = 10;
+		}else if(column == "系统设计工程师"){column = 11;
+		}else if(column == "统计有误"){column = 12;
+		}else if(column == "维护工程师"){column = 13;
+		}else if(column == "美工"){column = 14;
+		}else if(column == "质量工程师"){column = 15;
+		}else if(column == "资料工程师"){column = 16;
+		}else if(column == "配置库遗留"){column = 17;
+		}else if(column == "项目经理"){column = 18;
+		}
+		document.getElementById("cover").style.display = "block";
+		document.getElementById("tab-xm").style.display = "block";
+		document.getElementById("tab-xm").style.top = "40%";
+		$("#tab-details").bootstrapTable('destroy');
+        $("#tab-details").bootstrapTable({
+        	method: 'post',
+	    	contentType: "application/x-www-form-urlencoded",
+	        url : getRootPath() + '/LowLoc/zeroMember',
+	     	editable:false,// 可行内编辑
+	    	striped: true, // 是否显示行间隔色
+	    	dataField: "rows",
+	    	pageNumber: 1, // 初始化加载第一页，默认第一页
+	    	pagination:true,// 是否分页
+	    	queryParamsType:'limit',
+	    	sidePagination:'client',
+	    	pageSize:5,// 单页记录数
+	    	pageList:[5,10,20,30],// 分页步进值
+	    	showColumns:false,
+	    	toolbar:'#toolbar',// 指定工作栏
+	    	toolbarAlign:'right',
+	        dataType: "json",
+	        queryParams : function(params){
+	        	var param = {
+		    	        projNo : projNo,
+		    	        'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串*/
+			    		'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+			    		'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+			    		'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串 
+			    		'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+			    		'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+			    		'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+			    		'client': $("#selectBig").val(),
+			    		'month': $("#datepicker").val(),
+	    				'line': line,
+	    				'column': column,
+						}
+					return param;
+			},
+		    columns:[
+		    		{title: '华为产品线',field: 'subproduct',align: "center", width:160,valign:'middle'},
+		    		{title: '子产品',field: 'project',align: "center",width: 160,valign:'middle'},
+		    		{title: 'PDU',field: 'spdu',align: "center",width: 160,valign:'middle'},
+		    		{title: '项目',field: 'department',align: "center",width: 470,valign:'middle'},
+		    		{title: '姓名',field: 'staff',align: "center",width: 100,valign:'middle'},
+		    		{title: '工号',field: 'account',align: "center",width: 100,valign:'middle'},
+		    		{title: '本月总代码量',field: 'sum',align: "center",width: 115,valign:'middle'},
+		    		{title: '提交次数',field: 'num',align: "center",width: 80,valign:'middle'},
+		    		{title: '详情',field: '',align: "center",width: 170,valign:'middle',
+		    			formatter:function(value,row,index){
+	            			return "[java:"+row.javaNum+",js:"+row.jsNum+",c++:"+row.ccNum+"]";
+		        		}
+		    		},
+		    	],
+		    	locale:'zh-CN',//中文支持,
+		    });
+	}
+	function lowMember(line,column) {
+		if(column == "PM有部分项目管理工作"){column = 1;
+		}else if(column == "业务需求量小"){column = 2;
+		}else if(column == "代码有专人提交"){column = 3;
+		}else if(column == "导出数据异常"){column = 4;
+		}else if(column == "工具开发兼顾工具维护"){column = 5;
+		}else if(column == "投入CI"){column = 6;
+		}else if(column == "新员工"){column = 7;
+		}else if(column == "离职"){column = 8;
+		}else if(column == "部分投入技术攻关预研"){column = 9;
+		}else if(column == "部分投入测试"){column = 10;
+		}else if(column == "部分投入系统部署"){column = 11;
+		}else if(column == "配置库遗漏"){column = 12;
+		}
+		document.getElementById("cover").style.display = "block";
+		document.getElementById("tab-xm").style.display = "block";
+		document.getElementById("tab-xm").style.top = "40%";
+		$("#tab-details").bootstrapTable('destroy');
+        $("#tab-details").bootstrapTable({
+        	method: 'post',
+	    	contentType: "application/x-www-form-urlencoded",
+	        url : getRootPath() + '/LowLoc/lowMember',
+	     	editable:false,// 可行内编辑
+	    	striped: true, // 是否显示行间隔色
+	    	dataField: "rows",
+	    	pageNumber: 1, // 初始化加载第一页，默认第一页
+	    	pagination:true,// 是否分页
+	    	queryParamsType:'limit',
+	    	sidePagination:'client',
+	    	pageSize:5,// 单页记录数
+	    	pageList:[5,10,20,30],// 分页步进值
+	    	showColumns:false,
+	    	toolbar:'#toolbar',// 指定工作栏
+	    	toolbarAlign:'right',
+	        dataType: "json",
+	        queryParams : function(params){
+	        	var param = {
+		    	        projNo : projNo,
+		    	        'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串*/
+			    		'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+			    		'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+			    		'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串 
+			    		'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+			    		'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+			    		'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+			    		'client': $("#selectBig").val(),
+			    		'month': $("#datepicker").val(),
+	    				'line': line,
+	    				'column': column,
+						}
+					return param;
+			},
+		    columns:[
+		    	    {title: '华为产品线',field: 'subproduct',align: "center", width:160,valign:'middle'},
+	    		    {title: '子产品',field: 'project',align: "center",width: 160,valign:'middle'},
+		    		{title: 'PDU',field: 'spdu',align: "center",width: 160,valign:'middle'},
+		    		{title: '项目',field: 'department',align: "center",width: 470,valign:'middle'},
+		    		{title: '姓名',field: 'staff',align: "center",width: 100,valign:'middle'},
+		    		{title: '工号',field: 'account',align: "center",width: 100,valign:'middle'},
+		    		{title: '本月总代码量',field: 'sum',align: "center",width: 115,valign:'middle'},
+		    		{title: '提交次数',field: 'num',align: "center",width: 80,valign:'middle'},
+		    		{title: '详情',field: '',align: "center",width: 170,valign:'middle',
+		    			formatter:function(value,row,index){
+	            			return "[java:"+row.javaNum+",js:"+row.jsNum+",c++:"+row.ccNum+"]";
+		        		}
+		    		},
+		    	],
+		    	locale:'zh-CN',//中文支持,
+		    });
+	}
+
+		var last_year_month = function() {
+			var d = new Date();
+			var result = [];
+			for(var i = 0; i < 12; i++) {
+				d.setMonth(d.getMonth() - 1);
+				var m = d.getMonth() + 1;
+				m = m < 10 ? "0" + m : m;
+				//在这里可以自定义输出的日期格式
+				result.push(d.getFullYear() + "-" + m);
+				//result.push(d.getFullYear() + "年" + m + '月');
+			}
+			return result;
+		}/* 以上是日期选择 */
+		$(document).ready(function() {
+			//生成前12个月日期下拉框
+			$("#reportFormSel").val(1);
+			var today=new Date();
+		  	var year=today.getYear()+1900;
+		  	var month=today.getMonth()+1;
+		  	if(month<10){
+		  		month="0"+month;
+		  	}
+			var date=year+"-"+month;  
+			var sel = document.getElementById('datepicker');
+            sel.options[0].value = date;
+            sel.options[0].text = date;//给options赋值
+            
+			for(var allinfo = last_year_month(), i = 0; i < allinfo.length; i++) {
+				$("#datepicker").append("<option value='" + allinfo[i] + "'>" + allinfo[i] + "</option>");
+			}
+		    loadreportFormTable1();
+		    exportLowloc();
+		    reportFormSel();
+		});
+	function selectOnchange(){
+		var nos = "";
+		var tis=$("#reportFormSel").val();
+		if(tis==1){
+			loadreportFormcharts1();
+			$('#reportFormTable1').bootstrapTable('refresh');
+		}else if(tis==2){
+			$('#reportFormTable2').bootstrapTable('refresh');
+		}else if(tis==3){
+			$('#reportFormTable3').bootstrapTable('refresh');
+		}else if(tis==4){
+			$('#reportFormTable4').bootstrapTable('refresh');
+		}
+    } 
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.VerificationCycleDao">
+	<select id="getTmssInfo" parameterType="java.lang.String" resultType= "java.util.HashMap">
+		select c_version_name from tbl_tmss_all_info where no=#{no}
+		and last_result = "Passed" and auto_execution_type="true"
+		and DATE_FORMAT(start_time,'%Y')=#{year}
+		group by c_version_name
+	</select>
+	<select id="getTmssInfoNos" parameterType="java.lang.String" resultType= "java.util.HashMap">
+		select c_version_name from tbl_tmss_all_info where no in ${no}
+		and last_result = "Passed" and auto_execution_type="true"
+		and DATE_FORMAT(start_time,'%Y')=#{year}
+		group by c_version_name
+	</select>
+	<select id="getAllBVversion" parameterType="java.lang.String" resultType= "java.util.HashMap">
+		select ret.* from 
+			(
+			select count(tms.b_version_name) as numAll,tms.b_version_name,tms.c_version_name from 
+				(
+				select * from tbl_tmss_all_info where no=#{no}
+				and DATE_FORMAT(start_time,'%m')=#{month}
+				and last_result = "Passed" and auto_execution_type="true"
+				and DATE_FORMAT(start_time,'%Y')=#{year}
+				) tms 
+			group by tms.b_version_name
+			) ret
+		order by ret.numAll desc;
+	</select>
+	<select id="getAllBVversionNos" parameterType="java.lang.String" resultType= "java.util.HashMap">
+		select ret.* from 
+			(
+			select count(tms.b_version_name) as numAll,tms.b_version_name,tms.c_version_name from 
+				(
+				select * from tbl_tmss_all_info where no in ${no}
+				and DATE_FORMAT(start_time,'%m')=#{month}
+				and last_result = "Passed" and auto_execution_type="true"
+				and DATE_FORMAT(start_time,'%Y')=#{year}
+				) tms 
+			group by tms.b_version_name
+			) ret
+		order by ret.numAll desc;
+	</select>
+	
+	<select id="getMinutesGroupMouth" parameterType="java.lang.String" resultType= "java.util.HashMap">
+		SELECT IFNULL(A.minutes,0) AS minutes, IFNULL(A.num,0) AS num FROM
+			(
+			SELECT 
+			  SUM(
+			    ROUND(
+			      (
+			        UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
+			      ) / 60
+			    )
+			  ) AS minutes,
+			  count(*) as num
+			FROM tbl_tmss_all_info 
+			WHERE no =#{no}  
+			and b_version_name=#{bVersionName}
+			and DATE_FORMAT(start_time,'%m')=#{month}
+			and last_result = "Passed" and auto_execution_type="True"
+			and DATE_FORMAT(start_time,'%Y')=#{year}
+			) A
+	</select>
+	
+	<select id="getMinutesGroupMouthVers" parameterType="java.lang.String" resultType= "java.util.HashMap">
+		SELECT IFNULL(A.minutes,0) AS minutes, IFNULL(A.num,0) AS num FROM
+			(
+			SELECT 
+			  SUM(
+			    ROUND(
+			      (
+			        UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
+			      ) / 60
+			    )
+			  ) AS minutes,
+			  count(*) as num
+			FROM tbl_tmss_all_info 
+			WHERE b_version_name in ${bVersionName}
+			and DATE_FORMAT(start_time,'%m')=#{month}
+			and last_result = "Passed" and auto_execution_type="True"
+			and DATE_FORMAT(start_time,'%Y')=#{year}
+			) A
+	</select>
+	
+	<select id="getTotalAllBVversion" parameterType="java.lang.String" resultType= "java.util.HashMap">
+		select b_version_name,c_version_name from tbl_tmss_all_info where no=#{no}  
+		and DATE_FORMAT(start_time,'%m')=#{month}
+		and last_result in ("Passed","fail","investigate")
+		and DATE_FORMAT(start_time,'%Y')=#{year}
+		group by b_version_name
+	</select>
+	<select id="getTotalAllBVversionNos" parameterType="java.lang.String" resultType= "java.util.HashMap">
+		select b_version_name,c_version_name from tbl_tmss_all_info where no in ${no}
+		and DATE_FORMAT(start_time,'%m')=#{month}
+		and last_result in ("Passed","fail","investigate")
+		and DATE_FORMAT(start_time,'%Y')=#{year}
+		group by b_version_name
+	</select>
+</mapper>

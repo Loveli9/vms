@@ -1,0 +1,744 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/wentifengxian.js"></script>
+<style>
+	.chart-title span{
+		font-size: 16px;
+	}
+	.change-chart1 tbody tr:nth-child(even) td { 
+		background-color: #ffffff;
+	}
+	.bigImageFont{
+	    width: 19%;
+    	float: left;
+    	line-height: 24px;
+    	font-family: Microsoft Yahei;
+    }
+    a{
+    	text-decoration: none;
+    	color: rgba(255,255,255,.5);
+    }
+    a:hover{
+    	text-decoration: none;
+    	color: rgba(255,255,255,1);
+    	cursor: pointer;
+    }
+	.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+		color: #3399ff;
+	    background-color: #fff;
+	    border-bottom: 5px #3399ff solid;
+	}
+	.nav>li>a:hover{
+		color: #3399ff;
+	    background-color: #fff;
+	}
+	.nav>li>a {
+	    color: #000000;
+	    background-color: #fff;
+	    text-decoration: none;
+	}
+	.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+			padding-bottom: 10px;
+	}
+</style>
+<script type="text/javascript">
+        $(document).on("click", "ul.navbar-nav li", function () {
+        	$("ul.navbar-nav li").removeClass("active");
+        	_.each($("ul.navbar-nav li"), function(tab, index){
+        		$("#"+$(tab).attr("tabname")).css('display','none');
+        	});
+        	$(this).addClass("active");
+        	var id = $(this).attr("tabname");
+        	$("#"+id).css('display','block');
+        });
+</script>
+</head>
+<body style="background-color: #fff;">
+	<!-- <div style="height: 47px;border-bottom: 2px #e2e3e4 solid;padding-left: 30px;margin-top: 20px;font-size: 20px;">
+		<span>缺陷管理</span>
+	</div> -->
+	<div style="height: 50px;border-bottom: 2px #e2e3e4 solid;margin: 10px;">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li tabname="tab-wtd" class="active"><a href="#">问题单</a></li>
+		</ul>
+	</div>
+    <table width="99.5%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+            <div id="tab-wtd" style="margin: 0px 10px 10px 10px;">
+                <div class="change-chart">
+                   <!--  <div class="chart-title" style="height: 47px;line-height: 40px;">
+                        <div style="float: left;margin-left: 5px;"><span style="font-size: 16px;">问题单</span></div>
+                        <div style="border-right: 1px #367FA9 solid;height: 40px;width: 15px;float: left;"></div>
+                        <div style="border-right: 2px #367FA9 solid;height: 40px;width: 4px;float: left;"></div>
+                      	<a href="">
+                    		<span style="display:none; color:#367FA9;float: right; margin-right: 20px;">
+                    			<img width="15" src="images/editicon.png" alt="编辑" style="margin-bottom:-2px;"/>&nbsp;&nbsp;编辑
+	                    	</span>  
+	                   	</a>  
+                    </div> -->
+                    <div style="height: 230px; width: 99%">
+                    	<!-- <div style="width: 100%;height:50px;line-height:50px;padding-left:10px; font-size: 16px;">遗留问题单/遗留DI统计</div> -->
+                    	<div class="bigImageFont"><img src="images/zhimingwenti.png" /><div style="width: 50%;font-size:80px; position: relative;top:-85px;left: 20px;color: white;text-align: center; "><a id="critNum" onclick="exportEvent('Critical','critNum')">0</a></div></div>
+                    	<div class="bigImageFont"><img src="images/yanzhongwenti.png" /><div style="width: 50%;font-size:80px; position: relative;top:-85px;left: 20px;color: white;text-align: center; "><a id="majNum" onclick="exportEvent('Major','majNum')">0</a></div></div>
+                    	<div class="bigImageFont"><img src="images/yibanwenti.png" /><div style="width: 50%;font-size:80px; position: relative;top:-85px;left: 20px;color: white;text-align: center; "><a id="minNum" onclick="exportEvent('Minor','minNum')">0</a></div></div>
+                    	<div class="bigImageFont"><img src="images/tishiwenti.png" /><div style="width: 50%;font-size:80px; position: relative;top:-85px;left: 20px;color: white;text-align: center; "><a id="sugNum" onclick="exportEvent('Suggestion','sugNum')">0</a></div></div>
+                    	<div class="bigImageFont"><img src="images/yiliudi.png" /><div id="dtsLeaveDINum" style="width: 50%;font-size:70px; position: relative;top:-85px;left: 20px;color: white;text-align: center; ">0</div></div>
+                    </div>
+                    <div style="padding-top: 10px;padding-left: 30px;">
+                    	<select id="develop-sel" class="btn btn-default" style="outline: none;width: 150px; height: 35px;font-size: 15px;text-align: center;" onChange="tongjitu()">
+						    <option selected="selected" style="color: black" value="wenti">项目组问题单</option>
+						    <option style="color: black" value="banben">版本遗留DI</option>
+						</select>
+                    </div>
+                    <div class="chart" style="margin-top: 10px;width: 100%;">
+                        <div id="Div1" style="width: 100%; height: 330px;"></div>
+                    </div>
+                    <div class="" id="search" style="height: 80px;">
+                  		<fieldset id="fieldset" style="position:relative; top: 1px; width:94%; height:75%; margin:0 auto; background-color: #ffffff; border: 2px #dddddd solid;">
+	                        <table width="100%" class="change-chart1">
+	                           <tr style="height: 50px; line-height: 50px;">
+	                               <td class="td1" width="8%" align="center">
+	                                	   版本
+	                               </td>
+	                               <td width="25%" align="left">
+	                                    <div class="col-sm-12" style="width:260px;padding-left: 10px;">
+	                                   		<select id="edition1" name="usertype" title="请选择版本" class="selectpicker show-tick form-control" multiple data-live-search="false">
+							        		</select>
+							       		</div>
+	                               </td>
+	                               <td class="td1" width="8%" align="center">
+	                                 	  状态
+	                               </td>
+	                               <td width="25%" align="left">
+	                                    <div class="col-sm-12" style="width:260px;padding-left: 10px;">
+	                                   		<select id="stage0" name="usertype" title="请选择阶段" class="selectpicker show-tick form-control" multiple data-live-search="false">
+							        		</select>
+							       		</div>
+	                               </td>
+	                               <td align="center" style="text-align: center;">
+	                                   <input name="" type="button" value="查询" class="but1" id="but1" onclick="but1()" style="width:90px; height:38px; background-color:#367FA9; color:#ffffff; cursor:pointer; border:none; border-radius:4px; font-size:12px;margin-left: 40px; line-height: 38px;"/>
+	                                   <!-- <input name="" type="button" value="详细筛选" class="but2" id="moreBtn" onclick="moreBtn()" style="width:60px; height:38px; background-color:#ffffff; color:#367FA9; cursor:pointer; border:none; border-radius:4px; font-size:12px; outline: none;text-align: right;line-height: 38px;"/>
+	                                   <div id="jiantou" onclick="moreBtn()" style=" cursor:pointer;width:0; height:0; border:5px #367FA9 solid; border-right-width:0;  border-top-color:#ffffff; border-bottom-color:#ffffff;display: inline-block;"><input id="check" type="hidden" value="0"/></div> -->
+	                               </td>
+<!-- 	                               <td class="td1" width="5%" align="center">
+	                              		 日期 XXX
+	                               </td>
+	                               <td width="20%" align="left" style="padding-left: 10px;">
+	                               		<input name="" type="text" class="s1" id=""/>
+	                                   <input name="" type="date" class="s1" id="month-sel" style="background-image: url(images/dateicon.png); /*引入图片图片*/background-repeat: no-repeat; /*设置图片不重复*/background-position: 5px 10px; /*图片显示的位置*/padding-left: 40px;"/>&nbsp;&nbsp;至&nbsp;&nbsp;
+	                                   <input name="" type="date" class="s1" id="month-sel" style="background-image: url(images/dateicon.png); /*引入图片图片*/background-repeat: no-repeat; /*设置图片不重复*/background-position: 5px 10px; /*图片显示的位置*/padding-left: 40px;"/>
+	                               </td>
+ -->	                           
+	                           </tr>
+	                           <tr id="more" style="height: 50px; line-height: 50px; display: none;">
+	                               <td class="td1" align="center">
+	                                	   XXX
+	                               </td>
+	                               <td align="left" style="padding-left: 10px;">
+	                                   <input name="" type="text" class="s1" id=""/>
+	                               </td>
+	                               <td class="td1" align="center">
+	                                 	  XXX
+	                               </td>
+	                               <td align="left" style="padding-left: 10px;">
+	                                   <input name="" type="text" class="s1" id="projMgmr"/>
+	                               </td>
+	                               <td class="td1" align="center">
+	                              		 <!-- 日期 -->XXX
+	                               </td>
+	                               <td align="left" style="padding-left: 10px;">
+	                                   <input name="" type="text" class="s1" id=""/>
+	                                   <!-- <input name="" type="date" class="s1" id="month-sel" style="background-image: url(images/dateicon.png); /*引入图片图片*/background-repeat: no-repeat; /*设置图片不重复*/background-position: 5px 10px; /*图片显示的位置*/padding-left: 40px;"/>&nbsp;&nbsp;至&nbsp;&nbsp;
+	                                   <input name="" type="date" class="s1" id="month-sel" style="background-image: url(images/dateicon.png); /*引入图片图片*/background-repeat: no-repeat; /*设置图片不重复*/background-position: 5px 10px; /*图片显示的位置*/padding-left: 40px;"/> -->
+	                               </td>
+	                               <td colspan="2" align="center" colspan="2" style="text-align: center;">
+	                               </td>
+	                           </tr>
+	                        </table>
+               			</fieldset>
+                    </div>
+                    <div class="main-button">
+                    	<!-- <span style="font-size: 16px;padding-left:10px;color: #367FA9;">问题单(项目组)</span>
+                    	<div style=" cursor:pointer;width:0; height:0; border:5px #367FA9 solid; border-bottom-width:2px; border-bottom-color:#ffffff;  border-left-color:#ffffff; border-right-color:#ffffff;display: inline-block;"></div> -->
+                    	<select id="wentidanSel" onchange="but1()" style="font-size: 16px;padding-left:10px;color: #367FA9;border-color:#367FA9;border-width: 0;outline: none; ">
+                    		<option selected="selected" value="product">问题单(项目组)</option>
+                    		<option value="feature">问题单(特性)</option>
+                    		<option value="subsystem">问题单(子系统)</option>
+                    		<option value="module">问题单(模块)</option>
+                    		<option value="current_Handler">问题单(责任人)</option>
+                    	</select>
+                    </div>
+                    <table id="wentidan" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table">
+                        <thead>
+                            <tr bgcolor="#b4aeb5">
+                                <td style="line-height: 30px;"><span id="text"></span></td>
+                                <td style="line-height: 30px;">致命</td>
+                                <td style="line-height: 30px;">严重</td>
+                                <td style="line-height: 30px;">一般</td>
+                                <td style="line-height: 30px;">提示</td>
+                                <td style="line-height: 30px;">合计</td>
+                                <td style="line-height: 30px;">遗留DI</td>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div style="display: none;">
+                    	<span style="font-size: 16px;padding-left:10px;">问题 / 风险跟踪</span>
+                    </div>
+                    <table style="display: none;" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" id="">
+                        <thead>
+                            <tr bgcolor="#b4aeb5">
+                                <td style="line-height: 30px;">问题 / 风险编号</td>
+                                <td style="line-height: 30px;">状态</td>
+                                <td style="line-height: 30px;">问题 / 风险描述</td>
+                                <td style="line-height: 30px;">严重级别</td>
+                                <td style="line-height: 30px;">紧急程度</td>
+                                <td style="line-height: 30px;">影响分析</td>
+                                <td style="line-height: 30px;">提出人</td>
+                                <td style="line-height: 30px;">提出时间</td>
+                                <td style="line-height: 30px;">处理人</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td></tr>
+                            <tr><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td></tr>
+                            <tr><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td><td>XXX</td></tr>
+                        </tbody>
+                    </table>
+                    <div style="height: 50px;"></div>
+                    <div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content" style="top: 300px;">
+									<div class="modal-body" style="padding: 15px;">
+										<div style="text-align: center;">
+											<span id="dataAcquisition" style="font-size: 14px;">查询中。。。</span>
+										</div>
+									</div>
+								</div><!-- /.modal-content -->
+							</div><!-- /.modal-dialog -->
+					</div><!-- /.modal -->
+                </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+    	function moreBtn(){
+    		var n=document.getElementById("check");
+    		var ss=document.getElementById("search");
+    		var mb=document.getElementById("moreBtn");
+    		var jt=document.getElementById("jiantou");
+    		var more=document.getElementById("more");
+    		if(n.value==0){
+    			n.value=1;
+	    		ss.style.height="160px";
+	    		more.style.display="";
+/* 	    		var tr=document.createElement("tr");
+	    		tr.id="tr";
+	    		tr.style.height="50px";
+	    		tr.style.lineHeight="50px";
+	    		var td1=document.createElement("td");
+	    		var td2=document.createElement("td");
+	    		var td3=document.createElement("td");
+	    		var td4=document.createElement("td");
+	    		var td5=document.createElement("td");
+	    		var td6=document.createElement("td");
+	    		var td7=document.createElement("td");
+	    		var td8=document.createElement("td");
+	    		td1.className="td1";
+	    		td3.className="td1";
+	    		td5.className="td1";
+	    		td2.align="left";
+	    		td4.align="left";
+	    		td6.align="left";
+	    		var input1=document.createElement("input");
+	    		var input2=document.createElement("input");
+	    		var input3=document.createElement("input");
+	    		input1.style.width="120px";
+	    		input2.style.width="120px";
+	    		input3.style.width="120px";
+	    		input1.name="";
+	    		input1.id="";
+	    		input2.name="";
+	    		input2.id="";
+	    		input3.name="";
+	    		input3.id="";
+	    		mb.parentNode.parentNode.parentNode.appendChild(tr);
+	    		tr.appendChild(td1);
+	    		tr.appendChild(td2);
+	    		tr.appendChild(td3);
+	    		tr.appendChild(td4);
+	    		tr.appendChild(td5);
+	    		tr.appendChild(td6);
+	    		tr.appendChild(td7);
+	    		tr.appendChild(td8);
+	    		td1.innerHTML="XXX";
+	    		td3.innerHTML="XXX";
+	    		td5.innerHTML="XXX";
+	    		td2.appendChild(input1);
+	    		td4.appendChild(input2);
+	    		td6.appendChild(input3);
+ */	    		jt.style.borderColor="#367FA9";
+	    		jt.style.borderRightWidth="5px";
+	    		jt.style.borderBottomWidth="0px";
+	    		jt.style.borderLeftColor="#ffffff";
+	    		jt.style.borderRightColor="#ffffff";
+    		}else if(n.value==1){
+    			n.value=0;
+    			ss.style.height="80px";
+    			more.style.display="none";
+/*    			mb.parentNode.parentNode.parentNode.removeChild(document.getElementById("tr"));*/
+	    		jt.style.borderColor="#367FA9";
+	    		jt.style.borderBottomWidth="5px";
+	    		jt.style.borderRightWidth="0px";
+	    		jt.style.borderTopColor="#ffffff";
+	    		jt.style.borderBottomColor="#ffffff";
+    		}
+    		
+    	}
+	</script>
+    <script type="text/javascript">
+    var projNo = window.parent.projNo;
+   	//获得图表的值
+		function zhexiantuvalue(){
+			$.ajax({
+				url: getRootPath() + '/dtsTaskController/DtsDiList',		
+				type: 'post',
+				data: {
+					projNo: projNo
+				},
+				success: function (data) {//后台传来的值是List<Map<String, Object>>
+					var riqi=new Array();
+					var shuju=new Array();
+					for(var i=0;i<data.length;i++){
+						riqi[i]=data[i].date;
+						shuju[i]=data[i].value;
+					}
+					zhexiantu(riqi,shuju);
+				}
+			})
+		}
+   		
+   		function tiaoxingtuvalue(){
+			$.ajax({
+				url: getRootPath() + '/dtsTaskController/DtsSeverityByVersion',
+				type: 'post',
+				data: {
+					projNo: projNo
+				},
+				success: function (data) {//后台传来的值是List<Map<String, Object>>
+					var xiangmuzu=new Array();
+					var shuju=new Array();
+					for(var i=0;i<5;i++){
+						shuju[i]=new Array();
+					}
+					for(var i=0;i<data.length;i++){
+						xiangmuzu[i]=data[i].projectTeam;
+						shuju[0][i]=data[i].critNum;
+						shuju[1][i]=data[i].majNum;
+						shuju[2][i]=data[i].minNum;
+						shuju[3][i]=data[i].sugNum;
+						shuju[4][i]=data[i].dtsLeaveDINum;
+					}
+					tiaoxingtu(xiangmuzu,shuju);
+				}
+			})   			
+   		}
+   	
+		//初始化图标标签
+		var myCharts=echarts.init(document.getElementById("Div1"));
+		
+		//条形图
+		function tiaoxingtu(xiangmuzu,shuju){
+			var options1={
+				//定义标题
+				title:{
+					
+				},	
+				//图标
+				legend:[{
+					data:['致命','严重'],
+					top:'3%',
+					left:'75%'
+				},{
+					data:['一般','提示'],
+					top:'8%',
+					left:'75%'
+				}],
+				//鼠标悬停
+				tooltip:{
+					
+				},
+				//x轴设置
+				xAxis:{
+					name:'项目组',
+					splitLine:{show: false},//去除网格线
+					data:xiangmuzu,
+					nameTextStyle:{//设置x轴标题属性
+		            	color:'#000000',
+						fontSize:16
+		            },
+					axisTick:{//x轴刻度
+		       			show:false
+		   			},
+					axisLabel:{//x轴标示属性
+						textStyle:{
+							color:'#000000',
+							fontSize:16
+						}
+					},
+					axisLine:{//设置轴线属性
+						lineStyle:{
+							color:'#367FA9',
+							width:2					
+						}
+		            }
+				},
+				//y轴设置
+				yAxis:{
+					name:'数量',
+					splitLine:{show: false},//去除网格线
+					nameTextStyle:{//设置y轴标题属性
+		            	color:'#000000',
+						fontSize:16
+		            },
+					axisTick:{//y轴刻度
+		       			show:false
+		   			},
+					axisLabel:{//y轴标示属性
+						textStyle:{
+							color:'#000000',
+							fontSize:16
+						}
+					},
+					axisLine:{//设置轴线属性
+						lineStyle:{
+							color:'#367FA9',
+							width:2						
+						}
+		            }
+				},
+				//指定图表类型
+				series:[{
+					name:'致命',
+					type:'bar',
+					barWidth:16,//条宽度
+					barGap:'5%',//条间距			
+					itemStyle:{
+						normal:{
+							color: new echarts.graphic.LinearGradient(0, 0, 0, 1,[
+								{offset: 0, color: '#f57454'}
+							])				
+						},				
+		            },
+					data:shuju[0]
+				},{
+					name:'严重',
+					type:'bar',
+					barWidth:16,
+					barGap:'5%',
+					itemStyle:{
+						normal:{
+							color: new echarts.graphic.LinearGradient(0, 0, 0, 1,[
+								{offset: 0, color: '#f7b547'}
+							])				
+						}
+		            },
+					data:shuju[1]	
+				},{
+					name:'一般',
+					type:'bar',
+					barWidth:16,
+					barGap:'5%',
+					itemStyle:{
+						normal:{
+							color: new echarts.graphic.LinearGradient(0, 0, 0, 1,[
+								{offset: 0, color: '#649ce9'}
+							])				
+						}
+		            },
+					data:shuju[2]	
+				},{
+					name:'提示',
+					type:'bar',
+					barWidth:16,
+					barGap:'5%',
+					itemStyle:{
+						normal:{
+							color: new echarts.graphic.LinearGradient(0, 0, 0, 1,[
+								{offset: 0, color: '#69cfd4'}
+							])				
+						}
+		            },
+					data:shuju[3]	
+				}]
+			}
+			//调用统计图
+			myCharts.setOption(options1);
+		}
+		
+		//折线图
+		function zhexiantu(riqi,shuju){
+			var options2={
+				//定义标题
+				title:{
+					
+				},	
+				//鼠标悬停
+				tooltip:{
+					
+				},
+				//x轴设置
+				xAxis:{
+					name:'时间',
+					splitLine:{show: false},//去除网格线			
+					data:riqi,
+					nameTextStyle:{//设置x轴标题属性
+		            	color:'#000000',
+						fontSize:14
+		            },
+					axisTick:{//x轴刻度
+		       			show:false
+		   			},
+					axisLabel:{//x轴标示属性
+						textStyle:{
+							color:'#000000',
+							fontSize:14
+						}
+					},
+					axisLine:{//设置轴线属性
+						lineStyle:{
+							color:'#367FA9',
+							width:2					
+						}
+		            }
+				},
+				//y轴设置
+				yAxis:{
+					name:'数量',
+					splitLine:{show: false},//去除网格线
+					nameTextStyle:{//设置y轴标题属性
+		            	color:'#000000',
+						fontSize:16
+		            },
+					axisTick:{//y轴刻度
+		       			show:false
+		   			},
+					axisLabel:{//y轴标示属性
+						textStyle:{
+							color:'#000000',
+							fontSize:16
+						}
+					},
+					axisLine:{//设置轴线属性
+						lineStyle:{
+							color:'#367FA9',
+							width:2						
+						}
+		            }
+				},
+				//指定图表类型
+				series:[{
+					type:'line',
+					symbolSize: 5,//拐点大小
+					showAllSymbol:true,
+					itemStyle:{
+						normal:{
+							lineStyle:{
+								color:'#367FA9'	
+							},	
+							areaStyle:{
+								
+							},
+							color: new echarts.graphic.LinearGradient(0, 0, 0, 1,[
+								{offset: 0, color: '#367FA9'},
+								{offset: 1, color: 'white'}
+		               		])
+						}	
+					},
+					data:shuju
+				}]
+			}
+			//调用统计图
+			myCharts.setOption(options2);
+		}
+		function but1(){
+			$('#savetoop').modal('show');
+			$.ajax({
+				url: getRootPath() + '/dtsTaskController/DtsSeverityByEven',
+				type: 'post',
+				async: false,
+				data: {
+					projNo: projNo,
+					bVersion: $("#edition1").selectpicker("val")==null?null:$("#edition1").selectpicker("val").join(),
+					curentStatus: $("#stage0").selectpicker("val")==null?null:$("#stage0").selectpicker("val").join(),
+					dimensionality: $("#wentidanSel").val()
+				},
+				success: function (data) {
+					var a =$("#wentidanSel option:selected").text();
+					$("#text").text(a.substring(a.indexOf("(")+1 ,a.indexOf(")")));
+					$("#wentidan tr:not(:first)").remove();
+					if(data.length<=0){
+						$('#savetoop').modal('hide');
+						return;
+					}
+					var xiangmuzu=new Array();
+					var shuju=new Array();
+					for(var i=0;i<5;i++){
+						shuju[i]=new Array();
+					}
+					for(var i=0;i<data.length;i++){
+						xiangmuzu[i]=data[i].projectTeam;
+						shuju[0][i]=data[i].critNum;
+						shuju[1][i]=data[i].majNum;
+						shuju[2][i]=data[i].minNum;
+						shuju[3][i]=data[i].sugNum;
+						shuju[4][i]=data[i].dtsLeaveDINum;
+					}
+					var wentidan=document.getElementById("wentidan");
+					var tbody=document.createElement("tbody");
+					var td2all=0;
+					var td3all=0;
+					var td4all=0;
+					var td5all=0;
+					var tdallall=0;
+					var td6all=0;
+					for(var i=0;i<data.length;i++){
+						var tr=document.createElement("tr");
+						var td1=document.createElement("td");
+						var td2=document.createElement("td");
+						var td3=document.createElement("td");
+						var td4=document.createElement("td");
+						var td5=document.createElement("td");
+						var tdall=document.createElement("td");
+						var td6=document.createElement("td");
+						td1.width="20%";
+						var xmz=xiangmuzu[i];
+						td1.innerHTML=xmz;
+						var bVersion=$("#edition1").selectpicker("val").join();
+						var curentStatus=$("#stage0").selectpicker("val").join();
+						td2.innerHTML='<a style="text-decoration: none; color: #000000;" href="' + getRootPath() + '/dtsTaskController/dtsDownload?no=' + projNo + '&severity=Critical&selected=' + $("#wentidanSel option:selected").val() + '&selectedVal=' + xmz + '&bVersion=' + bVersion + '&curentStatus= ' +curentStatus+ '">' + (shuju[0][i]==0?"":shuju[0][i])+'</a>';
+						td3.innerHTML='<a style="text-decoration: none; color: #000000;" href="' + getRootPath() + '/dtsTaskController/dtsDownload?no=' + projNo + '&severity=Major&selected=' + $("#wentidanSel option:selected").val() + '&selectedVal=' + xmz + '&bVersion=' + bVersion + '&curentStatus= ' +curentStatus+ '">'+(shuju[1][i]==0?"":shuju[1][i])+'</a>';
+						td4.innerHTML='<a style="text-decoration: none; color: #000000;" href="' + getRootPath() + '/dtsTaskController/dtsDownload?no=' + projNo + '&severity=Minor&selected=' + $("#wentidanSel option:selected").val() + '&selectedVal=' + xmz + '&bVersion=' + bVersion + '&curentStatus= ' +curentStatus+ '">'+(shuju[2][i]==0?"":shuju[2][i])+'</a>';
+						td5.innerHTML='<a style="text-decoration: none; color: #000000;" href="' + getRootPath() + '/dtsTaskController/dtsDownload?no=' + projNo + '&severity=Suggestion&selected=' + $("#wentidanSel option:selected").val() + '&selectedVal=' + xmz + '&bVersion=' + bVersion + '&curentStatus= ' +curentStatus+ '">'+(shuju[3][i]==0?"":shuju[3][i])+'</a>';
+						var all = shuju[0][i]+shuju[1][i]+shuju[2][i]+shuju[3][i]
+						tdall.innerHTML='<a style="text-decoration: none; color: #000000;" href="' +getRootPath() +
+										'/dtsTaskController/dtsDownload?no=' + projNo + '&selected=' +
+										$("#wentidanSel option:selected").val() + '&selectedVal=' + xmz + '&bVersion=' +
+										bVersion + '&curentStatus= ' +curentStatus+ '">'+(all==0?"":all)+'</a>';
+						td6.innerHTML=shuju[4][i]==0?"":shuju[4][i];
+			    		tr.appendChild(td1);
+			    		tr.appendChild(td2);
+			    		tr.appendChild(td3);
+			    		tr.appendChild(td4);
+			    		tr.appendChild(td5);
+			    		tr.appendChild(tdall);
+			    		tr.appendChild(td6);
+			    		tbody.appendChild(tr);
+			    		//合计
+			    		td2all+=shuju[0][i];
+			    		td3all+=shuju[1][i];
+			    		td4all+=shuju[2][i];
+			    		td5all+=shuju[3][i];
+			    		tdallall+=all;
+			    		td6all+=shuju[4][i];
+					}
+					//合计
+					var tr=document.createElement("tr");
+					var td1=document.createElement("td");
+					var td2=document.createElement("td");
+					var td3=document.createElement("td");
+					var td4=document.createElement("td");
+					var td5=document.createElement("td");
+					var tdall=document.createElement("td");
+					var td6=document.createElement("td");
+					td1.width="20%";
+					td1.innerHTML='合计';
+					var bVersion=$("#edition1").selectpicker("val").join();
+					var curentStatus=$("#stage0").selectpicker("val").join();
+					td2.innerHTML='<a style="text-decoration: none; color: #000000;" href="' + getRootPath() +
+									'/dtsTaskController/dtsDownload?no=' + projNo + '&severity=Critical&bVersion=' +
+									bVersion + '&curentStatus= ' +curentStatus+ '">' +
+									(td2all==0?"":td2all)+'</a>';
+					td3.innerHTML='<a style="text-decoration: none; color: #000000;" href="' + getRootPath() +
+									'/dtsTaskController/dtsDownload?no=' + projNo + '&severity=Major&bVersion=' +
+									bVersion + '&curentStatus= ' +curentStatus+ '">'+
+									(td3all==0?"":td3all)+'</a>';
+					td4.innerHTML='<a style="text-decoration: none; color: #000000;" href="' + getRootPath() +
+									'/dtsTaskController/dtsDownload?no=' + projNo + '&severity=Minor&bVersion=' +
+									bVersion + '&curentStatus= ' +curentStatus+ '">'
+									+(td4all==0?"":td4all)+'</a>';
+					td5.innerHTML='<a style="text-decoration: none; color: #000000;" href="' + getRootPath() +
+									'/dtsTaskController/dtsDownload?no=' + projNo + '&severity=Suggestion&bVersion=' +
+									bVersion + '&curentStatus= ' +curentStatus+ '">'+
+									(td5all==0?"":td5all)+'</a>';
+					tdall.innerHTML='<a style="text-decoration: none; color: #000000;" href="' +getRootPath() +
+									'/dtsTaskController/dtsDownload?no=' + projNo + '&bVersion=' +
+									bVersion + '&curentStatus= ' +curentStatus+ '">'+
+									(tdallall==0?"":tdallall)+'</a>';
+					td6.innerHTML=td6all==0?"":td6all.toFixed(1);
+		    		tr.appendChild(td1);
+		    		tr.appendChild(td2);
+		    		tr.appendChild(td3);
+		    		tr.appendChild(td4);
+		    		tr.appendChild(td5);
+		    		tr.appendChild(tdall);
+		    		tr.appendChild(td6);
+		    		tbody.appendChild(tr);
+		    		
+					wentidan.appendChild(tbody);
+					$('#savetoop').modal('hide');
+				}
+			});		
+		}
+		
+		function tongjitu(){
+			var sel=document.getElementById("develop-sel");
+			if(sel.value=="wenti"){
+				myCharts.clear();
+				tiaoxingtuvalue();
+			}else if(sel.value=="banben"){
+				myCharts.clear();
+				zhexiantuvalue();
+			}
+		}
+		
+		function exportEvent(severity,tabid){
+ 			var curentStatus="";
+ 			var curentStatuslist=$("#stage0 option");
+ 			_.each(curentStatuslist, function(option, index){//(值，下标)
+ 				var value=$(option).val();
+ 				if(value!="Cancel"&&value!="Close"){
+ 					if((curentStatuslist.length-1)==index){
+ 						curentStatus+=value;
+ 					}else{
+	 					curentStatus+=value+",";
+ 					}
+ 				}
+			});
+	        var downloadUrl = getRootPath() + '/dtsTaskController/dtsDownload?no=' + projNo +
+	        		'&severity='+ severity + '&curentStatus=' +curentStatus;
+			$("#"+tabid).attr('href', downloadUrl);
+		};
+		
+		$(document).ready(function(){
+			tongjitu();
+			but1();
+		})
+    </script>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css"/>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css"/>
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css"/>
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/deliver.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <style>
+        .btn_add {
+            color: white;
+            background-color: #00DBBD;
+            border: none;
+            margin-top: 10px;
+        }
+
+        .btn_refresh {
+            color: white;
+            background-color: #54A8FE;
+            border: none;
+            margin-top: 10px;
+        }
+
+        .table > tbody > tr > td {
+            border-right-style: none;
+            border-left-style: none;
+            height: 60px;
+            font-family: '微软雅黑';
+            font-size: 13px;
+        }
+
+        .table > thead > tr > th {
+            border-right-style: none;
+            border-left-style: none;
+            height: 50px;
+            background: #F0F8FF;
+            font-family: '微软雅黑';
+            font-size: 15px;
+        }
+
+        .fixed-table-container tbody td .th-inner, .fixed-table-container thead th .th-inner {
+            line-height: 40px;
+        }
+
+        .glyphicon-ok-circle {
+            color: #54A8FE;
+            font-size: 15px;
+        }
+
+        .glyphicon-exclamation-sign {
+            color: red;
+            font-size: 15px;
+        }
+
+        td {
+            word-break: break-all;
+
+            word-wrap: break-word;
+        }
+
+        .clear_btn {
+            color: #0091FF;
+            background-color: white;
+            border: 1px #0091FF solid;
+        }
+
+        .search_btn {
+            color: white;
+            background-color: #0091FF;
+        }
+    </style>
+    <script>
+        $(function () {
+            $("#endTime").datetimepicker({
+                minView: "month", //选择日期后，不会再跳转去选择时分秒
+                language: 'zh-CN',
+                format: 'yyyy-mm-dd',
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: true
+            })
+        })
+    </script>
+</head>
+
+<body style="background: #F1F2F6;">
+<div>
+    <div class="top" style="width: 100%;float: left;margin-left: 10px;height: 70px;">
+        <div id="query-form" class="pull-left"
+             style="position: relative;width:400px;margin-left: 10px;margin-top: 10px;">
+            <div style="padding-top: 10px;">
+                <div class="col-sm-7" style="padding-left: 0px;float: left;">
+                    <input type="text" class="form-control" name="iteName"
+                           id="iteName" placeholder="请输入交付件名称"/>
+                </div>
+                <div class="btn-group" style="padding-left: 0px;width: 150px;float: left;">
+                    <button id="search_btn" type="button" class="btn search_btn">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+                    </button>
+                    <button id="clear_btn" type="button" class="btn clear_btn" style="margin-left: 10px;">
+                        <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>重置
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div style="padding-top: 10px;height: 60px;float: right;margin-right: 40px;">
+            <button id="btn_refresh" type="button" class="btn btn_refresh">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>刷新
+            </button>
+            <button id="btn_add" type="button" class="btn btn_add" style="margin-left: 10px;"
+                    data-toggle="modal" data-target="#deliverAddPage">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+            </button>
+        </div>
+    </div>
+    <div style="margin-left: 20px;margin-right: 30px;">
+        <table id="mytab" class="table" style="background-color: #fff;table-layout: fixed;"></table>
+    </div>
+    <!-- 新增页面 -->
+    <div class="modal fade" id="deliverAddPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true"
+         data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content" style="top: 100px;width:800px;margin-left: -50px;">
+                <div class="modal-header"
+                     style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                    <h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+                        新增交付件信息
+                    </h4>
+                </div>
+                <div class="modal-body" style="width: 100%;">
+                    <form id="addForm" method="post" class="form-horizontal">
+                        <div class="form-group" style="display: none">
+                            <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>项目编号</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="no" id="no"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>交付件名称</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="name" id="deliverName"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>验收形式</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="shape" id="deliverShape"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span style="padding-right: 5px;"></span>保存路径</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="path" id="deliverPath"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="endTime" class="col-sm-2 control-label"><span
+                                    style="padding-right: 5px;"></span>最后更新时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="endTime"
+                                       name="endTime"
+                                       style="background-color: white" readonly="readonly"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label"><span style="padding-right: 5px;"></span>提交人</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="submitter" id="deliverSubmitter"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">备注</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" name="remark" id="deliverRemark" rows="3"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group" style="padding-left: 150px">
+                            <div class="col-sm-2 col-sm-offset-2">
+                                <button type="button" class="btn btn-primary btn-block" id="add_saveBtn">保存</button>
+                            </div>
+                            <div class="col-sm-2 col-sm-offset-1">
+                                <button type="button" class="btn btn-default btn-block" id="add_backBtn"
+                                        data-dismiss="modal">返回
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="edit_deliverPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:800px;margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" id="edit_deliver" style="display: inline; margin-right: 310px;">
+                    修改交付件信息
+                </h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <form id="editForm" method="post" class="form-horizontal">
+                    <input style="display: none" type="text" class="form-control" name="id" id="editId"
+                           style="display: none"/>
+                    <div class="form-group" style="display: none">
+                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>项目编号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="no" id="editNo"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>交付件名称</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="name" id="editdeliverName"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>验收形式</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="shape" id="editdeliverShape"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span style="padding-right: 5px;"></span>保存路径</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="path" id="editdeliverPath"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEndDate" class="col-sm-2 control-label"><span
+                                style="padding-right: 5px;"></span>最后更新时间</label>
+                        <div class="col-md-4">
+                            <input class="form-control form-filter yearpicker" type="text" id="editEndDate"
+                                   name="endTime"
+                                   style="background-color: white" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"><span style="padding-right: 5px;"></span>提交人</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" name="submitter" id="editdeliverSubmitter"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">备注</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" name="remark" id="editdescribeInfo" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-left: 150px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block" id="edit_saveBtn">保存</button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block" id="edit_backBtn"
+                                    data-dismiss="modal">返回
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

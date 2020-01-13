@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.rank.RankSalaryDao">
+    <resultMap type="com.icss.mvp.entity.rank.ProjectMonthBudget" id="salaryMap">
+        <result property="id" column="id"/>
+        <result property="no" column="no"/>
+        <result property="costDate" column="cost_date"/>
+        <result property="attendMoney" column="attend_money"/>
+        <result property="overMoney" column="over_money"/>
+        <result property="normalOut" column="normal_out"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <insert id="calculateMoney" parameterType="Map">
+        REPLACE INTO project_month_budget (NO, cost_date, attend_money, over_money, normal_out, create_time, update_time)
+		SELECT a.no, #{ymdDate} AS cost_date
+			, ROUND(SUM(a.rank_price * 1.06 * (a.attendence / 8)), 2) AS attendMoney
+			, ROUND(SUM(a.rank_price * 2 * 1.06 * (a.overtime / 8)), 2) AS overMoney
+			, ROUND(SUM((a.rank_price * 1.06 * #{monthDays} + 2 * 2 * a.rank_price * 1.06) * b.rankNum), 2) AS normal
+			, NOW() AS create_time, NOW() AS update_time
+		FROM (
+			SELECT t.rank, t.no, SUM(t.ATTENDENCE) AS attendence
+				, SUM(t.OVERTIME) AS overtime, r.`rank_price`
+			FROM (
+				SELECT ps.*
+					, IF(SUM(pc.`ATTENDENCE`) > #{monthDays} * 8, #{monthDays} * 8, SUM(pc.`ATTENDENCE`)) AS attendence
+					, SUM(pc.`OVERTIME`) AS OVERTIME
+					, IF(pi.`IS_OFFSHORE` = '是', 1, 0) AS isOffshore
+					, sdi.val
+				FROM (
+					SELECT rank, `ZR_ACCOUNT`, NO
+					FROM project_staff
+					WHERE is_deleted = 0
+					AND #{ymDate} BETWEEN DATE_FORMAT(`start_date`, '%Y-%m') AND DATE_FORMAT(`end_date`, '%Y-%m')
+					AND `RANK` != ''
+					AND `RANK` IS NOT NULL
+				) ps
+				LEFT JOIN `project_cost` pc
+				ON ps.no = pc.`NO`
+				AND ps.ZR_ACCOUNT = pc.`ZR_ACCOUNT`
+				AND DATE_FORMAT(pc.`TIME`, '%Y-%m') = #{ymDate}
+				LEFT JOIN `project_info` PI ON pi.`NO` = ps.no
+				LEFT JOIN (
+					SELECT `name`, val
+					FROM `sys_dict_item`
+					WHERE `sys_dict_id` = (
+						SELECT id
+						FROM `sys_dict`
+						WHERE CODE = 'AREA_TYPE'
+					)
+				) sdi
+				ON sdi.name = pi.AREA
+				GROUP BY `ZR_ACCOUNT`, NO
+			) t
+			LEFT JOIN rank r
+			ON t.isOffshore = r.site
+			AND t.val = r.rank_category
+			AND t.RANK = r.rank_name
+			GROUP BY t.no, t.rank
+		) a
+		LEFT JOIN (
+			SELECT rank, COUNT(`RANK`) AS rankNum, NO
+			FROM project_staff
+			WHERE is_deleted = 0
+			AND #{ymDate} BETWEEN DATE_FORMAT(`start_date`, '%Y-%m') AND DATE_FORMAT(`end_date`, '%Y-%m')
+			AND `RANK` != ''
+			AND `RANK` IS NOT NULL
+			GROUP BY NO, rank
+		) b
+		ON a.rank = b.rank
+		AND a.no = b.no
+		WHERE 1 = 1
+        <if test="null != no and ''!= no">
+            AND a.no  = #{no}
+        </if>
+        GROUP BY NO
+    </insert>
+
+    <select id="getAccountHours" parameterType="map" resultType="com.icss.mvp.entity.rank.RankTotalHours">
+        SELECT t.*,
+               r.`rank_price` AS salary
+        FROM (
+        	SELECT * FROM(
+	               SELECT
+	                   IF('' = ps.RANK || NULL = ps.RANK, a.RANK, ps.RANK) AS RANK,
+	                   ps.`ZR_ACCOUNT` AS zrAccount,
+	                   ps.`NO`,
+	                   SUM(IFNULL(pc.ATTENDENCE,0)) AS attendence,
+	                   SUM(IFNULL(pc.`OVERTIME`,0)) AS overtime,
+	                   IF(pi.`IS_OFFSHORE`='是',1,0) AS isOffshore,
+	                   sdi.val
+	               FROM project_staff ps
+	                   LEFT JOIN `project_cost` pc
+	                       ON ps.no = pc.`NO` AND ps.ZR_ACCOUNT = pc.`ZR_ACCOUNT` AND DATE_FORMAT(pc.`TIME`, '%Y-%m') = #{ymDate}
+	                   LEFT JOIN `project_info` PI
+	                       ON pi.`NO` = ps.no
+	                   LEFT JOIN (SELECT `name`,val FROM `sys_dict_item`  WHERE `sys_dict_id` = (SELECT id FROM `sys_dict` WHERE CODE = 'AREA_TYPE'))sdi
+	                       ON sdi.name = pi.AREA
+	                   LEFT JOIN `archive` a
+	                       ON a.ZR_ACCOUNT = ps.ZR_ACCOUNT
+	               WHERE ps.`IS_DELETED` = 0
+	               		 AND ps.ROLE != 'QA'
+	                     AND #{ymDate} BETWEEN DATE_FORMAT(ps.`start_date`,'%Y-%m') AND DATE_FORMAT(ps.`end_date`,'%Y-%m')
+	                     <if test="null != no and '' != no">
+	                        AND ps.no = #{no}
+	                     </if>
+	               GROUP BY ps.`NO`,ps.`ZR_ACCOUNT`
+	        ) res
+	        WHERE res.`RANK` != '' AND res.`RANK` IS NOT NULL  
+        )t  LEFT JOIN rank r
+        ON t.isOffshore = r.site AND t.val = r.rank_category AND t.RANK = r.rank_name
+    </select>
+    
+    <insert id="SaveProjectCost">
+        REPLACE INTO project_month_budget (NO,cost_date,attend_money,over_money,normal_out,create_time,update_time) VALUES
+            <foreach collection="pbList" item="item" index="index" separator=",">
+                (#{item.no},#{ymdDate},#{item.attendMoney},#{item.overMoney},#{item.normalOut},now(),now())
+            </foreach>
+    </insert>
+
+</mapper>

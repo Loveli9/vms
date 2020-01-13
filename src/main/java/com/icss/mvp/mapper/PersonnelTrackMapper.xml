@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.icss.mvp.dao.IPersonnelTrackDao">
+    <!--项目群人员跟踪-->
+    <select id="queryGroupPersonTrack" resultType="java.util.Map">
+        SELECT
+        p.NO,
+        p.NAME,
+        p.PM,
+        CONCAT(p.HWZPDU, '/', P.PDU_SPDT, '/', P.DU) AS DEPARTMENT,
+        p.PROJECT_TYPE
+        FROM code_gain_type cgt
+        LEFT JOIN project_info p
+        ON cgt.NO = p.NO
+        WHERE cgt.PARAMETER_ID = 162
+        AND cgt.TYPE = 0
+        AND cgt.MODIFY_TIME BETWEEN '2019-01-01' AND '2019-12-31'
+        <if test="null != page.pageSize and null != page.offset">
+            LIMIT ${page.offset},${page.pageSize}
+        </if>
+    </select>
+
+    <!--项目群人员跟踪count-->
+    <select id="queryGroupPersonTrackCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(p.NO)
+        FROM code_gain_type cgt
+        LEFT JOIN project_info p
+        ON cgt.NO = p.NO
+        WHERE cgt.PARAMETER_ID = 162
+        AND cgt.TYPE = 0
+        AND cgt.MODIFY_TIME BETWEEN '2019-01-01' AND '2019-12-31'
+    </select>
+</mapper>

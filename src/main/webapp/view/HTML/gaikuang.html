@@ -1,0 +1,1168 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css"/>
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/css/style.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css"/>
+    <link rel="stylesheet" href="css/fishBone.css"/>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css"/>
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/css/style.css">
+    <link rel="stylesheet" href="../../resources/css/jquery.orgchart.css" type="text/css"/>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.SuperSlide.2.1.3.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <script type="text/javascript" src="js/comm/tableComm.js"></script>
+    <script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="../../resources/js/jquery.orgchart.js"></script>
+    <script type="text/javascript" src="js/projectScheduling.js"></script>
+    <script type="text/javascript" src="js/gaikuang.js"></script>
+    <script type="text/javascript" src="js/gaikuang2.js"></script>
+    <script type="text/javascript" src="js/comm/fishBone.js"></script>
+    <style>
+        .mousetable tr:hover {
+            background: #e8e8e8;
+        }
+
+        .namespan {
+            display: inline-block;
+            width: 72%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .milestonetime {
+            margin-top: 98px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .newicon {
+            position: absolute;
+            height: 220px;
+            width: 65px;
+            z-index: 20;
+            background-image: URL(images/newicon.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .iterationicon {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/iterationicon.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .timespot {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/timespot.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .start {
+            position: absolute;
+            height: 180px;
+            width: 65px;
+            z-index: 20;
+            background-image: URL(images/start.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .CPbg {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/CPbg.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #367FA9;
+            text-align: center;
+        }
+
+        .iterationiconH {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/iterationiconH.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .timespotH {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/timespotH.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .startH {
+            position: absolute;
+            height: 180px;
+            width: 65px;
+            z-index: 20;
+            background-image: URL(images/startH.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .CPbgH {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/CPbgH.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #367FA9;
+            text-align: center;
+        }
+
+        .procolor ul li span {
+            color: #999999;
+        }
+
+        .procolor ul li span span {
+            color: black;
+        }
+
+        .breadcrumb {
+            background-color: #fff;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        .myTab {
+            margin-top: 25px;
+        }
+
+        .bootstrap-table {
+            width: 100%;
+        }
+
+        .table {
+            table-layout: fixed;
+        }
+
+        .table tr td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tablenew tr:nth-child(odd) {
+            background: #f7f8f8;
+        }
+
+        .tableBody {
+            padding-top: 50px;
+        }
+
+        #btn_projectImport {
+            margin-left: 800px;
+        }
+
+        .but1 {
+            float: right;
+            width: 100px;
+            height: 30px;
+            background-color: #e41f2b;
+            color: #ffffff;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            margin-right: 0px;
+            line-height: 30px;
+        }
+
+        .but1:hover {
+            background-color: #ff0313;
+        }
+
+        .btn-default {
+            height: 35px;
+            line-height: 16px;
+            border-radius: 4px;
+        }
+
+        .editable-buttons .editable-cancel {
+            height: 26px;
+        }
+
+        .but2 {
+            width: 60px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #tableProjectListXM {
+            table-layout: fixed;
+        }
+
+        #tableProjectListXM td {
+            table-layout: fixed;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .trans {
+            display: none;
+            width: 54px;
+            height: 37px;
+            opacity: 0;
+            position: relative;
+            margin-top: -37px;
+            cursor: pointer;
+            margin-left: 40px;
+        }
+
+        .structure {
+            width: 100%;
+        }
+
+        .structureName {
+            font-weight: bold;
+            color: #3399ff;
+            font-size: 18px;
+        }
+
+        .orgchart {
+            background: rgba(255, 255, 255, 0);
+            margin-top: -26px;
+        }
+
+        .orgchart .node {
+            width: 100px;
+        }
+
+        .orgchart .node .title {
+            height: 25px;
+            line-height: 25px;
+            border-radius: 4px 4px 0px 0px;
+            background-color: #4472C4;
+        }
+
+        #chart-container {
+            border: 0px dashed #aaa;
+        }
+
+        .bootstrap-table .table:not(.table-condensed) {
+            padding: 0px;
+        }
+
+        tbody {
+            border-bottom: 1px #ddd solid;
+        }
+
+        #projectSynopsis {
+            /* margin-top: -2.4%;
+            margin-bottom: -3px;
+            width:18%;
+            font-family:Arial, Helvetica, sans-serif;
+            font-size:14px;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:pre;
+            color:#000;
+            max-width: 98%;
+            max-height: 127px;
+            word-break: break-all; */
+        }
+
+        .divgezi {
+            float: left;
+            width: 280px;
+            height: 100px;
+            margin: 10px;
+            border-color: #ddd;
+            border-width: 2px;
+            border-radius: 10px;
+            border-style: solid;
+            background-color: #ebf3ff;
+        }
+
+        .divgezi > a, .divgezi > a:focus, .divgezi > a:hover {
+            width: 100%;
+            height: 100%;
+            display: block;
+            color: #000000;
+            text-decoration: none;
+        }
+
+        /*#tab-xmcb .bootstrap-table {
+			width: 99%;
+		}
+		#tab-grcb .bootstrap-table {
+			width: 99%;
+		}
+		#tab-xmcb .fixed-table-container{
+            height: auto;
+        }
+        #tab-grcb .fixed-table-container{
+            height: auto;
+        }
+        #tab-xmcb > .bootstrap-table {
+            padding-top: 20px;
+        }
+        #tab-grcb > .bootstrap-table {
+            padding-top: 58px;
+        }
+        #tab-xmcb .xmcbSelect .dropdown-menu > li > a{
+            padding: 3px 3px !important;
+        }
+        #tab-grcb .grcbSelect .dropdown-menu > li > a{
+            padding: 3px 3px !important;
+        }
+        #tab-xmcb .xmcbSelect .bootstrap-select.btn-group.show-tick .dropdown-menu li a span.text {
+            margin-right: 27px;
+            padding-left: 7px;
+        }
+        #tab-grcb .grcbSelect .bootstrap-select.btn-group.show-tick .dropdown-menu li a span.text {
+            margin-right: 27px;
+            padding-left: 7px;
+        }
+        #tab-xmcb .xmcbSelect .bootstrap-select.btn-group.show-tick .dropdown-menu li a span.check-mark {
+            padding-left: 8px;
+        }
+        #tab-grcb .grcbSelect .bootstrap-select.btn-group.show-tick .dropdown-menu li a span.check-mark {
+            padding-left: 8px;
+        }*/
+
+        .gaikuangSapn {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 24%;
+            display: -webkit-inline-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            word-break: break-all;
+        }
+
+        .fixed-table-container {
+            height: 250px;
+        }
+
+        .modal-body {
+            padding: 20px 30px 15px;
+        }
+
+        html, body {
+            width: 100%;
+            height: 99%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .xmcbSelect {
+            width: 153px;
+        }
+
+        .grcbSelect {
+            width: 153px;
+        }
+
+        .li-square {
+            background-color: #fff;
+        }
+
+        .bordercss {
+            margin: 10px -10px 3px -10px;
+            border: 0px solid #dcdcdc;
+            padding: 10px;
+        }
+
+        .status {
+            margin-left: 15px;
+            margin-top: 15px;
+            font-size: 20px;
+        }
+
+        .wordWrap {
+            word-break: normal;
+            width: auto;
+            display: block;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+
+        #publishReview {
+            font-size: 16px;
+            margin-top: 8px;
+            background-color: #fcfcfc;
+            border-radius: 5px;
+            color: #121111;
+            float: right;
+            margin-right: 10px;
+            border: 0px;
+            height: 25px;
+            line-height: 25px;
+        }
+
+        #editReview {
+            font-size: 16px;
+            margin-top: 8px;
+            background-color: #fcfcfc;
+            border-radius: 5px;
+            color: #121111;
+            float: right;
+            margin-right: 10px;
+            border: 0px;
+            height: 25px;
+            line-height: 25px;
+        }
+
+        #closeReview {
+            font-size: 16px;
+            margin-top: 8px;
+            background-color: #fcfcfc;
+            border-radius: 5px;
+            color: #121111;
+            float: right;
+            margin-right: 10px;
+            border: 0px;
+            height: 25px;
+            line-height: 25px;
+        }
+
+        #saveReview {
+            font-size: 16px;
+            display: none;
+            margin-top: 8px;
+            background-color: #fcfcfc;
+            border-radius: 5px;
+            color: #121111;
+            float: right;
+            margin-right: 10px;
+            border: 0px;
+            height: 25px;
+            line-height: 25px;
+        }
+
+        #cancelReview {
+            font-size: 16px;
+            display: none;
+            margin-top: 8px;
+            background-color: #fcfcfc;
+            border-radius: 5px;
+            color: #121111;
+            float: right;
+            margin-right: 10px;
+            border: 0px;
+            height: 25px;
+            line-height: 25px;
+        }
+
+        #tab-xmpg li {
+            display: block;
+            float: left;
+        }
+
+        .active {
+            border-bottom: 5px #39f solid;
+            font-weight: bold;
+        }
+
+        .mvp-main {
+            margin: 25px;
+        }
+
+        .btn {
+            font-size: 16px;
+        }
+    </style>
+    <script type="text/javascript">
+        /*function changeTab(obj) {
+            obj.className = 'tabs-a-current';
+            if (obj.id == "tab1") {
+                document.getElementById('tab2').className = '';
+                document.getElementById('tab1Page').style.display = 'block';
+                document.getElementById('tab2Page').style.display = 'none';
+            } else {
+                document.getElementById('tab1').className = '';
+                document.getElementById('tab1Page').style.display = 'none';
+                document.getElementById('tab2Page').style.display = 'block';
+            }
+        }
+        $(document).ready(function(){
+            var Menus = getCookie('Menulist');
+            if ("管理员" == getCookie('Currentpername') || (-1 != Menus.indexOf("-109-") &&
+                -1 != $.inArray(getCookie('username'), getMemberAccount()))) {
+                var tab0 ='<li tabname="tab-xmcb" onclick="tabXmcb(\''+"project"+'\')" id="xmcb" style="border: 0px;"><a href="#">项目成本</a></li>';
+                $("#gaiKuang").append(tab0);
+            }
+            if (-1 != Menus.indexOf("-113-") && -1 != $.inArray(getCookie('username'), getMemberAccount())) {
+                var tab1 ='<li tabname="tab-grcb" onclick="tabXmcb(\''+"person"+'\')" id="grcb" style="border: 0px;"><a href="#">个人成本</a></li>';
+                $("#gaiKuang").append(tab1);
+            }
+            $("#datepicker").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'yy-mm-dd',
+                todayButton: true,
+                prevButton: true,
+                nextButton: true
+            });
+            var taleId = getQueryString("taleId");
+            if(taleId){
+                $("#tab_gjjs").click();
+                $("#keyName_but").click();
+            }
+            if(getQueryString("test")){
+                $("#xmcb").click();
+            }
+        });
+        function ExpandDetails() {
+            document.getElementById('expand-details').style.display = 'none';
+            document.getElementById('detailed-information').style.display = 'block';
+        }
+        function StopDetails() {
+            document.getElementById('expand-details').style.display = 'block';
+            document.getElementById('detailed-information').style.display = 'none';
+        }*/
+        $(document).on("click", "ul.navbar-nav li", function () {
+            $("ul.navbar-nav li").removeClass("active");
+            _.each($("ul.navbar-nav li"), function (tab, index) {
+                $("#" + $(tab).attr("tabname")).css('display', 'none');
+            });
+            $(this).addClass("active");
+            var id = $(this).attr("tabname");
+            $("#" + id).css('display', 'block');
+        });
+        //新增
+        $("#planStartTime").datetimepicker({
+            minView: "month", //选择日期后，不会再跳转去选择时分秒
+            language: 'zh-CN',
+            format: 'yyyy-mm-dd',
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: true
+        }).on(
+            "click",
+            function () { $("#planStartTime").datetimepicker("setEndDate",$("#planEndTime").val()); }).on('hide',
+            function (e) {
+                $('#addForm').bootstrapValidator('updateStatus',
+                    $('#planStartTime'), 'NOT_VALIDATED').bootstrapValidator('validateField', $('#planStartTime'));
+            });
+
+        $("#planEndTime").datetimepicker({
+            minView: "month", //选择日期后，不会再跳转去选择时分秒
+            language: 'zh-CN',
+            format: 'yyyy-mm-dd',
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: true
+        }).on(
+            "click",
+            function () {
+                $("#planEndTime").val('');
+                $("#planEndTime").datetimepicker("setStartDate", $("#planStartTime").val());
+            }).on('hide',
+            function (e) {
+                $('#addForm').bootstrapValidator('updateStatus',
+                    $('#planEndTime'), 'NOT_VALIDATED').bootstrapValidator('validateField', $('#planEndTime'));
+            });
+
+        //编辑
+        $("#editPlanStartTime").datetimepicker({
+            minView: "month", //选择日期后，不会再跳转去选择时分秒
+            language: 'zh-CN',
+            format: 'yyyy-mm-dd',
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: true
+        }).on(
+            "click",
+            function () {
+                $("#editPlanStartTime").datetimepicker("setEndDate", $("#editPlanEndTime").val());
+            }).on( 'hide',
+            function (e) {
+                $('#editForm').bootstrapValidator('updateStatus',
+                    $('#editPlanStartTime'), 'NOT_VALIDATED').bootstrapValidator('validateField', $('#editPlanStartTime'));
+            });
+
+        $("#editPlanEndTime").datetimepicker({
+            minView: "month", //选择日期后，不会再跳转去选择时分秒
+            language: 'zh-CN',
+            format: 'yyyy-mm-dd',
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: true
+        }).on(
+            "click",
+            function () {
+                $("#editPlanEndTime").datetimepicker("setStartDate", $("#editPlanStartTime").val());
+            }).on('hide',
+            function (e) {
+                $('#editForm').bootstrapValidator('updateStatus',
+                    $('#editPlanEndTime'), 'NOT_VALIDATED').bootstrapValidator('validateField', $('#editPlanEndTime'));
+            });
+    </script>
+</head>
+<body class="mvp-body">
+<div class="mvp-main">
+    <div style="color: #333333;padding:6px;background-color: #fff;border-radius: 4px;">
+        <div style="width: 100%; border-bottom: 2px; font-size: 14px;"
+             class="procolor">
+            <ul style="height: 30px;line-height:30px;">
+                <li>
+                    <span class="namespan" style="position: absolute;padding-left: 0.5%;">项目名称： <span id="name">xxxxx</span></span>
+                </li>
+            </ul>
+            <ul style="width: 100%;">
+                <li style="height: 30px;">
+                    <span class="gaikuangSapn" style="position: absolute;padding-left: 0.5%;">项目经理：<span id="pm">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 25%">项目计划开始时间：<span id="startDate">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 50%">项目计划结束时间：<span id="endDate">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 75%">地域：<span id="area">xxxxx</span></span>
+                </li>
+                <li style="height: 30px;">
+                    <span class="gaikuangSapn" style="display: none; position: absolute; left: 0.5%">业务线：<span id="bu">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="display: none; position: absolute; left: 25%">事业部：<span id="pdu">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="display: none; position: absolute; left: 50%">交付部：<span id="du">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="padding-left: 0.5%;">华为产品线：<span id="hwpdu">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 25%">华为子产品线：<span id="hwzpdu">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 50%">PDU/SPDT：<span id="pduSpdt">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 75%">项目状态(在行/关闭)：<span id="projectState">xxxxx</span></span>
+
+                </li>
+                <li style="height: 30px;">
+                    <span class="gaikuangSapn" style="position: absolute; padding-left: 0.5%;">团队名称：<span id="teamName">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 25%">合作类型：<span id="coopType">委托开发</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 50%">商务模式(FP/TM)：<span id="type">xxxxx</span></span>
+                    <span class="gaikuangSapn" style="position: absolute; left: 75%">项目类型(开发测试)：<span id="projectType">开发</span></span>
+                </li>
+                <li style="height: 30px;">
+                    <span class="gaikuangSapn" style="position: absolute;padding-left: 0.5%;padding-right: 10px;">项目简介：<span id="projectSynopsis">xxxxx</span></span>
+                    <!-- <a style="color: #999999;text-decoration:none;">项目简介：</a><span id="projectSynopsis">2017年。。。</span> -->
+                    <span class="gaikuangSapn" style="position: absolute; left: 25%">项目离岸(是/否)：<span id="projectOffShore">xxxxx</span></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="color: #333333;clear: both;background-color: #ffffff;margin-top: 25px;border-radius: 5px;">
+        <ul id="gaiKuang" class="nav navbar-nav topNav" style="font-size: 16px;float: none;/*margin-left: 15px;*/">
+            <!--<li tabname="tab-lcb" class="active" style="border: 0px;"><a href="###">里程碑</a></li>
+            <li tabname="361chengshudu" onclick="chengshudu()" style="border: 0px;"><a href="###">361成熟度</a></li>
+            <li tabname="tab-xmpg" onclick="projectEvaluation()" style="border: 0px;"><a href="###">项目评估</a></li>-->
+        </ul>
+        <!--里程碑-->
+        <div id="tab-lcb" style="background-color: #fff;padding:5px 5px 5px 5px;display:none;">
+            <script type="text/javascript"></script>
+        </div>
+        <!--361成熟度-->
+        <div id="361chengshudu" style="background-color: #fff;padding:5px 0px 5px 0px;display:none;">
+            <!-- js引入gerennengli_361chengshudu.html -->
+            <script type="text/javascript"></script>
+        </div>
+        <!--项目评估-->
+        <div id="tab-xmpg" style="background-color: rgb(255, 255, 255);display:none;">
+            <div id="dateSectionDiv" style="display: none;margin-bottom: 25px;margin-top: 25px"></div>
+            <div style="display: flow-root; width: 100%;background-color: #eaebeb">
+                <ul>
+                    <li class="li-square" style="width:19%;margin-right: 1%;">
+                        <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                            <div style="width: 100%;">
+                                <span style="font-size: 16px;">范围(需求/工作量)</span>
+                                <div id="changesLamp" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                                <span style="float: right; padding-right: 0px;">
+							<button id="changes" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;"
+                                    name="lampEdit" onclick="lampEdit(this.id)">
+								<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+							</button>
+						</span>
+                            </div>
+                            <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                                <span id="changesMark"></span>(<span id="changesText">0</span><span style="font-size: 14px;">%</span>)
+                            </div>
+                        </div>
+                        <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                            <div style="font-size: 14px;height:90%">
+                                <div><span>需求变更工作量：</span><span id="changeNumber">0</span></div>
+                                <div><span>需求总工作量：</span><span id="demandNumber">0</span></div>
+                            </div>
+                            <div style="height:10%">
+                                <div style="float: right;padding-right: 25px;visibility:hidden" id="changeEdit1"><a id="changeEdit" name="edit" href="javascript:void(0);">修改</a></div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="li-square" style="width:19%;margin-right: 1%;">
+                        <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                            <div style="width: 100%;">
+                                <span style="font-size: 16px;">资源(团队/稳定度)</span>
+                                <div id="resourcesLamp" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                                <span style="float: right; padding-right: 0px;">
+							<button id="resources" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;" name="lampEdit" onclick="lampEdit(this.id)">
+								<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+							</button>
+						</span>
+                            </div>
+                            <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                                <span id="resourcesMark"></span>(<span id="resourcesText">0</span><span style="font-size: 14px;">%</span>)
+                            </div>
+                        </div>
+                        <div style="width:100%;height: 207px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                            <div style="font-size: 14px;height:90%">
+                                <div><span>总人力缺口：</span><span id="memberDiffer">0</span></div>
+                                <div><span>总人力到位率：</span><span id="memberArrival">0</span><span style="font-size: 10px"> %</span>
+                                </div>
+                                <div><span>关键角色缺口：</span><span id="keyRolesDiffer">0</span></div>
+                                <div><span>关键角色到位率：</span><span id="keyRolesArrival">0</span><span style="font-size: 10px"> %</span></div>
+                                <div><span>待答辩人数：</span><span id="keyRolesfail">0</span></div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="li-square" style="width:19%;margin-right: 1%;">
+                        <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                            <div style="width: 100%;">
+                                <span style="font-size: 16px;">进度(计划/调整)</span>
+                                <div id="progressLamp" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                                <span style="float: right; padding-right: 0px; ;">
+							<button id="progress" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;" name="lampEdit" onclick="lampEdit(this.id)">
+								<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+							</button>
+						</span>
+                            </div>
+                            <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                                <span id="progressMark"></span>(<span id="progressDeviation">0</span><span style="font-size: 14px;">%</span>)
+                            </div>
+                        </div>
+                        <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                            <div style="font-size: 14px;height:90%">
+                                <div><span>需求完成率：</span><span id="demandCompletion">0</span><span style="font-size: 10px"> %</span></div>
+                                <div><span>进度完成率：</span><span id="progressCompletion">0</span><span style="font-size: 10px"> %</span></div>
+                            </div>
+                            <div style="height:10%">
+                                <div style="float: right;padding-right: 25px;visibility:hidden;" id="progressEdit1"><a id="progressEdit" name="edit" href="javascript:void(0);">修改</a></div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="li-square" style="width:19%;margin-right: 1%;">
+                        <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                            <div style="width: 100%;">
+                                <span style="font-size: 16px;">效率(代码产出)</span>
+                                <div id="qualityLamp1" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                                <span style="float: right; padding-right: 0px;">
+									<button id="quality1" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;" name="lampEdit" onclick="lampEdit(this.id)">
+										<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+									</button>
+								</span>
+                            </div>
+                            <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                            </div>
+                        </div>
+                        <div style="width:100%;height: 207px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                            <div id="measures1" style="font-size: 14px;height:90%"></div>
+                        </div>
+                    </li>
+                    <li class="li-square" style="width:20%;">
+                        <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                            <div style="width: 100%;">
+                                <span style="font-size: 16px;">过程交付质量(红/黄/绿)</span>
+                                <div id="qualityLamp" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                                <span style="float: right; padding-right: 0px;">
+									<button id="quality" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;" name="lampEdit" onclick="lampEdit(this.id)">
+										<img style="height:16px;width:16px" src="images/greenPencil.png"/>
+									</button>
+								</span>
+                            </div>
+                            <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                                <span id="qualityMark"></span>(
+                                <span style="color: #ff0000;" id="redLight">0</span>/
+                                <span style="color: #ffc000;" id="yellowLight">0</span>/
+                                <span style="color: #00b050;" id="greenLight">0</span>)
+                            </div>
+                        </div>
+                        <div style="width:100%;height: 207px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                            <div id="measures" style="font-size: 14px;height:90%"></div>
+                        </div>
+                    </li>
+                    <li style="width:99.9%;">
+                        <div class="bordercss sortable2div" style="height: 300px;">
+                            <div style="height: 40px;line-height: 40px;background-color: #26aa8d;">
+                                <span style="float: left;margin-left: 5px;font-size: 16px;color: #fff;font-weight: 600;">预评估得分&项目点评</span>
+                                <button id="publishReview">发布</button>
+                                <button id="editReview">编辑</button>
+                                <button id="closeReview">结项</button>
+                                <button id="saveReview">保存</button>
+                                <button id="cancelReview">返回</button>
+                            </div>
+                            <div style="height:270px;width: 100%;border-top: 1px solid #DEDDDD;">
+                                <div style="float: left;width:24%;margin-right: 1%;height: 310px;background-color: #fff;">
+                                    <div>
+                                        <div id="statusColor" class="status">
+                                            <span id="statusText">未评估</span>
+                                            <span id="status"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="float: left;width:75%;background-color: #fff;height: 310px; overflow-y:scroll">
+                                    <div style="border: 1px  #000000; width: 95%; margin: 0 auto;">
+                                        <span id="review" class="wordWrap" style="font-size: 18px;"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!--项目评估结束-->
+
+        <div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content" style="top: 100px;">
+                    <div class="modal-body" style="padding: 15px;">
+                        <div style="text-align: center;">
+                            <span id="dataAcquisition" style="font-size: 14px;">保存成功</span>
+                            <div class="modal-footer" id="submitImportmodalfooter" style="margin-top: 10px; padding: 5px;">
+                                <button type="button" class="btn btn-primary" id="submitImport" style="display: initial" onclick="hidePopover()">确定
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+        <div id="testDIV" style="display: none; height: 150px; width: 160px; overflow: auto; border-color: #ddd; border-width: 1px; border-radius: 3px; border-style: solid;">
+        </div>
+        <!--技能分布-->
+        <div id="skillSpread" style="background-color: #fff;padding:5px 5px 5px 5px;display:none;">
+            <div id="skill" style="width:100%;height: 400px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- /.modal -->
+<div class="modal fade" id="savetoop1" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 300px;">
+            <div class="modal-body" style="padding: 15px;">
+                <div style="text-align: center;">
+                    <span id="dataAcquisition1" style="font-size: 14px;">查询中。。。</span>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<!--项目评估-->
+<div class="modal fade" id="changeEditPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:600px;margin-left: -50px;">
+            <div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" style="display: inline; margin-right: 310px;">变更（变更率）信息</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <form id="changeEditForm" method="post" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">需求变更率</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="changesEdit" id="changesEdit" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">需求变更工作量</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="changeNumberEdit" id="changeNumberEdit"
+                                   readonly="readonly" oninput="changeDemand()" placeholder="请输入需求变更"/>
+                        </div>
+                        <label for="startDate" class="col-sm-2 control-label">需求总工作量</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="demandNumberEdit" id="demandNumberEdit"
+                                   readonly="readonly" oninput="changeDemand()" placeholder="请输入总需求数"/>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-left: 80px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block" id="changeEdit_saveBtn">保存</button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block" id="changeEdit_backBtn">返回</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--需求完成率编辑  -->
+<div class="modal fade" id="progressEditPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:600px;margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" style="display: inline; margin-right: 310px;">交付及时性信息</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;font-size: 16px;">
+                <form id="progressEditForm" method="post" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">进度偏差率</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="progressDeviationEdit"
+                                   id="progressDeviationEdit" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">需求完成率</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="demandCompletionEdit"
+                                   id="demandCompletionEdit" readonly="readonly"
+                                   onblur="checkDemandCompletion(this.value)"
+                                   onkeyup="this.value=this.value.replace(/[^\d]/g,'')"
+                                   oninput="changeDemandCompletion()" placeholder="请输入需求变更"/>
+                        </div>
+                        <label for="startDate" class="col-sm-2 control-label">进度完成率</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="progressCompletionEdit"
+                                   id="progressCompletionEdit" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <span id="err1" style="display: none;"></span>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-left: 80px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block" id="progressEdit_saveBtn">保存
+                            </button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block" id="progressEdit_backBtn">返回
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 项目点评编辑页面 -->
+<div class="modal fade" id="publishReviewPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:650px;margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" id="addModalLabel" style="display: inline; margin-right: 310px;">项目点评</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <div style="margin-bottom: 10px;font-size: larger;">预评估得分</div>
+                <div><input type="text" class="form-control" id="projectStatus" readonly="readonly"></input></div>
+                <div style="margin-bottom: 10px;font-size: larger;margin-top: 10px;">
+                    <span>点评&趋势预测</span>
+                    <select onchange="selectChangeReview()" id="selectReview"
+                            style="width: 300px;float: right;"></select>
+                </div>
+                <div>
+                	<textarea class="form-control input-large" rows="6" placeholder="请输入项目点评&趋势预测（5000字以内）"
+                              id="projectReview" maxlength="5000" onchange="this.value=this.value.substring(0, 5000)"
+                              onkeydown="this.value=this.value.substring(0, 5000)"
+                              onkeyup="this.value=this.value.substring(0, 5000)"></textarea>
+                </div>
+                <div class="form-group" style="margin-top: 10px;margin-bottom: 40px;padding-right: 10px;">
+                    <div class="col-sm-2 col-sm-offset-3">
+                        <button type="button" class="btn btn-primary btn-block" id="publishReview_saveBtn">确认</button>
+                    </div>
+                    <div class="col-sm-2 col-sm-offset-1">
+                        <button type="button" class="btn btn-default btn-block" id="publishReview_backBtn">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 结项弹出页面 -->
+<div class="modal fade" id="closeReviewPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:650px;margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" id="addModalLabel" style="display: inline; margin-right: 310px;">项目结项</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <div style="margin-bottom: 10px;font-size: larger;">结项得分</div>
+                <div><input type="text" class="form-control" id="projectStatus1" readonly="readonly"></input></div>
+                <div style="margin-bottom: 10px;font-size: larger;margin-top: 10px;">
+                    <span>点评&趋势预测</span>
+                    <select onchange="selectChange()" id="selectProjectReview"
+                            style="width: 300px;float: right;"></select>
+                </div>
+                <div>
+                	<textarea class="form-control input-large" rows="6" placeholder="请输入项目点评&趋势预测（5000字以内）"
+                              id="projectReview1" maxlength="5000" onchange="this.value=this.value.substring(0, 5000)"
+                              onkeydown="this.value=this.value.substring(0, 5000)"
+                              onkeyup="this.value=this.value.substring(0, 5000)"></textarea>
+                </div>
+                <div class="viewMessage">结项后项目将变更为关闭状态！</div>
+                <div class="form-group" style="margin-top: 10px;margin-bottom: 40px;padding-right: 10px;">
+                    <div class="col-sm-2 col-sm-offset-3">
+                        <button type="button" class="btn btn-primary btn-block" id="closeReview_saveBtn">确认</button>
+                    </div>
+                    <div class="col-sm-2 col-sm-offset-1">
+                        <button type="button" class="btn btn-default btn-block" id="closeReview_backBtn">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="lampEditPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 50px;width:800px;margin-left: -100px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" style="display: inline; margin-right: 310px;">
+                    <span id="lampText"></span>点灯状态修改
+                </h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <form id="lampEditForm" method="post" class="form-horizontal">
+                    <input id="field" style="display: none"/>
+                    <div class="form-group" style="width: 96%; padding: 3% 5%;">
+                        <label for="lampMode" class="demo--label"><span style="padding-left: 5px;"></span>模式：</label>
+                        <label class="demo--label" style="margin-left:15px;">
+                            <input class="demo--radio" type="radio" value="0" name="lampMode" id="mode0"
+                                   autocomplete="off"/>
+                            <span class="demo--radioInput"> 自动</span>
+                        </label>
+                        <label class="demo--label" style="margin-left:10px;">
+                            <input class="demo--radio" type="radio" value="1" name="lampMode" id="mode1"
+                                   autocomplete="off"/>
+                            <span class="demo--radioInput"> 手动</span>
+                        </label>
+                        <label class="demo--label" style="margin-left:10px;" id="labelMode2" style="display: none">
+                            <input class="demo--radio" type="radio" value="2" name="lampMode" id="mode2"
+                                   autocomplete="off"/>
+                            <span class="demo--radioInput"> 导入</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="lampText" style="padding-left: 42px;float:left" class="demo--label"><span
+                                style="padding-left: 5px;float:left"></span>得分：</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" style="width: 100px;display: none;" name="lampText"
+                                   id="autoValue" readonly="readonly"/>
+                            <input type="text" class="form-control" name="lampText" style="width: 100px;"
+                                   id="manualValue" onblur="checkManualValue(this.value)"
+                                   onkeyup="this.value=this.value.replace(/[^\d+(\.\d{1,2})]/g,'')"/>
+                            <input type="text" class="form-control" style="width: 100px;display: none;" name="lampText"
+                                   id="importValue" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <span id="err2" style="display: none;"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group" style="padding-left: 80px">
+                    <div class="col-sm-2" style="float:right;">
+                        <button type="button" class="btn btn-default btn-block"
+                                style="margin-right: 65px; padding-right: 15px;height: 35px;margin-left: 10px;"
+                                id="lampEdit_backBtn">返回
+                        </button>
+                    </div>
+                    <div class="col-sm-2" style="float:right;">
+                        <button type="button" class="btn btn-primary btn-block"
+                                style="margin-right: 65px; padding-right: 15px;height: 35px;"
+                                id="lampEdit_saveBtn">保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.modal -->
+<script type="text/javascript">
+    function showDateTime() {
+        var today = new Date();
+        var year = today.getYear() + 1900;
+        var month = today.getMonth() + 1;
+        var day = today.getDate();
+        var hour = today.getHours() >= 0 && today.getHours() < 10 ? "0" + today.getHours() : today.getHours();
+        var minute = today.getMinutes() >= 0 && today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes();
+        var second = today.getSeconds() >= 0 && today.getSeconds() < 10 ? "0" + today.getSeconds() : today.getSeconds();
+        var date = year + "/" + month + "/" + day + "  " + hour + ":" + minute + ":" + second;
+        $("#localTime").html(date);
+    }
+</script>
+</body>
+</html>

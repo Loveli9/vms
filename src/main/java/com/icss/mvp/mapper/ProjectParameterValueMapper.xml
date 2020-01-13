@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectParameterValueDao">
+	<resultMap id="paraValue" type="com.icss.mvp.entity.ProjectParameterValue">
+		<result property="no" column="NO" />
+		<result property="name" column="NAME" />
+		<result property="yearMonth" column="MONTH" />
+		<result property="id" column="ID" />
+		<result property="big_type_value" column="BIG_TYPE" />
+		<result property="small_type_value" column="SMALL_TYPE" />
+		<result property="source" column="SOURCE" />
+		<result property="unit" column="UNIT" />
+		<result property="isDisplay" column="IS_DISPLAY" />
+		<result property="value" column="VALUE" />
+	</resultMap>
+	<resultMap id="paraValueNew" type="com.icss.mvp.entity.ParameterValueNew">
+		<result property="no" column="NO" />
+		<result property="month" column="MONTH" />
+		<result property="parameterId" column="PARAMETER_ID" />
+		<result property="value" column="VALUE" />
+	</resultMap>
+	<select id="getList" resultMap="paraValue"
+		parameterType="com.icss.mvp.entity.ProjectParameterValue">
+		select ID,NAME,NO ,
+		SOURCE,UNIT,IS_DISPLAY AS ISDISPLAY, SMALL_TYPE AS small_type_value,
+		BIG_TYPE AS big_type_value, MONTH as MONTH ,VALUE AS VALUE
+		from (
+		SELECT
+		PRO.PARAMETER_ID AS ID,PAR.NAME,PRO.NO,
+		<!-- (SELECT CODE_MASTER_INFO.NAME
+		FROM CODE_MASTER_INFO WHERE CODE_MASTER_INFO.CODEKEY='Source'
+		AND PRO.SOURCE_VALUE = CODE_MASTER_INFO.VALUE) AS SOURCE,
+		PRO.UNIT AS
+		UNIT,
+		PRO.IS_DISPLAY AS IS_DISPLAY,
+		(SELECT CODE_MASTER_INFO.NAME FROM
+		CODE_MASTER_INFO WHERE CODE_MASTER_INFO.CODEKEY='BigType'
+		AND CODE_MASTER_INFO.VALUE = PAR.BIG_TYPE_VALUE) AS BIG_TYPE,
+		(SELECT
+		CODE_MASTER_INFO.NAME FROM CODE_MASTER_INFO WHERE
+		CODE_MASTER_INFO.CODEKEY='SmallType'
+		AND CODE_MASTER_INFO.VALUE = PAR.SMALL_TYPE_VALUE) AS SMALL_TYPE,
+		MAX(VAL.VALUE) AS
+		VALUE,IFNULL(VAL.MONTH,#{projectParameterValue.yearMonth}) AS MONTH -->
+		(SELECT v.`key` FROM v_dictionary v WHERE v.code ='Source'
+		AND PRO.SOURCE_VALUE = v.value) AS SOURCE,
+		PRO.UNIT AS
+		UNIT,
+		PRO.IS_DISPLAY AS IS_DISPLAY,
+		(SELECT v.`key` FROM v_dictionary v WHERE v.code='BigType'
+		AND v.value = PAR.BIG_TYPE_VALUE) AS BIG_TYPE,
+		(SELECT v.`key` FROM v_dictionary v WHERE v.code='SmallType'
+		AND v.value = PAR.SMALL_TYPE_VALUE) AS SMALL_TYPE,
+		MAX(VAL.VALUE) AS
+		VALUE,IFNULL(VAL.MONTH,#{projectParameterValue.yearMonth}) AS MONTH
+		FROM
+		PROJECT_PARAMETER PRO
+		LEFT JOIN PARAMETER_INFO PAR ON PAR.ID = PRO.PARAMETER_ID
+		LEFT JOIN PROJECT_PARAMETER_VALUE_NEW VAL ON VAL.NO = PRO.NO
+		AND
+		VAL.PARAMETER_ID = PRO.PARAMETER_ID
+		AND DATE_FORMAT(VAL.MONTH,'%Y%m') =
+		DATE_FORMAT(#{projectParameterValue.yearMonth},'%Y%m')
+		WHERE
+		PRO.NO = #{projectParameterValue.no}
+		GROUP BY
+		PRO.PARAMETER_ID,PAR.NAME,PRO.SOURCE_VALUE,PAR.BIG_TYPE_VALUE,PAR.SMALL_TYPE_VALUE,PRO.IS_DISPLAY,DATE_FORMAT(VAL.MONTH,'%Y%m')
+		) b
+		where 1=1
+		<if test="projectParameterValue.name!=null and projectParameterValue.name!=''">
+			AND NAME LIKE CONCAT('%',#{projectParameterValue.name},'%')  
+    	</if>
+		<if
+			test="projectParameterValue.big_type_value!=null and projectParameterValue.big_type_value!=''">
+			AND BIG_TYPE = #{projectParameterValue.big_type_value}  
+    </if>
+		<if
+			test="projectParameterValue.small_type_value!=null and projectParameterValue.small_type_value!=''">
+			AND SMALL_TYPE = #{projectParameterValue.small_type_value}  
+    </if>
+		<if
+			test="projectParameterValue.source!=null and projectParameterValue.source!=''">
+			AND SOURCE = #{projectParameterValue.source}  
+    </if>
+		<if
+			test="projectParameterValue.unit!=null and projectParameterValue.unit!=''">
+			AND UNIT like CONCAT('%',#{projectParameterValue.unit},'%') ESCAPE '/'
+		</if>
+		<if
+			test="projectParameterValue.isDisplay!=null and projectParameterValue.isDisplay!=''">
+			AND IS_DISPLAY = #{projectParameterValue.isDisplay}  
+    </if>
+		<if test="sort!=null and sort!='' and order!=null and order!=''">
+			ORDER BY ${sort} ${order}
+    </if>
+	</select>
+
+	<insert id="insertParameterValue" parameterType="com.icss.mvp.entity.ParameterValueNew">
+		insert into
+		PROJECT_PARAMETER_VALUE_NEW (NO,MONTH,PARAMETER_ID,VALUE)
+		values
+		(#{paraValue.no,jdbcType=VARCHAR},#{paraValue.month},#{paraValue.parameterId},#{paraValue.value})
+	</insert>
+
+	<delete id="deleteParameterValue" parameterType="com.icss.mvp.entity.ParameterValueNew">
+		DELETE FROM
+		PROJECT_PARAMETER_VALUE_NEW
+		WHERE no = #{paraValue.no} AND DATE_FORMAT(MONTH,'%Y%m') =
+		DATE_FORMAT(#{paraValue.month},'%Y%m') and PARAMETER_ID =
+		#{paraValue.parameterId}
+	</delete>
+
+	<select id="getProjDml" parameterType="java.lang.String"
+		resultType="com.icss.mvp.entity.ProjectParameterValue">
+		select *
+		from project_parameter_value_new
+		where no = #{no}
+		and DATE_FORMAT(MONTH,'%Y%m') = #{month} and parameter_id = 129 
+	</select>
+	
+	<select id="getParameterValue" parameterType="com.icss.mvp.entity.ParameterValueNew"
+		resultType="com.icss.mvp.entity.ParameterValueNew">
+		select *
+		from project_parameter_value_new
+		where no = #{paraValue.no,jdbcType=VARCHAR}
+		and DATE_FORMAT(MONTH,'%Y%m') = DATE_FORMAT(#{paraValue.month},'%Y%m') and parameter_id = #{paraValue.parameterId} 
+	</select>
+
+	<insert id="insertParams" parameterType="java.util.List">
+		REPLACE INTO project_parameter_value_new
+		(NO, MONTH, PARAMETER_ID,
+		VALUE)
+		VALUES
+		<foreach collection="list" index="index" item="item"
+			separator=",">
+			(#{item.no}, #{item.month}, #{item.parameterId}, #{item.value})
+		</foreach>
+	</insert>
+
+	<select id="getExistIndicatorNum" parameterType="java.lang.String"
+		resultType="com.icss.mvp.entity.ProjectParameterValue">
+		select * from project_parameter_value_new
+		where no in(
+		select NO
+		from project_info
+		where version = #{c_version}) and DATE_FORMAT(MONTH,'%Y%m%d') = #{month} and
+		parameter_id = #{parameterId}
+	</select>
+
+	<update id="updateIndicatorVal" parameterType="java.lang.String">
+		UPDATE project_parameter_value_new SET VALUE=#{paramValue}
+		WHERE NO in(
+		select NO
+		from project_info
+		where version = #{c_version} )AND DATE_FORMAT(MONTH,'%Y%m%d') = #{month} AND
+		PARAMETER_ID = #{paramId}
+	</update>
+
+	<insert id="insertIndicatorVal">
+		INSERT INTO project_parameter_value_new
+		(NO, MONTH, PARAMETER_ID, VALUE) VALUES(
+		(SELECT NO
+		FROM project_info
+		WHERE
+		VERSION = #{c_version} Limit 1), #{month},
+		#{paramId}, #{paramValue})
+	</insert>
+	
+	<select id="getProjDtsDensityNum" parameterType="java.lang.String"
+		resultType="com.icss.mvp.entity.ProjectParameterValue">
+		select * from project_parameter_value_new
+		where no in(
+		select NO
+		from project_info
+		where version = #{version}) and DATE_FORMAT(MONTH,'%Y-%m')=#{month} and
+		parameter_id = #{id}
+	</select>
+
+	<insert id="insertDtsDensityNum">
+		INSERT INTO project_parameter_value_new
+		(NO, MONTH, PARAMETER_ID, VALUE) VALUES
+		((SELECT NO
+		FROM project_info
+		WHERE
+		VERSION = #{version} Limit 1),
+		#{month},#{id},#{value})
+	</insert>
+	<update id="updateDtsDensityNum">
+		UPDATE project_parameter_value_new SET VALUE=#{value}
+		WHERE NO in(
+		select NO
+		from project_info
+		where version = #{version} ) AND MONTH= #{month} AND
+		PARAMETER_ID = #{id}
+	 </update>
+	 <select id="queryDtsDiList" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select no,value,DATE_FORMAT(MONTH,'%Y%m%d') as date from project_parameter_value_new
+		where no = #{projNo}
+		and PARAMETER_ID = #{id}
+		and SUBSTRING(MONTH, 1,10) >= SUBSTRING(date_add(NOW(), interval -30 day), 1,10)
+	</select>
+	<insert id="insertParameterValueNew" parameterType="com.icss.mvp.entity.ParameterValueNew">
+		REPLACE into
+		PROJECT_PARAMETER_VALUE_NEW (NO,MONTH,PARAMETER_ID,VALUE)
+		values
+		(#{paraValue.no,jdbcType=VARCHAR},#{paraValue.month},#{paraValue.parameterId},#{paraValue.value})
+	</insert>
+	<select id="queryProportionList"  resultType="java.util.HashMap">
+		select ppvn.no as no,ppvn.value as value,pi.NAME as name,DATE_FORMAT(ppvn.MONTH, '%Y-%m') AS months 
+		from project_parameter_value_new ppvn,parameter_info pi
+		where ppvn.no = #{projNo}
+		and ppvn.PARAMETER_ID in (${parameterId})
+		and ppvn.PARAMETER_ID = pi.ID	
+		and date_format(ppvn.MONTH, '%d') = "01"
+		and DATE_FORMAT(ppvn.MONTH, '%Y-%m') in 
+		<foreach collection="months"  item="item" open="(" close=")"
+			separator=",">
+			#{item}
+		</foreach>
+	</select>
+	<delete id="deleteParameterValueByName" parameterType="java.lang.String">
+		DELETE FROM
+		PROJECT_PARAMETER_VALUE_NEW
+		where no = #{projNo}
+		and PARAMETER_ID =(SELECT ID AS PARAID FROM PARAMETER_INFO WHERE NAME=#{name})
+	</delete>
+	
+	<delete id="deleteParameterValueById" parameterType="java.lang.String">
+		DELETE FROM
+		PROJECT_PARAMETER_VALUE_NEW
+		where no = #{projNo}
+		and PARAMETER_ID in (${parameterId})
+		and year(MONTH) = year(curdate())
+	</delete>
+	
+	<delete id="deleteParameterValueByIds" parameterType="java.lang.String">
+		DELETE FROM
+		PROJECT_PARAMETER_VALUE_NEW
+		where no in #{projNo}
+		and PARAMETER_ID in (${parameterId})
+		and year(MONTH) = year(curdate())
+	</delete>
+</mapper>

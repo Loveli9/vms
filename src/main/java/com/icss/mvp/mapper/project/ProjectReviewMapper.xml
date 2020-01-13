@@ -1,0 +1,949 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.project.IProjectReviewDao">
+	<resultMap id="BaseResultMap"
+		type="com.icss.mvp.entity.project.ProjectReviewEntity">
+		<result column="id" property="id" />
+		<result column="pro_no" property="proNo" />
+		<result column="project_status" property="projectStatus" />
+		<result column="project_review" property="projectReview" />
+		<result column="statistical_time" property="statisticalTime" />
+		<result column="demand_completion" property="demandCompletion" />
+		<result column="progress_completion"
+			property="progressCompletion" />
+		<result column="progress_deviation"
+			property="progressDeviation" />
+		<result column="member_differ" property="memberDiffer" />
+		<result column="member_arrival" property="memberArrival" />
+		<result column="key_roles_differ" property="keyRolesDiffer" />
+		<result column="key_roles_fail" property="keyRolesfail" />
+		<result column="key_roles_arrival" property="keyRolesArrival" />
+		<result column="key_roles_pass" property="keyRolesPass" />
+		<result column="resources" property="resources" />
+		<result column="change_number" property="changeNumber" />
+		<result column="demand_number" property="demandNumber" />
+		<result column="money" property="money" />
+		<result column="workload" property="workload" />
+		<result column="changes" property="changes" />
+		<result column="resources_lamp" property="resourcesLamp" />
+		<result column="progress_lamp" property="progressLamp" />
+		<result column="changes_lamp" property="changesLamp" />
+		<result column="quality_lamp" property="qualityLamp" />
+		<result column="green_light" property="greenLight" />
+		<result column="yellow_light" property="yellowLight" />
+		<result column="red_light" property="redLight" />
+		<result column="measure_list" property="measureList" />
+		<result column="is_close" property="isClose" />
+		<result column="TYPE" property="type" />
+	</resultMap>
+	<resultMap id="projectReviewVo"
+		type="com.icss.mvp.entity.project.ProjectReviewVo">
+		<result column="id" property="id" />
+		<result column="pro_no" property="proNo" />
+		<result column="project_status" property="projectStatus" />
+		<result column="project_review" property="projectReview" />
+		<result column="statistical_time" property="statisticalTime" />
+		<result column="demand_completion" property="demandCompletion" />
+		<result column="progress_completion"
+			property="progressCompletion" />
+		<result column="progress_deviation"
+			property="progressDeviation" />
+		<result column="member_differ" property="memberDiffer" />
+		<result column="member_arrival" property="memberArrival" />
+		<result column="key_roles_differ" property="keyRolesDiffer" />
+		<result column="key_roles_fail" property="keyRolesfail" />
+		<result column="key_roles_arrival" property="keyRolesArrival" />
+		<result column="key_roles_pass" property="keyRolesPass" />
+		<result column="resources" property="resources" />
+		<result column="change_number" property="changeNumber" />
+		<result column="demand_number" property="demandNumber" />
+		<result column="money" property="money" />
+		<result column="workload" property="workload" />
+		<result column="changes" property="changes" />
+		<result column="resources_lamp" property="resourcesLamp" />
+		<result column="progress_lamp" property="progressLamp" />
+		<result column="changes_lamp" property="changesLamp" />
+		<result column="quality_lamp" property="qualityLamp" />
+		<result column="green_light" property="greenLight" />
+		<result column="yellow_light" property="yellowLight" />
+		<result column="red_light" property="redLight" />
+		<result column="measure_list" property="measureList" />
+	</resultMap>
+	<resultMap id="MeasureComment"
+		type="com.icss.mvp.entity.MeasureComment">
+		<result column="measure_id" property="measureId" />
+		<result column="name" property="measureName" />
+		<result column="no" property="proNo" />
+		<result column="mon" property="month" />
+		<result column="COMPUTE_RULE" property="computeRule" />
+		<result column="measure_value" property="measureValue" />
+		<result column="UPPER" property="upper" />
+		<result column="LOWER" property="lower" />
+		<result column="TARGET" property="target" />
+		<result column="CHALLENGE" property="challenge" />
+		<result column="cmonth" property="changeMonth" />
+	</resultMap>
+	<resultMap id="MonthlyReport"
+		type="com.icss.mvp.entity.MonthlyReportStatistics">
+		<result column="num" property="num" />
+		<result column="STATUS" property="status" />
+		<result column="resources" property="resources" />
+		<result column="progress" property="progress" />
+		<result column="quality" property="quality" />
+	</resultMap>
+	<resultMap id="qualifyTrend"
+      type="com.icss.mvp.entity.QualifyTrend">
+      <result column="measure_id" property="measureId" />
+      <result column="VERSION" property="version" />
+      <result column="create_time" property="createTime" />
+      <result column="qualify" property="qualify" />
+      <result column="no" property="no" />
+  	</resultMap>
+  	
+  	<resultMap id="ProjListMap" type="com.icss.mvp.entity.ProjectInfo">
+		<result property="startDate" column="START_DATE" />
+		<result property="endDate" column="END_DATE" />
+	</resultMap>
+  	
+	<insert id="editProjectReviewTemp"
+		parameterType="com.icss.mvp.entity.project.ProjectReviewEntity">
+		replace into `project_review_temp`
+		(`pro_no`,
+		`demand_completion`, `progress_completion`, `progress_deviation`,
+		`member_differ`, `member_arrival`,
+		`key_roles_differ`,
+		`key_roles_arrival`, `key_roles_pass`, `key_roles_fail`, `resources`,
+		`change_number`, `demand_number`,`money`, `workload`, `changes`,
+		`resources_lamp`, `progress_lamp`,
+		`changes_lamp`, `quality_lamp`,
+		`green_light`, `yellow_light`,
+		`red_light`,`statistical_time`,`measure_list`, `project_status`)
+		VALUES
+		(#{proNo}, #{demandCompletion}, #{progressCompletion},
+		#{progressDeviation},
+		#{memberDiffer},#{memberArrival},
+		#{keyRolesDiffer},#{keyRolesArrival}, #{keyRolesPass},
+		#{keyRolesfail},#{resources},
+		#{changeNumber},#{demandNumber},#{money}, #{workload}, #{changes},
+		#{resourcesLamp}, #{progressLamp},
+		#{changesLamp},
+		#{qualityLamp},#{greenLight}, #{yellowLight}, #{redLight},
+		#{statisticalTime} ,#{measureList} ,#{projectStatus})
+	</insert>
+
+	<insert id="editProjectReview"
+		parameterType="com.icss.mvp.entity.project.ProjectReviewEntity">
+		replace into `project_review`
+		(
+		<if test="id!=null">`id`,</if>
+		`pro_no`, `statistical_time`, `project_status`, `project_review`,
+		`resources_lamp`, `progress_lamp`, `quality_lamp`, `changes_lamp`,`is_close`)
+		VALUES
+		(
+		<if test="id != null">#{id},</if>
+		#{proNo}, #{statisticalTime}, #{projectStatus}, #{projectReview},
+		#{resourcesLamp}, #{progressLamp}, #{qualityLamp}, #{changesLamp},#{isClose})
+	</insert>
+
+	<select id="getProjectStatus" resultType="java.lang.String">
+		select SUM(CAST((CASE WHEN lamp_mode=0 THEN auto_value ELSE manual_value END)AS DECIMAL(5,2))) *2
+		from project_lamp_mode
+		where pro_no=#{proNo} and statistical_time =#{date} and field != 'changes'
+	</select>
+
+	<select id="getProjectReviewList" resultMap="BaseResultMap">
+		SELECT *
+		FROM
+		project_review WHERE pro_no = #{proNo} order by statistical_time
+	</select>
+
+	<select id="getProjectReviewInfo" resultMap="BaseResultMap">
+		SELECT id, pro_no, project_status, project_review, statistical_time,
+		quality_lamp,resources_lamp,progress_lamp,changes_lamp
+		FROM
+		project_review WHERE pro_no = #{proNo}
+		<!-- <if test="status == 0"> <![CDATA[ AND project_status = 0 ]]> </if> -->
+		<if test="status == 1">
+        	<![CDATA[
+				AND project_status >= 0 AND project_status < 70
+			]]>
+		</if>
+		<if test="status == 2">
+            <![CDATA[
+				AND project_status >= 70 AND project_status < 80
+			]]>
+		</if>
+		AND statistical_time = #{statisticalTime}
+	</select>
+	
+	<select id="getOldWeekReview" parameterType="java.lang.String"
+		resultMap="projectReviewVo">
+		SELECT pr.id, pr.pro_no, pr.project_status, pr.project_review, pr.statistical_time,
+		pr.quality_lamp,pr.resources_lamp,pr.progress_lamp,pr.changes_lamp
+		FROM project_review pr
+		WHERE pr.pro_no = #{proNo}
+		AND pr.statistical_time = #{oldWeekDate}
+	</select>
+
+	<select id="getProjectReviewListTop5" resultMap="BaseResultMap">
+		SELECT * FROM
+		project_review
+		WHERE pro_no = #{proNo}
+		order BY statistical_time desc
+		limit 5
+	</select>
+
+	<select id="queryProjectCycle" resultType="java.lang.String">
+		select end_date
+		from
+		project_cycle
+		order by end_date desc
+		limit 6
+	</select>
+
+	<select id="queryProjectCycleQ" resultType="java.lang.String">
+		SELECT end_date
+		FROM
+		project_cycle
+		where end_date between #{startDate} and #{endDate}
+		order
+		BY end_date desc
+		limit 6
+	</select>
+
+	<select id="queryProjectCycle1" resultType="java.lang.String">
+		select end_date
+		from
+		project_cycle
+		order by end_date desc
+		limit 9
+	</select>
+
+	<insert id="editProjectQualityDate">
+		insert into project_cycle(start_date, end_date)
+		values(#{startDate}, #{endDate})
+	</insert>
+
+	<select id="getProjectReviewHistory" resultMap="BaseResultMap">
+	SELECT t.*,SUM(a.measure_ids ='' AND a.TYPE = 'TM') AS TYPE FROM
+	(SELECT * FROM project_review_temp
+	WHERE pro_no = #{proNo}
+	AND DATE_FORMAT(statistical_time, '%Y-%m-%d') &lt;= #{date}
+	ORDER BY statistical_time DESC LIMIT 1) t
+	LEFT JOIN
+	(SELECT m.no,m.measure_ids,p.TYPE FROM `measure_configuration_record`m,`project_info` p
+	WHERE m.`no` = p.`NO` AND m.no = #{proNo} AND DATE_FORMAT(m.update_time, '%Y-%m-%d') &lt;=#{date}
+	ORDER BY m.update_time DESC LIMIT 1) a ON a.no = t.pro_no
+	</select>
+
+	<select id="getProjectReview" resultMap="BaseResultMap">
+		SELECT pro_no,
+		project_status, project_review,
+		DATE_FORMAT(statistical_time,
+		'%Y-%m-%d') AS statistical_time, quality_lamp,
+		resources_lamp,
+		progress_lamp, changes_lamp
+		FROM project_review
+		WHERE pro_no = #{proNo}
+		and statistical_time = #{date}
+	</select>
+	
+	<select id="getDateTimeByNo" resultMap="ProjListMap">
+		SELECT START_DATE,END_DATE FROM project_info WHERE NO = #{proNo}
+	</select>
+	
+	<select id="getProjectReviewQ" resultMap="BaseResultMap">
+		SELECT *
+		FROM project_review
+		WHERE pro_no = #{proNo}
+		<if test="null != date and '' != date" >
+			and statistical_time = #{date}
+		</if>
+	</select>
+	
+	<select id="getCloseDateByNo" resultType="java.lang.String">
+		SELECT statistical_time
+		FROM project_review
+		WHERE pro_no = #{proNo} and is_close = 1
+		ORDER BY statistical_time
+		LIMIT 1
+	</select>
+	
+	<update id="closeProjects" parameterType="java.lang.String">
+		UPDATE project_info SET PROJECT_STATE='关闭' where No = #{proNo}
+	</update>	
+	
+	<update id="changeIsClose" parameterType="java.lang.String">
+		UPDATE project_review SET is_close = 1 where pro_no = #{proNo} and statistical_time = #{date}
+	</update>	
+
+	<select id="getProjectReviewDetail" resultMap="BaseResultMap">
+	SELECT
+	t.demand_completion,t.progress_completion,t.progress_deviation,
+	t.member_differ,t.member_arrival,t.key_roles_differ,t.key_roles_arrival,
+	t.key_roles_pass,t.key_roles_fail,t.resources,t.change_number,
+	t.demand_number,t.changes,t.green_light,t.yellow_light,t.red_light,
+	t.measure_list,t.pro_no,t.statistical_time,p.id,p.project_status,p.project_review,
+	p.resources_lamp,p.progress_lamp,p.quality_lamp,p.changes_lamp,
+	SUM((a.measure_ids = '' OR a.measure_ids = NULL)AND a.TYPE = 'TM') AS TYPE
+	FROM
+	project_review_temp t LEFT JOIN project_review p
+	ON p.pro_no = t.pro_no AND p.statistical_time=t.statistical_time
+	LEFT JOIN
+	(SELECT p.no,IFNULL(m.measure_ids,'') AS measure_ids,IFNULL(P.TYPE,'') AS TYPE FROM `project_info` p
+     LEFT JOIN (SELECT * FROM `measure_configuration_record`
+     WHERE DATE_FORMAT(update_time, '%Y-%m-%d') &lt;= #{date}) m ON p.no = m.no
+     WHERE p.no = #{proNo} ORDER BY m.update_time DESC
+     LIMIT 1) a ON a.no = t.pro_no <!-- 获取项目商业模式以及配置历史记录是否为空的判断 -->
+	WHERE t.pro_no = #{proNo}
+	and DATE_FORMAT(t.statistical_time,'%Y-%m-%d')=#{date}
+	</select>
+	<!-- 查询TM项目有无指标 -->
+	<select id="getProjectTmNoindex" resultType="java.lang.String">
+	SELECT SUM((a.measure_ids = '' OR a.measure_ids = NULL)AND a.TYPE = 'TM') AS TYPE FROM
+	(
+	SELECT p.no,IFNULL(m.measure_ids,'') AS measure_ids,IFNULL(P.TYPE,'') AS TYPE
+	FROM `project_info` p
+	LEFT JOIN (SELECT * FROM `measure_configuration_record`
+	WHERE DATE_FORMAT(update_time, '%Y-%m-%d') &lt;= #{date}
+	)m ON p.no = m.no
+	WHERE p.no = #{proNo}
+	ORDER BY m.update_time DESC
+	LIMIT 1
+	) a
+	</select>
+
+	<update id="updateProjectLamp">
+		update project_review_temp
+		set ${field} = #{lamp}
+		WHERE pro_no = #{proNo}
+		and DATE_FORMAT(statistical_time, '%Y-%m-%d') =
+		#{date}
+	</update>
+
+	<update id="changeEdit"
+		parameterType="com.icss.mvp.entity.project.ProjectReviewEntity">
+		update project_review_temp
+		set change_number =
+		#{changeNumber}, demand_number = #{demandNumber},
+		changes = #{changes},
+		changes_lamp = #{changesLamp}
+		WHERE pro_no = #{proNo}
+		and
+		DATE_FORMAT(statistical_time, '%Y-%m-%d') =#{statisticalTime}
+	</update>
+
+	<update id="progressEdit"
+		parameterType="com.icss.mvp.entity.project.ProjectReviewEntity">
+		update project_review_temp
+		set demand_completion =
+		#{demandCompletion}, progress_completion =
+		#{progressCompletion},
+		progress_deviation = #{progressDeviation}, progress_lamp =
+		#{progressLamp}
+		WHERE pro_no = #{proNo}
+		and
+		DATE_FORMAT(statistical_time, '%Y-%m-%d') =#{statisticalTime}
+	</update>
+
+	<select id="getProjectLampMode"
+		resultType="com.icss.mvp.entity.project.ProjectLampMode">
+		select id, pro_no as proNo, statistical_time as
+		statisticalTime,
+		field, lamp_mode as lampMode, auto_value as autoValue,
+		manual_value as
+		manualValue
+		from project_lamp_mode
+		where pro_no =
+		#{proNo} and DATE_FORMAT(statistical_time, '%Y-%m-%d')
+		=DATE_FORMAT(#{date}, '%Y-%m-%d')
+		and field = #{field}
+	</select>
+
+	<insert id="editProjectLampMode"
+		parameterType="com.icss.mvp.entity.project.ProjectLampMode">
+		replace into project_lamp_mode
+		(pro_no, statistical_time,
+		field, lamp_mode, auto_value, manual_value)
+		values
+		(#{proNo},
+		#{statisticalTime}, #{field}, #{lampMode}, #{autoValue},
+		#{manualValue})
+	</insert>
+
+	<update id="updateProjectLampMode"
+		parameterType="com.icss.mvp.entity.project.ProjectLampMode">
+		update project_lamp_mode
+		set auto_value = #{autoValue}
+		WHERE pro_no = #{proNo}
+		and DATE_FORMAT(statistical_time, '%Y-%m-%d') =
+		DATE_FORMAT(#{statisticalTime}, '%Y-%m-%d')
+		and field = #{field}
+	</update>
+	<select id="queryProjectReviewTop6"
+		resultType="java.lang.Integer">
+		SELECT
+		<if test="num == 1"> 
+        <![CDATA[
+      	 ifnull(SUM(project_status<#{red}  and project_status!=-1
+         ]]>
+		</if>
+		<if test="num == 2"> 
+        <![CDATA[
+      	ifnull(SUM(project_status>=#{red}  and project_status<#{green}
+         ]]>
+		</if>
+		<if test="num == 3"> 
+        <![CDATA[
+      	ifnull(SUM(project_status>=#{green}
+         ]]>
+		</if>
+		AND b.btm =#{month}
+		),0)
+		FROM
+		(SELECT
+		project_status,statistical_time,DATE_FORMAT(statistical_time,'%Y-%m-%d')
+		AS btm
+		FROM
+		<!-- project_review p -->
+		(
+		SELECT * FROM `project_review` pr
+		,(SELECT pro_no as pro_no1  FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0
+		) t
+		WHERE pr.`pro_no`=t.`pro_no1`
+		) p
+		LEFT JOIN `project_info` t1 ON p.`pro_no`=t1.`NO`
+		where
+		1=1 and `t1`.`HWPDUID` = 32
+		<include refid="sql_status" />
+		) AS b
+	</select>
+	<!-- 获取连续两周风险项目数或预警项目数 -->
+	<select id="getState" resultType="java.lang.Integer">
+		SELECT
+		<if test="num == 1">
+		 <![CDATA[	
+		 ifnull(SUM(rps1<#{red} and rps1!=-1 AND rps2<#{red} and rps2!=-1),0)
+		  ]]>
+		</if>
+		<if test="num == 2">	
+		<![CDATA[	
+		ifnull(SUM(rps1>=#{red} AND rps1<#{green} AND rps2>=#{red} AND rps2<#{green}),0)
+		 ]]>
+		</if>
+		FROM
+		 <![CDATA[
+		(SELECT rn.*,rb.rps2 FROM (SELECT r.`project_status` AS rps1,r.`pro_no` ,
+		YEAR(r.`statistical_time`) AS `year`,statistical_time,
+		IF(DATE_FORMAT(r.`statistical_time`, '%d')>15,
+		MONTH(r.`statistical_time`) *2, MONTH(r.`statistical_time`) *2 -1) AS
+		`week`
+		FROM 
+		(
+		SELECT * FROM `project_review` pr 
+		,(SELECT pro_no as pro_no1 FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0) t
+		WHERE pr.`pro_no`=t.`pro_no1` 
+		) r
+		
+		) rn
+		LEFT JOIN (SELECT r2.`project_status` AS rps2,r2.`pro_no` ,
+		IF(DATE_FORMAT(r2.`statistical_time`, '%d')>15,
+		MONTH(r2.`statistical_time`) *2,
+		MONTH(r2.`statistical_time`) *2 -1) AS `week`
+		FROM 
+		(
+		SELECT * FROM `project_review` pr 
+		,(SELECT pro_no as pro_no1 FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0) t
+		WHERE pr.`pro_no`=t.`pro_no1`
+		) r2
+		
+		) rb ON rn.`pro_no` =
+		rb.`pro_no` AND rb.`week` = IF(rn.`week` =1,24,rn.`week` -1)
+		 ]]>
+		WHERE DATE_FORMAT(statistical_time,'%Y-%m-%d')=#{month2}
+		) AS c LEFT
+		JOIN `project_info` t1 ON t1.no=c.pro_no
+		where 1=1
+		<include refid="sql_status" />
+	</select>
+
+	<select id="queryLastPeriod" resultType="java.lang.Integer">
+		SELECT
+		<if test="num == 1">
+		 <![CDATA[	
+			SUM(rps1<#{red} and rps1!=-1)-SUM(rps2<#{red} and rps2!=-1)
+		  ]]>
+		</if>
+		<if test="num == 2">	
+		<![CDATA[	
+			SUM(rps1 BETWEEN #{red} AND #{green})-SUM(rps2 BETWEEN #{red} AND  #{green})
+		 ]]>
+		</if>
+		FROM
+		 <![CDATA[
+		(SELECT rn.*,rb.rps2 FROM (SELECT r.`project_status` AS rps1,r.`pro_no` ,
+		YEAR(r.`statistical_time`) AS `year`,statistical_time,
+		IF(DATE_FORMAT(r.`statistical_time`, '%d')>15,
+		MONTH(r.`statistical_time`) *2, MONTH(r.`statistical_time`) *2 -1) AS
+		`week`
+		FROM 
+		(
+		SELECT * FROM `project_review` pr 
+		,(SELECT pro_no as pro_no1 FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0) t
+		WHERE pr.`pro_no`=t.`pro_no1` 
+		) r
+	
+		) rn
+		LEFT JOIN (SELECT r2.`project_status` AS rps2,r2.`pro_no` ,
+		IF(DATE_FORMAT(r2.`statistical_time`, '%d')>15,
+		MONTH(r2.`statistical_time`) *2,
+		MONTH(r2.`statistical_time`) *2 -1) AS `week`
+		FROM 
+		(
+		SELECT * FROM `project_review` pr 
+		,(SELECT pro_no as pro_no1 FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0) t
+		WHERE pr.`pro_no`=t.`pro_no1` 
+		) r2	
+		) rb ON rn.`pro_no` =
+		rb.`pro_no` AND rb.`week` = IF(rn.`week` =1,24,rn.`week` -1)
+		 ]]>
+		WHERE DATE_FORMAT(statistical_time,'%Y-%m-%d')=#{month}
+		) AS c LEFT
+		JOIN `project_info` t1 ON c.pro_no=t1.no
+		where 1=1 
+		<include refid="sql_status" />
+	</select>
+
+	<select id="twoWeekPeriod" resultType="java.lang.Integer">
+		SELECT
+		<if test="num == 1">
+		<![CDATA[	
+			 IFNULL(SUM(rps1<#{red} AND rps1!=-1 AND rps2<#{red} AND rps2!=-1),0) AS Y
+		 ]]>
+		</if>
+		<if test="num == 2">
+		<![CDATA[
+			 IFNULL(SUM(rps1 BETWEEN #{red} AND  #{green} AND rps2 BETWEEN #{red} AND  #{green}),0) AS Y
+		]]>
+		</if>
+		FROM
+		( SELECT * FROM (
+		SELECT rn.*,rb.rps2,rb.stime AS b FROM (
+		SELECT r.`project_status` AS rps1,r.`pro_no`,
+		YEAR(r.`statistical_time`) AS `year`,statistical_time, IF(DATE_FORMAT(r.`statistical_time`,
+		'%d')>15,
+		MONTH(r.`statistical_time`) *2, MONTH(r.`statistical_time`) *2 -1) AS `week` FROM (
+		SELECT * FROM `project_review` pr ,
+		(SELECT pro_no as pro_no1 FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0) t 
+		WHERE pr.`pro_no`=t.`pro_no1` ) r ) rn LEFT JOIN (
+		SELECT r2.`project_status` AS rps2,r2.`pro_no` ,statistical_time AS stime, 
+		IF(DATE_FORMAT(r2.`statistical_time`, '%d')>15, MONTH(r2.`statistical_time`) *2, MONTH(r2.`statistical_time`) *2 -1) AS `week`
+		 FROM ( SELECT * FROM `project_review` pr ,(SELECT pro_no as pro_no1 FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0) t 
+		WHERE pr.`pro_no`=t.`pro_no`  ) r2 ) rb ON rn.`pro_no` = rb.`pro_no` AND rb.`week` = IF(rn.`week` =1,24,rn.`week` -1)
+		   WHERE DATE_FORMAT(statistical_time,'%Y-%m-%d')=#{month} ) AS c LEFT JOIN `project_info` t1 ON t1.no=c.pro_no WHERE 1=1
+		  <include refid="sql_status" />
+		  ) AS d
+	</select>
+	<sql id="sql_status">
+		<if test="areas != null and areas.size() != 0">
+			AND `t1`.`AREAID` in
+			<foreach collection="areas" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="status != null and status.size() != 0">
+			AND `t1`.`PROJECT_STATE` IN
+			<foreach collection="status" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="hwpduId != null and hwpduId.size() != 0">
+			AND `t1`.`HWPDUID` IN
+			<foreach collection="hwpduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="hwzpduId != null and hwzpduId.size() != 0">
+			AND `t1`.`HWZPDUID` IN
+			<foreach collection="hwzpduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="pduSpdtId != null and pduSpdtId.size() != 0">
+			AND `t1`.`PDU_SPDTID` IN
+			<foreach collection="pduSpdtId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="buId != null and buId.size() != 0">
+			AND `t1`.`BUID` IN
+			<foreach collection="buId" item="item" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="pduId != null and pduId.size() != 0">
+			AND `t1`.`PDUID` IN
+			<foreach collection="pduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="duId != null and duId.size() != 0">
+			AND `t1`.`DUID` IN
+			<foreach collection="duId" item="item" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+	<select id="queryQualityState" resultMap="MeasureComment">
+		SELECT m.name,m.UPPER,m.LOWER,m.TARGET,
+		m.CHALLENGE,m.COMPUTE_RULE,mhd.measure_id,mhd.create_time,mhd.measure_value,cgt.no,cpc.`change_date`
+		as cmonth,
+		cpc.change_value,DATE_FORMAT(mhd.`CREATE_TIME`,'%Y-%m-%d') AS mon
+		FROM (SELECT m.no,m.measure_id,m.create_time,m.measure_value FROM
+		measure_history_detail m
+		WHERE m.create_time BETWEEN #{month2} AND #{month1}
+		AND m.measure_id IN
+		<foreach collection="no" item="no" separator="," open="("
+			close=")">
+			#{no}
+		</foreach>
+		) mhd
+		INNER JOIN code_gain_type cgt ON cgt.PARAMETER_ID =163 AND cgt.`TYPE`=0 AND
+		mhd.no = cgt.no
+		LEFT JOIN measure m
+		ON mhd.measure_id = m.ID
+		LEFT JOIN comment_picture_change cpc
+		ON mhd.no = cpc.pro_no
+		AND mhd.create_time = cpc.change_date
+		AND mhd.measure_id = cpc.measure_id
+	</select>
+	<select id="queryQualityEchars" resultMap="MeasureComment">
+		SELECT m.name,m.UPPER,m.LOWER,m.TARGET,
+		m.CHALLENGE,m.COMPUTE_RULE,mhd.measure_id,mhd.create_time,mhd.measure_value,cgt.no,cpc.`change_date`
+		as cmonth,
+		cpc.change_value,DATE_FORMAT(mhd.`CREATE_TIME`,'%Y-%m-%d') AS mon
+		FROM (SELECT m.no,m.measure_id,m.create_time,m.measure_value FROM
+		measure_history_detail m
+		WHERE m.create_time BETWEEN #{month2} AND #{month1}
+		AND m.measure_id =#{no}
+		) mhd
+		INNER JOIN code_gain_type cgt ON cgt.PARAMETER_ID =163 AND cgt.`TYPE`=0 
+		AND mhd.no = cgt.no
+		LEFT JOIN measure m
+		ON mhd.measure_id = m.ID
+		LEFT JOIN comment_picture_change cpc
+		ON mhd.no = cpc.pro_no
+		AND mhd.create_time = cpc.change_date
+		AND mhd.measure_id = cpc.measure_id
+	</select>
+	<select id="getTopProjectReview" resultMap="BaseResultMap">
+		SELECT id, pro_no, project_status, project_review,
+		DATE_FORMAT(statistical_time, '%Y-%m-%d') AS statistical_time,
+		quality_lamp,
+		resources_lamp, progress_lamp, changes_lamp
+		FROM project_review WHERE pro_no = #{proNo}
+	        <![CDATA[
+	      AND DATE_FORMAT(statistical_time,'%Y-%m-%d') <= #{statisticalTime}
+	    ]]>
+		ORDER BY statistical_time DESC
+	</select>
+
+	<select id="queryProjectExpect" resultMap="MonthlyReport">
+		SELECT COUNT(*) AS num,SUM(r.project_status) AS STATUS,SUM(r.resources_lamp) AS resources,
+SUM(r.progress_lamp) AS progress,SUM(r.quality_lamp) AS quality,r.statistical_time FROM`project_review` r
+RIGHT JOIN (SELECT pro_no FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0) t ON t.pro_no = r.pro_no
+LEFT JOIN project_info t1 ON t1.no=t.pro_no
+WHERE r.statistical_time = #{month}
+		<include refid="sql_status" />
+	</select>
+	<select id="actualTableSave" resultType="java.util.HashMap">
+		SELECT t1.*,r.project_status,r.resources_lamp,r.progress_lamp,r.quality_lamp 
+FROM project_info t1
+RIGHT JOIN project_review r ON r.pro_no=t1.no
+RIGHT JOIN (SELECT pro_no FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+		parameter_id=162 and parameter_value =0) p ON p.pro_no = t1.no
+WHERE r.statistical_time = #{month}
+		<include refid="sql_status" />
+		<if test="num == 0">
+			ORDER BY project_status+0
+		</if>
+		<if test="num == 1">
+			ORDER BY quality_lamp+0
+		</if>
+		<if test="num == 2">
+			ORDER BY progress_lamp+0
+		</if>
+		<if test="num == 3">
+			ORDER BY resources_lamp+0
+		</if>
+	</select>
+	<select id="getMeasureName" resultType="java.lang.String">
+		SELECT NAME FROM
+		`measure` WHERE id=#{id}
+	</select>
+	
+	  <select id="getMeasuresName" resultType="java.util.HashMap">
+<!-- 	    SELECT ID,NAME,VERSION FROM `measure` WHERE id IN -->
+		SELECT ID, NAME, VERSION FROM in_tmpl_index WHERE id IN
+	    <foreach collection="Measure_List" open="(" close=")" separator=" , " item="measure">
+	        #{measure}
+	    </foreach>
+	    <if test="'164'.equals(measureMark)">
+<!-- 	    	GROUP BY VERSION -->
+	    	ORDER BY ID
+	    </if>
+	    <if test="'163'.equals(measureMark)">
+	    	ORDER BY VERSION
+	    </if>
+	  </select>
+	  
+	<!-- 质量新 -->
+    <select id="queryQualifyEchar" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT
+		qt.measure_id,DATE_FORMAT(qt.create_time,'%Y-%m-%d')AS create_time,
+		qt.qualify,qt.no
+		FROM (SELECT pro_no FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{nowDate}
+		<if test=" '163'.equals(measureMark)">
+			AND parameter_id = #{measureMark}
+		</if>
+		<if test=" '164'.equals(measureMark)">
+			AND parameter_id IN (164, 162)
+		</if>
+		AND parameter_value = 0
+		<if test=" '164'.equals(measureMark)">
+			GROUP BY pro_no HAVING COUNT(pro_no) > 1
+		</if>
+ 		<!--AND parameter_id=#{measureMark} and parameter_value =0-->
+		) ppr
+		LEFT JOIN quality_trend qt
+		ON ppr.pro_no = qt.no
+		left join project_info t1
+		on ppr.pro_no = t1.no
+		<!-- <if test=" '164'.equals(measureMark)">
+			left join code_gain_type cgt
+			on qt.no=cgt.`NO`
+		</if> -->
+		WHERE qt.create_time = #{nowDate}
+		<if test=" '163'.equals(measureMark)">
+			AND qt.measure_id = #{measureId}
+		</if>
+		<if test=" '164'.equals(measureMark)">
+<!-- 			AND qt.measure_id IN (SELECT ID FROM measure WHERE VERSION = #{measureId}) -->
+			AND qt.measure_id = (SELECT ID FROM in_tmpl_index WHERE VERSION = #{measureId})
+			<!-- and cgt.`TYPE`=0 and cgt.PARAMETER_ID=165 -->
+		</if>
+		AND qt.qualify = #{qualify}
+		<include refid="sql_status" />
+		) res
+    </select>
+    
+    <select id="queryQualifyTrend" resultMap="qualifyTrend">
+      SELECT qt.measure_id,DATE_FORMAT(qt.create_time,'%Y-%m-%d')AS create_time,
+      qt.qualify,qt.no,m.VERSION
+      FROM (SELECT pro_no FROM project_parameter_record
+    WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{nowDate}
+    <if test=" '163'.equals(measureMark)">
+		AND parameter_id = #{measureMark}
+	</if>
+	<if test=" '164'.equals(measureMark)">
+		AND parameter_id IN (164, 162)
+	</if>
+	AND parameter_value = 0
+	<if test=" '164'.equals(measureMark)">
+		GROUP BY pro_no HAVING COUNT(pro_no) > 1
+	</if>
+    <!--  AND parameter_id=#{measureMark} AND parameter_value =0-->
+    ) ppr
+        LEFT JOIN quality_trend qt
+        ON ppr.pro_no = qt.no
+<!--         left join measure m -->
+		left join in_tmpl_index m
+        on qt.measure_id = m.ID
+        left join project_info t1
+        on ppr.pro_no = t1.no
+      WHERE qt.create_time = #{nowDate} 
+      AND qt.measure_id IN 
+	    <foreach collection="no" item="no" separator="," open="(" close=")"> 
+	        #{no}
+	    </foreach>
+	  <include refid="sql_status" />
+    </select>
+    
+    <select id="queryQualifyTrendLastMonth" resultMap="qualifyTrend">
+      SELECT qt.measure_id,DATE_FORMAT(qt.create_time,'%Y-%m-%d')AS create_time,
+      qt.qualify,qt.no,m.VERSION
+      FROM (SELECT pro_no FROM project_parameter_record
+    WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{lastDate}
+    <if test=" '163'.equals(measureMark)">
+		AND parameter_id = #{measureMark}
+	</if>
+	<if test=" '164'.equals(measureMark)">
+		AND parameter_id IN (164, 162)
+	</if>
+	AND parameter_value = 0
+	<if test=" '164'.equals(measureMark)">
+		GROUP BY pro_no HAVING COUNT(pro_no) > 1
+	</if>
+    <!-- AND parameter_id=#{measureMark} AND parameter_value =0-->
+    ) ppr
+        LEFT JOIN quality_trend qt
+        ON ppr.pro_no = qt.no
+<!--          left join measure m -->
+		left join in_tmpl_index m
+        on qt.measure_id = m.ID
+        left join project_info t1
+        on ppr.pro_no = t1.no
+      WHERE qt.create_time = #{lastDate} 
+      AND qt.measure_id IN 
+	    <foreach collection="no" item="no" separator="," open="(" close=")"> 
+	        #{no}
+	    </foreach>
+	  <include refid="sql_status" />
+    </select>
+    
+    <select id="isKxProject" resultType="java.lang.String">
+    	select cgt.`NO` from code_gain_type cgt where cgt.PARAMETER_ID=165 and cgt.`TYPE`=0
+    </select>
+    
+	 <select id="getKXmeasure" parameterType="java.lang.String" resultType="java.lang.Integer">
+<!-- 	 	SELECT ID FROM measure WHERE LABLE_ID in ${lid} -->
+	 	SELECT itli.index_id FROM in_tmpl_label_index itli
+		WHERE itli.label_id = #{lid}
+
+	 </select>
+	 
+	 <!-- 获取项目指标值和时间 -->
+	 <select id="measureValueLine" resultMap="MeasureComment">
+	    <!-- SELECT q.create_time AS mon,q.measure_value FROM `measure` m,quality_trend q
+	    WHERE m.VERSION = #{id} AND q.measure_id = m.ID AND q.NO = #{projectId} -->
+	    SELECT q.create_time AS mon,q.measure_value FROM in_tmpl_index m,quality_trend q
+	    WHERE m.VERSION = #{id} AND q.measure_id = m.ID AND q.NO = #{projectId}
+	</select>
+	
+	<select id="measureValueHistory" resultType="java.lang.String">
+		SELECT q.measure_value FROM `in_tmpl_index` m,`measure_history_detail` q
+		WHERE m.VERSION = #{id} AND q.measure_id = m.ID AND q.NO = #{projectId}
+		AND DATE_FORMAT(q.create_time, '%Y-%m-%d') &gt;= #{start} 
+		AND DATE_FORMAT(q.create_time, '%Y-%m-%d') &lt;= #{end}
+		GROUP BY q.create_time DESC LIMIT 1
+	</select>
+	
+	<select id="measureValueLineCode" resultMap="MeasureComment">
+	    SELECT create_time AS mon,measure_value FROM quality_trend WHERE measure_id = #{id} and no = #{projectId}
+	</select>
+	
+	<select id="measureValueHistoryCode" resultType="java.lang.String">
+		SELECT measure_value FROM 
+		measure_history_detail 
+		WHERE measure_id = #{id} AND NO = #{projectId}
+		AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{start} 
+		AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{end}
+		GROUP BY create_time DESC LIMIT 1
+	</select>
+	
+	<select id="getMembersStatusRate" resultType="java.util.HashMap">
+		SELECT mb.keyRoleCount, mb.headcount
+		, pk.key_onDuty, pk.key_reserve, pk.key_person, pml.on_duty, pml.reserve
+		FROM manpower_budget mb
+		LEFT JOIN (
+		SELECT NO, SUM(CASE WHEN (STATUS = '在岗' AND START_DATE
+		&lt;= #{date}) THEN 1 ELSE 0 END) AS key_onDuty,
+		SUM(CASE WHEN (STATUS = '后备' AND START_DATE &lt;=
+		#{date}) THEN 1 ELSE 0 END) AS key_reserve,
+		COUNT(ZR_ACCOUNT) AS key_person
+		FROM project_staff
+		WHERE IS_KEY_STAFFS = 0
+		AND IS_DELETED = 0
+		GROUP BY NO
+		) pk
+		ON mb.pro_no = pk.NO
+		LEFT JOIN (
+		SELECT NO, SUM(CASE WHEN (STATUS = '在岗' AND START_DATE
+		&lt;= #{date}) THEN 1 ELSE 0 END) AS on_duty,
+		SUM(CASE WHEN (STATUS = '后备' AND START_DATE &lt;=
+		#{date}) THEN 1 ELSE 0 END) AS reserve
+		FROM project_staff
+		WHERE IS_DELETED = 0
+		GROUP BY NO
+		) pml
+		ON mb.pro_no = pml.NO
+		WHERE mb.pro_no = #{proNo}
+	</select>
+	
+	<select id="getSelectProjectReview" resultType="java.util.HashMap">
+	    SELECT project_review,statistical_time FROM project_review WHERE pro_no = #{no}
+	     AND project_review != 'NULL' ORDER BY statistical_time DESC
+	</select>
+	
+	<select id="getProjectMeasureids" parameterType="java.lang.String" resultType="com.icss.mvp.entity.ProjectInfo">
+		SELECT a.measure_ids AS measureId,a.NAME,a.PM,a.AREA,a.PDU_SPDT AS pduSpdt,a.`TYPE` FROM(
+	    SELECT i.`NAME`,i.`PM`,i.AREA,i.PDU_SPDT,i.`TYPE`,r.measure_ids,r.update_time FROM `project_info` i
+	    LEFT JOIN `measure_configuration_record` r ON i.`NO` = r.`no`
+	    AND DATE_FORMAT(r.update_time, '%Y-%m-%d') &lt;= #{month} AND r.`no` = #{no} 
+	    ORDER BY update_time DESC LIMIT 1
+		) a
+	</select>
+	
+	<sql id="workManages">
+		<![CDATA[	
+		(
+			IFNULL(DATE_FORMAT(iwm.start_time,'%Y-%m-%d'),DATE_FORMAT(iwm.plan_start_time,'%Y-%m-%d')) <= #{end} and 
+			IFNULL(DATE_FORMAT(iwm.end_time,'%Y-%m-%d'),DATE_FORMAT(iwm.plan_end_time,'%Y-%m-%d')) > #{start}
+		)
+	]]>
+	</sql>
+	
+	<select id="demandCompletion" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<![CDATA[
+			select count(*) from iterative_work_manage iwm where iwm.pro_no=#{no} and iwm.is_deleted=0 and iwm.`change`!='4' and 
+		]]>	
+		<if test="status != null">
+			iwm.`status`='6' and 
+		</if>
+		<include refid="workManages" />
+	</select>
+	
+	<select id="totalHours" parameterType="java.lang.String" resultType="java.lang.Double">
+		select sum(iwm.actual_hours) from iterative_work_manage iwm where iwm.pro_no=#{no} and iwm.is_deleted=0 and 
+		<include refid="workManages" />
+	</select>
+	
+	<select id="modifyHours" parameterType="java.lang.String" resultType="java.lang.Double">
+		select sum(abs(iwm.expect_hours-iwm.actual_hours)) from iterative_work_manage iwm where iwm.pro_no=#{no} and iwm.is_deleted=0 and iwm.`change`=#{change} and  
+		<include refid="workManages" />
+	</select>
+	
+	<select id="newOrCancelHours" parameterType="java.lang.String" resultType="java.lang.Double">
+		select sum(iwm.expect_hours) from iterative_work_manage iwm where iwm.pro_no=#{no} and iwm.is_deleted=0 and iwm.`change`=#{change} and   
+		<include refid="workManages" />
+	</select>
+	
+</mapper>

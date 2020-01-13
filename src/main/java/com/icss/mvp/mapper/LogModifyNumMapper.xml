@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.LogModifyNumDao">
+	<resultMap type="com.icss.mvp.entity.LogModifyNum" id="LogModifyNum">
+		<result property="id" column="id"/>
+		<result property="url" column="url"/>
+		<result property="proNo" column="pro_id"/>
+		<result property="fileType" column="file_type"/>
+		<result property="commitTime" column="commit_time"/>
+		<result property="fileModifynum" column="modify_num"/>
+		<result property="createtime" column="create_time"/>
+		<result property="updatetime" column="modify_time"/>
+		<result property="isdelete" column="is_deleted"/>
+		<result property="fileDelfynum" column="del_num"/>
+	</resultMap>
+	<insert id="insertcommitrecord" useGeneratedKeys="true" parameterType="java.util.List">
+		REPLACE INTO log_modify_type (id,url, pro_id, file_type,commit_time,modify_num,create_time,
+		modify_time,is_deleted,del_num)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.id},#{item.url},#{item.proNo},#{item.fileType},#{item.commitTime},#{item.fileModifynum},
+			#{item.createtime},#{item.updatetime},#{item.isdelete},#{item.fileDelfynum})
+		</foreach>
+	</insert>
+	<select id="queryCodeNum" parameterType="java.lang.String" resultType="int">
+		SELECT SUM(num*val) FROM
+		(SELECT IFNULL (t.`modify_num`,0) AS num,t.`file_type` ,t1.`name`,IFNULL(t1.`val`,0) AS val FROM `log_modify_type` t LEFT JOIN `sys_dict_item` t1 ON
+		t.`file_type` =  t1.`name` AND t1.`sys_dict_id` = '6' AND t.`pro_id` = #{no}) a
+	</select>
+	<delete id="delcommitrecord" parameterType="java.util.Map">
+	delete from log_modify_type where pro_id = #{map.no} and url = #{map.url}
+	</delete>
+</mapper>

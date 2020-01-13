@@ -1,0 +1,560 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/ztree/zTreeStyle.css" type="text/css" />    
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+    
+    <link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>  
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    
+    <script type="text/javascript" src="../../resources/ztree/jquery.ztree.all.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script> 
+    <script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <script type="text/javascript" src="js/userManage.js"></script>
+
+    <style>
+		.form-inline .form-group {
+			width: 243px;
+		}
+		.col-sm-3 input{
+			width:80px;
+		}
+		#query-form div input{
+			width:130px;
+		}
+		#query-form div select{
+			width:160px;
+		}
+		
+		.breadcrumb {
+			font-size: 14px;
+		    margin: -50px 0px 10px 0px;
+		    padding: 8px 0px;
+		    background-color:#f5f5f5;
+		}
+	</style>
+    <script type="text/javascript">
+	    //回到顶部
+		function callback(){
+			$("html,body").animate({scrollTop:0}, 200);
+		};
+    </script>
+</head>
+<body>	
+   <div class="" id="search" style="height: 155px;margin-top:50px;">
+  		<div id="fieldset" style="width:94%; height:40%; margin:0 auto;background-color: #ffffff; border: 0px #dddddd solid;">
+	         <ol class="breadcrumb">
+				<li><b>系统</b></li>
+			    <li class="active">用户管理</li>
+			 </ol>
+	         <div>
+				<div id="query-form" class=" pull-left" style="position: relative;top: 10px; border: 0px red solid;width:930px;">
+					<table>
+						<tr>
+							<td>
+								<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;">
+									<input type="text" class="form-control" name="lobname" id="lobname" placeholder="请输入用户名称" />
+								</div>
+							</td>
+							<td>
+								<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;">
+									<select class="form-control input-xsm" id="lobline" name="lobline" placeholder="请选择业务线"></select>
+								</div>
+							</td>
+							<td>
+								<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;">
+									<select class="form-control input-xsm" id="lobdept" name="lobdept" placeholder="请选择事业部"></select> 
+								</div>
+							</td>
+							<td>
+								<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;">
+									<select class="form-control input-xsm" id="lobdepment" name="lobdepment" placeholder="请选择交付部"></select> 
+								</div>
+							</td>
+							<td>
+								<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;">
+									<select class="form-control input-xsm" id="lobrole" name="lobrole" placeholder="请选择用户角色"></select> 
+								</div>
+							</td>
+							<td>
+								<div class="btn-group" style="">
+									<button id="search_btn" type="button" class="btn btn-default">
+										<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+									</button>
+									<button id="clear_btn" type="button" class="btn btn-default">
+										<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+									</button>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				
+				<div class="btn-group" id="toolbar">
+					<button id="btn_add" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					</button>
+				    <!-- <button id="btn_edit" type="button" class="btn btn-default">
+					   <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+				    </button> -->
+				</div>
+			</div>
+			<table id="userlv" class="tablenew" width="100%"></table>
+		</div>
+    </div>    
+    
+	<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">新增用户</h4>
+            </div>
+            
+            <form role="form" id="addUserForm">
+                <div class="modal-body">
+                    <div class="form-inline mb20 mt10">
+                        <div class="form-group form-group-width">
+                            <label for="lastName_A">登录账号</label>
+                            <span style="color: red">*</span>
+                            <input type="text" class="form-control input-xsm" id="lastName_A" name="lastName_A"
+                                   placeholder="请输入登录账号" style="width: 69%;margin-left:7px;">
+                            <small class="help-block" data-bv-for="lastName_A" style="color: #a94442;display: none">账号不能为空</small>
+                        </div>
+                        <br/>
+                        <!--<div class="form-group form-group-width" style="margin-left: 18px;">-->
+                            <!--<label for="password_A" >用户密码</label>-->
+                            <!--<span style="color: red">*</span>-->
+                            <!--<input type="text" class="form-control input-xsm" id="password_A" placeholder="请输入密码" style="width: 170px;margin-left:7px;" >-->
+                        <!--</div>-->
+                        <div class="form-group form-group-width" style="margin-top: 5px">
+							<label for="lastName_A" style="margin-top: 5px;">角色名称</label>
+							<span style="color: red">*</span>
+                            <div class="col-sm-4" style="width:170px;float: right;padding-right: 0px;padding-left: 0px;text-align: left;margin-top: 3px;margin-left: 3px;">
+                              <select class="selectpicker show-tick form-control" id="permissionid" name="permissionid" title="请选择" style="width: 179px" multiple data-live-search="false">
+                              </select>
+							</div>
+                        </div>
+
+						<div class="form-group form-group-width" style="margin-top: 5px;margin-left: 18px;">
+							<label for="lastName_A" style="margin-top: 5px;">业务线</label>
+							<span style="color: red">*</span>
+							<div class="col-sm-4" style="width:170px;float: right;padding-right: 0px;padding-left: 0px;text-align: left;margin-top: 3px;margin-left: 3px;">
+								<select class="selectpicker show-tick form-control" id="buSearch" name="buSearch" title="请选择" style="width: 179px" multiple data-live-search="false">
+								</select>
+							</div>
+						</div>
+						<div class="form-group form-group-width" style="margin-top: 5px;">
+							<label for="lastName_A" style="margin-top: 5px;">事业部</label>
+							<div class="col-sm-4" style="width:170px;float: right;padding-right: 0px;padding-left: 0px;text-align: left;margin-top: 3px;margin-left: 3px;">
+								<select class="selectpicker show-tick form-control" id="duSearch" name="duSearch" title="请选择" style="width: 179px" multiple data-live-search="false">
+								</select>
+							</div>
+						</div>
+						<div class="form-group form-group-width" style="margin-top: 5px;margin-left: 18px;">
+							<label for="lastName_A" style="margin-top: 5px;">交付部</label>
+							<div class="col-sm-4" style="width:170px;float: right;padding-right: 0px;padding-left: 0px;text-align: left;margin-top: 3px;margin-left: 3px;">
+								<select class="selectpicker show-tick form-control" id="deptSearch" name="deptSearch" title="请选择" style="width: 179px" multiple data-live-search="false">
+								</select>
+							</div>
+						</div>
+                    </div>
+                    <input type="reset" style="display:none;"/>
+                </div>
+                <div class="modal-footer" style="text-align:center">
+                    <button id="back" href="javascript:void(0)" class="btn btn-default" data-dismiss="modal"
+                       onclick="$('input[type=reset]').trigger('click');">返回</button>
+                    <button id="addConfirm" href="javascript:void(0)" type="button" class="btn btn-primary" 
+                       onclick="addUser();">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 修改页面 -->
+<div class="modal fade" id="editPage" tabindex="-1" role="dialog" aria-labelledby="modalLabel" data-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title">编辑用户</h4>
+            </div>
+            
+            <form role="form" id="1">
+                <div class="modal-body">
+                    <div class="form-inline mb20 mt10">
+                        <div class="form-group form-group-width" style="float:left;">
+                            <label for="lastName_A">用户名称</label>
+                            <span style="color: red">*</span>
+                            <input type="hidden" id="userId" value=""/>
+                            <input type="text" class="form-control input-xsm" id="userName" name="lastName_A" placeholder="请输入用户名" style="width: 69%;margin-left:7px;">
+                            <small class="help-block" data-bv-for="lastName_A" style="color: #a94442;display: none">姓名不能为空</small>
+                        </div>
+                        <!-- <div class="form-group form-group-width" style="margin-left: 18px;">
+                            <label for="password_A" >用户密码</label>
+                            <span style="color: red">*</span>
+                            <input type="text" class="form-control input-xsm" name="password_A" id="passWord" placeholder="请输入密码" style="width: 170px;margin-left:7px;" >
+                        </div> -->
+                        <div class="form-group form-group-width" style="margin: 45px 0px 0px -243px; float:left;">
+							<label for="lastName_A" style="margin-top: 5px;">角色名称</label>
+							<span style="color: red">*</span>
+                            <div class="col-sm-4" style="width:170px;float: right;padding-right: 0px;padding-left: 0px;text-align: left;margin-top: 3px;margin-left: 3px;">
+                              <select class="selectpicker show-tick form-control" id="permissionid1" name="permissionid" title="请选择" style="width: 179px" multiple data-live-search="false">
+                              </select>
+							</div>
+                        </div>
+
+						<div class="form-group form-group-width" style="margin-top: 45px;margin-left: 22px;">
+							<label for="lastName_A" style="margin-top: 5px;">业务线</label>
+							<span style="color: red">*</span>
+							<div class="col-sm-4" style="width:170px;float: right;padding-right: 0px;padding-left: 0px;text-align: left;margin-top: 3px;margin-left: 3px;">
+								<select class="selectpicker show-tick form-control" id="buSearch1" name="buSearch" title="请选择" style="width: 179px" multiple data-live-search="false">
+								</select>
+							</div>
+						</div>
+						<div class="form-group form-group-width" style="margin-top: 5px;">
+							<label for="lastName_A" style="margin-top: 5px;">事业部</label>
+							<div class="col-sm-4" style="width:170px;float: right;padding-right: 0px;padding-left: 0px;text-align: left;margin-top: 3px;margin-left: 3px;">
+								<select class="selectpicker show-tick form-control" id="duSearch1" name="duSearch" title="请选择" style="width: 179px" multiple data-live-search="false">
+								</select>
+							</div>
+						</div>
+						<div class="form-group form-group-width" style="margin-top: 5px;margin-left: 18px;">
+							<label for="lastName_A" style="margin-top: 5px;">交付部</label>
+							<div class="col-sm-4" style="width:170px;float: right;padding-right: 0px;padding-left: 0px;text-align: left;margin-top: 3px;">
+								<select class="selectpicker show-tick form-control" id="deptSearch1" name="deptSearch" title="请选择" style="width: 179px" multiple data-live-search="false">
+								</select>
+							</div>
+						</div>
+                    </div>
+                    <input type="reset" style="display:none;"/>
+                </div>
+                <div class="modal-footer" style="text-align:center">
+                    <button  href="javascript:void(0)" class="btn btn-default" data-dismiss="modal"
+                    onclick="$('input[type=reset]').trigger('click');">返回</button>
+                    <button id="saveUpdate" href="javascript:void(0)" type="button" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+	
+	<div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content" style="top: 300px;">
+					<div class="modal-body" style="padding: 15px;">
+						<div style="text-align: center;">
+							<span id="dataAcquisition" style="font-size: 14px;">保存成功</span>
+						</div>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+	
+	
+	
+	<script type="text/javascript">
+		//变量
+		var zNodes=[];//树节点数组
+		var dataPiece=null;//每个父节点的子节点
+		var saveState=1;//弹窗状态  新增1 编辑2
+		
+		function showPopover(msg) {
+			$('#dataAcquisition').text(msg);
+			$('#submitImportmodalfooter').css('display','none');
+			$('#savetoop').modal('show');
+			//2秒后消失提示框
+			var id = setTimeout(function () {
+				$('#savetoop').modal('hide');
+			}, 2000);
+		}
+		function showPopoverErr(msg) {
+			$('#dataAcquisition').text(msg);
+			$('#submitImportmodalfooter').css('display','block');
+			$('#savetoop').modal('show');
+		}
+		function hidePopover() {
+			$('#savetoop').modal('hide');
+		}
+		
+		//新增用户弹窗btn_add
+   		$(document).on("click", "#btn_add", function () {
+			$('#lastName_A').val('');
+//			$('#password_A').val('');
+			$('#permissionid').selectpicker('deselectAll');
+			$('#buSearch').selectpicker('deselectAll');
+			$('#duSearch').selectpicker('deselectAll');
+			$('#deptSearch').selectpicker('deselectAll');
+            $('#lastName_A').attr("readonly",false);
+//            $('#password_A').attr("readonly",false);
+
+			$("#addUserModal").modal('show');	
+		});
+
+
+	  //获取权限信息列表
+	  	function getPerInfos(perName){
+		   if(perName){
+			   perName=perName;
+		   }else{
+			   perName='';
+		   }
+	  		$.ajax({
+	  			url: getRootPath() + '/sysRole/perlist',
+	  			type: 'post',
+	  			async: false,
+	  			data: {perName:perName},
+	  			success: function (data) {
+	  				if (0==data.status) {
+	  					 for (var i = 0; i < data.data.length; i++) {
+                             $("#permissionid").append("<option>" + data.data[i].perName + "</option>");
+                             $("#permissionid1").append("<option>" + data.data[i].perName + "</option>");
+	  		  				 $("#lobrole").append("<option value=" + data.data[i].permissionid+ ">" + data.data[i].perName + "</option>");
+	  		  				 $("#perids").append("<option>" + data.data[i].perName + "</option>");
+	  		  			  }	
+					}
+	  			}
+	  		});
+
+            getSearch();
+
+	  	};
+		$(document).on("change", "#buSearch", function () {
+            $.ajax({
+                url: getRootPath() + '/opDepartment/getOpDepartmentBylevel',
+                type: 'post',
+                async: false,
+                data: {level: 3, ids: $("#buSearch").selectpicker("val") == null ? null : $("#buSearch").selectpicker("val").join()},
+                success: function (data) {
+                    $('#duSearch').selectpicker("val", []);
+                    $("#duSearch").empty();
+                    $('#duSearch').prev('div.dropdown-menu').find('ul').empty();
+                    $('#deptSearch').selectpicker("val", []);
+                    $("#deptSearch").empty();
+                    $('#deptSearch').prev('div.dropdown-menu').find('ul').empty();
+                    if (data != null && data.data != null && data.data.length > 0) {
+                        for (var i = 0; i < data.data.length; i++) {
+                            $("#duSearch").append('<option value="' + data.data[i].dept_id + '">' + data.data[i].dept_name + '</option>');
+                        }
+                    }
+                    $('#duSearch').selectpicker('refresh');
+                    $('#duSearch').selectpicker('render');
+                }
+            })
+		})
+		$(document).on("change", "#duSearch", function () {
+            $.ajax({
+                url: getRootPath() + '/opDepartment/getOpDepartmentBylevel',
+                type: 'post',
+                async: false,
+                data: {
+                    level: 4,
+                    ids: $("#duSearch").selectpicker("val") == null ? null : $("#duSearch").selectpicker("val").join()
+                },
+                success: function (data) {
+                    $('#deptSearch').selectpicker("val", []);
+                    $("#deptSearch").empty();
+                    $('#deptSearch').prev('div.dropdown-menu').find('ul').empty();
+                    if (data != null && data.data != null && data.data.length > 0) {
+                        for (var i = 0; i < data.data.length; i++) {
+                            $("#deptSearch").append('<option value="' + data.data[i].dept_id + '">' + data.data[i].dept_name + '</option>');
+                        }
+                    }
+                    $('#deptSearch').selectpicker('refresh');
+                    $('#deptSearch').selectpicker('render');
+                }
+            })
+		})
+		function getSearch(){
+            $.ajax({
+                url: getRootPath() + '/opDepartment/getOpDepartmentBylevel',
+                type: 'post',
+                async: false,
+                data: {
+                    level: 2,
+                },
+                success: function (data) {
+                    $('#buSearch').selectpicker("val", []);
+                    $("#buSearch").empty();
+                    $('#buSearch').prev('div.dropdown-menu').find('ul').empty();
+                    $('#duSearch').selectpicker("val", []);
+                    $("#duSearch").empty();
+                    $('#duSearch').prev('div.dropdown-menu').find('ul').empty();
+                    $('#deptSearch').selectpicker("val", []);
+                    $("#deptSearch").empty();
+                    $('#deptSearch').prev('div.dropdown-menu').find('ul').empty();
+                    if (data != null && data.data != null && data.data.length > 0) {
+                        for (var i = 0; i < data.data.length; i++) {
+                            $("#buSearch").append('<option value="' + data.data[i].dept_id + '">' + data.data[i].dept_name + '</option>');
+                            $("#buSearch1").append('<option value="' + data.data[i].dept_id + '">' + data.data[i].dept_name + '</option>');
+                        }
+                    }
+                    if (data != null && data.data != null && data.data.length > 0) {
+                    	$("#lobline").append('<option value="">'+'请选择业务线'+'</option>');
+                    	for (var i = 0; i < data.data.length; i++) {
+                          	 $("#lobline").append('<option value="' + data.data[i].dept_id + '">' + data.data[i].dept_name + '</option>');
+                        }
+                    }
+                    $('#buSearch').selectpicker('refresh');
+                    $('#buSearch').selectpicker('render');
+                }
+            })
+		}
+	 $('#search_btn').click(function(){
+		 $('#userlv').bootstrapTable('refresh', {url: getRootPath() + '/user/queryList'});
+			
+	 });
+
+		//弹窗点击完成
+		function addUser(){
+			var url,data;
+			var userType = '1';
+			var userId=$('#lastName_A').val();
+			if (userId==null ||userId=="") {
+				alert("登录账号不能为空！")
+				return;
+			}
+//			var passWord=$('#password_A').val();
+//			if (passWord==null ||passWord=="") {
+//				alert("用户密码不能为空！")
+//				return;
+//			}
+
+			
+			var permissionName=$("#permissionid").selectpicker("val")==null?null:$("#permissionid").selectpicker("val").join();
+
+			if(permissionName==null||permissionName==""){
+                alert("角色名称不能为空！")
+                return;
+            }
+            var buSearch=$("#buSearch").selectpicker("val")==null?null:$("#buSearch").selectpicker("val").join();
+
+            if(buSearch==null||buSearch==""){
+                alert("业务线不能为空！")
+                return;
+            }
+            
+			url=getRootPath() + '/user/addUserInfo';
+             data={
+                 "userId":userId,
+//                 "passWord":passWord,
+                 "permissionName":permissionName,
+                 "userType":userType,
+                 "buSearch":buSearch,
+                 "duSearch":$("#duSearch").selectpicker("val")==null?null:$("#duSearch").selectpicker("val").join(),
+                 "deptSearch":$("#deptSearch").selectpicker("val")==null?null:$("#deptSearch").selectpicker("val").join(),
+             };
+			
+			$.ajax({
+				url: url,
+				type: 'post',
+				async: false,
+				data:data,
+				success: function (data) {
+					if(0==data.status){
+						$("#addUserModal").modal('hide');
+						showPopover('保存成功！');
+						getUserInfo();
+					}else{
+						if (1==data.status) {
+							$("#addUserModal").modal('hide');
+							showPopover('用户已存在！');
+						}
+						if (2==data.status) {
+							$("#addUserModal").modal('hide');
+							showPopover('保存失败！');
+						}
+						
+					}
+				}
+			});
+			
+		}
+		$("#lobdept").append('<option value="">'+'请选择事业部'+'</option>');
+	    $("#lobdepment").append('<option value="">'+'请选择交付部'+'</option>');
+	    $("#lobrole").append('<option value="">'+'请选择角色'+'</option>');
+		function querySYB(){//根据业务线选择结果显示事业部
+			$("#lobline").change(function(){
+				getZhongruanSYBData();
+			});
+		};
+		
+		function queryJFB(){//根据事业部选择结果显示交付部
+			$("#lobdept").change(function(){
+				getZhongruanJFBData();
+			});
+	    };
+	    function getZhongruanSYBData(){//根据业务线选择结果显示事业部
+	       $("#lobdept").empty();
+	       $("#lobdepment").empty();
+	       $("#lobdepment").append('<option value="">'+'请选择交付部'+'</option>');
+	    	$.ajax({
+	        	url: getRootPath() + '/opDepartment/getOpDepartmentBylevel',
+                type: 'post',
+                async: false,
+                data: {level: 3, ids: $("#lobline").val()},
+                success: function (data) {
+                	$("#lobdept").append('<option value="">'+'请选择事业部'+'</option>');
+                	if (data != null && data.data != null && data.data.length > 0) {                   	
+                    	for (var i = 0; i < data.data.length; i++) {
+                            $("#lobdept").append('<option value="' + data.data[i].dept_id + '">' + data.data[i].dept_name + '</option>');
+                        }
+                    }
+                }
+            })
+	    };
+	    
+		function getZhongruanJFBData(){//根据事业部选择结果显示交付部		
+			$("#lobdepment").empty();
+            $.ajax({
+                url: getRootPath() + '/opDepartment/getOpDepartmentBylevel',
+                type: 'post',
+                async: false,
+                data: {
+                    level: 4,
+                    ids: $("#lobdept").val()
+                },
+                success: function (data) {
+                	$("#lobdepment").append('<option value="">'+'请选择交付部'+'</option>');
+                	if (data != null && data.data != null && data.data.length > 0) {                   	
+                    	for (var i = 0; i < data.data.length; i++) {
+                            $("#lobdepment").append('<option value="' + data.data[i].dept_id + '">' + data.data[i].dept_name + '</option>');
+                        }
+                    }
+                }
+            })
+		};
+		
+	  	$(document).ready(function(){
+			querySYB();
+			queryJFB();
+			getPerInfos("");
+	  	});	  	
+
+	</script>
+</body> 
+</html>

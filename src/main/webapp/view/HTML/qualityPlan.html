@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/js/sui.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/js/handsontable/handsontable.full.min.css" />
+<link rel="stylesheet" href="../../resources/js/color/spectrum.css" />
+<link rel="stylesheet" href="../HTML/css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../HTML/js/toastr.min.js"></script>
+<script src="../../resources/js/color/spectrum.js"></script>
+<script src="../../resources/js/handsontable/handsontable.full.min.js"></script>
+<script src="../../resources/js/handsontable/languages/all.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/qualityPlan.js"></script>
+<script type="text/javascript" src="../HTML/js/comm/HandsontableComm.js"></script>
+<style>
+	#measure tr,#measure td{
+		height: 25px;
+	}
+	#measure thead tr th,#measure tbody tr td{
+		text-align: center;
+	}
+	#measure tbody tr th{
+		text-align: left;
+		padding-left: 22px;
+	}
+	.fontBoxColor>div>.color-icon-image{
+		width: 15px;
+		height: 20px;
+		margin-top: -22px;
+		background: url(/mvp/view/HTML/images/font-color.png);
+		background-repeat: round;
+		margin-left: 4px;
+	}
+</style>
+</head>
+
+
+<body class="mvp-body">
+
+<div class="mvp-main">
+	<div style="background-color: white;padding-top: 15px;padding-bottom: 10px;">
+		<span style="font-size: 18px;margin-left: 20px;">SOW质量目标</span>
+		<table id="measure" border="1" cellpadding="0" cellspacing="0" style="width: 95%;margin: 0 auto;border: 1px solid #ccc;background-color: #f0f0f0;font-size: 14px;margin-top: 15px;">
+			<thead>
+				<tr>
+					<th>指标分类</th><th>指标名称</th><th>单位</th><th>上限值</th><th>下限值</th><th>挑战值</th><th>目标值</th><th>采集方式</th>
+				</tr>
+			</thead>
+			<tbody id="tbody" style="background-color: #ffffff;"></tbody>
+		</table>
+	</div>
+	<div style="margin-top: 20px;height: 35px;background-color: #eaebeb;">
+		<ul class="nav navbar-nav" id="" style="font-size: 16px;">
+			<li tabname="codeManage" class="active" title="代码管理"><a href="###">代码管理</a></li>
+		</ul>
+		<span class="glyphicon glyphicon-plus" data-toggle="modal" data-target="#module" style="color: #28a3ef;font-size: 20px;cursor: pointer;margin-left: 10px;margin-top: 5px;"></span>
+		<button id="deleQualityPlan" style="float: right;border: 1px #e41f2b solid;background-color: #e41f2b;width: 80px;height: 25px;color: white;border-radius: 5px;outline: none;margin-right: 2.5%;margin-top: 5px;">删除</button>
+		<button id="savaQualityPlan" style="float: right;border: 1px #e41f2b solid;background-color: #e41f2b;width: 80px;height: 25px;color: white;border-radius: 5px;outline: none;margin-right: 1%;margin-top: 5px;">保存</button>
+	</div>
+	<div style="background-color: white;padding-top: 15px;padding-bottom: 10px;">
+		<div style="height: 40px;padding-left: 35px;">
+			背景色:<input id="color-box-background" />
+			字体颜色:<input id="color-box-color" />
+    	</div>
+		<div id="codeManage" style="font-size: 14px;margin-left: 2.5%;"></div>
+	</div>
+	
+	<div class="modal fade" id="module" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;">
+				<div class="modal-body" style="padding: 15px;">
+					<div class="modal-footer" id="submitImportmodalfooter" style="margin-top: 10px;padding: 5px;">
+						<div style="text-align: left;">
+							<span style="display: inline-block;width: 23%;">请输入新的模块名称</span>                     
+							<input class="form-control" type="text" id="moduleName" style="width: 76%;display: unset;" />
+						</div><br />	
+						<button type="button" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+						<button type="button" data-dismiss="modal" id="saveModule" style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">确定</button>
+					</div>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+	<div class="modal fade" id="deletemodule" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;">
+				<div class="modal-body" style="padding: 15px;">
+					<div class="modal-footer" id="submitImportmodalfooter" style="margin-top: 10px;padding: 5px;">
+						<div style="text-align: left;">
+							<span style="display: inline-block;">确定删除该模块及全部数据？</span>                     
+						</div><br />	
+						<button type="button" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+						<button type="button" data-dismiss="modal" id="sureDeletemodule" style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">确定</button>
+					</div>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+</div>
+
+</body>
+</html>

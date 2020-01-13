@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.MemberInforDao">
+	<resultMap type="com.icss.mvp.entity.ProjectInformation" id="ProjectInfor">
+		<result property="no" column="NO"/>
+		<result property="pm" column="PM"/>
+		<result property="pmid" column="PMID"/>
+		<result property="interestRate" column="INTEREST_RATE"/>
+		<result property="actualInterest" column="ACTUAL_INTEREST"/>
+		<result property="operate" column="OPERATE"/>
+		<result property="ytdOperate" column="YTD_OPERATE"/>
+		<result property="op" column="OP"/>
+		<result property="money" column="MONEY"/>
+		<result property="electronFlow" column="ELECTRON_FLOW"/>
+	</resultMap>
+	
+	<resultMap type="com.icss.mvp.entity.ProjectPostInfor" id="PostInfor">
+		<result property="post" column="POSITION"/>
+		<result property="actual" column="ACTUAL"/>
+		<result property="budget" column="DEMAND"/>
+		<result property="keyRole" column="is_keyRole"/>
+	</resultMap>
+  	
+  	<select id="projectInformation"  parameterType="java.lang.String"  resultMap="ProjectInfor">
+	SELECT
+	i.`NO`,i.`PM`,i.`PMID`,a.`INTEREST_RATE`,a.`ACTUAL_INTEREST`,a.`ELECTRON_FLOW`,
+	a.`OPERATE`,a.`YTD_OPERATE`,a.`OP`,a.`MONEY` FROM `project_info_add` a
+	RIGHT JOIN `project_info` i ON i.`NO` = a.`NO`
+	WHERE i.`NO` = #{projectId}
+  	</select>
+  	
+  	<select id="memberinformation"  parameterType="java.lang.String"  resultMap="PostInfor">
+	SELECT POSITION,
+    (SELECT COUNT(*) FROM `project_members_information`
+    WHERE NO = #{projectId} AND post = POSITION) AS ACTUAL,
+    DEMAND FROM `project_post_hierarchy` WHERE NO = #{projectId}
+  	</select>
+  	
+  	<update id="saveMembersInformation" parameterType="com.icss.mvp.entity.ProjectMembersInformation">
+	UPDATE `project_members_information` SET
+	ZR_ACCOUNT=#{project.zrAccount},KEY_ROLE=#{project.keyRole},POST=#{project.post},AREA=#{project.area},IS_211=#{project.school},QUITDAY=#{project.quitday},
+	SILING=#{project.siling},ACHIEVEMENTS_THREE=#{project.achievementsThree},ACHIEVEMENTS_TWO=#{project.achievementsTwo},
+	BACKUP_PERSONEL=#{project.backupPersonel},STAFF_MENTOR=#{project.staffMentor},OMP_KEYROLES=#{project.ompKeyrles},
+	ENTRY_DATA=#{project.entryData},PROJECT_ENTRY=#{project.projectEntry},PROJECT_OUTPUT=#{project.projectOutput},INCENTIVE_MATRIX=#{project.incentiveMatrix}
+	WHERE ID = #{project.id}
+	</update>
+	<update id="saveProjectInformation" parameterType="com.icss.mvp.entity.ProjectMembersInformation">
+	UPDATE `project_members_information` SET
+	EDUCATION=#{project.education},RANK=#{project.rank},GRADUATION=#{project.graduation},ENTRY=#{project.entry},
+	SILING=#{project.siling},IS_BACKBONE=#{project.backbone},
+	ACHIEVEMENTS_FOUR=#{project.achievementsFour},ACHIEVEMENTS_ONE=#{project.achievementsOne},
+	ACHIEVEMENTS_THREE=#{project.achievementsThree},ACHIEVEMENTS_TWO=#{project.achievementsTwo},
+	CURRENTJOB_STARTTIME=#{project.jobStart},
+	<if test="project.lastAdjustmeny != null and project.lastAdjustmeny != '' ">
+       LAST_SALARY_ADJUSTMENT=#{project.lastAdjustmeny},
+    </if>
+	WORKING_LIFE=#{project.workingLift},CHANNEL_RANK=#{project.channelRank},
+	PAY_INTERVAL=#{project.payInterval},CURRENT_WORKING_HOURS=#{project.workingHours},
+	PERFORMANCE_SCORE=#{project.performanceScore},IS_RANK_INVERSION=#{project.rankInversion},
+	PAY_ADJUSETMMENT_INDEX=#{project.payAdjusetmment},IS_CHANGEOFPOST=#{project.changeOfPost},
+	IS_ELIMINATION=#{project.elimination}
+	WHERE ID = #{project.id}
+	</update>
+   <resultMap id="MemberResult" type="com.icss.mvp.entity.ProjectMembersInformation">
+    <id property="id" column="ID" />
+    <result property="no" column="NO" />
+    <result property="name" column="NAME" />
+    <result property="zrAccount" column="ZR_ACCOUNT" />
+    <result property="area" column="AREA" />
+    <result property="education" column="EDUCATION" />
+    <result property="school" column="IS_211" />
+    <result property="graduation" column="GRADUATION" />
+    <result property="entry" column="ENTRY" />
+    <result property="quitday" column="QUITDAY" />
+    <result property="siling" column="SILING" />
+    <result property="achievementsFour" jdbcType="VARCHAR" column="ACHIEVEMENTS_FOUR" />
+    <result property="achievementsThree" jdbcType="VARCHAR" column="ACHIEVEMENTS_THREE" />
+    <result property="achievementsTwo" column="ACHIEVEMENTS_TWO" />
+    <result property="achievementsOne" column="ACHIEVEMENTS_ONE" />
+    <result property="rank" column="RANK" />
+    <result property="post" column="POST" />
+    <result property="backupPersonel" column="BACKUP_PERSONEL" />
+    <result property="staffMentor" column="STAFF_MENTOR" />
+    <result property="backbone" column="IS_BACKBONE" />
+    <result property="ompKeyrles" column="OMP_KEYROLES" />
+    <result property="entryData" column="ENTRY_DATA" />
+    <result property="projectEntry" column="PROJECT_ENTRY" />
+    <result property="projectOutput" column="PROJECT_OUTPUT" />
+    <result property="jobStart" column="CURRENTJOB_STARTTIME" />
+    <result property="lastAdjustmeny" column="LAST_SALARY_ADJUSTMENT" />
+    <result property="incentiveMatrix" column="INCENTIVE_MATRIX" />
+    <result property="workingLift" column="WORKING_LIFE" />
+    <result property="channelRank" column="CHANNEL_RANK" />
+    <result property="payInterval" column="PAY_INTERVAL" />
+    <result property="workingHours" column="CURRENT_WORKING_HOURS" />
+    <result property="performanceScore" column="PERFORMANCE_SCORE" />
+    <result property="rankInversion" column="IS_RANK_INVERSION" />
+    <result property="payAdjusetmment" column="PAY_ADJUSETMMENT_INDEX" />
+    <result property="changeOfPost" column="IS_CHANGEOFPOST" />
+    <result property="elimination" column="IS_ELIMINATION" />
+    <result property="keyRole" column="KEY_ROLE" />
+  </resultMap>
+   <select id="queryMembersInformation" parameterType="java.lang.String" resultMap="MemberResult">
+    SELECT * FROM `project_members_information` WHERE NO = #{proNo} 
+   </select>
+   <select id="editDataPosts" parameterType="java.lang.String" resultMap="MemberResult">
+    SELECT * FROM `project_members_information` WHERE ID = #{id} 
+   </select>
+   
+   	<!-- 中软工号查重 -->
+	<select id="getZRAccountCount" resultType="int">
+		SELECT COUNT(ZR_ACCOUNT) FROM project_members_information WHERE ZR_ACCOUNT = #{zrAccount}
+		AND NO = #{proNo}
+	</select>
+	
+	<!-- 导入岗位 -->
+	<insert id="addPostInformation" parameterType = "com.icss.mvp.entity.ProjectPostInfor">
+		<!-- INSERT INTO project_post_hierarchy(NO,POSITION,NAME,DEMAND,dict_item_id)
+		VALUES(#{proNo},#{projectPostInfo.post},(SELECT val FROM sys_dict_item WHERE NAME = #{projectPostInfo.post} LIMIT 1),#{projectPostInfo.budget},
+		(SELECT sdi.id FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sdi.sys_dict_id = sd.order
+		WHERE sdi.NAME = #{projectPostInfo.post} AND sd.name = #{projectPostInfo.roleOrPost})) -->
+		INSERT INTO project_post_hierarchy(NO,POSITION,NAME,DEMAND,dict_item_id)
+		VALUES(#{proNo},#{projectPostInfo.post},(SELECT val FROM sys_dict_item WHERE NAME = #{projectPostInfo.post} LIMIT 1),#{projectPostInfo.budget},
+		(select v.id from v_dictionary v where v.`key` = #{projectPostInfo.post} and v.name = #{projectPostInfo.roleOrPost}))
+	</insert>
+	
+	<!-- 导入成员 -->
+	<insert id="addMemberInfo" parameterType = "com.icss.mvp.entity.ProjectMembersInformation">
+		INSERT INTO project_members_information(NO,NAME,ZR_ACCOUNT,AREA,EDUCATION,IS_211,GRADUATION,ENTRY,QUITDAY,SILING,ACHIEVEMENTS_FOUR
+		,ACHIEVEMENTS_THREE,ACHIEVEMENTS_TWO,ACHIEVEMENTS_ONE,RANK,POST,BACKUP_PERSONEL,STAFF_MENTOR,IS_BACKBONE,OMP_KEYROLES,ENTRY_DATA
+		,PROJECT_ENTRY,PROJECT_OUTPUT,CURRENTJOB_STARTTIME,LAST_SALARY_ADJUSTMENT,INCENTIVE_MATRIX,WORKING_LIFE,CHANNEL_RANK,PAY_INTERVAL
+		,CURRENT_WORKING_HOURS,PERFORMANCE_SCORE,IS_RANK_INVERSION,PAY_ADJUSETMMENT_INDEX,IS_CHANGEOFPOST,IS_ELIMINATION,KEY_ROLE)
+		VALUES(#{projectMembersInfo.no},#{projectMembersInfo.name},#{projectMembersInfo.zrAccount},#{projectMembersInfo.area},#{projectMembersInfo.education}
+		,#{projectMembersInfo.school},#{projectMembersInfo.graduation},#{projectMembersInfo.entry},#{projectMembersInfo.quitday},#{projectMembersInfo.siling}
+		,#{projectMembersInfo.achievementsFour},#{projectMembersInfo.achievementsThree},#{projectMembersInfo.achievementsTwo},#{projectMembersInfo.achievementsOne},#{projectMembersInfo.rank}
+		,#{projectMembersInfo.post},#{projectMembersInfo.backupPersonel},#{projectMembersInfo.staffMentor},#{projectMembersInfo.backbone},#{projectMembersInfo.ompKeyrles}
+		,#{projectMembersInfo.entryData},#{projectMembersInfo.projectEntry},#{projectMembersInfo.projectOutput},#{projectMembersInfo.jobStart},#{projectMembersInfo.lastAdjustmeny}
+		,#{projectMembersInfo.incentiveMatrix},#{projectMembersInfo.workingLift},#{projectMembersInfo.channelRank},#{projectMembersInfo.payInterval},#{projectMembersInfo.workingHours}
+		,#{projectMembersInfo.performanceScore},#{projectMembersInfo.rankInversion},#{projectMembersInfo.payAdjusetmment},#{projectMembersInfo.changeOfPost},#{projectMembersInfo.elimination}
+		,#{projectMembersInfo.keyRole})
+	</insert>
+	
+	<!-- 查询所有成员信息 -->
+	<select id="queryProjectMembersInfo" resultMap="MemberResult">
+		SELECT * FROM project_members_information WHERE NO = #{proNo} ORDER BY POST,KEY_ROLE,ZR_ACCOUNT
+	</select>
+	
+	<select id="queryProjectPostInfo" resultMap="PostInfor">
+		SELECT pph.POSITION,pph.DEMAND,sdp.is_keyRole 
+		FROM project_post_hierarchy pph
+		LEFT JOIN sys_dict_post sdp ON pph.dict_item_id = sdp.dict_item_id
+		WHERE pph.NO = #{proNo}
+	</select>
+	
+	<select id="queryActualNumberOfPost" resultMap="MemberResult">
+		SELECT POST,COUNT(POST) AS ACTUAL,KEY_ROLE
+		FROM project_members_information WHERE NO = #{proNo}
+		GROUP BY KEY_ROLE,POST
+	</select>
+	
+	<select id="getPostCount" parameterType = "com.icss.mvp.entity.ProjectPostInfor" resultMap="PostInfor">
+		SELECT pph.POSITION,sdp.is_keyRole,pph.DEMAND FROM project_post_hierarchy pph
+		LEFT JOIN sys_dict_post sdp ON pph.dict_item_id = sdp.dict_item_id
+		WHERE pph.NO=#{proNo}
+		AND pph.POSITION = #{projectPostInfo.post}
+		AND sdp.is_keyRole = #{projectPostInfo.keyRole}
+	</select>
+	
+	<update id="updatePostInformation" parameterType="com.icss.mvp.entity.ProjectPostInfor">
+		<!-- UPDATE project_post_hierarchy SET
+		DEMAND = #{projectPostInfo.budget}
+		WHERE NO = #{proNo}
+		AND POSITION = #{projectPostInfo.post}
+		AND dict_item_id = (SELECT sdi.id FROM sys_dict_item sdi LEFT JOIN sys_dict sd ON sdi.sys_dict_id = sd.order
+		WHERE sdi.NAME = #{projectPostInfo.post} AND sd.name = #{projectPostInfo.roleOrPost}) -->
+		UPDATE project_post_hierarchy SET
+		DEMAND = #{projectPostInfo.budget}
+		WHERE NO = #{proNo}
+		AND POSITION = #{projectPostInfo.post}
+		AND dict_item_id = (select v.id from v_dictionary v where v.`key` = #{projectPostInfo.post} 
+		and v.name = #{projectPostInfo.roleOrPost}))
+	</update>
+</mapper>

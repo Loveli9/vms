@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.CodeGainTypeDao">
+    <resultMap type="com.icss.mvp.entity.CodeGainType" id="codeTypeMap">
+        <result property="id" column="ID"/>
+        <result property="type" column="TYPE"/>
+        <result property="no" column="NO"/>
+        <result property="parameterId" column="PARAMETER_ID"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+    </resultMap>
+    <!-- 新增记录 -->
+    <insert id="saveCodeGainType" parameterType="com.icss.mvp.entity.CodeGainType">
+		INSERT INTO code_gain_type (TYPE,NO,PARAMETER_ID,CREATE_TIME,MODIFY_TIME) VALUES (#{cGainType.type},#{cGainType.no},#{cGainType.parameterId},#{cGainType.createTime},#{cGainType.modifyTime})
+	</insert>
+    <!-- 查询记录 -->
+    <select id="getCodeTypeNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM code_gain_type
+        WHERE NO = #{no} AND PARAMETER_ID = #{parameterId}
+    </select>
+    <!-- 更新记录 -->
+    <update id="updateCodeGainType" parameterType="com.icss.mvp.entity.CodeGainType">
+		UPDATE code_gain_type SET TYPE = #{cGainType.type} ,MODIFY_TIME = #{cGainType.modifyTime} WHERE NO = #{cGainType.no} and PARAMETER_ID = #{cGainType.parameterId}
+	</update>
+    <!--  -->
+    <select id="getCodeTypeByNo" parameterType="java.lang.String" resultMap="codeTypeMap">
+        SELECT *
+        FROM code_gain_type
+        WHERE NO = #{no} AND PARAMETER_ID IN (${parameterIds})
+    </select>
+    <!-- 保存邮件 -->
+    <insert id="saveEmailInfo">
+		INSERT INTO email_info (no,send_email,email_on_off) VALUES (#{no},#{emailUrl},#{emailOnOff})
+	</insert>
+    <!-- 更新邮件 -->
+    <update id="updateEmailInfo">
+		UPDATE email_info SET send_email = #{emailUrl} ,email_on_off = #{emailOnOff} WHERE NO = #{no}
+	</update>
+    <!-- 查询邮件 -->
+    <select id="getEmailInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT *
+        FROM email_info
+        WHERE NO = #{no.no}
+    </select>
+    <insert id="saveProjectParamterRecord" parameterType="com.icss.mvp.entity.CodeGainType">
+		REPLACE INTO project_parameter_record 
+		(pro_no,parameter_id,parameter_value,create_time)
+		 VALUES 
+		(#{no},#{parameterId},#{type},#{modifyTime})
+	</insert>
+    <select id="getStaticMeasureCount" parameterType="java.lang.String" resultType="int">
+        <!-- select count(1) from
+                project_label_config l left join label_measure_config m on l.id=m.PROJECT_LABLE_ID
+                where l.label_id=42 and l.is_deleted=0 and m.MEASURE_ID in(303,305,306,307,308,309,310,311,337,385,387)
+                and m.IS_DELETED=0 and l.project_id = #{proNo} -->
+        SELECT COUNT(*)
+        FROM (
+        SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(a.measure_ids, ',', b.help_topic_id + 1), ',', -1) AS measure_id
+        FROM (SELECT measure_ids
+        FROM `measure_configuration_record`
+        WHERE NO = #{proNo}
+        ORDER BY `update_time` DESC
+        LIMIT 1) a
+        LEFT JOIN mysql.help_topic b ON b.help_topic_id &lt;
+        (LENGTH(a.measure_ids) - LENGTH(REPLACE(a.measure_ids, ',', '')) +
+        1)) a
+        WHERE a.measure_id IN (303, 305, 306, 307, 308, 309, 310, 311, 337, 385, 387)
+    </select>
+    <select id="getReliableStaticMeasureCount" parameterType="java.lang.String" resultType="int">
+        <!-- select count(1) from
+         project_label_config
+         where label_id in (46,53) and is_deleted=0 and project_id = #{proNo}-->
+        SELECT COUNT(*)
+        FROM
+        (
+        SELECT
+        a.`ID`,
+        b.`label`
+        FROM
+        `in_tmpl_index` a,
+        `in_tmpl_label` b,
+        `in_tmpl_label_index` c
+        WHERE a.`ID` = c.`index_id`
+        AND b.`ID` = c.`label_id`
+        AND b.`label` = '可信指标'
+        GROUP BY a.`ID`
+        ) a,
+        (
+        SELECT *
+        FROM (
+        SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(a.measure_ids, ',', b.help_topic_id + 1), ',',
+        -1) AS measure_id
+        FROM (SELECT measure_ids
+        FROM `measure_configuration_record`
+        WHERE NO = #{proNo}
+        ORDER BY
+        `update_time` DESC
+        LIMIT 1) a
+        LEFT JOIN mysql.help_topic b ON b.help_topic_id &lt; (
+        LENGTH(a.measure_ids) - LENGTH(REPLACE(a.measure_ids, ',', '')) + 1)) a) b
+        WHERE a.ID = b.measure_id
+    </select>
+
+    <select id="getClose" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT is_close
+        FROM project_review
+        WHERE pro_no = #{no} AND is_close = #{closeMark}
+    </select>
+
+    <select id="queryProjectPO" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT NAME
+        FROM project_po
+        WHERE NO = #{proNo}
+    </select>
+
+    <update id="updateProjectPO" parameterType="java.lang.String">
+		UPDATE project_po SET NAME = #{po}, MODIFY_TIME = NOW() WHERE NO = #{proNo}
+	</update>
+
+    <insert id="addProjectPO" parameterType="java.lang.String">
+		INSERT INTO project_po (CREATE_TIME, MODIFY_TIME, IS_DELETED, NO, NAME) VALUES
+		(NOW(), NOW(), 0, #{proNo}, #{po})
+	</insert>
+
+    <select id="getProIsKx" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT cgt.`TYPE`
+        FROM code_gain_type cgt
+        WHERE cgt.`NO` = #{no} AND cgt.PARAMETER_ID = 165
+    </select>
+
+    <select id="queryProjectOffline" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM code_gain_type
+        WHERE NO = #{no} AND PARAMETER_ID = #{measureMark}
+        AND TYPE = #{measureType}
+    </select>
+</mapper>

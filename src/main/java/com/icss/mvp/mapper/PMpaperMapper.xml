@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IPMpaperDao">
+
+	<resultMap id="iterationCycle" type="com.icss.mvp.entity.IterationCycle">
+	    <id column="id" jdbcType="VARCHAR" property="id" />
+	    <result column="pro_no" jdbcType="VARCHAR" property="proNo" />
+	    <result column="plan_start_date" jdbcType="DATE" property="planStartDate" />
+	    <result column="plan_end_date" jdbcType="DATE" property="planEndDate" />
+	    <result column="start_date" jdbcType="DATE" property="startDate" />
+	    <result column="end_date" jdbcType="DATE" property="endDate" />
+	    <result column="ite_name" jdbcType="VARCHAR" property="iteName" />
+	    <result column="describe_info" jdbcType="VARCHAR" property="describeInfo" />
+	    <result column="code" jdbcType="VARCHAR" property="code" />
+	    <result column="is_deleted" jdbcType="VARCHAR" property="isDeleted" />
+  	</resultMap>
+
+	<select id="queryProName" parameterType="java.lang.String" resultType="java.lang.String">
+		select NAME from project_info where no=#{proNo}
+	</select>
+	
+	<select id="queryLowlocDetail" resultType="com.icss.mvp.entity.LowLoc">
+		select * from lowloc order by pdu,month
+	</select>
+	
+	<select id="getProjName" parameterType="java.lang.String" resultType="java.lang.String">
+		select NAME from project_info where NO=#{no}
+	</select>
+ 
+	<select id="getPMname" parameterType="java.lang.String" resultType="java.lang.String">
+		<!-- select NAME from project_members_local where ROLE='PM' and NO=#{no} -->
+		select NAME from project_staff ps left join member_base mb on
+		ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		where ROLE='PM' and NO=#{no} and ps.IS_DELETED = 0 limit 1
+	</select>
+ 
+	<select id="sumDTS" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from dts_log
+			where (colse_Type=null or colse_Type='' or colse_Type='Closure After Correction')
+				and no=#{no}
+	</select>
+ 
+	<select id="sumBySeverity" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select count(*) as alls,sum(severity='Critical') as critical,sum(severity='Major') as major,
+			sum(severity='Minor') as minor,sum(severity='Suggestion') as suggestion from dts_log
+				where (colse_Type=null or colse_Type='' or colse_Type='Closure After Correction')
+					and curent_Status!='Cancel'
+					and no=#{no}
+	<if test="all!=null">
+		and curent_Status!='Close'
+	</if>
+	</select>
+ 
+	<select id="getCurentStatus" resultType="com.icss.mvp.entity.CodeMasterInfo">
+		<!-- select * from code_master_info where CODEKEY='curent_Status' -->
+		select v.code as CODEKEY, v.`key` as NAME, v.value as VALUE, v.name as NOTE 
+		from v_dictionary v where v.code='curent_Status';	
+	</select>
+ 
+	<select id="sumByCurentStatus" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from dts_log 
+			where (colse_Type=null or colse_Type='' or colse_Type='Closure After Correction')
+				and curent_Status=#{status}
+				and no=#{no}
+	</select>
+ 
+	<select id="runingDTS" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from dts_log
+			where (colse_Type=null or colse_Type='' or colse_Type='Closure After Correction')
+				and curent_Status!='Close' and curent_Status!='Cancel'
+				and no=#{no}
+	</select>
+	
+	<select id="getProject" parameterType="java.lang.String" resultType="com.icss.mvp.entity.ProjectInfo">
+		<!-- select p.no as no,p.name as name,p.pdu_spdt as pduSpdt,p.area as area,p.hwzpdu as hwzpdu,CONCAT_WS(' ',(SELECT
+			m.NAME FROM project_keyroles m WHERE  m.NO = p.NO AND m.POSITION = 'PM' LIMIT 1),(SELECT
+			m.zr_account FROM project_keyroles m WHERE  m.NO =	p.NO AND m.POSITION = 'PM' LIMIT 1)) AS pm,
+			CONCAT_WS(' ',(SELECT m.NAME  FROM project_keyroles m WHERE	m.NO = p.NO	AND m.POSITION = 'QA' LIMIT 1),(SELECT
+			m.zr_account FROM project_keyroles m WHERE  m.NO =	p.NO AND m.POSITION = 'QA' LIMIT 1))
+			AS qa,p.pdu as pdu from project_info p where p.no=#{no} -->
+		  SELECT
+		  p.no       AS NO,
+		  p.name     AS NAME,
+		  p.pdu_spdt AS pduSpdt,
+		  p.area     AS AREA,
+		  p.hwzpdu   AS hwzpdu,
+		  CONCAT_WS(' ',(SELECT m.NAME FROM member_base m LEFT JOIN project_staff ps ON m.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		  AND ps.IS_DELETED = 0 AND ps.IS_KEY_STAFFS = 0
+		  WHERE ps.NO = p.NO AND ps.ROLE = 'PM' LIMIT 1),
+		  (SELECT m.ZR_ACCOUNT FROM project_staff m WHERE m.NO = p.NO AND m.ROLE = 'PM' LIMIT 1)) AS pm,
+		  CONCAT_WS(' ',(SELECT m.NAME FROM member_base m LEFT JOIN project_staff ps ON m.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		  AND ps.IS_DELETED = 0 AND ps.IS_KEY_STAFFS = 0
+		  WHERE ps.NO = p.NO AND ps.ROLE = 'QA' LIMIT 1),
+		  (SELECT m.ZR_ACCOUNT FROM project_staff m WHERE m.NO = p.NO AND m.ROLE = 'QA' LIMIT 1)) AS qa,
+		  p.pdu      AS pdu
+		FROM project_info p
+		WHERE p.no = #{no}
+	</select>
+ 
+ 	<select id="needs" parameterType="java.lang.String" resultType="java.util.HashMap">
+ 		select ic.ite_name,ic.plan_start_date,ic.plan_end_date,ic.start_date,ic.end_date,sum(sdi.name='关键') as cri,sum(sdi.name='重要') as maj,sum(sdi.name='一般') as min,sum(sdi.name='提示') as sug from iterative_work_manage iwm 
+				left join sys_user su on iwm.creator=su.USERID
+				left join iteration_cycle ic on iwm.ite_id=ic.id
+				left join sys_dict_item sdi on sdi.val=iwm.importance
+			where iwm.is_deleted=0 and ic.is_deleted=0 and iwm.pro_no=#{no}
+				and sdi.sys_dict_id=(select sd.id from sys_dict sd where sd.name='重要程度') group by ic.ite_name
+ 	</select>
+ 
+ 	<select id="measures" parameterType="java.lang.String" resultType="com.icss.mvp.entity.Measure">
+ 	<![CDATA[
+ 		select m.ID,m.name,m.UNIT,m.UPPER,m.LOWER,m.TARGET,imi.value from iteration_measure_index imi 
+			left join iteration_cycle ic on imi.iteration_id=ic.id 
+			left join measure m on m.ID=imi.measure_id
+			left join label_measure_config lmc on imi.measure_id=lmc.MEASURE_ID
+			where ic.start_date<=now() and ic.end_date>=now()
+		 		and lmc.IS_DELETED=0
+				and ic.is_deleted=0
+				and lmc.PROJECT_LABLE_ID in(select id from project_label_config where is_deleted=0 and project_id=#{no})
+				and ic.pro_no=#{no}
+	]]>
+ 	</select>
+ 	
+ 	<select id="hotMeasures" resultType="java.util.HashMap">
+ 		select lmc.MEASURE_ID,count(*) as num from label_measure_config lmc
+			where lmc.IS_DELETED=0
+				and lmc.PROJECT_LABLE_ID in(select plc.id from project_label_config plc where plc.label_id in(select l.ID from label l where l.CATEGORY='业务线通用'))
+			group by lmc.MEASURE_ID order by num desc
+ 	</select>
+ 	
+ 	<select id="iterationCycles" parameterType="java.lang.String" resultMap="iterationCycle">
+ 	<![CDATA[
+ 		select * from iteration_cycle ic 
+			where ic.pro_no=#{no} and ic.is_deleted=0 order by ic.start_date;
+ 	]]>
+ 	</select>
+ 	<select id="bugSubmission" parameterType="java.lang.String" resultType="java.util.HashMap">
+ 		SELECT d.ticket_No AS id,IFNULL(IFNULL(s.name,m.name),d.ACCOUNT) AS creator,SUM(d.severity='Critical')AS critical,SUM(d.severity='Major') AS major,SUM(d.severity='Minor') AS minor,SUM(d.severity='Suggestion') AS suggestion,COUNT(*) AS alls FROM
+(SELECT ticket_No,RIGHT(REPLACE(creator,' ',''),8) AS ACCOUNT,current_Handler,severity
+FROM DTS_LOG WHERE NO = #{no} AND RIGHT(REPLACE(creator,' ',''),8) = #{ACCOUNT} AND curent_Status != 'Cancel' AND curent_Status != 'Close' AND (colse_Type IS NULL || colse_Type = '' || colse_Type='Closure After Correction')) d
+LEFT JOIN
+(SELECT NAME,RIGHT(REPLACE(AUTHOR,' ',''),8) AS AUTHOR,RIGHT(REPLACE(ZR_ACCOUNT,' ',''),8) AS ZR_ACCOUNT FROM project_members) s ON s.AUTHOR = d.ACCOUNT OR s.ZR_ACCOUNT=d.ACCOUNT
+LEFT JOIN
+(SELECT NAME,RIGHT(REPLACE(ACCOUNT,' ',''),8) AS ACCOUNT FROM project_member) m ON m.ACCOUNT = d.ACCOUNT ORDER BY creator
+ 	</select>
+ 	
+ 	<select id="bugSubmissionAcc" parameterType="java.lang.String" resultType="java.util.HashMap">
+ 		SELECT DISTINCT(RIGHT(REPLACE(creator,' ',''),8)) AS ACCOUNT
+        FROM DTS_LOG WHERE NO = #{no} AND curent_Status != 'Cancel' AND curent_Status != 'Close' AND (colse_Type IS NULL || colse_Type = '' || colse_Type='Closure After Correction')
+ 	</select>
+ 	
+ 	<select id="dtsCount" parameterType="java.lang.String" resultType="java.util.HashMap">
+ 	<![CDATA[
+ 		SELECT COUNT(*) as alls,sum(severity='Critical'||severity='致命') as critical,sum(severity='Major'||severity='严重' ) as major,sum(severity='Minor'||severity='一般' ) as minor,sum(severity='Suggestion'||severity='提示' ) as suggestion FROM DTS_LOG 
+			WHERE (curent_Status != '${@com.icss.mvp.Constants@CANCEL}'&& curent_Status !='撤消')  AND (curent_Status != '${@com.icss.mvp.Constants@CLOSE}'&& curent_Status !='关闭')  
+				AND (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}'||colse_Type='问题解决关闭')
+				and no = #{no} and created_Time >= #{startTime} and created_Time <= #{endTime}
+ 	]]>
+ 	</select>
+ 	
+ 	<select id="storyStatus" resultType="com.icss.mvp.entity.SysDictItem">
+ 		select sdi.name as name,sdi.val as val from sys_dict_item sdi where sdi.sys_dict_id=4 order by sdi.`order`	
+ 	</select>
+ 	
+ 	<select id="storyByStatus" parameterType="java.lang.String" resultType="java.lang.Integer">
+ 		select count(*) as num from iterative_work_manage iwm 
+			where iwm.ite_type=(select val from sys_dict_item where name='story') and iwm.is_deleted=0 
+				and iwm.pro_no=#{no} and iwm.ite_id=#{iteId}
+				and iwm.`status`=#{status}
+ 	</select>
+ 	
+ 	<select id="storyCounts" parameterType="java.lang.String" resultType="java.lang.Integer">
+ 		select count(*) as alls from iterative_work_manage iwm 
+			where iwm.ite_type=(select val from sys_dict_item where name='story') and iwm.is_deleted=0 
+				and iwm.pro_no=#{no} and iwm.ite_id=#{iteId}
+ 	</select>
+ 	
+</mapper>

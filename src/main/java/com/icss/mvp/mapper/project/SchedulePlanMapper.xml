@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.project.ISchedulePlanDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.project.SchedulePlanEntity">
+        <result column="id" property="id"/>
+        <result column="project_schedule_id" property="projectScheduleId"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="schedule_type" property="scheduleType"/>
+        <result column="schedule_icon" property="scheduleIcon"/>
+        <result column="planned_finish_date" property="plannedFinishDate"/>
+        <result column="actual_finish_date" property="actualFinishDate"/>
+        <result column="schedule_state" property="scheduleState"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+    <resultMap id="ProjectSchedulePlanResultMap" type="com.icss.mvp.entity.project.ProjectSchedulePlanEntity">
+        <result column="id" property="id"/>
+        <result column="NO" property="no"/>
+        <result column="plan_name" property="planName"/>
+        <result column="plan_type" property="planType"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <select id="getProjectSchedulePlanList" resultMap="ProjectSchedulePlanResultMap">
+        SELECT * FROM project_schedule_plan  WHERE  no = #{no} and is_deleted = 0
+    </select>
+
+    <select id="getSchedulePlanList" resultMap="BaseResultMap">
+        SELECT * FROM schedule_plan  WHERE  project_schedule_id = #{projectScheduleId} and is_deleted = 0 order by planned_finish_date
+    </select>
+    
+	<sql id="sql_column">
+		`s`.`id`, `s`.`project_schedule_id`,
+		`s`.`name`, `s`.`description`, `s`.`schedule_type`,
+		`s`.`schedule_icon`, `s`.`schedule_state`,
+		`s`.`planned_finish_date`,
+		`s`.`actual_finish_date`,
+		`s`.`create_time`,
+		`s`.`modify_time`
+	</sql>
+	
+	<select id="querySchedulePlan" resultMap="BaseResultMap">
+		SELECT
+		<include refid="sql_column" />
+		FROM schedule_plan s join project_schedule_plan p
+		on s.project_schedule_id = p.id
+		and s.is_deleted = 0 and p.is_deleted = 0
+		WHERE 1 = 1
+		<if test="no != null and no != ''">
+			AND `NO` = #{no}
+		</if>
+		<if test="name != null and name != ''">
+			AND `name` = #{name}
+		</if>
+	</select>
+
+    <insert id="insertProjectSchedulePlan" parameterType="com.icss.mvp.entity.project.ProjectSchedulePlanEntity" useGeneratedKeys="true" keyProperty="repInfo.id">
+		INSERT INTO project_schedule_plan (NO,create_time,modify_time,is_deleted,plan_name,plan_type)
+		VALUES(#{repInfo.no},#{repInfo.createTime},#{repInfo.modifyTime},#{repInfo.isDeleted},
+		#{repInfo.planName},#{repInfo.planType});
+	</insert>
+
+    <insert id="insertSchedulePlan" parameterType="com.icss.mvp.entity.project.SchedulePlanEntity" useGeneratedKeys="true" keyProperty="repInfo.id">
+		INSERT INTO schedule_plan (project_schedule_id,create_time,modify_time,is_deleted,name,description,schedule_type,
+		schedule_icon,planned_finish_date,actual_finish_date,schedule_state)
+		VALUES(#{repInfo.projectScheduleId},#{repInfo.createTime},#{repInfo.modifyTime},#{repInfo.isDeleted},#{repInfo.name},
+		#{repInfo.description},#{repInfo.scheduleType},#{repInfo.scheduleIcon},#{repInfo.plannedFinishDate},
+		#{repInfo.actualFinishDate},#{repInfo.scheduleState});
+	</insert>
+
+    <update id="delSchedulePlan" >
+        UPDATE `schedule_plan` SET `is_deleted` = 1 WHERE id = #{id}
+    </update>
+    <update id="delProjectSchedulePlanByProjectScheduleId" >
+        UPDATE `schedule_plan` SET `is_deleted` = 1 WHERE project_schedule_id = #{id}
+    </update>
+    <update id="delProjectSchedulePlan" >
+        UPDATE `project_schedule_plan` SET `is_deleted` = 1 WHERE id = #{id}
+    </update>
+
+    <update id="editSchedulePlan" parameterType="com.icss.mvp.entity.project.SchedulePlanEntity">
+        UPDATE `schedule_plan` SET
+        `name` = #{data.name}
+        <if test="null != data.description and '' != data.description">
+            ,`description` = #{data.description}
+        </if>
+        ,`schedule_type` = #{data.scheduleType}
+        ,`schedule_icon` = #{data.scheduleIcon}
+        ,`schedule_state` = #{data.scheduleState}
+        ,`planned_finish_date` = #{data.plannedFinishDate}
+        <if test="null != data.actualFinishDate">
+          ,`actual_finish_date` = #{data.actualFinishDate}
+        </if>
+        WHERE id = #{data.id}
+    </update>
+</mapper>

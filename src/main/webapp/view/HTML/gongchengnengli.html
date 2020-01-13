@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+</head>
+<body>
+    <table width="98%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+                <div>
+                    <div class="chart-title">
+                        <span>工程能力</span></div>
+ 						<div  style="padding-bottom:20px;display:block">
+                            <div id="projCapacityGrid" ></div>
+                        </div>
+                    <div class="selDiv">
+                       	 指标：<select id="proj-capacity-sel">
+                       	  
+                        </select>
+                    </div>
+                    <div class="chartDiv">
+                        <div id="Div1" style="width: 98%; height: 330px;">
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+	    var projNo = window.parent.projNo;
+	    var buName = window.parent.projBU;
+        // 基于准备好的dom，初始化echarts实例
+        var myChart1 = echarts.init(document.getElementById('Div1'));
+
+        // 指定图表的配置项和数据
+        var option1 = {
+            tooltip: {},
+            xAxis: {
+                data: []
+            },
+            yAxis: {}
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart1.setOption(option1);
+        function initProjCapacityGrid(){
+            if(!$("#projCapacityGrid").data('datagrid')){
+            	 $.when(initGrid(projNo, "工程能力", "工程能力", "projCapacityGrid", 'proj-capacity-sel')).done(function(){
+                	 reloadChart($("#projCapacityGrid").data("gridData"), $("#proj-capacity-sel option:selected:first").text(), option1, myChart1);
+                });
+             }
+        };
+        $(document).ready(function(){
+            initProjCapacityGrid();
+            $("#proj-capacity-sel").on('change',function(){
+                reloadChart($("#projCapacityGrid").data("gridData"), $("#proj-capacity-sel option:selected").text(), option1, myChart1);
+            })
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/manFour.js"></script>
+    <style>
+		.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+			color: #3399ff;
+		    background-color: #fff;
+		    border-bottom: 5px #3399ff solid;
+		}
+		.nav>li>a:hover{
+			color: #3399ff;
+		    background-color: #fff;
+		}
+		.nav>li>a {
+		    color: #000000;
+		    background-color: #fff;
+		    text-decoration: none;
+		}
+		.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+				padding-bottom: 10px;
+		}
+	</style>
+    <script type="text/javascript">
+	    //回到顶部
+		function callback(){
+			$("html,body").animate({scrollTop:0}, 200);
+		};
+		$(document).on("click", "ul.navbar-nav li", function () {
+        	$("ul.navbar-nav li").removeClass("active");
+        	_.each($("ul.navbar-nav li"), function(tab, index){
+        		$("#"+$(tab).attr("tabname")).css('display','none');
+        	});
+        	$(this).addClass("active");
+        	var id = $(this).attr("tabname");
+        	$("#"+id).css('display','block');
+        });
+		
+    </script>
+</head>
+<body>
+	<!-- <div style="height: 47px;border-bottom: 2px #e2e3e4 solid;padding-left: 30px;margin-top: 20px;font-size: 20px;">
+		<span>工时度量</span>
+	</div> -->
+	<div style="height: 50px;border-bottom: 2px #e2e3e4 solid;margin: 10px;">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li tabname="tab-rltr" class="active"><a href="#" id="rltrinfo">人力投入</a></li>
+			<li tabname="tab-trbl" ><a href="#" id="trblinfo">投入比例</a></li>
+		</ul>
+	</div>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td style="padding-right: 10px;">
+                 <div id="tab-rltr" style="margin: 0px 10px 10px 10px;">
+					<div class="change-chart">
+						<!-- <div class="chart-title" style="line-height: 40px;">
+							<div style="float: left;">
+								<span style="font-size: 16px;">人力投入</span>
+							</div>
+							<div
+								style="border-right: 1px #367FA9 solid; height: 33px; width: 15px; float: left;"></div>
+							<div
+								style="border-right: 2px #367FA9 solid; height: 33px; width: 4px; float: left;"></div>
+						</div> -->
+						<div class="main-button" style="height: 45px;line-height: 45px;">
+							<!-- <span style="font-size: 16px; padding-left: 10px;float: left;">每月人力投入</span>&nbsp;&nbsp;&nbsp; -->
+								<!-- 条件筛选 -->
+							<select id="monthly-manpower-count" class="btn btn-default"
+								style="margin-left: 10px;margin-top: 2px;float: right;">
+								<option selected="selected" style="co	lor: black" value='0'>实际工时</option>
+								<option style="color: black" value='1'>标准工时</option>
+							</select>&nbsp;&nbsp;&nbsp;&nbsp;
+						</div>
+						<table id="monthlyManpower" width="100%" border="1" cellspacing="0" cellpadding="0" class="data-table" 
+						       style="border: 2px #000 solid;">
+							<thead>
+								<tr bgcolor="#b4aeb5">
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+							<tfoot>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+				<div id="tab-trbl" style="display:none;margin: 0px 10px 10px 10px;">
+					<div class="change-chart">
+						<div class="main-button" style="height: 45px;line-height: 45px;">
+							<!-- <span style="font-size: 16px; padding-left: 10px;">投入比例</span>&nbsp;&nbsp;&nbsp; -->
+							<div id="edit3" data_obj="1" style="float: right;margin: 0px 8px 0px 0px;">
+                    		<a onclick="tableEdit('edit3','proportionAdjustment')" style="font-size: 14px;color: #367FA9;cursor: pointer;">
+                    			<i><img  style="margin: 2px;" src="images/editicon.png" alt="编辑" width="17px" height="17px"/></i><span>编辑</span>
+                    		</a>
+                    		</div>
+                    		<div id="proportionAdjustment" style="float: right;display:none;margin-right: 6px;">
+	                    		<a id="tableadd3" onclick="tableAdd3()" class="btn btn-danger" style="margin: 0px 10px 0px 0px;;padding: 3px 10px 3px 10px;">增加</a>
+	                    		<a onclick="tableCancel3()" class="btn btn-default" style="margin: 0px 10px 0px 0px;;padding: 3px 10px 3px 10px;">取消</a>
+	                    		<a id="tablesave3" onclick="tableSave3()" class="btn btn-danger" style="padding: 3px 10px 3px 10px;">保存</a>
+                    		</div>
+						</div>
+						<table id="monthlyManpowerProportion" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table"
+						       style="border:2px #000 solid;">
+							<thead>
+								<tr bgcolor="#b4aeb5">
+									
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+							<tfoot>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+                   <div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content" style="top: 100px;">
+								<div class="modal-body" style="padding: 15px;">
+									<div style="text-align: center;">
+										<span id="dataAcquisition" style="font-size: 14px;">保存成功</span>
+										<div class="modal-footer" id="submitImportmodalfooter" style="margin-top: 10px;padding: 5px;">
+											<button type="button" class="btn btn-primary" id="submitImport" style="display: initial" onclick="hidePopover()">
+												确定	
+											</button>
+										</div>
+									</div>
+								</div>
+							</div><!-- /.modal-content -->
+						</div><!-- /.modal-dialog -->
+				</div><!-- /.modal -->
+				<div id="testDIV" style="display: none;height: 150px; width: 150px; overflow: auto; border-color: #ddd;border-width: 1px;border-radius: 3px;border-style: solid;">
+				</div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

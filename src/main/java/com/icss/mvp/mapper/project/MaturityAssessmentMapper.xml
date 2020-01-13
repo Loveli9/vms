@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.project.MaturityAssessmentDao">
+	<resultMap id="MaturityAssessmentMap" type="com.icss.mvp.entity.project.MaturityAssessment">
+        <result column="id" property="id"/>
+        <result column="no" property="no"/>
+        <result column="assessmentId" property="assessmentId"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="result" property="result"/>
+        <result column="largeCategory" property="largeCategory"/>
+        <result column="category" property="category"/>
+        <result column="name" property="name"/>
+        <result column="template" property="template"/>
+    </resultMap>
+	<select id="getAssessmentCategory" parameterType="java.lang.String" resultMap="MaturityAssessmentMap">
+		SELECT c.*, a.result,a.createTime FROM assessment_category c 
+		LEFT JOIN maturity_assessment a
+		ON c.id = a.assessmentId AND a.no= #{no} AND a.createTime = #{createTime}
+		WHERE c.template = #{template}
+		ORDER BY id,largeCategory,category
+	</select>
+	
+	<select id="getIdByTemplate" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT id,name FROM assessment_category WHERE template = #{template}
+	</select>
+	
+	<insert id="insertAssessmentCategory" parameterType="java.util.List">
+ 		REPLACE into maturity_assessment (no,assessmentId,createTime,updateTime,result) VALUES
+		<foreach collection="assessmentList" item="item" index="index" separator=",">
+			(
+				#{item.no},#{item.assessmentId},#{item.createTime},#{item.updateTime},#{item.result}
+			)
+		</foreach>
+ 	</insert>
+ 	
+ 	<select id="getTemplateIs361" resultType="java.util.HashMap">
+		SELECT v.key,v.value FROM v_dictionary v WHERE CODE = 'template_361'
+	</select>
+
+	<select id="getProjectManualValue" resultMap="MaturityAssessmentMap">
+		SELECT t.assessmentId,t.name,t.result FROM(
+			SELECT assessmentId,name,result FROM maturity_assessment a 
+				LEFT JOIN assessment_category c ON a.assessmentId=c.id 
+			WHERE a.NO=#{proNo} 
+			AND a.createTime BETWEEN #{startTime} AND #{endTime} 
+			AND IF(#{flag},largeCategory,category)= #{value} AND template=#{template}
+			ORDER BY createTime DESC)t
+		GROUP BY t.assessmentId
+	</select>
+	
+	<select id="getTemplateValue" resultType="java.lang.String">
+		SELECT template FROM maturity_template WHERE NO = #{proNo}
+	</select>
+	
+	<insert id="updateTemplateValue" parameterType="java.lang.String">
+ 		REPLACE into maturity_template (no,template) VALUES(#{proNo},#{template})
+ 	</insert>
+</mapper>

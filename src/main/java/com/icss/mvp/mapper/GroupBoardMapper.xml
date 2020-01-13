@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IGroupBoardDao">
+    <resultMap id="groupAcceptance" type="com.icss.mvp.entity.GroupAcceptanceEntity">
+        <result property="projectNo" column="NO"/>
+        <result property="name" column="NAME"/>
+        <result property="pm" column="PM"/>
+        <result property="qa" column="QA"/>
+        <result property="hwzpdu" column="pdu"/>
+        <result property="pduSpdt" column="pduspt"/>
+
+        <!--<result property="checkedProject" column=""/>
+        <result property="customerScoring" column=""/>
+        <result property="executedProject" column=""/>
+        <result property="riskProject" column=""/>
+        <result property="issueCloseLoop" column=""/>
+        <result property="personnelArrival" column=""/>
+        <result property="personnelStable" column=""/>
+        <result property="credibleProject" column=""/>-->
+
+        <!--<result property="checkedProject" column=""/>
+        <result property="customerScoring" column=""/>
+        <result property="executedProject" column=""/>
+        <result property="credibleProject" column=""/>-->
+    </resultMap>
+
+    <resultMap id="projectStateNumber" type="com.icss.mvp.entity.ProjectStateNumber">
+        <result property="projectNo" column="NO"/>
+        <result property="name" column="NAME"/>
+        <result property="pm" column="PM"/>
+        <result property="pdu" column="pdu"/>
+        <result property="pduspt" column="pduspt"/>
+        <!--<result property="redState" column=""/>
+        <result property="yellowState" column=""/>
+        <result property="greenState" column=""/>
+        <result property="redState1" column=""/>
+        <result property="yellowState1" column=""/>
+        <result property="greenState1" column=""/>
+        <result property="red" column=""/>
+        <result property="yellow" column=""/>
+        <result property="red1" column=""/>
+        <result property="yellow1" column=""/>-->
+    </resultMap>
+
+    <sql id="sql_status">
+        <if test="hwpduId != null and hwpduId.size() != 0">
+            AND `PI`.`HWPDUID` IN
+            <foreach collection="hwpduId" item="item" separator=","
+                     open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwzpduId != null and hwzpduId.size() != 0">
+            AND `PI`.`HWZPDUID` IN
+            <foreach collection="hwzpduId" item="item" separator=","
+                     open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduSpdtId != null and pduSpdtId.size() != 0">
+            AND `PI`.`PDU_SPDTID` IN
+            <foreach collection="pduSpdtId" item="item" separator=","
+                     open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="buId != null and buId.size() != 0">
+            AND `PI`.`BUID` IN
+            <foreach collection="buId" item="item" separator="," open="("
+                     close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduId != null and pduId.size() != 0">
+            AND `PI`.`PDUID` IN
+            <foreach collection="pduId" item="item" separator=","
+                     open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="duId != null and duId.size() != 0">
+            AND `PI`.`DUID` IN
+            <foreach collection="duId" item="item" separator="," open="("
+                     close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+
+    <!--一级组织机构集合-->
+    <select id="getFirstOrganizations" resultType="java.util.Map">
+        SELECT
+        <if test='"hwpdu" == flag'>
+            PI.HWPDU AS firstOrg, PI.HWPDUID AS firstOrgId
+        </if>
+        <if test='"bu" == flag'>
+            PI.BU AS firstOrg, PI.BUID AS firstOrgId
+        </if>
+        FROM project_info PI
+        WHERE 1 = 1
+        <if test=' "hwpdu" == flag and (hwpduId == null or hwpduId.size() == 0)'>
+            AND PI.HWPDUID IN(1012, 1015)
+        </if>
+        <if test=' "bu" == flag and (buId == null or buId.size() == 0)'>
+            AND PI.BUID = 100253
+        </if>
+        <if test='"hwpdu" == flag'>
+            AND PI.HWPDUID != '' AND PI.HWPDU != ''
+        </if>
+        <if test='"bu" == flag'>
+            AND PI.BUID != '' AND PI.BU != ''
+        </if>
+        <include refid="sql_status"/>
+        <if test='"hwpdu" == flag'>
+            GROUP BY PI.HWPDUID;
+        </if>
+        <if test='"bu" == flag'>
+            GROUP BY PI.BUID;
+        </if>
+    </select>
+
+    <!--二级组织机构集合-->
+    <select id="getSecondOrganizations" resultType="java.util.Map">
+        SELECT
+        <if test='"hwpdu" == flag'>
+            PI.HWZPDU AS secondOrg, PI.HWZPDUID AS secondOrgId
+        </if>
+        <if test='"bu" == flag'>
+            PI.PDU AS secondOrg, PI.PDUID AS secondOrgId
+        </if>
+        FROM project_info PI
+        WHERE 1 = 1
+        <if test='"hwpdu" == flag'>
+            AND PI.HWZPDUID != '' AND PI.HWZPDU != ''
+        </if>
+        <if test='"bu" == flag'>
+            AND PI.PDUID != '' AND PI.PDU != ''
+        </if>
+        <include refid="sql_status"/>
+        <if test='"hwpdu" == flag'>
+            GROUP BY PI.HWZPDUID;
+        </if>
+        <if test='"bu" == flag'>
+            GROUP BY PI.PDUID;
+        </if>
+    </select>
+
+    <!--三级组织机构集合-->
+    <select id="getThirdOrganizations" resultType="java.util.Map">
+        SELECT
+        <if test='"hwzpdu" == flag'>
+            PI.PDU_SPDT AS thirdOrg, PI.PDU_SPDTID AS thirdOrgId
+        </if>
+        <if test='"pdu" == flag'>
+            PI.DU AS thirdOrg, PI.DUID AS thirdOrgId
+        </if>
+        FROM project_info PI
+        WHERE 1 = 1
+        <if test='"hwzpdu" == flag'>
+            AND PI.PDU_SPDTID != '' AND PI.PDU_SPDT != ''
+        </if>
+        <if test='"pdu" == flag'>
+            AND PI.DUID != '' AND PI.DU != ''
+        </if>
+        <include refid="sql_status"/>
+        <if test='"hwzpdu" == flag'>
+            GROUP BY PI.PDU_SPDTID;
+        </if>
+        <if test='"pdu" == flag'>
+            GROUP BY PI.DUID;
+        </if>
+    </select>
+
+    <!--项目看板执行表-->
+    <select id="queryProjectExecute" resultType="java.util.Map">
+        SELECT PI.NO, PI.NAME, PI.PM, mb.NAME AS QA,
+        <if test="0 == client">
+            PI.HWZPDU AS pdu, PI.PDU_SPDT AS pduspt
+        </if>
+        <if test="1 == client">
+            PI.PDU AS pdu, PI.DU AS pduspt
+        </if>
+        <foreach collection="monthList" item="item">
+            , MAX(CASE pr.statistical_time WHEN #{item} THEN pr.project_status ELSE -1 END) #{item}
+        </foreach>
+        FROM project_info PI
+        LEFT JOIN (
+            SELECT pro_no, statistical_time, project_status
+            FROM project_review
+            WHERE statistical_time IN
+            <foreach collection="monthList" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+            ORDER BY statistical_time DESC) pr
+        ON PI.NO = pr.pro_no
+        LEFT JOIN project_staff ps
+        ON PI.NO = ps.NO AND ps.ROLE = 'QA' AND ps.IS_DELETED = 0
+        LEFT JOIN member_base mb
+        ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+        WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行'
+        <if test="(hwpduId == null or hwpduId.size() == 0) and 0 == client">
+            AND PI.HWPDUID IN (1012, 1015)
+        </if>
+        <if test="(hwpduId != null and hwpduId.size() != 0) or 1 == client">
+            <include refid="sql_status"/>
+        </if>
+        <if test="null != pageSize and null != offset">
+            LIMIT ${offset}, ${pageSize}
+        </if>
+    </select>
+
+    <!--项目看板执行表count-->
+    <select id="queryProjectExecuteCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(PI.NO)
+        FROM project_info PI
+        WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行'
+        <if test="(hwpduId == null or hwpduId.size() == 0) and 0 == client">
+            AND PI.HWPDUID IN (1012, 1015)
+        </if>
+        <if test="(hwpduId != null and hwpduId.size() != 0) or 1 == client">
+            <include refid="sql_status"/>
+        </if>
+    </select>
+
+    <!--项目看板验收表-->
+    <select id="queryProjectAcceptance" resultMap="groupAcceptance">
+        SELECT PI.NO, PI.NAME, PI.PM, mb.NAME AS QA,
+        <if test="0 == client">
+            PI.HWZPDU AS pdu, PI.PDU_SPDT AS pduspt
+        </if>
+        <if test="1 == client">
+            PI.PDU AS pdu, PI.DU AS pduspt
+        </if>
+        FROM project_info PI
+        LEFT JOIN project_staff ps
+        ON PI.NO = ps.NO AND ps.ROLE = 'QA' AND ps.IS_DELETED = 0
+        LEFT JOIN member_base mb
+        ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+        WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行'
+        <if test="(hwpduId == null or hwpduId.size() == 0) and 0 == client">
+            AND PI.HWPDUID IN (1012, 1015)
+        </if>
+        <if test="(hwpduId != null and hwpduId.size() != 0) or 1 == client">
+            <include refid="sql_status"/>
+        </if>
+        <if test="null != pageSize and null != offset">
+            LIMIT ${offset}, ${pageSize}
+        </if>
+    </select>
+
+    <!--项目看板验收表count-->
+    <select id="queryProjectAcceptanceCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(PI.NO)
+        FROM project_info PI
+        WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行'
+        <if test="(hwpduId == null or hwpduId.size() == 0) and 0 == client">
+            AND PI.HWPDUID IN (1012, 1015)
+        </if>
+        <if test="(hwpduId != null and hwpduId.size() != 0) or 1 == client">
+            <include refid="sql_status"/>
+        </if>
+    </select>
+
+    <!--组织看板验收表结项项目个数-->
+    <select id="queryKnotProjectCount" resultType="java.lang.Integer">
+        SELECT
+        COUNT(pr.is_close)
+        FROM project_review pr
+        LEFT JOIN project_info p
+        ON pr.pro_no = p.NO
+        WHERE pr.statistical_time = #{month} AND pr.is_close = 1 AND p.PROJECT_STATE = '在行'
+        <if test='"secondOrgHw" == flag'>
+            AND p.HWZPDUID = #{id}
+        </if>
+        <if test='"secondOrgZr" == flag'>
+            AND p.PDUID = #{id}
+        </if>
+        <if test='"thirdOrgHw" == flag'>
+            AND p.PDU_SPDTID = #{id}
+        </if>
+        <if test='"thirdOrgZr" == flag'>
+            AND p.DUID = #{id}
+        </if>
+    </select>
+
+    <!--组织看板总览表风险项目个数-->
+    <select id="queryRiskProjectCount" resultType="java.lang.String">
+        SELECT
+        pr.project_status
+        FROM  project_info p
+        LEFT JOIN project_review pr
+        ON p.NO = pr.pro_no AND pr.statistical_time = #{month}
+        WHERE p.PROJECT_STATE = '在行'
+        <if test='"firstOrgHw" == flag'>
+            AND p.HWPDUID = #{id}
+        </if>
+        <if test='"firstOrgZr" == flag'>
+            AND p.BUID = #{id}
+        </if>
+        <if test='"secondOrgHw" == flag'>
+            AND p.HWZPDUID = #{id}
+        </if>
+        <if test='"secondOrgZr" == flag'>
+            AND p.PDUID = #{id}
+        </if>
+        <if test='"thirdOrgHw" == flag'>
+            AND p.PDU_SPDTID = #{id}
+        </if>
+        <if test='"thirdOrgZr" == flag'>
+            AND p.DUID = #{id}
+        </if>
+    </select>
+
+    <!--组织看板总览表执行项目个数-->
+    <select id="queryExecutionProjectCount" resultType="java.lang.Integer">
+        SELECT COUNT(p.NO) FROM project_info p
+        WHERE p.PROJECT_STATE = '在行'
+        <if test='"firstOrgHw" == flag'>
+            AND p.HWPDUID = #{id}
+        </if>
+        <if test='"firstOrgZr" == flag'>
+            AND p.BUID = #{id}
+        </if>
+        <if test='"secondOrgHw" == flag'>
+            AND p.HWZPDUID = #{id}
+        </if>
+        <if test='"secondOrgZr" == flag'>
+            AND p.PDUID = #{id}
+        </if>
+        <if test='"thirdOrgHw" == flag'>
+            AND p.PDU_SPDTID = #{id}
+        </if>
+        <if test='"thirdOrgZr" == flag'>
+            AND p.DUID = #{id}
+        </if>
+    </select>
+
+</mapper>

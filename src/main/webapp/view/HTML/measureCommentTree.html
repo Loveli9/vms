@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/jquery/jquery.treegrid.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/css/style.css" type="text/css" />
+ 	<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="../../resources/jquery/jquery.min.js"></script> 
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-treegrid.js"></script>
+<script type="text/javascript" src="../../resources/jquery/jquery.treegrid.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="js/comm/echartcomm.js"></script>
+<script type="text/javascript" src="js/measureCommentTree.js"></script>
+<style>
+	html {
+	    height: 95%;
+	}
+	.breadcrumb {
+		background-color: #fff;
+		margin-left: 20px;
+		margin-right: 20px;
+		margin-bottom: 0px;
+		padding: 8px 0px;
+	}
+	.myTab{
+		padding-left: 8px;
+		padding-right: 23px;
+		width:100.7%;
+		/* background-color: #FFFFFF; */
+	}
+	#iteConfigPage button{
+		margin-right: 15px;
+	}
+	.editableform{
+	    margin-top: -20px;
+	}
+	.editableform .form-control {
+		width: 100%;
+		margin-top: -4px;
+        height: 50px;
+        font-size: 12px;
+        padding: 5px 0px 5px 0px;
+	}
+	.editable-click, a.editable-click, a.editable-click:hover{
+	    border-bottom: 0px;
+	}
+    .editableform .input-sm{
+        width: 105px !important;
+        height: 30px;
+        margin-right: 58px;
+        margin-top: 1.5px;
+        padding:0px;
+        padding-right: 0px !important;
+        text-align: -webkit-right;
+	}
+	.editable-container.editable-inline {
+	    margin-top: 17.5px;
+		width: 100%;
+	}
+	.editableform .control-group{
+		width: 100%;
+	}
+	.popover-content {
+	    padding:0px;
+	    margin-top: 20px;
+	}
+	.editable-input {
+		float: left;
+		width: 100%;
+	}
+	.editable-buttons {
+		float: left;
+		margin-top: 5px;
+		margin-left: 15px;
+	}
+	#closedAll,#openedAll{
+		float: right; margin-right: 10px;
+	}
+	#closedAll:hover,#openedAll:hover{
+		text-decoration: underline; color: purple;
+	}
+	.table>thead:first-child>tr:first-child>th{
+		border-right: 1px solid  #e7eaec !important;
+		border-top: 1px solid #e7eaec !important;
+		border-left: 1px solid #e7eaec !important;
+	}
+	.bootstrap-table .table:not(.table-condensed) > tbody > tr > td{
+		border-right: 1px solid transparent !important;
+		border-left: 0px;
+	}
+	.fixed-table-container {
+		border-width: 0px;
+		/* background-color: #fff; */
+		background-color: #FFFFFF;
+	}
+	.imggreenequalz{
+	    background: url(/mvp/view/HTML/images/tendency/gequalz.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imgredequalz{
+	    background: url(/mvp/view/HTML/images/tendency/requalz.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imgyellowequalz{
+	    background: url(/mvp/view/HTML/images/tendency/yqualz.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+	.imggreenequal{
+	    background: url(/mvp/view/HTML/images/tendency/gequal.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imggreenlower{
+	    background: url(/mvp/view/HTML/images/tendency/glower.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imggreenupper{
+	    background: url(/mvp/view/HTML/images/tendency/gupper.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imgredequal{
+	    background: url(/mvp/view/HTML/images/tendency/requal.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imgredlower{
+	    background: url(/mvp/view/HTML/images/tendency/rlower.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imgredupper{
+	    background: url(/mvp/view/HTML/images/tendency/rupper.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imgyellowequal{
+	    background: url(/mvp/view/HTML/images/tendency/yqual.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imgyellowlower{
+	    background: url(/mvp/view/HTML/images/tendency/ylower.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    .imgyellowupper{
+	    background: url(/mvp/view/HTML/images/tendency/ypper.png) no-repeat left 20% center;
+	    background-size: 30px;
+    }
+    
+    /* .lefttitle{
+    background: url(/mvp/view/HTML/images/lefttitle.png) no-repeat scroll;
+    background-size: 39px;
+    } */
+    .rightactual{
+    background: url(/mvp/view/HTML/images/rightactual.png)right 0% no-repeat scroll;
+    background-size: 6px;
+    }
+     .nolefttitle{
+    color: #000;
+    font-size: 12px;
+    width:190px;
+    white-space: pre-wrap;
+    margin-left:12px;
+    height:34px;
+    display: table-cell;
+    vertical-align: middle;
+    }
+    .editable-container.popover{
+     width:109px;
+    }
+	#measureTable{
+    	white-space:nowrap;
+		table-layout: fixed;
+    }
+	.btn-group>.btn:first-child {
+    margin-left: 10px;
+    padding: 8px 15px;
+    height:30px;
+	}
+	.actualValueStyle{
+	     display: inline-block;
+	     height: 30px;
+	     width:105px;
+	     margin-right: 17px;
+	     line-height: 28px;
+	     padding: 0px 0px 0px 23px;
+	     border: 1px solid #ddd;
+	     overflow: hidden;
+	}
+	.dropdown-menu {
+    border: medium none;
+    display: none;
+    float: left;
+    font-size: 12px;
+    left: 0;
+    list-style: none outside none;
+    padding: 0;
+    position: absolute;
+    text-shadow: none;
+    top: 100%;
+    z-index: 1000;
+    border-radius: 0;
+    box-shadow: 0 0 3px rgba(86, 96, 117, .3);
+    margin-left: 14px;
+    margin: 20px 11px 0;
+	}
+		.btn-group{
+	    position: relative;
+	    display: block;
+	    vertical-align: middle;
+	}
+	.measureStyle{
+	    background-color: #26AB8E;
+	    color:#fff;
+	}
+	.fixed-table-body {
+	    overflow-x: auto;
+	    overflow-y: auto;
+	    background-color: #FFFFFF;
+	}
+	.btn-default, .btn-default:hover{
+		background-color: #eaebeb !important;
+		border-color: #eaebeb;
+    	color: #333;
+	}
+	.fixed-table-toolbar .bs-bars, .fixed-table-toolbar .search, .fixed-table-toolbar .columns{
+		margin:0px;
+	}
+
+</style>
+</head>
+
+<body class="mvp-body">
+<div style="margin: 25px">
+	<!-- 指标点评数据页面 -->
+	<div class="" >
+		<div style="width: 100%;background-color: #ffffff;border-radius: 5px;">
+			<div id="dateSectionDiv" style="display: none;float: right;margin-bottom: 8px;margin-top: 8px;margin-left: 15px;margin-right: 15px;"></div>
+			<div class="btn-group" id="toolbar">
+				<button id="btn_add" type="button" style="border: 0px #0091fe solid;margin: 8px 0px 8px;
+    				background-color: #0091fe; color: white; border-radius: 4px; width: 90px; height: 35px;outline: none;">
+					<span class="glyphicon glyphicon-saved" aria-hidden="true"></span>整体保存
+				</button>
+			</div>
+			<div >
+				<table id="measureTable"  border="0" cellspacing="0" cellpadding="0" class="table text-nowrap"></table>
+			</div>
+		</div>	
+	</div>
+	
+	<!-- 过程数据新增页面 -->
+	<div class="modal fade" id="processDataPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
+		 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:800px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 id="calculation" class="modal-title" style="display: inline; margin-right: 10px;">
+						过程数据计算值:
+					</h4>
+					<input type="text" style="display: inline;width:100px;" class="form-control" name="progressDeviationEdit"
+                                   id="processValues" readonly="readonly"/>
+                    <span id="processUnit"></span> 
+                    <input id="processId" type="hidden" />          
+					<button onclick="processCancel()" style="float: right;border:0px;" type="button" class="btn btn-default btn-sm editable-cancel"><i class="glyphicon glyphicon-remove"></i></button>
+					<button onclick="processSave()" id="processSave" style="float: right;border:0px;margin-right: 20px;" type="button" class="btn btn-default btn-sm editable-cancel"><i class="glyphicon glyphicon-ok"></i></button>
+				</div>
+				<div style="width: 92.5%;margin: 30px 30px 30px;border:1px solid #ddd;">
+					<table id="processData" cellspacing="0" cellpadding="0" class="table text-nowrap"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 质量点评指标图表 -->
+	<div class="modal fade" id="qualityCommentModal" tabindex="-1" role="dialog"
+		 aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+		<div class="modal-dialog">
+			<div  class="modal-content" style="top: -26px; width: 1000px; margin-left: -207px;">
+				<div class="modal-header"
+					 style="border-bottom-width: 2px; padding-top: 10px; padding-bottom: 10px; line-height: 100%; padding: 6px; background-color:#26AB8E;">
+					<div class="row">
+						<div class="col-md-9" style="width:90%;text-align: center;">
+							<h4 class="modal-title" style="display: inline;padding-bottom: 5px;color: white;line-height: 30px;">指标趋势(<span id="qualityCommentTitle"></span>)</h4>
+						</div>
+						<div class="col-md-3" style="width:10%;height:15%;">
+							<button type="button" class="btn btn-default btn-block" id="closeBtnQualityCommentModal">关闭</button>
+						</div>
+					</div>
+				</div>
+				<div class="modal-body" style="width: 100%; min-height: 400px; margin-bottom:-20px; background-color:#ffffff;">
+					<div id="qualityCommentPage"  style="width: 941px;height: 400px;margin-left: -16px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

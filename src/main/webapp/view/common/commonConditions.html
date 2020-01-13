@@ -1,0 +1,73 @@
+<button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#queryConditions">
+    当前项目
+</button>
+<div class="modal fade" id="queryConditions" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    模态框（Modal）标题
+                </h4>
+            </div>
+            <div class="modal-body">
+                <input name="projName" type="text" class="s3 form-control" placeholder="项目名称" id="projName" style="width: 100px;float: left;margin-right: 10px;padding: 0px;height: 32px;"/>
+                <div class="col-sm-12" style="width:110px;z-index:999;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+                    <select id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                    </select>
+                </div>
+                <div class="col-sm-12" style="width:85px;float: left;padding-right: 10px;padding-left: 0px;">
+                    <select id="zrOrhwselect" name="usertype" style="width: 75px;padding: 0px 12px;" class="btn dropdown-toggle bs-placeholder btn-default" title="中软 &华为" >
+                        <option id="hwsel" value="0" selected>华为</option>
+                        <option id="zrsel" value="1">中软</option>
+                    </select>
+                </div>
+                <div id="hwselect">
+                    <div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+                        <select id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                        </select>
+                    </div>
+                    <div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+                        <select id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                        </select>
+                    </div>
+                    <div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+                        <select id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                        </select>
+                    </div>
+                </div>
+                <div id="zrselect" style="display: none;">
+                    <div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+                        <select id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                        </select>
+                    </div>
+                    <div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+                        <select id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                        </select>
+                    </div>
+                    <div class="col-sm-12" style="width:150px;float: left;padding-right: 10px;padding-left: 0px;text-align: left;">
+                        <select id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-12" style="width:80px;float: left;padding-right: 10px;padding-left: 0px;">
+                    <select id="usertype2" name="usertype" title="请选择状态" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                        <option value="在行">在行</option>
+                        <option value="关闭">关闭</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">返回
+                </button>
+                <button type="button" class="btn btn-primary">
+                    查询
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

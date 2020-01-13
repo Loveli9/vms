@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.MeasureDao">
+    <resultMap type="com.icss.mvp.entity.Measure" id="measureMap">
+        <id column="ID" property="id"/>
+        <result column="WD_ID" property="wdId"/>
+        <result column="CREATE_TIME" property="createTime"/>
+        <result column="MODIFY_TIME" property="modifyTime"/>
+        <result column="IS_DELETE" property="isDelete"/>
+        <result column="name" property="name"/>
+        <result column="UNIT" property="unit"/>
+        <result column="UPPER" property="upper"/>
+        <result column="LOWER" property="lower"/>
+        <result column="TARGET" property="target"/>
+        <result column="CONTENT" property="content"/>
+        <result column="CATEGORY" property="category"/>
+        <result column="VERSION" property="version"/>
+        <result column="ITERATION" property="iteration"/>
+        <result column="times" property="times"/>
+        <result column="project_id" property="proNo"/>
+        <result column="copyDate" property="copyDate"/>
+        <result column="compute_rule" property="computeRule"/>
+    </resultMap>
+
+    <!-- <select id="queryMeasureList" parameterType = "java.lang.String" resultMap="measureMap">
+        SELECT
+          (@i := @i + 1) AS rowNum,
+          t.name,
+          t.ID,
+          t.TARGET,
+          t.UNIT,
+          t.UPPER,
+          t.LOWER,
+          (SELECT
+            s.NAME
+          FROM
+            `dime_measure` s
+          WHERE t.WD_ID = s.ID) AS wdName
+        FROM
+          `measure`  t,
+          (SELECT
+            @i := 0) AS it
+    </select> -->
+
+    <!--新增一条Measure记录-->
+
+
+    <!--通过主键id查询指定Measure记录-->
+    <select id="getMeasureById" resultMap="measureMap" parameterType="String">
+        <!-- 		select * from measure where ID=#{id} -->
+        SELECT iti.ID, iti.CREATE_TIME, iti.MODIFY_TIME, iti.IS_DELETE, iti.name, iti.UNIT, iti.UPPER,
+        iti.LOWER, iti.TARGET, iti.CHALLENGE, iti.CONTENT, itl.category AS CATEGORY, iti.VERSION,
+        iti.ITERATION, itl.ID AS LABLE_ID, iti.COLLECT_TYPE, iti.COMPUTE_RULE FROM in_tmpl_label_index itli
+        LEFT JOIN in_tmpl_label itl ON itli.label_id = itl.ID
+        LEFT JOIN in_tmpl_index iti ON itli.index_id = iti.ID
+        WHERE iti.ID = #{id}
+    </select>
+
+    <!--通过主键id单个删除-->
+    <delete id="deleteMeasureById" parameterType="String">
+		delete from measure where ID=#{id}
+	</delete>
+
+
+    <select id="getAllMeasure" resultMap="measureMap">
+        SELECT *
+        FROM measure
+    </select>
+
+    <select id="getMeasureByWD" resultMap="measureMap" parameterType="String">
+        SELECT *
+        FROM measure
+        WHERE WD_ID = #{wd}
+    </select>
+
+</mapper>

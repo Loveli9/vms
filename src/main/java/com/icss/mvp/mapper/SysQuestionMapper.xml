@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icss.mvp.dao.SysQuestionDao" >
+  <resultMap id="BaseResultMap" type="com.icss.mvp.entity.SysQuestion" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="CHAR" />
+    <result column="create_date" property="createDate" jdbcType="DATE" />
+    <result column="solve_state" property="solveState" jdbcType="CHAR" />
+    <result column="stop_state" property="stopState" jdbcType="CHAR" />
+    <result column="stop_date" property="stopDate" jdbcType="DATE" />
+    <result column="stop_user" property="stopUser" jdbcType="VARCHAR" />
+    <result column="content" property="answerContent" jdbcType="LONGVARCHAR" />
+    <result column="create_date" property="answerTime" jdbcType="DATE" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.icss.mvp.entity.SysQuestion" extends="BaseResultMap" >
+    <result column="content" property="content" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, name, email, phone, type, create_date, solve_state, stop_state, stop_date, 
+    stop_user
+  </sql>
+  <sql id="Blob_Column_List" >
+    content
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from sys_question
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from sys_question
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.icss.mvp.entity.SysQuestion" >
+    insert into sys_question (id, user_id, name, email, phone, type, create_date, solve_state, stop_state, stop_date, stop_user, content)
+    values (#{id}, #{userId}, #{name}, #{email}, #{phone}, #{type}, #{createDate}, #{solveState}, #{stopState}, #{stopDate}, #{stopUser}, #{content})
+  </insert>
+  <insert id="insertSelective" parameterType="com.icss.mvp.entity.SysQuestion" >
+    insert into sys_question
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="createDate != null" >
+        create_date,
+      </if>
+      <if test="solveState != null" >
+        solve_state,
+      </if>
+      <if test="stopState != null" >
+        stop_state,
+      </if>
+      <if test="stopDate != null" >
+        stop_date,
+      </if>
+      <if test="stopUser != null" >
+        stop_user,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=CHAR},
+      </if>
+      <if test="createDate != null" >
+        #{createDate},
+      </if>
+      <if test="solveState != null" >
+        #{solveState,jdbcType=CHAR},
+      </if>
+      <if test="stopState != null" >
+        #{stopState,jdbcType=CHAR},
+      </if>
+      <if test="stopDate != null" >
+        #{stopDate},
+      </if>
+      <if test="stopUser != null" >
+        #{stopUser,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.icss.mvp.entity.SysQuestion" >
+    update sys_question
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=CHAR},
+      </if>
+      <if test="createDate != null" >
+        create_date = #{createDate},
+      </if>
+      <if test="solveState != null" >
+        solve_state = #{solveState,jdbcType=CHAR},
+      </if>
+      <if test="stopState != null" >
+        stop_state = #{stopState,jdbcType=CHAR},
+      </if>
+      <if test="stopDate != null" >
+        stop_date = #{stopDate},
+      </if>
+      <if test="stopUser != null" >
+        stop_user = #{stopUser,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.icss.mvp.entity.SysQuestion" >
+    update sys_question
+    set user_id = #{userId,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      type = #{type,jdbcType=CHAR},
+      create_date = #{createDate},
+      solve_state = #{solveState,jdbcType=CHAR},
+      stop_state = #{stopState,jdbcType=CHAR},
+      stop_date = #{stopDate},
+      stop_user = #{stopUser,jdbcType=VARCHAR},
+      content = #{content,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.icss.mvp.entity.SysQuestion" >
+    update sys_question
+    set user_id = #{userId,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      type = #{type,jdbcType=CHAR},
+      create_date = #{createDate},
+      solve_state = #{solveState,jdbcType=CHAR},
+      stop_state = #{stopState,jdbcType=CHAR},
+      stop_date = #{stopDate},
+      stop_user = #{stopUser,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <select id="selectQuestionCount" parameterType="com.icss.mvp.entity.SysQuestion" resultType="java.lang.Integer">
+    select
+    count(1)
+    from sys_question
+    where 1 = 1
+    <if test="userId != null" >
+      and user_id = #{userId,jdbcType=VARCHAR}
+    </if>
+    <if test="name != null and name != 'admin'" >
+      and name = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="email != null" >
+      and email = #{email,jdbcType=VARCHAR}
+    </if>
+    <if test="phone != null" >
+      and phone = #{phone,jdbcType=VARCHAR}
+    </if>
+    <if test="type != null" >
+      and type = #{type,jdbcType=CHAR}
+    </if>
+    <if test="createDate != null" >
+      and create_date = #{createDate}
+    </if>
+    <if test="solveState != null" >
+      and solve_state = #{solveState,jdbcType=CHAR}
+    </if>
+    <if test="stopState != null" >
+      and stop_state = #{stopState,jdbcType=CHAR}
+    </if>
+    <if test="stopDate != null" >
+      and stop_date = #{stopDate}
+    </if>
+    <if test="stopUser != null" >
+      and stop_user = #{stopUser,jdbcType=VARCHAR}
+    </if>
+    <if test="content != null" >
+      and content like concat('%', #{content,jdbcType=LONGVARCHAR}, '%')
+    </if>
+  </select>
+
+  <select id="selectQuestions" parameterType="Map" resultType="java.util.HashMap">
+    select q.id,q.user_id,q.name,q.type,q.content,q.create_date,q.solve_state,a.content as acontent,a.create_date as adate from sys_question q left join sys_answer a on q.id=a.question_id
+    where 1 = 1
+    <if test="sysQuestion.userId != null" >
+      and q.user_id = #{sysQuestion.userId,jdbcType=VARCHAR}
+    </if>
+    <if test="sysQuestion.name != null and sysQuestion.name != 'admin'" >
+      and q.name like concat('%', #{sysQuestion.name,jdbcType=VARCHAR}, '%')
+    </if>
+    <if test="sysQuestion.email != null" >
+      and email = #{sysQuestion.email,jdbcType=VARCHAR}
+    </if>
+    <if test="sysQuestion.phone != null" >
+      and phone = #{sysQuestion.phone,jdbcType=VARCHAR}
+    </if>
+    <if test="sysQuestion.type != null" >
+      and type = #{sysQuestion.type,jdbcType=CHAR}
+    </if>
+    <if test="sysQuestion.createDate != null" >
+      and create_date = #{sysQuestion.createDate}
+    </if>
+    <if test="sysQuestion.solveState != null" >
+      and solve_state = #{sysQuestion.solveState,jdbcType=CHAR}
+    </if>
+    <if test="sysQuestion.stopState != null" >
+      and stop_state = #{sysQuestion.stopState,jdbcType=CHAR}
+    </if>
+    <if test="sysQuestion.stopDate != null" >
+      and stop_date = #{sysQuestion.stopDate}
+    </if>
+    <if test="sysQuestion.stopUser != null" >
+      and stop_user = #{sysQuestion.stopUser,jdbcType=VARCHAR}
+    </if>
+    <if test="sysQuestion.content != null" >
+      and content like concat('%', #{sysQuestion.content,jdbcType=LONGVARCHAR}, '%')
+    </if>
+    order by q.create_date desc
+    <if test="pageInfo.fromIndex != null and pageInfo.pageSize != null">
+      limit #{pageInfo.fromIndex}, #{pageInfo.pageSize}
+    </if>
+  </select>
+  
+  <select id="details" parameterType="java.lang.String" resultType="java.util.HashMap">
+    select q.id,q.user_id,q.name,q.email,q.phone,q.type,q.content,a.content as acontent 
+		from sys_question q left join sys_answer a on q.id=a.question_id where q.id=#{questionId}
+  </select>
+  
+  <update id="updateSolveState" parameterType="java.lang.String">
+  	update sys_question set solve_state=#{solveState} where id=#{id}
+  </update>
+</mapper>

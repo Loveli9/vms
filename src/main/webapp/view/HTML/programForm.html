@@ -1,0 +1,166 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/programFrom.js"></script>
+    <style> </style>
+    <style>
+    	#nav {
+			width:30px; height: 65px;  position:fixed;right:2px;top:50%;z-index: 9999;
+		}
+		.retop{
+			width:30px;height:30px;float:right;margin-top: 2px;
+		}
+		.retop2{
+			float:right;margin-top: 2px;
+		}
+		.retop span{
+			color:white;
+		}
+		.tablenew tbody:nth-child(odd) td{
+			background-color:#ffffff;
+		}
+		.tablenew tbody:nth-child(even) td{
+			background-color:#f7f8f8;
+		}
+		.tablenew thead tr {
+			font-size: 14px;height: 40px;background-color: #e8e8e8;
+		}
+		.tablenew thead tr td{
+			font-weight: normal;text-align: center;border-right: 2px #ffffff solid;border-bottom:2px #ffffff solid;
+		}
+		.tablenew tbody tr td{
+			font-weight: normal;height: 52px;text-align: center;border-right: 2px #ffffff solid;border-bottom:2px #ffffff solid;
+		}
+		.tablenew {
+			font-size: 14px;text-align: center;float: left;border-spacing: 0px;
+		}
+		.res{
+			float: right;
+			font-size: 16px;
+			margin-right: 10px;
+			cursor:pointer;
+		}
+		a:hover{
+			color:red;
+			text-decoration: none;
+		}
+		.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+			color: #3399ff;
+		    background-color: #fff;
+		    border-bottom: 5px #3399ff solid;
+		}
+		.nav>li>a:hover{
+			color: #3399ff;
+		    background-color: #fff;
+		}
+		.nav>li>a {
+		    color: #000000;
+		    background-color: #fff;
+		    text-decoration: none;
+		}
+		.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+				padding-bottom: 10px;
+		}
+	</style>
+    <script type="text/javascript">
+	    //回到顶部
+		function callback(){
+			$("html,body").animate({scrollTop:0}, 200);
+		};
+		$(document).on("click", "ul.navbar-nav li", function () {
+        	$("ul.navbar-nav li").removeClass("active");
+        	_.each($("ul.navbar-nav li"), function(tab, index){
+        		$("#"+$(tab).attr("tabname")).css('display','none');
+        	});
+        	$(this).addClass("active");
+        	var id = $(this).attr("tabname");
+        	$("#"+id).css('display','block');
+        });
+    </script>
+</head>
+<body>
+
+	<div style="height: 50px;border-bottom: 2px #e2e3e4 solid;margin: 10px;">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li tabname="tab-xmbb" class="active"><a href="#">项目报表</a></li>
+		</ul>
+		<a class='res btn btn-danger' style="margin-top: 7px;" onclick="refreshMeasure()">刷新指标</a>
+	</div>
+     <div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content" style="top: 300px;">
+									<div class="modal-body" style="padding: 15px;">
+										<div style="text-align: center;">
+											<span id="dataAcquisition" style="font-size: 14px;">正在计算中，请稍后。。。</span>
+										</div>
+									</div>
+								</div>
+							</div>
+	</div>
+
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td style="padding-right: 10px;">
+                <div style="width: 100%;color: #333333;">
+                	<div id="tab-xmbb" style="margin: 0px 10px 10px 10px;">
+                    	<div style="display: flex;;margin-top: 5px;width: 100%;">
+	                    	<table id="xiaolv" class="tablenew" width="100%">
+	                    		<thead>
+	                    			<tr>
+										<td style="width: 6%;">分类</td>
+										<td style="width: 10%;">月份/度量项</td>
+										<td style="width: 7%;">1月</td>
+										<td style="width: 7%;">2月</td>
+										<td style="width: 7%;">3月</td>
+										<td style="width: 7%;">4月</td>
+										<td style="width: 7%;">5月</td>
+										<td style="width: 7%;">6月</td>
+										<td style="width: 7%;">7月</td>
+										<td style="width: 7%;">8月</td>
+										<td style="width: 7%;">9月</td>
+										<td style="width: 7%;">10月</td>
+										<td style="width: 7%;">11月</td>
+										<td style="width: 7%;">12月</td>
+	                    			</tr>
+	                    		</thead>
+	                    		<!--<tfoot>
+								  	<tr>
+								  		<td rowspan="29">
+								    		<span class="water-table-listbtn"></span>
+								     		<span class="water-table-page">
+									     		<span id="pagemsg" class="water-table-pagemsg">当前0/0页</span>
+									     		<input type="button" id="fpbtn" value="首页"/>
+									     		<input type="button" id="rpbtn" value="上页"/>
+									     		<input type="button" id="npbtn" value="下页"/>
+									     		<input type="button" id="lpbtn" value="尾页"/>
+									     		<span id="pagemsg" class="water-table-pagemsg">跳转
+									     			<input type="text" id="gpinput" size="3" value="0"/>页
+									     		</span>
+									     		<input type="button" id="gpbtn" value="跳转"/>
+								    		</span>
+								  		</td>
+									</tr>
+ 								</tfoot>-->
+ 								<tbody>
+	                    		</tbody>
+	                    	</table>
+                    	</div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

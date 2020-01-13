@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.MeasureCommentDao">
+
+    <resultMap id="ProjListMap" type="com.icss.mvp.entity.ProjectInfo">
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+    </resultMap>
+
+    <resultMap type="com.icss.mvp.entity.MeasureProcess"
+               id="processMeasure">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="measureId" column="measure_id"/>
+        <result property="unit" column="unit"/>
+        <result property="measureValues" column="measure_value"/>
+    </resultMap>
+
+    <resultMap type="com.icss.mvp.entity.IterationMeasureIndex"
+               id="iterationMeasureIndex">
+        <id property="id" column="id"/>
+        <result property="iterationId" column="iteration_id"/>
+        <result property="measureId" column="measure_id"/>
+        <result property="value" column="value"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+    <!-- 查询项目名称 -->
+    <select id="queryName" resultType="java.lang.String">
+        SELECT DISTINCT NAME
+        FROM
+            project_info
+        WHERE NO = #{proNo}
+    </select>
+    <!-- 保存指标点评信息 -->
+    <insert id="saveMeasureComment">
+		replace into
+		measure_comment (pro_no, measure_id, type, comment, create_time, update_time)
+		values
+		(#{measureComment.proNo}, #{measureComment.id}, 1, #{measureComment.comment},
+		#{measureComment.endDate}, now())
+	</insert>
+
+    <select id="measureConfigurationRecord" resultType="java.lang.String">
+        SELECT measure_ids FROM `measure_configuration_record` WHERE
+        <if test="null != endDate">
+            DATE_FORMAT(update_time, '%Y-%m-%d') &lt;= #{endDate} AND
+        </if>
+        NO = #{proNo} ORDER BY update_time DESC LIMIT 1
+    </select>
+    <!--团队指标配置-->
+    <select id="measureConfigurationTeamRecord" resultType="java.lang.String">
+        SELECT measure_ids FROM `team_measure_configuration_record` WHERE
+        <if test="null != endDate">
+            DATE_FORMAT(update_time, '%Y-%m-%d') &lt;= #{endDate} AND
+        </if>
+        team_id = #{teamId} ORDER BY update_time DESC LIMIT 1
+    </select>
+    <!-- 查询指标点评信息列表 -->
+    <select id="queryCurrentCommentList"
+            resultType="com.icss.mvp.entity.MeasureComment">
+        SELECT t.*, t6.value AS measureValue, t7.comment AS comment, t8.changeValue
+        		<if test="null != startDate2 and null != endDate2">
+            		, t9.value AS oldValue
+        		</if>
+        FROM(
+        SELECT
+        a.name AS measureName,
+        a.unit AS unit,
+        a.`ID` AS measureId,
+        IF(b.id IS NULL,a.`CHALLENGE`,b.`CHALLENGE`) AS challenge,
+        IF(b.id IS NULL,a.`UPPER`,b.UPPER) AS upper,
+        IF(b.id IS NULL,a.`TARGET`,b.`TARGET`) AS target,
+        IF(b.id IS NULL,a.`LOWER`,b.`LOWER`) AS lower,
+        IF(b.id IS NULL,a.`COMPUTE_RULE`,b.`COMPUTE_RULE`) AS computeRule,
+        IF(b.id IS NULL,a.`COLLECT_TYPE`,b.`COLLECT_TYPE`)AS collectType,
+        a.`label` AS labelTitle,
+        a.`category` AS measureCategory FROM (
+        	SELECT  distinct t1.*,t2.`label`,t2.`category`
+        	FROM `in_tmpl_index` t1, `in_tmpl_label` t2,`in_tmpl_label_index` t3
+        	WHERE t1.`ID` = t3.`index_id` AND t2.`ID` = t3.`label_id` 
+        	AND t1.id IN ${measureIds}) a 
+        	left join
+            (SELECT * FROM (SELECT * FROM `measure_range` WHERE `no` = #{proNo} ORDER BY `update_time` DESC)s 
+            	GROUP BY s.measure_id) b 
+            ON b.`measure_id` = a.id
+        GROUP BY a.id
+        ) t
+        LEFT JOIN
+        (
+        SELECT t5.measure_id, t5.value
+        FROM (
+        SELECT measure_id AS measure_id, measure_value AS value
+        FROM measure_history_detail
+        WHERE DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startDate1}
+        AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endDate1}
+        AND NO = #{proNo}
+        ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC) t5
+        GROUP BY t5.measure_id
+        ) t6 ON t.measureId = t6.measure_id
+        <if test="null != startDate2 and null != endDate2">
+            LEFT JOIN
+            (
+            SELECT t8.measure_id,t8.value
+            FROM (
+            SELECT measure_id AS measure_id, measure_value AS value
+            FROM measure_history_detail
+            WHERE DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startDate2}
+            AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endDate2}
+            AND NO = #{proNo}
+            ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC) t8
+            GROUP BY t8.measure_id
+            ) t9
+            ON t.measureId = t9.measure_id
+        </if>
+        LEFT JOIN
+        ( SELECT measure_id, comment
+        FROM measure_comment
+        WHERE type = 1 AND pro_no = #{proNo}
+        AND DATE_FORMAT(create_time, '%Y-%m-%d') = #{endDate1}
+        ) t7 ON t.measureId = t7.measure_id
+        LEFT JOIN
+        ( select measure_id, change_value as changeValue
+        from comment_picture_change
+        where change_date = #{endDate1} and pro_no=#{proNo}
+        ) t8 ON t.measureId=t8.measure_id
+        ORDER BY t.labelTitle, t.measureCategory, t.measureId
+    </select>
+    
+    <select id="queryHistoryCommentList" resultType="com.icss.mvp.entity.MeasureComment">
+    	select t.* ,c.comment from 
+       ( SELECT
+        	a.name AS measureName,
+        	a.unit AS unit,
+        	a.`ID` AS measureId,
+        	IF(b.id IS NULL,a.`CHALLENGE`,b.`CHALLENGE`) AS challenge,
+        	IF(b.id IS NULL,a.`UPPER`,b.UPPER) AS upper,
+        	IF(b.id IS NULL,a.`TARGET`,b.`TARGET`) AS target,
+        	IF(b.id IS NULL,a.`LOWER`,b.`LOWER`) AS lower,
+        	IF(b.id IS NULL,a.`COMPUTE_RULE`,b.`COMPUTE_RULE`) AS computeRule,
+        	IF(b.id IS NULL,a.`COLLECT_TYPE`,b.`COLLECT_TYPE`)AS collectType,
+        	a.`label` AS labelTitle,
+        	a.`category` AS measureCategory,
+        	b.measure_value as measureValue,
+        	b.measure_color as light
+         FROM (
+        	SELECT distinct t1.*,t2.`label`,t2.`category`
+        		FROM `in_tmpl_index` t1, `in_tmpl_label` t2,`in_tmpl_label_index` t3
+        		WHERE t1.`ID` = t3.`index_id` AND t2.`ID` = t3.`label_id` 
+        			  AND t1.id IN 
+					  <foreach collection="others" item="item" separator="," open="(" close=")">#{item}</foreach>) a 
+        	left join 
+       		(select * from `quality_trend` 
+			   where `no` = #{proNo} AND `create_time`=#{endDate1}) b 
+			 ON  a.id = b.`measure_id` 
+		<if test="null!=warnings and warnings.size()>0">
+		union
+		SELECT
+        	a.name AS measureName,
+        	a.unit AS unit,
+        	a.`ID` AS measureId,
+        	IF(b.id IS NULL,a.`CHALLENGE`,b.`CHALLENGE`) AS challenge,
+        	IF(b.id IS NULL,a.`UPPER`,b.UPPER) AS upper,
+        	IF(b.id IS NULL,a.`TARGET`,b.`TARGET`) AS target,
+        	IF(b.id IS NULL,a.`LOWER`,b.`LOWER`) AS lower,
+        	IF(b.id IS NULL,a.`COMPUTE_RULE`,b.`COMPUTE_RULE`) AS computeRule,
+        	IF(b.id IS NULL,a.`COLLECT_TYPE`,b.`COLLECT_TYPE`)AS collectType,
+        	a.`label` AS labelTitle,
+        	a.`category` AS measureCategory,
+        	b.measure_value as measureValue,
+        	b.measure_color as light
+         FROM (
+        	SELECT distinct t1.*,t2.`label`,t2.`category`
+        		FROM `in_tmpl_index` t1, `in_tmpl_label` t2,`in_tmpl_label_index` t3
+        		WHERE t1.`ID` = t3.`index_id` AND t2.`ID` = t3.`label_id` 
+        			  AND t1.id IN 
+        			  <foreach collection="warnings" item="item" separator="," open="(" close=")">#{item}</foreach>
+        			  ) a ,
+       		(select * from `quality_trend` 
+			   where `no` = #{proNo} AND `create_time`=#{endDate1} and measure_id=223) b 
+		</if>	  
+		) t 
+		left join 
+		( SELECT measure_id, comment
+        	FROM measure_comment
+        	WHERE type = 1 AND pro_no = #{proNo}
+        		  AND DATE_FORMAT(create_time, '%Y-%m-%d') = #{endDate1} 
+        ) c ON t.measureId = c.measure_id 
+		ORDER BY t.labelTitle, t.measureCategory, t.measureId
+    </select>
+    
+    
+    
+    
+    <!-- 使用no查询指标点评信息列表 -->
+    <select id="queryCommentListByNo"
+            resultType="com.icss.mvp.entity.MeasureComment">
+        SELECT
+            t.*,
+            t6.value AS measureValue
+        FROM
+            (
+                SELECT
+                    l.labelId,
+                    l.labelTitle,
+                    l.c_id      AS                             measureId,
+                    m.name      AS                             measureName,
+                    m.unit      AS                             unit,
+                    m.category  AS                             measureCategory,
+                    r.challenge AS                             challenge,
+                    IFNULL(r.r_upper, m.m_upper)               upper,
+                    IFNULL(r.r_target, m.m_target)             target,
+                    IFNULL(r.r_lower, m.m_lower)               lower,
+                    IFNULL(r.r_compute_rule, m.m_compute_rule) computeRule,
+                    IFNULL(r.r_collect_type, m.m_collect_type) collectType
+                FROM
+                    (
+                        SELECT
+                            t1.MEASURE_ID AS c_id,
+                            t4.l_id       AS labelId,
+                            t4.title      AS labelTitle
+                        FROM label_measure_config t1, (
+                                                          SELECT
+                                                              t2.id,
+                                                              t3.ID    AS l_id,
+                                                              t3.TITLE AS title
+                                                          FROM project_label_config t2,
+                                                              label t3
+                                                          WHERE t2.project_id = #{proNo} AND t2.label_id = t3.`ID`
+                                                                AND t2.is_deleted = 0 AND t3.IS_DELETED = 0) t4
+                        WHERE t1.IS_DELETED = 0 AND t1.PROJECT_LABLE_ID = t4.id
+                    ) l
+                    LEFT JOIN
+                    (
+                        SELECT
+                            measure_id   AS r_id,
+                            UPPER        AS r_upper,
+                            target       AS r_target,
+                            compute_rule AS r_compute_rule,
+                            LOWER        AS r_lower,
+                            collect_type AS r_collect_type,
+                            challenge
+                        FROM
+                            (SELECT *
+                             FROM measure_range
+                             WHERE NO = #{proNo}
+                             ORDER BY measure_id, update_time DESC) rr
+                        GROUP BY measure_id
+                    ) r ON l.c_id = r.r_id
+                    LEFT JOIN
+                    (
+                        # 		SELECT  ID AS m_id, name, UNIT AS unit, CATEGORY AS category,UPPER AS m_upper,
+                        # 				TARGET AS m_target, LOWER AS m_lower, COLLECT_TYPE AS m_collect_type, COMPUTE_RULE AS m_compute_rule
+                        # 		FROM in_tmpl_index
+                        SELECT
+                            a.*,
+                            b.`category`
+                        FROM
+                            `in_tmpl_index` a,
+                            `in_tmpl_label` b,
+                            `in_tmpl_label_index` c
+                        WHERE a.`ID` = c.`index_id`
+                              AND b.`ID` = c.`label_id`
+                        GROUP BY a.id
+                    ) m ON l.c_id = m.id
+            ) t
+            LEFT JOIN
+            (
+                SELECT
+                    t5.measure_id,
+                    t5.value
+                FROM (
+                         SELECT
+                             measure_id    AS measure_id,
+                             measure_value AS value
+                         FROM measure_history_detail
+                         WHERE NO = #{proNo}
+                         ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC, update_time DESC) t5
+                GROUP BY t5.measure_id
+            ) t6
+                ON t.measureId = t6.measure_id
+        ORDER BY
+            labelId, t.measureCategory, t.measureId
+    </select>
+    <select id="queryMeasureList"
+            resultType="com.icss.mvp.entity.MeasureComment">
+        SELECT t.*, d.value AS measureValue, p.changeValue
+        FROM
+        <!--(SELECT a.*,i.`name` AS measureName, i.`UNIT` AS unit -->
+        <!--FROM-->
+        <!--(SELECT-->
+        <!--`label` AS labelTitle,-->
+        <!--`measure_id` AS measureId,-->
+        <!--`category` AS measureCategory,-->
+        <!--`challenge`,-->
+        <!--`upper`,-->
+        <!--`target`,-->
+        <!--`lower`,-->
+        <!--`compute_rule` AS computeRule,-->
+        <!--`collect_type` AS collectType-->
+        <!--FROM `measure_range` -->
+        <!--WHERE `measure_id` IN -->
+        <!--<foreach collection="measureIds" item="item" separator="," open="(" close=")">-->
+        <!--#{item}-->
+        <!--</foreach>-->
+        <!--AND no = #{proNo}-->
+        <!--AND (!ISNULL(label) AND LENGTH(TRIM(label))>1) -->
+        <!--ORDER BY measureId, update_time DESC) a -->
+        <!--LEFT JOIN `in_tmpl_index` i ON a.measureId = i.`ID` -->
+        <!--GROUP BY a.measureId) t-->
+        (SELECT
+        a.name AS measureName,
+        a.unit AS unit,
+        a.`ID` AS measureId,
+        IF(b.id IS NULL,a.`CHALLENGE`,b.`CHALLENGE`) AS challenge,
+        IF(b.id IS NULL,a.`UPPER`,b.UPPER) AS upper,
+        IF(b.id IS NULL,a.`TARGET`,b.`TARGET`) AS target,
+        IF(b.id IS NULL,a.`LOWER`,b.`LOWER`) AS lower,
+        IF(b.id IS NULL,a.`COMPUTE_RULE`,b.`COMPUTE_RULE`) AS computeRule,
+        IF(b.id IS NULL,a.`COLLECT_TYPE`,b.`COLLECT_TYPE`)AS collectType,
+        a.`label` AS labelTitle,
+        a.`category` AS measureCategory FROM (
+        SELECT distinct a.*,b.`label`,b.`category` FROM `in_tmpl_index` a, `in_tmpl_label`
+        b,`in_tmpl_label_index` c
+        WHERE a.`ID` = c.`index_id` AND b.`ID` = c.`label_id` AND a.id IN
+        <foreach collection="measureIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ) a left join
+        (SELECT * FROM (SELECT * FROM `measure_range` WHERE `no` = #{proNo} ORDER BY `update_time` DESC)s 
+            	GROUP BY s.measure_id) b  ON b.`measure_id` = a.id 
+        GROUP BY a.id) t
+        LEFT JOIN
+        (
+        SELECT t5.measure_id, t5.value
+        FROM (
+        SELECT measure_id AS measure_id, measure_value AS value
+        FROM measure_history_detail
+        WHERE DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startDate}
+        AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endDate}
+        AND NO = #{proNo}
+        ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC) t5
+        GROUP BY t5.measure_id
+        ) d
+        ON t.measureId = d.measure_id
+        LEFT JOIN
+        ( select measure_id, change_value as changeValue
+        from comment_picture_change
+        where change_date = #{endDate} and pro_no=#{proNo}
+        ) p ON t.measureId=p.measure_id
+    </select>
+
+    <select id="queryIterativeWork" parameterType="java.lang.String"
+            resultType="java.util.HashMap">
+        SELECT *
+        FROM
+            (SELECT
+                 t1.pro_no AS
+                     NO,
+                 t1.topic,
+                 t2.ite_name,
+                 t1.prior,
+                 t1.importance,
+                 t1.status,
+                 t1.change,
+                 t1.finalimit,
+                 t1.person_liable,
+                 t1.plan_start_time,
+                 t1.plan_end_time,
+                 t1.start_time,
+                 t1.end_time,
+                 t1.creator,
+                 t1.expect_hours,
+                 t1.actual_hours,
+                 t1.code_amount,
+                 t1.wr_field,
+                 t1.create_time,
+                 t1.update_time
+             FROM iterative_work_manage t1
+                 LEFT JOIN iteration_cycle t2 ON t2.id = t1.ite_id
+             WHERE t1.pro_no = #{proNo} AND t1.is_deleted = '0') a
+        ORDER BY
+            a.create_time DESC
+    </select>
+
+    <!-- <select id="queryIterativeName" parameterType="java.lang.String"
+    resultType="java.util.HashMap">
+    SELECT HW_ACCOUNT,NAME FROM project_members_local WHERE NO
+    =#{proNo}
+    </select> -->
+
+    <select id="queryQroblemRisk" parameterType="java.lang.String"
+            resultType="java.util.HashMap">
+        SELECT
+            question,
+            impr_measure,
+            progress_desc,
+            is_361,
+            DATE_FORMAT(finish_time, '%Y-%m-%d')        AS
+                finish_time,
+            DATE_FORMAT(actual_finish_time, '%Y-%m-%d') AS
+                actual_finish_time,
+            person_liable,
+            state
+        FROM project_maturity_comments
+        WHERE NO = #{proNo} AND is_deleted = '0'
+    </select>
+
+    <!-- 新增计算的指标值 -->
+    <insert id="insert"
+            parameterType="com.icss.mvp.entity.MeasureLoadEveryInfo">
+		REPLACE INTO `measure_history_detail`
+		(measure_id,create_time,update_time,measure_value,no) VALUES
+		(#{measureId},#{createTime},#{updateTime},#{measureValue},#{no})
+	</insert>
+
+    <select id="queryNewestValue" parameterType="java.lang.String"
+            resultType="java.lang.String">
+	<![CDATA[
+        SELECT m.measure_value
+        FROM measure_history_detail m
+        WHERE m.`no` = #{no} AND m.measure_id = #{id}
+              AND DATE_FORMAT(create_time, '%Y-%m-%d') >= #{startDate} AND
+              DATE_FORMAT(create_time, '%Y-%m-%d') <= #{endDate}
+        ORDER BY m.create_time DESC
+        LIMIT 1
+        ]]>
+	</select>
+
+    <select id="queryNewestTime" parameterType="java.lang.String"
+            resultType="java.util.HashMap">
+	<![CDATA[
+        SELECT
+            m.measure_value,
+            m.update_time
+        FROM measure_history_detail m
+        WHERE m.`no` = #{no} AND m.measure_id = #{id}
+              AND DATE_FORMAT(create_time, '%Y-%m-%d') >= #{startDate} AND
+              DATE_FORMAT(create_time, '%Y-%m-%d') <= #{endDate}
+        ORDER BY m.create_time DESC
+        LIMIT 1
+        ]]>
+	</select>
+
+    <select id="queryMeasureId" parameterType="java.lang.Integer"
+            resultType="java.lang.String">
+        SELECT mp.measure_id
+        FROM measure_process mp
+        WHERE
+            mp.id = #{id} AND is_delete = 0
+    </select>
+
+    <select id="querySameProcessMeasures"
+            parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT mp.id
+        FROM
+            measure_process mp
+        WHERE mp.measure_id LIKE CONCAT('%', #{mid}, '%') AND
+              is_delete = 0
+    </select>
+
+    <select id="currentIteration" parameterType="java.lang.String"
+            resultType="java.lang.String">
+	<![CDATA[
+        SELECT ic.id
+        FROM iteration_cycle ic
+        WHERE ic.pro_no = #{no} AND ic.is_deleted = 0
+              AND DATE_FORMAT(ic.start_date, '%Y-%m-%d') <= #{date} AND DATE_FORMAT(ic.end_date, '%Y-%m-%d') >= #{date}
+        LIMIT 1
+        ]]>
+	</select>
+
+    <select id="queryFromIndex" parameterType="java.lang.String"
+            resultMap="iterationMeasureIndex">
+	<![CDATA[
+        SELECT *
+        FROM iteration_measure_index imi
+        WHERE imi.measure_id = #{mid}
+              AND imi.iteration_id = #{iter}
+        LIMIT 1
+        ]]>
+	</select>
+
+    <insert id="updateIndexValue"
+            parameterType="com.icss.mvp.entity.IterationMeasureIndex">
+		replace into iteration_measure_index
+		values(#{id},#{iterationId},#{measureId},#{value},#{createTime})
+	</insert>
+
+    <select id="queryUnit" parameterType="java.lang.Integer"
+            resultType="java.lang.String">
+        SELECT UNIT
+        FROM measure
+        WHERE ID = #{id}
+    </select>
+
+    <select id="getMeasureChangeKey" resultType="java.lang.Integer">
+        SELECT id
+        FROM comment_picture_change
+        WHERE measure_id = #{measureId} AND change_date = #{changeDate} AND pro_no = #{proNo}
+    </select>
+
+    <insert id="insertMeasureCommentChange">
+		insert into
+		comment_picture_change
+		(change_value,create_time,modify_time,measure_id,pro_no,change_date)
+		value
+		(#{changeValue},now(),now(),#{measureId},#{proNo},#{changeDate})
+	</insert>
+
+    <update id="updateMeasureCommentChange">
+		UPDATE comment_picture_change
+		set change_value = #{changeValue}, modify_time = now()
+		where id = #{id}
+	</update>
+
+    <select id="getMeasureChange" resultType="java.lang.Integer">
+        SELECT IFNULL(change_value, 0)
+        FROM comment_picture_change
+        WHERE measure_id = #{measureId} AND change_date = #{date} AND pro_no = #{proNo}
+    </select>
+    <select id="queryMeasureProcessData" parameterType="Map" resultMap="processMeasure">
+        SELECT
+            p.id,
+            p.NAME,
+            p.measure_id,
+            p.unit,
+	<![CDATA[(SELECT m.measure_value
+             FROM measure_history_detail m
+             WHERE m.`no` = #{proNo} AND m.measure_id = p.id AND DATE_FORMAT(create_time, '%Y-%m-%d') >= #{startDate}
+                   AND DATE_FORMAT(create_time, '%Y-%m-%d') <= #{endDate}
+             ORDER BY m.create_time DESC
+             LIMIT 1)]]> AS measure_value
+        FROM measure_process p
+        WHERE p.measure_id LIKE CONCAT('%', #{measureId}, '%') AND p.is_delete = 0
+    </select>
+
+    <select id="queryProcessMeasure" parameterType="java.lang.String" resultMap="processMeasure">
+        SELECT
+            id,
+            name,
+            measure_id,
+            unit
+        FROM measure_process
+        WHERE measure_id LIKE CONCAT('%', #{mid}, '%') AND is_delete = 0
+    </select>
+
+    <select id="getDateTimeByNo" resultMap="ProjListMap">
+        SELECT
+            START_DATE,
+            END_DATE
+        FROM project_info
+        WHERE NO = #{proNo}
+    </select>
+
+    <select id="getCloseDateByNo" resultType="java.lang.String">
+        SELECT statistical_time
+        FROM project_review
+        WHERE pro_no = #{proNo} AND is_close = 1
+        ORDER BY statistical_time
+        LIMIT 1
+    </select>
+    <select id="getHistoryValue" resultType="java.lang.String">
+        SELECT p.measure_value
+        FROM `measure_history_detail` p
+        WHERE p.`no` = #{proNo} AND p.`measure_id` = #{measureId}
+        ORDER BY `update_time` DESC
+        LIMIT 1, 1
+    </select>
+
+    <select id="getMeasureValue" resultType="java.util.HashMap">
+        SELECT
+            measure_value           AS measureValue,
+            DATE_FORMAT(create_time,
+                        '%Y-%m-%d') AS createTime
+        FROM measure_history_detail
+        WHERE measure_id = #{measureId}
+              AND NO = #{proNo}
+              AND create_time &gt;= #{startDate}
+              AND create_time &lt;= #{endDate}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+</mapper>

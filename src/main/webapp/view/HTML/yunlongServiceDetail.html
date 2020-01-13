@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet"
+	href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+<link rel="stylesheet"
+	href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet"
+	href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript"
+	src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript"
+	src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript"
+	src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript"
+	src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/yunlongServiceDetail.js"></script>
+<style>
+.breadcrumb>.active {
+	color: #333333;
+}
+
+.breadcrumb {
+	background-color: #fff;
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-bottom: 0px;
+	padding: 8px 0px;
+}
+
+.change-chart table.data-table tbody td {
+	line-height: 25px;
+	height: 18px;
+	white-space: nowrap
+}
+
+.change-chart table.data-table thead td {
+	line-height: 25px;
+	height: 18px;
+	white-space: nowrap;
+}
+
+.tablenew tr:nth-child(odd) {
+	background: #f7f8f8;
+}
+
+.mousetable tr:hover {
+	background: #e8e8e8;
+}
+
+.namespan {
+	display: inline-block;
+	width: 260px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.milestonetime {
+	margin-top: 98px;
+	position: absolute;
+	z-index: 1;
+}
+
+.newicon {
+	position: absolute;
+	height: 220px;
+	width: 65px;
+	z-index: 20;
+	background-image: URL(images/newicon.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	text-align: center;
+}
+
+.iterationicon {
+	position: absolute;
+	height: 200px;
+	width: 65px;
+	z-index: 10;
+	background-image: URL(images/iterationicon.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	text-align: center;
+}
+
+.timespot {
+	position: absolute;
+	height: 200px;
+	width: 65px;
+	z-index: 10;
+	background-image: URL(images/timespot.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	text-align: center;
+}
+
+.start {
+	position: absolute;
+	height: 180px;
+	width: 65px;
+	z-index: 20;
+	background-image: URL(images/start.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	text-align: center;
+}
+
+.CPbg {
+	position: absolute;
+	height: 200px;
+	width: 65px;
+	z-index: 10;
+	background-image: URL(images/CPbg.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	color: #367FA9;
+	text-align: center;
+}
+
+.iterationiconH {
+	position: absolute;
+	height: 200px;
+	width: 65px;
+	z-index: 10;
+	background-image: URL(images/iterationiconH.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	text-align: center;
+}
+
+.timespotH {
+	position: absolute;
+	height: 200px;
+	width: 65px;
+	z-index: 10;
+	background-image: URL(images/timespotH.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	text-align: center;
+}
+
+.startH {
+	position: absolute;
+	height: 180px;
+	width: 65px;
+	z-index: 20;
+	background-image: URL(images/startH.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	text-align: center;
+}
+
+.CPbgH {
+	position: absolute;
+	height: 200px;
+	width: 65px;
+	z-index: 10;
+	background-image: URL(images/CPbgH.png);
+	background-repeat: no-repeat;
+	background-position: center;
+	color: #367FA9;
+	text-align: center;
+}
+
+.procolor ul li span {
+	color: #999999;
+}
+
+.procolor ul li span span {
+	color: black;
+}
+
+.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover {
+	color: #3399ff;
+	background-color: #fff;
+	border-bottom: 5px #3399ff solid;
+}
+
+.nav>li>a:hover {
+	color: #3399ff;
+	background-color: #fff;
+}
+
+.nav>li>a {
+	color: #000000;
+	background-color: #fff;
+	text-decoration: none;
+}
+
+.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus,
+	.navbar-nav>li.active>a:hover {
+	padding-bottom: 10px;
+}
+
+.breadcrumb {
+	background-color: #fff;
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-bottom: 0px;
+	padding: 8px 0px;
+}
+</style>
+
+<script type="text/javascript">
+	$(document).on("click", "ul.navbar-nav li", function() {
+		$("ul.navbar-nav li").removeClass("active");
+		_.each($("ul.navbar-nav li"), function(tab, index) {
+			$("#" + $(tab).attr("tabname")).css('display', 'none');
+		});
+		$(this).addClass("active");
+		var id = $(this).attr("tabname");
+		$("#" + id).css('display', 'block');
+	});
+</script>
+
+
+</head>
+<body>
+	<ol class="breadcrumb" id="itemPath"
+		style="font-size: 13px; padding-top: 15px;">
+		<li>服务</li>
+		<li class="active">服务详情</li>
+	</ol>
+
+	<div
+		style="height: 50px; border-bottom: 2px #e2e3e4 solid; margin: 10px;">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li id="scope" onclick="loadData(this.id)" class="active"><a href="#" id="scopeA" style="color:#00">范围</a></li>
+			<li id="progress" onclick="loadData(this.id)"><a href="#" id="progressA" style="color:#00">进度</a></li>
+			<li id="processQuality" onclick="loadPQ(this.id)"><a href="#" id="processQualityA" style="color:#00">过程质量</a></li>
+			<li id="efficiency" onclick="loadData(this.id)"><a href="#" id="efficiencyA" style="color:#00">效率</a></li>
+		</ul>
+	</div>
+	
+	<div 
+		style="height: 50px; border-bottom: 2px #e2e3e4 solid; margin: 10px; display:none" id="qpDiv">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li id="build" onclick="loadPQData(this.id)" class="active" ><a href="#" id="buildA" style="color:#00"> Build构建</a></li>
+			<li id="alpha" onclick="loadPQData(this.id)" ><a href="#" id="alphaA" style="color:#00">Alpha</a></li>
+			<li id="beta" onclick="loadPQData(this.id)" ><a href="#" id="betaA" style="color:#00">Beta</a></li>
+			<li id="gamma" onclick="loadPQData(this.id)" ><a href="#" id="gammaA" style="color:#00">Gamma</a></li>
+			<li id="push" onclick="loadPQData(this.id)" ><a href="#" id="pushA" style="color:#00">发布</a></li>
+			<li id="tTime" onclick="loadPQData(this.id)" ><a href="#" id="tTimeA" style="color:#00">迭代周期内</a></li>
+			
+		</ul>
+	</div>
+
+
+	<div style="margin: 0px 20px 20px 20px;">
+		<!-- 表格 -->
+		<div class="modal-body change-chart"
+			style="width: 100%; padding: 0px;">
+			<table id="tableBody" style="width: 100%" border="0" cellspacing="0"
+				cellpadding="0" class="data-table">
+				<thead>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		</div>
+		<!-- 图表 -->
+		<div style="margin: 20px; padding-bottom: 20px; padding-top: 100px;">
+			<div style="height: 400px;" id="chartWidth">
+				<div class="home-content">
+					<div id="developIndex"
+						style="width: 100%; height: 400px; padding-right: 15px;"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

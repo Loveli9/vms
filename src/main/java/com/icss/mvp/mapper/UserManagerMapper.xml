@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IUserManagerDao">
+	<resultMap id="UserMap" type="com.icss.mvp.entity.UserInfo">
+		<result property="USERID" column="USERID" />
+		<result property="USERNAME" column="USERNAME" />
+		<result property="PASSWORD" column="PASSWORD" />
+		<result property="ISONLINE" column="ISONLINE" />
+		<result property="CREATER" column="CREATER" />
+		<result property="permissionids" column="permission_ids" />
+		<result property="bu" column="bu" />
+		<result property="du" column="du" />
+		<result property="dept" column="dept" />
+		<result property="hwpdu" column="hwpdu" />
+		<result property="hwzpdu" column="hwzpdu" />
+		<result property="pduspdt" column="pduspdt" />
+		<result property="roleId" column="role_id" />
+		<result property="CREATERTIME" column="CREATETIME" />
+		<result property="UPDATER" column="UPDATER" />
+		<result property="UPDATERTIME" column="UPDATETIME" />
+		<result property="IDENTITY" column="IDENTITY" />
+		<result property="usertype" column="usertype" />
+		<result property="isDeleted" column="is_deleted" />
+	</resultMap>
+
+	<resultMap id="UserNameMap" type="com.icss.mvp.entity.UserDetailInfo">
+		<result property="USERNAME" column="USERNAME" />
+	</resultMap>
+
+	<resultMap type="com.icss.mvp.entity.ProjectMembersLocal" id="projectMembersLocal">
+		<id property="no" column="NO"/>
+		<result property="name" column="NAME"/>
+		<result property="zrAccount" column="ZR_ACCOUNT"/>
+		<result property="hwAccount" column="HW_ACCOUNT"/>
+		<result property="svnGitNo" column="SVN_GIT_NO"/>
+		<result property="role" column="ROLE"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+		<result property="rank" column="RANK"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+
+	<select id="isExistsByAccount" resultMap="UserNameMap">
+		SELECT * FROM sys_user
+		where USERID=#{USERNAME}
+	</select>
+	<select id="queryId" parameterType="String" resultType="Integer">
+		SELECT role_id FROM sys_role
+		where role_name=#{roleName}
+	</select>
+
+	<select id="queryperId" parameterType="String" resultType="Integer">
+		SELECT permission_id FROM sys_permission
+		where permission_name=#{permissionName}
+	</select>
+	<select id="querypNameById" parameterType="Integer" resultType="String">
+		SELECT permission_name FROM sys_permission
+		where permission_id=#{permissionid}
+	</select>
+
+    <select id="isExistis" resultType="com.icss.mvp.entity.UserInfo">
+        SELECT * FROM sys_user
+        where USERID=#{USERNAME}
+    </select>
+
+	<select id="queryUserInfo" resultType="com.icss.mvp.entity.UserInfo">
+		SELECT *
+		FROM
+		sys_user where
+		USERID=#{USERNAME} and
+		PASSWORD=#{PASSWORD} order by CREATETIME desc
+	</select>
+
+	<select id="getUserInfoByName" parameterType="Map" resultMap="UserMap">
+		SELECT *
+		FROM
+		sys_user where
+		USERID=#{userName}
+	</select>
+
+	<select id="queryUserInfos" resultMap="UserMap">
+		SELECT
+		t1.USERID as USERID,
+		t1.USERNAME as USERNAME,
+		t1.role_id as role_id,
+		t1.permission_ids as permission_ids,
+		t2.role_name as roleName,
+		t1.CREATETIME as CREATERTIME
+		FROM
+		sys_user t1 left join sys_role t2 on t1.role_id = t2.role_id
+		WHERE 1=1
+		<if test="user.USERNAME!=null and user.USERNAME!=''">
+			AND t1.USERID like CONCAT('%',#{user.USERNAME},'%')
+		</if>
+		<if test="sort!=null and sort!='' and order!=null and order!=''">
+			order by ${sort} ${order}
+		</if>
+	</select>
+	<insert id="addUserInfo" parameterType="com.icss.mvp.entity.UserDetailInfo">
+		INSERT INTO sys_user
+		(USERID, USERNAME, PASSWORD, role_id,permission_ids, CREATER, CREATETIME,bu,du,dept,hwpdu,hwzpdu,pduspdt,usertype) VALUES
+		(#{USERID}
+		,#{USERNAME},#{PASSWORD}, #{roleId},#{permissionids}, #{CREATER}, #{CREATETIME}
+		,#{bu}, #{du}, #{dept}, #{hwpdu}, #{hwzpdu}, #{pduspdt}, #{usertype});
+	</insert>
+	
+	<update id="updateUser" parameterType="com.icss.mvp.entity.UserInfo">
+		UPDATE sys_user SET
+		PASSWORD=#{PASSWORD} WHERE
+		(USERID=#{USERNAME});
+	</update>
+	<update id="updateUsers" parameterType="java.util.Map">
+		UPDATE sys_user SET
+		usertype=#{map.usertype} WHERE
+		(USERID=#{map.userid});
+	</update>
+
+	<!-- <delete id="deleteUser" parameterType="com.icss.mvp.entity.UserInfo">
+		DELETE FROM sys_user WHERE
+		USERID=#{USERID};
+	</delete> -->
+	
+	<update id="deleteUser" parameterType="com.icss.mvp.entity.UserInfo">
+		update sys_user set is_deleted = 1 WHERE USERID = #{USERID};
+	</update>
+	
+	<update id="editRole" parameterType="Map">
+		update sys_user set role_id = #{roleId} where USERID = #{userId}
+	</update>
+	<update id="updateper" parameterType="Map">
+		update sys_user set permission_ids = #{perids} where USERID = #{userId}
+	</update>
+	
+  <select id="queryIteInfoByPage" resultMap="UserMap">
+  		SELECT
+      USERID,USERNAME,PASSWORD,permission_ids,bu,du,dept,hwpdu,hwzpdu,pduspdt,usertype
+		FROM
+		sys_user
+		where is_deleted = 0 and usertype = #{page.queryMap.usertype}
+		 <if test="null != page.queryMap.lobline and '' !=page.queryMap.lobline" > <!-- 业务线id -->
+        	and bu like concat('%', #{page.queryMap.lobline}, '%')
+      	</if>
+		 <if test="null != page.queryMap.lobdept and '' !=page.queryMap.lobdept" > <!-- 事业部id -->
+        	and du  like concat('%', #{page.queryMap.lobdept}, '%')
+      	</if>
+		 <if test="null != page.queryMap.lobdepment and '' !=page.queryMap.lobdepment" > <!-- 交付部id -->
+        	and dept like concat('%', #{page.queryMap.lobdepment}, '%')
+      	</if>
+		 <if test="null != page.queryMap.hwpdu and '' !=page.queryMap.hwpdu" > <!-- 华为产品线id -->
+        	and hwpdu like concat('%', #{page.queryMap.hwpdu}, '%')
+      	</if>
+		 <if test="null != page.queryMap.hwzpdu and '' !=page.queryMap.hwzpdu" > <!-- 子产品线id -->
+        	and hwzpdu  like concat('%', #{page.queryMap.hwzpdu}, '%')
+      	</if>
+		 <if test="null != page.queryMap.pduspdt and '' !=page.queryMap.pduspdt" > <!-- PDU/SPDTid -->
+        	and pduspdt like concat('%', #{page.queryMap.pduspdt}, '%')
+      	</if>
+		 <if test="null != page.queryMap.lobname and '' !=page.queryMap.lobname" > <!-- 用户名称 -->
+        	and USERNAME like concat('%', #{page.queryMap.lobname}, '%')
+      	</if>
+		 <if test="null != page.queryMap.lobrole and '' !=page.queryMap.lobrole" > <!-- 角色id -->
+        	and permission_ids = #{page.queryMap.lobrole}
+      	</if>
+      	<if test="null != page.page and  null != page.rows">
+	    	LIMIT ${page.page},${page.rows}     
+      	</if>  
+  </select>
+   
+  <select id="queryIterationTotals" resultType="java.lang.Integer">
+  	SELECT COUNT(*) FROM sys_user where is_deleted = 0 and usertype = #{page.queryMap.usertype}
+  	 <if test="null != page.queryMap.lobline and '' !=page.queryMap.lobline" > <!-- 业务线id -->
+        	and bu like concat('%', #{page.queryMap.lobline}, '%')
+      	</if>
+		 <if test="null != page.queryMap.lobdept and '' !=page.queryMap.lobdept" > <!-- 事业部id -->
+        	and du  like concat('%', #{page.queryMap.lobdept}, '%')
+      	</if>
+		 <if test="null != page.queryMap.lobdepment and '' !=page.queryMap.lobdepment" > <!-- 交付部id -->
+        	and dept  like concat('%', #{page.queryMap.lobdepment}, '%')
+      	</if>
+		 <if test="null != page.queryMap.lobname and '' !=page.queryMap.lobname" > <!-- 用户名称 -->
+        	and USERNAME like concat('%', #{page.queryMap.lobname}, '%')
+      	</if>
+		 <if test="null != page.queryMap.lobrole and '' !=page.queryMap.lobrole" > <!-- 角色id -->
+        	and permission_ids = #{page.queryMap.lobrole}
+      	</if>
+ </select>
+
+	<select id="selecById" parameterType="java.lang.String" resultMap="UserMap">
+		select * from sys_user WHERE USERNAME = #{id}
+	</select>
+
+	<select id="queryProjectNos" parameterType="java.lang.String" resultType="java.lang.String">
+		select no  from project_info WHERE PMID = #{pmid}
+	</select>
+
+<update id="updateNew" parameterType = "com.icss.mvp.entity.UserInfo">
+		UPDATE sys_user SET 		
+		permission_ids= #{permissionNames},
+		PASSWORD= #{PASSWORD},
+		bu= #{buVal},
+		du= #{duVal},
+		dept= #{deptVal},
+		hwpdu= #{hwpduVal},
+		hwzpdu= #{hwzpduVal},
+		pduspdt= #{pduspdtVal}
+		where
+		USERID = #{USERID}
+	</update>
+	
+	<select id="queryOldProjectMembers" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT
+		mb.NAME,
+		mb.HW_ACCOUNT,
+		mb.ZR_ACCOUNT,
+		ps.SVN_GIT_NO,
+		ps.ROLE,
+		p.START_DATE,
+		p.END_DATE,
+		ps.STATUS,
+		ps.IS_KEY_STAFFS,
+		ps.RANK
+		FROM project_staff ps
+		LEFT JOIN member_base mb
+		ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		LEFT JOIN project_info p
+		ON p.NO = #{proNo}
+		WHERE ps.NO = #{oldNo}
+		AND ps.IS_DELETED = 0
+		AND mb.ZR_ACCOUNT != ''
+	</select>
+	
+	<select id="queryRepeatProjectStaff" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		SELECT COUNT(ZR_ACCOUNT) FROM project_staff WHERE NO = #{no} AND ZR_ACCOUNT = #{zrAccount}
+	</select>
+	<select id="queyMembersByPmid" parameterType="com.icss.mvp.entity.PersonnelInfo"
+			resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT COUNT(*) FROM (SELECT ps.`NO`AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT  FROM project_staff ps LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT WHERE ps.STATUS IN('在岗','后备') AND ps.IS_DELETED ='0' )t
+		 LEFT JOIN project_info p on t.NO = p.`NO`
+		WHERE p.PMID = #{renyuan.pmid} AND p.PROJECT_STATE = '在行' GROUP BY t.ZR_ACCOUNT)s;
+	</select>
+	<select id="queyMembersByPmidofproject" parameterType="com.icss.mvp.entity.PersonnelInfo"
+			resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT ps.`NO`AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT  FROM project_staff ps LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT WHERE ps.STATUS IN('在岗','后备') AND ps.IS_DELETED ='0' )t
+		 LEFT JOIN project_info p on t.NO = p.`NO`
+		WHERE p.PMID = #{renyuan.pmid} AND p.PROJECT_STATE = '在行';
+	</select>
+	<select id="queyMembersByNo" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT COUNT(*) FROM (SELECT ps.`NO`AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT  FROM project_staff ps LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT WHERE ps.STATUS IN('在岗','后备') AND ps.IS_DELETED ='0' AND ps.NO= #{proNo})t
+		 GROUP BY t.ZR_ACCOUNT)s;
+	</select>
+	<select id="queyMembersTotal" parameterType="com.icss.mvp.entity.PersonnelInfo"
+			resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT COUNT(*) FROM (SELECT ps.`NO`AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT  FROM project_staff ps LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT WHERE  ps.IS_DELETED ='0' )t
+		 LEFT JOIN project_info p on t.NO = p.`NO`
+		WHERE p.PMID = #{renyuan.pmid} AND p.PROJECT_STATE = '在行' GROUP BY t.ZR_ACCOUNT)s;
+	</select>
+	<select id="queyMembersTotalByNo" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT COUNT(*) FROM (SELECT ps.`NO`AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT  FROM project_staff ps LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT WHERE  ps.IS_DELETED ='0' AND ps.NO= #{proNo})t
+		 GROUP BY t.ZR_ACCOUNT)s;
+	</select>
+	<select id="queryGuanjianByPmid" parameterType="com.icss.mvp.entity.PersonnelInfo"
+			resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT COUNT(*) FROM (SELECT ps.`NO`AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT  FROM project_staff ps LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT WHERE ps.STATUS IN('在岗','后备') AND ps.IS_DELETED ='0'AND ps.IS_KEY_STAFFS = '0')t
+		 LEFT JOIN project_info p on t.NO = p.`NO`
+		WHERE p.PMID = #{renyuan.pmid}  AND p.PROJECT_STATE = '在行' GROUP BY t.ZR_ACCOUNT)s;
+	</select>
+	<select id="queryGuanjianByPmidofproject" parameterType="com.icss.mvp.entity.PersonnelInfo"
+			resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT ps.`NO`AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT  FROM project_staff ps LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT WHERE ps.STATUS IN('在岗','后备') AND ps.IS_DELETED ='0'AND ps.IS_KEY_STAFFS = '0')t
+		 LEFT JOIN project_info p on t.NO = p.`NO`
+		WHERE p.PMID = #{renyuan.pmid}  AND p.PROJECT_STATE = '在行';
+	</select>
+	<select id="queryGuanjianByNo" parameterType="com.icss.mvp.entity.PersonnelInfo"
+			resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (SELECT COUNT(*) FROM (SELECT ps.`NO`AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT  FROM project_staff ps LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT WHERE ps.STATUS IN('在岗','后备') AND ps.IS_DELETED ='0'AND ps.IS_KEY_STAFFS = '0'
+		  AND ps.NO= #{proNo})t GROUP BY t.ZR_ACCOUNT)s;
+	</select>
+	<!-- 继承团队下所属项目配置成员 -->
+	<insert id="addMemberInfo" parameterType="java.util.HashMap">
+		INSERT INTO project_staff (CREATE_TIME, MODIFY_TIME, NO, ZR_ACCOUNT, SVN_GIT_NO
+			, ROLE, STATUS, START_DATE, END_DATE, IS_KEY_STAFFS, RANK)
+		VALUES (NOW(), NOW(), #{member.NO}, #{member.ZR_ACCOUNT}, #{member.SVN_GIT_NO}, #{member.ROLE}, 
+		#{member.STATUS}, #{member.START_DATE}, #{member.END_DATE}, #{member.IS_KEY_STAFFS}, #{member.RANK})
+	</insert>
+	
+	<update id="updateMemberInfo" parameterType="java.util.HashMap">
+		UPDATE project_staff
+		SET MODIFY_TIME = NOW(), IS_DELETED = 0, SVN_GIT_NO = #{member.SVN_GIT_NO}, ROLE = #{member.ROLE}, 
+		STATUS = #{member.STATUS}, START_DATE = #{member.START_DATE}, END_DATE = #{member.END_DATE},
+		IS_KEY_STAFFS = #{member.IS_KEY_STAFFS}, RANK = #{member.RANK}
+		WHERE NO = #{member.NO}
+		AND ZR_ACCOUNT = #{member.ZR_ACCOUNT}
+	</update>
+	
+	<select id="queryTeamIdByProNo" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT TEAMID FROM project_info WHERE NO = #{proNo}
+	</select>
+	
+	<select id="queryTeamMembers" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT
+		mb.NAME,
+		mb.HW_ACCOUNT,
+		mb.ZR_ACCOUNT,
+		ts.SVN_GIT_NO,
+		ts.ROLE,
+		p.START_DATE,
+		p.END_DATE,
+		ts.STATUS,
+		ts.RANK
+		FROM team_staff ts
+		LEFT JOIN member_base mb
+		ON ts.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		LEFT JOIN project_info p
+		ON p.NO = #{proNo}
+		WHERE ts.TEAM_ID = #{teamId}
+		AND ts.IS_DELETED = 0
+		AND mb.ZR_ACCOUNT != ''
+	</select>
+	
+	<select id="queryOldProjectPost" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT pph.POSITION, pph.NAME, pph.dict_item_id, pph.DEMAND FROM project_post_hierarchy pph
+		WHERE PMID = #{pmid}
+	</select>
+	
+	<update id="updateProjectPostDemand" parameterType="Map">
+		REPLACE INTO project_post_hierarchy(NO, POSITION, NAME, DEMAND, dict_item_id) 
+		VALUES (#{map.NO}, #{map.POSITION}, #{map.NAME}, 0, #{map.dict_item_id})
+	</update>
+
+	<select id="getRelateProjects" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT p.NO,p.NAME FROM project_info p
+		WHERE p.PMID = #{pmid}
+		AND p.PROJECT_STATE = '在行'
+	</select>
+
+	<select id="queryMemberinfoDisplay" parameterType="java.lang.String" resultMap="projectMembersLocal">
+SELECT t.* FROM  (SELECT
+        mb.NAME AS NAME,
+		  mb.ZR_ACCOUNT AS ZR_ACCOUNT ,
+		  mb.HW_ACCOUNT AS HW_ACCOUNT ,
+		  ps.SVN_GIT_NO AS SVN_GIT_NO ,
+		  ps.ROLE AS ROLE ,
+		  ps.RANK AS RANK ,
+		  ps.START_DATE AS START_DATE ,
+		  ps.END_DATE AS  END_DATE ,
+		  ps.`STATUS` AS  `STATUS` ,
+		  ps.`NO` AS NO
+		FROM member_base mb
+		  LEFT JOIN project_staff ps
+		    ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		    AND ps.IS_DELETED = 0) t LEFT JOIN project_info p
+		    ON t.`NO`=p.`NO`
+		    WHERE p.PMID = #{pmid}
+		    AND t.NO = #{no}
+		    AND t.ZR_ACCOUNT = #{zrAccount};
+	</select>
+	<select id="editProjectPages" parameterType="java.lang.String" resultMap="projectMembersLocal">
+		SELECT t.* FROM  (SELECT
+          mb.NAME AS NAME,
+		  mb.ZR_ACCOUNT AS ZR_ACCOUNT ,
+		  mb.HW_ACCOUNT AS HW_ACCOUNT ,
+		  ps.SVN_GIT_NO AS SVN_GIT_NO ,
+		  ps.ROLE AS ROLE ,
+		  ps.RANK AS RANK ,
+		  ps.START_DATE AS START_DATE ,
+		  ps.END_DATE AS  END_DATE ,
+		  ps.`STATUS` AS  `STATUS` ,
+		  ps.`NO` AS NO
+		FROM member_base mb
+		  LEFT JOIN project_staff ps
+		    ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT
+		    AND ps.IS_DELETED = 0) t
+		    WHERE t.NO = #{no}
+		    AND t.ZR_ACCOUNT = #{zrAccount};
+	</select>
+	<update id="updatememberlocalToMemberBase" parameterType="com.icss.mvp.entity.ProjectMembersLocal">
+		UPDATE
+		member_base SET
+		MODIFY_TIME = NOW(), NAME = #{membersLocal.name}, HW_ACCOUNT = #{membersLocal.hwAccount}
+		WHERE ZR_ACCOUNT = #{membersLocal.zrAccount}
+	</update>
+	<update id="updatmemberlocalToProjectStaff" parameterType="com.icss.mvp.entity.ProjectMembersLocal">
+		UPDATE
+		project_staff SET
+		MODIFY_TIME = NOW(),SVN_GIT_NO = #{membersLocal.svnGitNo}, ROLE = #{membersLocal.role},STATUS = #{membersLocal.status},
+		RANK = #{membersLocal.rank},IS_DELETED = 0, START_DATE = #{membersLocal.startDate}, END_DATE = #{membersLocal.endDate}
+		WHERE NO = #{membersLocal.no} AND ZR_ACCOUNT = #{membersLocal.zrAccount}
+	</update>
+	<!-- 删除团队成员 -->
+	<update id="deleteProjectStaff" parameterType="com.icss.mvp.entity.ProjectMembersLocal">
+		UPDATE
+		project_staff SET
+		IS_DELETED = 1
+		WHERE NO = #{projNo} AND ZR_ACCOUNT = #{zrAccount}
+	</update>
+    <select id="getMemberinfoByZr" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT mb.NAME as NAME ,mb.HW_ACCOUNT as HW_ACCOUNT FROM member_base mb
+		WHERE mb.ZR_ACCOUNT = #{zr};
+	</select>
+</mapper>

@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.MeasureLoadEveryDayDao">
+	<resultMap type="com.icss.mvp.entity.MeasureLoadEveryInfo" id="valueMap">
+		<result property="id" column="id"/>
+		<result property="measureId" column="measure_id"/>
+		<result property="createTime" column="create_time"/>
+		<result property="updateTime" column="update_time"/>
+		<result property="measureValue" column="measure_value"/>
+		<result property="no" column="no"/>
+	</resultMap>
+	
+	<resultMap id="BaseResultMap" type="com.icss.mvp.entity.ProjectInfo">
+        <result column="No" property="no" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="HWPDU" property="hwpdu" jdbcType="VARCHAR"/>
+        <result column="HWZPDU" property="hwzpdu" jdbcType="VARCHAR"/>
+        <result column="PDU_SPDT" property="pduSpdt" jdbcType="VARCHAR"/>
+        <result column="areaName" property="area" jdbcType="VARCHAR"/>
+        <result column="TYPE" property="type" jdbcType="VARCHAR"/>
+        <result column="pm" property="pm" jdbcType="VARCHAR"/>
+        <result column="START_DATE" property="startDate" jdbcType="TIMESTAMP"/>
+        <result column="END_DATE" property="endDate" jdbcType="TIMESTAMP"/>
+        <result column="IS_OFFSHORE" property="isOffshore" jdbcType="VARCHAR"/>
+        <result column="PROJECT_STATE" property="projectState"/>
+    </resultMap>
+    
+   <resultMap id="MeasureResultMap" type="com.icss.mvp.entity.IterationMeasureIndex" >
+    <result column="id" property="id" jdbcType="VARCHAR" />
+    <result column="iteration_id" property="iterationId" jdbcType="VARCHAR" />
+    <result column="measure_id" property="measureId" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+  </resultMap>
+	
+	<!-- 获取在行项目列表 -->
+	<select id="getPorjectList" resultMap="BaseResultMap">
+		<!-- select p.*
+		from
+			( select distinct project_id
+				from project_label_config where is_deleted=0 ) c
+		inner join project_info p
+			on c.project_id = p.`NO` 
+		where p.`PROJECT_STATE` = '在行' -->
+		SELECT p.*
+		FROM (SELECT DISTINCT NO
+		      FROM measure_configuration_record) c
+	  	INNER JOIN project_info p ON c.NO = p.`NO`
+		WHERE p.`PROJECT_STATE` = '在行'
+	</select>
+	
+	<!-- 新增计算的指标值 -->
+	<insert id="insert" parameterType="java.util.List">
+			REPLACE INTO `measure_history_detail` (measure_id,create_time,update_time,measure_value,no) VALUES
+			<foreach collection="meaInfo" item="item" index="index"
+			separator=",">
+			(#{item.measureId},#{item.createTime},#{item.updateTime},
+			#{item.measureValue},#{item.no}
+			)
+		</foreach>
+	</insert>
+	
+	<!-- 查询项目配置的流程类目 -->
+	<select id="getProjectConfigCategory" parameterType="java.lang.String" resultType = "java.lang.String">
+		SELECT `CATEGORY` FROM `label` WHERE id = (
+			SELECT `label_id` FROM `project_label_config` WHERE `project_id` = #{proNo} AND `is_deleted` = 0 LIMIT 1
+		)
+	</select>
+	
+	<!-- 查询手工录入的指标值并插入 -->
+	<insert id="insertIteMeasureIndexsManual" parameterType="java.lang.String">
+		REPLACE INTO `measure_history_detail` (`measure_id`,`create_time`,`update_time`,`measure_value`,`no`)
+			SELECT t.measure_id,
+			(select IF(DATE_FORMAT(NOW(),'%Y-%m-%d') > DATE_FORMAT(m.end_date,'%Y-%m-%d'),m.end_date,NOW()) from iteration_cycle m where m.id = #{iteId}),
+			NOW(),
+			t.value,
+			#{proNo}
+			FROM `iteration_measure_index` t LEFT JOIN `iteration_cycle` t1 ON t.`iteration_id` = t1.`id`
+			LEFT JOIN `measure` t2 ON t.`measure_id` = t2.`ID`
+			WHERE t1.`is_deleted` = 0  AND t2.`IS_DELETE` = 0
+			AND t1.`pro_no` = #{proNo} AND t2.`COLLECT_TYPE` = '手工录入'
+			AND t.`iteration_id` = #{iteId}
+			AND t2.`LABLE_ID` IN (SELECT id FROM `label` WHERE  `CATEGORY` = #{category} )
+			GROUP BY t.`measure_id`
+	</insert>
+	
+	<!-- 返回手工录入指标列表 -->
+	<!--<select id="ManualMeasureValues" parameterType="java.lang.String" resultMap = "MeasureResultMap">-->
+		<!--SELECT t.measure_id, t.value, t.unit FROM-->
+			<!--(SELECT-->
+			<!--t1.measure_id AS measure_id,-->
+			<!--t1.measure_value AS value,-->
+			<!--t2.UNIT AS unit-->
+			<!--FROM measure_history_detail t1-->
+			<!--LEFT JOIN measure t2 ON t1.measure_id = t2.ID-->
+			<!--where-->
+			<!--t2.LABLE_ID IN (SELECT id FROM `label` WHERE  `CATEGORY` = #{category} )-->
+			<!--<if test="null != startDate">-->
+				<!--and date_format(t1.create_time, '%Y-%m-%d') &gt;= #{startDate}-->
+			<!--</if>-->
+			<!--<if test="null != endDate">-->
+				  <!--<![CDATA[and date_format(t1.create_time, '%Y-%m-%d') <= #{endDate}]]>-->
+			<!--</if>-->
+			<!--AND t1.`no` = #{proNo}-->
+			<!--ORDER BY DATE_FORMAT(t1.create_time, '%Y-%m-%d') DESC, t1.update_time DESC ) t-->
+		<!--GROUP BY t.measure_id-->
+	<!--</select>-->
+	
+	<select id="ManualMeasureValues" parameterType="java.lang.String" resultMap = "MeasureResultMap">
+		SELECT t.measure_id, t.value, t.unit FROM
+		(SELECT
+		t1.measure_id AS measure_id,
+		t1.measure_value AS value,
+		t2.UNIT AS unit
+		FROM measure_history_detail t1
+		LEFT JOIN in_tmpl_index t2 ON t1.measure_id = t2.ID
+		where 1=1
+		<if test="null != startDate">
+			and date_format(t1.create_time, '%Y-%m-%d') &gt;= #{startDate}
+		</if>
+		<if test="null != endDate">
+			<![CDATA[and date_format(t1.create_time, '%Y-%m-%d') <= #{endDate}]]>
+		</if>
+		AND t1.`no` = #{proNo}
+		ORDER BY DATE_FORMAT(t1.create_time, '%Y-%m-%d') DESC, t1.update_time DESC ) t
+		GROUP BY t.measure_id
+	</select>
+
+	<select id="queryCodeNum" parameterType="java.lang.String" resultType = "java.lang.Double">
+		<!-- SELECT IFNULL(SUM(t1.MODIFYNUM)/1000,0) as demandCodeNum FROM svn_log 
+		t1 LEFT JOIN project_members_local t2 ON t1.AUTHOR = t2.svn_git_no WHERE 
+		t1.no = #{proNo} -->
+		SELECT
+		IFNULL(SUM(t1.MODIFYNUM)/1000,0) as demandCodeNum
+		FROM svn_log t1 LEFT JOIN
+		(select SVN_GIT_NO as svn_git_no from project_staff WHERE IS_DELETED = 0) t2 
+		ON t1.AUTHOR = t2.svn_git_no
+		WHERE t1.no = #{proNo}
+		<if test="null != startDate">
+			and date_format(t1.COMMITTIME, '%Y-%m-%d') &gt;= #{startDate}
+		</if>
+		<if test="null != endDate">
+		    <![CDATA[and date_format(t1.COMMITTIME, '%Y-%m-%d') <= #{endDate}]]>
+		</if>
+	</select>
+	
+	<select id="queryTestCaseImpAndPlanNum" parameterType="java.lang.String" resultType = "java.lang.Double">
+		SELECT * FROM 
+		(SELECT IFNULL(SUM(`TESTCASE_VALUE`),0) AS total FROM `testcase_statistics` WHERE `TESTCASE_TYPE` = 0
+		 <if test="null != startDate">
+	        and date_format(t1.COMMITTIME, '%Y-%m-%d') &gt;= #{startDate}
+	      </if>
+	      <if test="null != endDate">
+	        <![CDATA[and date_format(t1.COMMITTIME, '%Y-%m-%d') <= #{endDate}]]>
+	      </if>)a,
+		(SELECT IFNULL(SUM(`TESTCASE_VALUE`) ,0)AS impl FROM `testcase_statistics` WHERE `TESTCASE_TYPE` = 1 
+		 <if test="null != startDate">
+	        and date_format(DATE, '%Y-%m-%d') &gt;= #{startDate}
+	      </if>
+	      <if test="null != endDate">
+	        <![CDATA[and date_format(DATE, '%Y-%m-%d') <= #{endDate}]]>
+	      </if>)b
+	</select>
+	
+	<!--&lt;!&ndash; java/c迭代生产率 &ndash;&gt;-->
+	<!--<select id="getJavaOrcProduct" resultType="java.lang.Double">-->
+		<!--&lt;!&ndash; SELECT-->
+		<!--IFNULL(SUM(-->
+		<!--IFNULL(t1.`FILE_MODIFYNUM`, 0) * IFNULL(t3.`val`, 0)-->
+		<!--),0) AS effect-->
+		<!--FROM-->
+		<!--`svn_log` t-->
+		<!--LEFT JOIN `svn_log_file_modifynum` t1-->
+		<!--ON t.`ID` = t1.`SVN_LOG_ID`-->
+		<!--LEFT JOIN `project_members_local` t2-->
+		<!--ON t2.`NO` = t.`NO`-->
+		<!--LEFT JOIN `sys_dict_item` t3-->
+		<!--ON t3.`name` = t1.`FILE_TYPE`-->
+		<!--WHERE t.`NO` = #{no}-->
+		<!--<if test="null != javaFiles">-->
+			<!--AND t1.`FILE_TYPE` IN ${javaFiles}-->
+		<!--</if>-->
+		<!--AND t2.ROLE = '开发工程师'-->
+		<!--AND (-->
+		<!--t2.`svn_git_no` = t.`AUTHOR`-->
+		<!--OR t2.`HW_ACCOUNT` = substring(t.`AUTHOR`,2)  OR t2.`HW_ACCOUNT` = t.`AUTHOR`-->
+		<!--)-->
+		<!--AND t3.`sys_dict_id` = '6'  &ndash;&gt;-->
+		<!--SELECT-->
+		<!--IFNULL(SUM(-->
+		<!--IFNULL(t1.`FILE_MODIFYNUM`, 0) * IFNULL(t3.`val`, 0)-->
+		<!--),0) AS effect-->
+		<!--FROM-->
+		<!--`svn_log` t-->
+		<!--LEFT JOIN `svn_log_file_modifynum` t1-->
+		<!--ON t.`ID` = t1.`SVN_LOG_ID`-->
+		<!--LEFT JOIN (select NO,HW_ACCOUNT,ROLE,ps.SVN_GIT_NO as svn_git_no -->
+		<!--from project_staff ps-->
+		<!--LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT and `NO` = #{no}-->
+		<!--AND ps.IS_DELETED-->
+		<!--= 0 ) t2-->
+		<!--ON t2.`NO` = t.`NO`-->
+		<!--LEFT JOIN `sys_dict_item` t3-->
+		<!--ON t3.`name` = t1.`FILE_TYPE`-->
+		<!--WHERE t.`NO` = #{no}-->
+		<!--<if test="null != javaFiles">-->
+			<!--AND t1.`FILE_TYPE` IN ${javaFiles}-->
+		<!--</if>-->
+		<!--AND t2.ROLE = '开发工程师'-->
+		<!--AND (-->
+		<!--t2.`svn_git_no` = t.`AUTHOR`-->
+		<!--OR t2.`HW_ACCOUNT` = substring(t.`AUTHOR`,2) OR t2.`HW_ACCOUNT` =-->
+		<!--t.`AUTHOR`-->
+		<!--)-->
+		<!--AND t3.`sys_dict_id` = '6'-->
+		<!--<if test="null != startDate">-->
+			<!--AND date_format(t.COMMITTIME, '%Y-%m-%d') &gt;= #{startDate}-->
+		<!--</if>-->
+		<!--<if test="null != endDate">-->
+	        <!--<![CDATA[and date_format(t.COMMITTIME, '%Y-%m-%d') <= #{endDate}]]>-->
+		<!--</if>-->
+	<!--</select>-->
+	
+	<!-- 自动化用例写作效率 -->
+	<select id="queryWriteCase" parameterType="Map" resultType="java.lang.Integer">
+  		SELECT IFNULL(COUNT(*),0) AS impCase FROM tbl_tmss_info
+		WHERE auto_execution_type = 'True'  AND NO = #{proNo}
+		AND last_result = 'Passed' 
+		<if test="null != startDate">
+        and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+      	</if>
+       <if test="null != endDate">
+        <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+       </if>
+  </select>
+  
+  <!-- 查询测试用例相关指标 -->
+  <select id="queryCase" resultType="java.util.HashMap">
+  		select COUNT(*) as design,
+		COUNT(CASE WHEN  DATE_FORMAT(start_time,'%Y-%m-%d') BETWEEN #{startDate} and #{endDate} THEN 1 ELSE NULL END ) as impl,
+		COUNT(CASE WHEN auto_execution_type = 'True' and DATE_FORMAT(creation_date,'%Y-%m-%d') BETWEEN #{startDate} and #{endDate}  THEN 1 ELSE NULL END) as writing,
+		COUNT(CASE WHEN auto_execution_type = 'True' and DATE_FORMAT(start_time,'%Y-%m-%d') BETWEEN #{startDate} and #{endDate}  THEN 1 ELSE NULL END) as autoTotal ,
+		COUNT(CASE WHEN auto_execution_type = 'True' and last_result = 'Passed' and DATE_FORMAT(start_time,'%Y-%m-%d') BETWEEN #{startDate} and #{endDate}  THEN 1 ELSE NULL END) as autoPassed 
+		from tbl_tmss_info 
+		where no = #{no}
+  </select>
+  
+  <!-- 判断项目是否是第一次执行定时任务 -->
+  <select id="isFirstCalculate" resultType="java.lang.Integer">
+  	SELECT COUNT(*) FROM `measure_history_detail` WHERE `no` = #{no}
+  </select>
+  
+  <!-- 插入非配置化指标值 -->
+  <!--<insert id="insertNotIterationMeasure" parameterType="java.lang.String">-->
+  	<!--REPLACE into measure_history_detail (measure_id,create_time,update_time,measure_value,no)-->
+		<!--select t.id,IF(DATE_FORMAT(s.`MONTH`,'%Y-%m') = DATE_FORMAT(NOW(),'%Y-%m'),NOW(),s.`MONTH`),NOW(),s.value,#{no} from project_parameter_value_new s-->
+	<!--left join in_tmpl_index t on t.VERSION = s.PARAMETER_ID where s.`NO`= #{no} and t.VERSION = s.PARAMETER_ID-->
+  <!--</insert>-->
+  
+	<insert id="insertNotIterationMeasure" parameterType="java.lang.String">
+		REPLACE into measure_history_detail (measure_id,create_time,update_time,measure_value,no)
+			SELECT
+			  i.id,
+			  NOW(),
+			  NOW(),
+			  t.VALUE,
+			  #{no} AS NO
+			FROM
+			  (SELECT
+				*
+			  FROM
+				`project_parameter_value_new` p
+			  ORDER BY `MONTH` DESC) t,`in_tmpl_index` i
+			WHERE i.`VERSION` = t.PARAMETER_ID AND t.no = #{no}
+			  AND DATE_FORMAT(t.MONTH, '%Y-%m') = DATE_FORMAT(NOW(), '%Y-%m')
+			GROUP BY t.PARAMETER_ID
+	</insert>
+	
+  <select id="getDevelopPerson" resultType="java.lang.Integer">
+	<!-- select count(*) from project_members_local where no = #{no} and ROLE = '开发工程师' -->
+	select count(*) from project_staff where no = #{no} and ROLE = '开发工程师'
+	and IS_DELETED = 0
+  </select>
+  
+  <!--获取迭代内手工用例执行数  -->
+  <select id="getManualExcute" resultType="java.lang.Integer">
+  	SELECT COUNT(*) FROM `tbl_tmss_info` WHERE NO = #{no}
+	AND `auto_execution_type` = 'False'
+	AND  DATE_FORMAT(start_time,'%Y-%m-%d') BETWEEN #{startDate} and #{endDate}
+  </select>
+  
+  <!-- 获取项目开始时间 -->
+  <select id="getProjectStartDate" resultType="java.lang.String">
+  	 select DATE_FORMAT(START_DATE,'%Y-%m-%d') from project_info where no = #{no} 
+  </select>
+
+   <!--测试自动化脚本数-->
+  <select id="automationScriptsNumber" parameterType="Map" resultType="java.lang.Integer">
+  		SELECT IFNULL(COUNT(*),0) AS impCase FROM tbl_tmss_info 
+		WHERE auto_execution_type = 'True'  AND NO = #{no}
+		<if test="null != startDate">
+        and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+      	</if>
+       <if test="null != endDate">
+        <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+       </if>
+  </select>
+  
+  <!-- 执行测试用例数 -->
+  <select id="numberOfExecutionCases" parameterType="Map" resultType="java.lang.Integer">
+	  	SELECT COUNT(*) FROM tbl_tmss_info 
+		WHERE (auto_execution_type ='True' or auto_execution_type ='False')
+		AND NO=#{proNo}
+		<if test="null != startDate">
+           and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+      	</if>
+        <if test="null != endDate">
+           <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+  </select>
+  
+   <!-- 手工执行测试用例总数 -->
+  <select id="getManualUseCases" parameterType="Map" resultType="java.lang.Integer">
+	  	SELECT COUNT(*) FROM tbl_tmss_info 
+		WHERE  auto_execution_type ='False'
+		AND NO=#{proNo}
+		<if test="null != startDate">
+           and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+      	</if>
+        <if test="null != endDate">
+           <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+  </select>
+  
+   <!-- 设计测试用例数 -->
+  <select id="getNumberOfDesignCases" parameterType="Map" resultType="java.lang.Integer">
+	  	SELECT COUNT(*) FROM tbl_tmss_info 
+		WHERE  NO=#{proNo}
+		<if test="null != startDate">
+           and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+      	</if>
+        <if test="null != endDate">
+           <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+  </select>
+  
+  <!-- 代码行 -->
+  <select id="getlineOfCode" parameterType="Map" resultType="java.lang.Integer">
+	  	SELECT measure_value FROM measure_history_detail
+		WHERE  measure_id='580' AND NO=#{proNo}
+		<if test="null != startDate">
+           and date_format(create_time, '%Y-%m-%d') &gt;= #{startDate}
+      	</if>
+        <if test="null != endDate">
+           <![CDATA[and date_format(create_time, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+  </select>
+  
+  <!-- 自动化用例数 -->
+  <select id="getAutomationUseCases" parameterType="Map" resultType="java.lang.Integer">
+	  	SELECT COUNT(*) FROM tbl_tmss_info 
+		WHERE auto_execution_type='True' AND NO=#{proNo}
+		<if test="null != startDate">
+           and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+      	</if>
+        <if test="null != endDate">
+           <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+  </select>
+  
+  <!-- 用例总数 -->
+  <select id="getUseCases" parameterType="Map" resultType="java.lang.Integer">
+	  	SELECT COUNT(*) FROM tbl_tmss_info 
+		WHERE NO=#{proNo}
+		<if test="null != startDate">
+           and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+      	</if>
+        <if test="null != endDate">
+           <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+  </select>
+  
+  <!-- 用例总数 -->
+  <select id="getProjectWorkHours" resultType="java.lang.Double">
+	<!-- SELECT SUM(CAST(d.actual_labor_hour AS DECIMAL(5,2)))
+	FROM tbl_time_information d,
+	(SELECT IFNULL(a.ZR_ACCOUNT,b.ZR_ACCOUNT) account
+	FROM project_members_local a
+	LEFT JOIN project_members b ON b.AUTHOR=a.HW_ACCOUNT
+	WHERE a.no=#{proNo}) t
+	WHERE d.zr_account = t.account -->
+	SELECT SUM(CAST(d.actual_labor_hour AS DECIMAL(5,2)))
+	FROM tbl_time_information d,(
+	SELECT IFNULL(a.ZR_ACCOUNT,b.ZR_ACCOUNT) account FROM (
+	SELECT NO as no,ps.ZR_ACCOUNT AS ZR_ACCOUNT,HW_ACCOUNT
+	FROM project_staff ps
+	LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+	WHERE NO =#{proNo} AND ps.IS_DELETED = 0) a
+	LEFT JOIN project_members b ON b.AUTHOR=a.HW_ACCOUNT
+	WHERE a.no=#{proNo}) t
+	WHERE d.zr_account = t.account
+	AND d.`statistical_time` &gt;= #{startDate}
+	AND d.`statistical_time` &lt;= #{endDate}
+</select>
+</mapper>

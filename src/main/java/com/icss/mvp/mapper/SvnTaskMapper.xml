@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ISvnTaskDao">
+	<insert id="saveLogList" useGeneratedKeys="true" parameterType="java.util.List">
+		REPLACE INTO svn_log (ID, AUTHOR, COMMITTIME, MESSAGE,
+		REVISION,MODIFYNUM,DELNUM,NO,COLDATE,FILENUM)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.ID},#{item.AUTHOR},#{item.COMMITTIME},#{item.MESSAGE},#{item.REVISION},#{item.MODIFYNUM},#{item.DELNUM},#{item.NO},#{item.COLDATE},#{item.FILENUM}
+			)
+		</foreach>
+	</insert>
+
+	<select id="getMonthCollect" parameterType="String"
+		resultType="com.icss.mvp.entity.CodeQualityInfo">
+		SELECT
+		NO,SUM(MODIFYNUM-DELNUM) AS CODETOTAL, COMMITTIME AS staticmonthn
+		FROM
+		svn_log
+		WHERE DATE_FORMAT(COMMITTIME,'%Y%m') = #{month}
+		GROUP BY NO
+	</select>
+	<update id="updateSvnMonthCollect" parameterType="com.icss.mvp.entity.CodeQualityInfo">
+			UPDATE project_parameter_value_new SET VALUE=#{list.CODETOTAL} WHERE NO=#{list.NO} AND DATE_FORMAT(MONTH,'%Y%m') = #{month} AND PARAMETER_ID = 129
+	</update>
+	
+	<insert id="insertSvnMonthCollect" parameterType="com.icss.mvp.entity.CodeQualityInfo">
+		insert into project_parameter_value_new 
+		(NO, MONTH, PARAMETER_ID, VALUE)
+		values
+			(#{list.no}, #{list.staticmonthn}, 129, #{list.codetotal})
+	</insert>
+	
+	<select id ="serchSvn" parameterType="java.lang.String" resultType = "com.icss.mvp.entity.SvnLogs">
+		select * from svn_log  where no = #{no}
+	</select>
+	
+	<select id = "addCode" resultType="int" >
+		select CASE WHEN sum(modifynum) is null THEN 0 ELSE sum(modifynum) END
+		from svn_log s 
+		where author = #{author} and no =#{no}  
+		and month(committime) = #{month}
+		and year(committime) = 2018
+	</select>
+	
+	<select id = "addCodeWx" resultType="int" >
+		select CASE WHEN sum(modifynum) is null THEN 0 ELSE sum(modifynum) END 
+		from svn_log s where subString(AUTHOR,2)=#{author}
+		and no =#{no} and month(committime) = #{month}
+		and year(committime) = 2018
+	</select>
+	
+	<select id = "searchByAuthor" resultType="int" parameterType="java.lang.String">
+		select month(committime) from svn_log where author =#{author}
+	</select>
+	
+	<select id = "searchByAuthorWx" resultType="int" parameterType="java.lang.String">
+		select month(committime) from svn_log where subString(AUTHOR,2) =#{author}
+	</select>
+	
+	<update id="updatelasttime"  parameterType="java.util.Map">
+		UPDATE svn_log_time SET
+		LASTTIME=#{map.lasttime} WHERE
+		NO=#{map.NO} and repository_id=#{map.id};
+	</update>
+	<insert id="insertlasttime"  parameterType="java.util.Map">
+		REPLACE into svn_log_time values
+		(#{map.NO},#{map.id},#{map.lasttime});
+	</insert>
+	
+	<select id="searchByNo" parameterType="java.lang.String" resultType="date">
+		select lasttime from svn_log_time where no = #{no} 
+		and repository_id = #{id}
+	</select>
+	<select id="searchByNoMax" parameterType="java.lang.String" resultType="date">
+		select max(lasttime) from svn_log_time where no = #{no} order by lasttime desc 
+	</select>
+	<select id="searchByReidMax" parameterType="java.lang.String" resultType="date">
+		select max(lasttime) from svn_log_time where repository_id in ${reId} order by lasttime desc 
+	</select>
+	
+	<select id="queryTimeByNo" parameterType="java.lang.String" resultType="java.util.Date">
+	select START_DATE from project_info
+	where NO = #{no}
+	</select>
+	
+	<select id = "searchById" resultType="int" parameterType="java.lang.String">
+		select month(committime) from svn_log where id =#{id}
+	</select>
+	
+	<!-- 统计message代码量 -->
+	<select id = "addCodeByMessage" resultType="Integer" >
+		SELECT SUM(t1.FILE_MODIFYNUM) FROM svn_log t LEFT JOIN svn_log_file_modifynum t1 ON t.ID = t1.SVN_LOG_ID
+		WHERE t.no = #{no} AND MONTH(t1.COMMITTIME) = #{month}  AND  t1.MESSAGE_AUTHOR LIKE
+		concat(concat('%',#{author}),'%') AND year(t1.COMMITTIME) = 2018
+	</select>
+	
+	
+	<!-- 根据commit分类统计代码量 -->
+	<select id = "getCodeNumByCommit" resultType="Integer">
+		SELECT
+		SUM(t.`FILE_MODIFYNUM`)
+		FROM
+		`SVN_LOG_FILE_MODIFYNUM` t,
+		`SVN_LOG` t1
+		WHERE t.`FILE_TYPE` IN ${codeType}
+		AND t.`AUTHOR` = t1.`AUTHOR`
+		AND t.`COMMITTIME` = t1.`COMMITTIME`
+		AND t.AUTHOR = #{author}
+		AND MONTH(t1.committime) = #{month}
+		AND t1.`NO` = #{no}
+		and year(t1.committime) = 2018
+	</select>
+	<select id = "getCodeNumByCommitWx" resultType="Integer">
+		SELECT
+		SUM(t.`FILE_MODIFYNUM`)
+		FROM
+		`SVN_LOG_FILE_MODIFYNUM` t,
+		`SVN_LOG` t1
+		WHERE t.`FILE_TYPE` IN ${codeType}
+		AND t.`AUTHOR` = t1.`AUTHOR`
+		AND t.`COMMITTIME` = t1.`COMMITTIME`
+		AND subString(t.AUTHOR,2) = #{author}
+		AND MONTH(t1.committime) = #{month}
+		AND t1.`NO` = #{no}
+		and year(t1.committime) = 2018
+	</select>
+	
+	<!-- 根据message分类统计代码量 -->
+	<select id = "getCodeNumByMessage" resultType="Integer">
+		SELECT SUM(t1.FILE_MODIFYNUM) FROM svn_log t LEFT JOIN svn_log_file_modifynum t1 ON t.ID = t1.SVN_LOG_ID
+		WHERE t.no = #{no} AND MONTH(t1.COMMITTIME) = #{month}  AND  t1.MESSAGE_AUTHOR LIKE
+		concat(concat('%',#{author}),'%') AND year(t1.COMMITTIME) = 2018 
+		AND t1.FILE_TYPE IN ${codeType}
+	</select>
+	
+	<insert id="savesvnurl" parameterType="java.util.Map">
+	insert into repository (create_time,modify_time,is_deleted,url) values
+		(#{map.createtime},#{map.modifytime},#{map.delete},#{map.url});
+	</insert>
+	<select id="seachIdByUrl" parameterType="java.lang.String" resultType="java.lang.Integer">
+	select id from repository where url = #{url}
+	</select>
+	
+	<select id="searchStartDate" parameterType="java.lang.String" resultType="java.util.Date">
+	select START_DATE from project_info where NO = #{no}
+	</select>
+	
+	<!-- 查询不同语言的代码提交量  commit-->
+	<select id="getCodeNumByCommitAndType" parameterType="java.lang.String" resultType="java.util.HashMap">
+			SELECT DATE_FORMAT(`COMMITTIME`,'%Y-%m') AS month,
+			CONCAT(ROUND(SUM(FILE_MODIFYNUM * IFNULL(val, 0)))) AS val  
+			FROM (
+			SELECT t2.*,t3.val FROM `svn_log` t1 LEFT JOIN `svn_log_file_modifynum` t2
+			ON t1.`ID` = t2.`SVN_LOG_ID`
+			<!-- LEFT JOIN (SELECT b.name,b.val FROM `sys_dict` a,`sys_dict_item` b WHERE
+			a.`code` = 'code_type' AND b.`sys_dict_id` = a.`id`) t3 ON t3.name = t2.`FILE_TYPE` -->
+			LEFT JOIN (select v.`key` as name, v.value as val from v_dictionary v
+			where code = 'code_type') t3 ON t3.name = t2.`FILE_TYPE`
+			WHERE t1.`NO` = #{no} AND (
+				t2.`AUTHOR` = #{author} OR subString(t2.`AUTHOR`,2) = #{author} OR t2.`AUTHOR` = #{svnGitNo}
+			)
+			) A WHERE 1=1 
+			<![CDATA[
+			and DATE_FORMAT(`COMMITTIME`,'%Y-%m') >= #{startDate}
+			and DATE_FORMAT(`COMMITTIME`,'%Y-%m') <= #{endDate}
+			]]>
+			<if test="codeType != 'all'">
+	    		AND FILE_TYPE  in  ${codeType}   
+      		</if> 
+				GROUP BY DATE_FORMAT(`COMMITTIME`,'%Y-%m') 
+	</select>
+	<!-- 查询不同语言的代码提交量  commit-->
+	<select id="getCodeNumByParam" parameterType="java.lang.String" resultType="java.util.HashMap">
+			SELECT DATE_FORMAT(`COMMITTIME`,'%Y-%m') AS month,
+				CONCAT(FLOOR(SUM(FILE_MODIFYNUM * IFNULL(val, 0)))) AS val  
+				FROM (
+				SELECT t2.*,t3.val FROM `svn_log` t1 LEFT JOIN `svn_log_file_modifynum` t2
+				ON t1.`ID` = t2.`SVN_LOG_ID`
+				<!-- LEFT JOIN (SELECT b.name,b.val FROM `sys_dict` a,`sys_dict_item` b WHERE
+				a.`code` = 'code_type' AND b.`sys_dict_id` = a.`id`) t3 ON t3.name = t2.`FILE_TYPE` -->
+				LEFT JOIN (select v.`key` as name, v.value as val from v_dictionary v
+				where code = 'code_type') t3 ON t3.name = t2.`FILE_TYPE`
+				WHERE t1.`NO` = #{no} AND (
+					t2.`AUTHOR` = #{author} OR subString(t2.`AUTHOR`,2) = #{author} OR t2.`AUTHOR` = #{svnGitNo}
+				)
+				) A WHERE 1=1 
+			<if test="codeType != 'all'">
+	    		AND FILE_TYPE  in  ${codeType}   
+      		</if> 
+				GROUP BY DATE_FORMAT(`COMMITTIME`,'%Y-%m') 
+	</select>
+	
+	<!-- 查询不同语言的代码提交量 commit（不折算）-->
+	<select id="getCodeNumByParamY" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT
+		DATE_FORMAT(l.COMMITTIME,'%Y-%m') as month,
+		FLOOR(SUM(l.FILE_MODIFYNUM)) as val
+		FROM svn_log s
+		LEFT JOIN svn_log_file_modifynum l ON s.ID = l.SVN_LOG_ID
+		WHERE (
+			s.AUTHOR = #{author} OR subString(s.AUTHOR,2) = #{author} OR s.AUTHOR = #{svnGitNo}
+		)
+		and s.`NO` = #{no}
+		<if test="codeType != null and codeType != ''">
+			AND l.FILE_TYPE IN  ${codeType}  
+      	</if> 
+			GROUP BY DATE_FORMAT(s.`COMMITTIME`, '%Y-%m')
+	</select>
+	<!-- 查询不同语言的代码提交量 commit（不折算）-->
+	<select id="getCodeNumByCommitAndTypeY" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT
+		DATE_FORMAT(l.COMMITTIME,'%Y-%m') as month,
+		ROUND(SUM(l.FILE_MODIFYNUM)) as val
+		FROM svn_log s
+		LEFT JOIN svn_log_file_modifynum l ON s.ID = l.SVN_LOG_ID
+		WHERE (
+			s.AUTHOR = #{author} OR subString(s.AUTHOR,2) = #{author} OR s.AUTHOR = #{svnGitNo}
+		)
+		and s.`NO` = #{no}
+		<![CDATA[
+		and DATE_FORMAT(l.COMMITTIME,'%Y-%m') >= #{startDate}
+		and DATE_FORMAT(l.COMMITTIME,'%Y-%m') <= #{endDate}
+		]]>
+		<if test="codeType != null and codeType != ''">
+			AND l.FILE_TYPE IN  ${codeType}  
+      	</if> 
+		GROUP BY DATE_FORMAT(l.COMMITTIME, '%Y-%m')
+	</select>
+	
+	<!-- 查询不同语言的代码提交量  message-->
+	<select id="getCodeNumByMessageAndType" parameterType="java.lang.String" resultType="java.util.HashMap">
+			SELECT DATE_FORMAT(`COMMITTIME`,'%Y-%m') AS month,
+			   CONCAT(ROUND(SUM(FILE_MODIFYNUM * IFNULL(val, 0)))) AS val  
+			FROM (
+			SELECT t2.*,t3.val FROM `svn_log` t1 LEFT JOIN `svn_log_file_modifynum` t2
+			ON t1.`ID` = t2.`SVN_LOG_ID`
+			<!-- LEFT JOIN (SELECT b.name,b.val FROM `sys_dict` a,`sys_dict_item` b WHERE
+			a.`code` = 'code_type' AND b.`sys_dict_id` = a.`id`) t3 ON t3.name = t2.`FILE_TYPE` -->
+			LEFT JOIN (select v.`key` as name, v.value as val from v_dictionary v
+			where code = 'code_type') t3 ON t3.name = t2.`FILE_TYPE`
+			WHERE t1.`NO` = #{no} AND (t2.MESSAGE_AUTHOR LIKE concat(concat('%',#{author}),'%') OR 
+			t2.MESSAGE_AUTHOR LIKE concat(concat('%',#{svnGitNo}),'%'))
+			)
+			<![CDATA[
+			and DATE_FORMAT(`COMMITTIME`,'%Y-%m') >= #{startDate}
+			and DATE_FORMAT(`COMMITTIME`,'%Y-%m') <= #{endDate}
+			]]>
+			<if test="codeType != 'all'">
+	    		AND FILE_TYPE  in  ${codeType}   
+      		</if> 
+			GROUP BY DATE_FORMAT(`COMMITTIME`,'%Y-%m') 
+	</select>
+	
+	<!-- 查询不同语言的代码提交量  message(不折算)-->
+	<select id="getCodeNumByMessageAndTypeY" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT
+		DATE_FORMAT(l.COMMITTIME,'%Y-%m') as month,
+		ROUND(SUM(l.FILE_MODIFYNUM)) as val
+		FROM svn_log s
+		LEFT JOIN svn_log_file_modifynum l ON s.ID = l.SVN_LOG_ID
+		WHERE 
+			(l.MESSAGE_AUTHOR LIKE concat(concat('%',#{author}),'%') OR 
+			l.MESSAGE_AUTHOR LIKE concat(concat('%',#{svnGitNo}),'%'))
+		and s.`NO` = #{no}
+		<![CDATA[
+		and DATE_FORMAT(l.COMMITTIME,'%Y-%m') >= #{startDate}
+		and DATE_FORMAT(l.COMMITTIME,'%Y-%m') <= #{endDate}
+		]]>
+		<if test="codeType != null and codeType != ''">
+			AND l.FILE_TYPE IN  ${codeType}  
+      	</if> 
+		GROUP BY DATE_FORMAT(l.COMMITTIME, '%Y-%m')
+	</select>
+	
+	<!--获取最后提交时间、当月提交次数 -->
+	<select id="searchNewSubMessage" parameterType="java.lang.String" resultType="java.util.HashMap">
+			select DATE_FORMAT(s.COMMITTIME,'%Y-%m') as month,
+			COUNT(s.AUTHOR) as subCount,
+			MAX(s.COMMITTIME) lastSubTime from svn_log s where (
+			s.AUTHOR = #{svnGitNo} or s.AUTHOR = #{author} or SUBSTRING(s.AUTHOR,2) = #{author}
+			)
+			and s.`NO` = #{no}
+			group by DATE_FORMAT(s.COMMITTIME,'%Y-%m')
+	</select>
+	<select id="searchSubMessage" parameterType="java.lang.String" resultType="java.util.HashMap">
+			select DATE_FORMAT(s.COMMITTIME,'%Y-%m') as month,
+			COUNT(s.AUTHOR) as subCount,
+			MAX(s.COMMITTIME) lastSubTime from svn_log s where (
+			s.AUTHOR = #{svnGitNo} or s.AUTHOR = #{author} or SUBSTRING(s.AUTHOR,2) = #{author}
+			)
+			and s.`NO` = #{no}
+			<![CDATA[
+			and DATE_FORMAT(s.COMMITTIME,'%Y-%m') >= #{startDate}
+			and DATE_FORMAT(s.COMMITTIME,'%Y-%m') <= #{endDate}
+			]]>
+			group by DATE_FORMAT(s.COMMITTIME,'%Y-%m')
+	</select>
+	<!--获取最后提交时间、使用type分组 -->
+	<select id="getLastTimeGroupType" parameterType="java.lang.String" resultType="java.util.HashMap">
+			select a.no as no,a.type as type,a.LASTTIME as lasttime from (
+				select * from svn_log_time slt,repository re
+				where  re.id = slt.repository_id and slt.NO = #{no}
+				order by LASTTIME desc
+			) a
+			group by a.type
+	</select>
+</mapper>

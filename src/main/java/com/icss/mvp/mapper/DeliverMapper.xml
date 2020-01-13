@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.DeliverDao">
+
+    <select id="queryList" resultType="com.icss.mvp.entity.DeliverResult"
+            parameterType="com.icss.mvp.entity.TableSplitResult">
+        SELECT d.*,p.`NAME` AS projectName FROM `deliver` d,`project_info` p WHERE d.`no` IN
+        (SELECT `NO` FROM `project_info` WHERE `PMID`=#{page.queryMap.zrAccount})
+        AND d.`no`=p.`NO` and d.`is_deleted` !=1
+        <if test="null != page.queryMap.iteName and '' != page.queryMap.iteName">
+            and d.`name` like concat('%', #{page.queryMap.iteName}, '%')
+        </if>
+        <if test="null != page.queryMap.proNo and '' != page.queryMap.proNo">
+            and d.`no` like concat('%', #{page.queryMap.proNo}, '%')
+        </if>
+        LIMIT ${page.page},${page.rows}
+    </select>
+    <select id="queryAll" resultType="com.icss.mvp.entity.DeliverResult"
+            parameterType="com.icss.mvp.entity.TableSplitResult">
+        SELECT d.*,p.`NAME` AS projectName FROM `deliver` d,`project_info` p
+        WHERE d.`no`=p.`NO` and d.`is_deleted` !=1
+        <if test="null != page.queryMap.iteName and '' != page.queryMap.iteName">
+            and d.`name` like concat('%', #{page.queryMap.iteName}, '%')
+        </if>
+        <if test="null != page.queryMap.proNo and '' != page.queryMap.proNo">
+            and d.`no` =#{page.queryMap.proNo}
+        </if>
+        LIMIT ${page.page},${page.rows}
+    </select>
+    <select id="queryListTotals" resultType="java.lang.Integer" parameterType="com.icss.mvp.entity.TableSplitResult">
+        SELECT COUNT(*) FROM `deliver` d,`project_info` p WHERE d.no IN
+        (SELECT NO FROM `project_info` WHERE PMID=#{page.queryMap.zrAccount})
+        AND d.`no`=p.`NO` and d.`is_deleted` !=1
+        <if test="null != page.queryMap.iteName and '' != page.queryMap.iteName">
+            and d.`name` like concat('%', #{page.queryMap.iteName}, '%')
+        </if>
+    </select>
+    <select id="queryAllTotals" resultType="java.lang.Integer" parameterType="com.icss.mvp.entity.TableSplitResult">
+        SELECT COUNT(*) AS projectName FROM `deliver` d,`project_info` p
+        WHERE d.`no`=p.`NO` and d.`is_deleted` !=1
+        <if test="null != page.queryMap.iteName and '' != page.queryMap.iteName">
+            and d.`name` like concat('%', #{page.queryMap.iteName}, '%')
+        </if>
+        <if test="null != page.queryMap.proNo and '' != page.queryMap.proNo">
+            and d.`no` =#{page.queryMap.proNo}
+        </if>
+    </select>
+
+
+    <insert id="add" parameterType="com.icss.mvp.entity.Deliver">
+		 insert into `deliver` (`no`,`name`,`shape`,`path`,`end_time`,`submitter`,`remark`
+        )
+        values (#{no},#{name}, #{shape}, #{path},
+        #{endTime}, #{submitter}, #{remark}
+        )
+	</insert>
+
+    <select id="queryEditPageInfo" parameterType="java.lang.String" resultType="com.icss.mvp.entity.Deliver">
+        SELECT
+        *
+        FROM `deliver`
+        WHERE `id` = #{id}
+    </select>
+
+    <update id="update" parameterType="com.icss.mvp.entity.Deliver">
+        update `deliver` set
+        `no`=#{deliver.no},
+        `name`=#{deliver.name},
+        `shape`=#{deliver.shape},
+        `path`=#{deliver.path},
+        `end_time`=#{deliver.endTime},
+        `submitter`=#{deliver.submitter},
+        `remark`=#{deliver.remark}
+        where `id`=#{deliver.id}
+    </update>
+    <select id="delete" parameterType="java.lang.String">
+        UPDATE `deliver`
+        SET `is_deleted` = 1
+        WHERE `id` = #{id}
+    </select>
+
+    <select id="queryAccount" resultType="java.lang.String">
+        SELECT mb.`ZR_ACCOUNT` FROM `member_base` mb,`project_staff` ps WHERE mb.`ZR_ACCOUNT`=ps.`ZR_ACCOUNT`
+			AND mb.`HW_ACCOUNT`=#{hwAccount} GROUP BY mb.ZR_ACCOUNT
+    </select>
+</mapper>

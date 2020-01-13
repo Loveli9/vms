@@ -1,0 +1,621 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="js/xiaolvPage.js"></script>
+    <style>
+	#nav { 
+		width:30px; height: 65px; position:fixed; right:2px; top:50%; z-index: 9999;
+	}
+	.retop{
+		width:30px; height:30px; float:right; margin-top: 2px;
+	}
+	.retop2{
+		float:right; margin-top: 2px;
+	}
+	.retop span{
+		color:white;
+	}
+	.trans {
+		display: none; width: 54px;	height: 37px; opacity: 0; position: relative; margin-top: -37px; cursor: pointer;
+	}
+	.datagrid-view{
+		height: 840px!important;
+	}
+	.panel{
+		background-color: #fafafa!important;
+	}
+	a{
+    	text-decoration: none; color: rgba(255,255,255,.5);
+    }
+    a:hover{
+    	text-decoration: none; color: rgba(255,255,255,1); cursor: pointer;
+    }
+    .home-content{
+    	
+    }
+    .home-text{
+    	color: #666; font-size: 18px; font-weight:400; margin: 10px 0px 10px 20px;
+    }
+    .home-361{
+    	float: right; width: 165px; height: 52px; margin:0px 20px 20px 0px;
+    }
+    .home-font-pro{
+    	font-size: 16px; color: white; text-align: left; line-height: 52px; padding-left: 10px; width: auto; float: left;
+    }
+    .home-font-num{
+	    font-size: 24px; text-align: right; line-height: 52px; float: right; color: white; padding-right: 10px; width: auto;
+    }
+    .home-font-num a{
+    	color:white;
+    }
+    .homeSelect{
+    	float:right; width:153px; height:32px; margin-left: 6px;
+    }
+    .nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+		color: #3399ff; background-color: #f7f8f8; border-bottom: 5px #3399ff solid;
+	}
+	.nav>li>a:hover{
+		color: #3399ff; background-color: #f7f8f8;
+	}
+	.nav>li>a {
+	    color: #000000; background-color: #f7f8f8; text-decoration: none;
+	}
+	.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+		padding-bottom: 12px;
+	}
+	.mains{
+		border-left:2px #e2e3e4 solid; width:auto; height:auto; position:absolute; top:0px; left:0px; right:0px; background:#f7f8f8;
+	}
+    </style>
+</head>
+<body style="line-height: 24px;">
+    <div class="mains" style="padding:0;">
+    	<div style="margin-top: 20px;margin-left: 30px;width:95%;height:40px;">
+	    	<span style="float:left;width:100px;font-size: 20px;font-weight: bold;line-height: 32px;color: #666;">效率总览</span>
+			<!-- 中软 -->
+			<div class="homeSelect" id="select8" style="display: none;">
+				<select onchange="selectOnchange()" id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+			</div>
+			<div class="homeSelect" id="select7">
+    			<select onchange="selectOnchange()" id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+    		</div>
+			<div class="homeSelect" id="select6">
+	    		<select onchange="selectOnchange()" id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+    		</div>
+    		<!-- 华为 -->
+    		<div class="homeSelect" style="display: none;" id="select5">
+				<select onchange="selectOnchange()" id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+			</div>
+			<div class="homeSelect" style="display: none;" id="select4">
+    			<select onchange="selectOnchange()" id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+    		</div>
+			<div class="homeSelect" style="display: none;" id="select3">
+	    		<select onchange="selectOnchange()" id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+    		</div>
+    		<!-- 地域 -->
+    		<div class="homeSelect" id="select1" style="display: none;">
+	    		<select onchange="selectOnchange()" id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+    		</div>
+    		<div class="homeSelect" style="display: none;">
+	            <select id="usertype2" name="usertype" title="请选择状态" class="selectpicker show-tick form-control" multiple data-live-search="false">
+	                <option value="在行">在行</option>
+	                <option value="关闭">关闭</option>
+	       		</select>
+			</div>
+			<div class="homeSelect" id="select">
+				<select id="selectBig" name="select" title="中软&华为" class="selectpicker show-tick form-control"  data-live-search="false">
+					<option value='1' selected="selected">中软</option>
+					<option value='2'>华为</option>
+					<option value='3'>地域</option>
+				</select>
+			</div>
+			<input class="homeSelect" type="text" id="datepicker" placeholder="请选择月份" style="border: 1px #999999 solid; background-color: transparent; width: 150px; height: 32px; padding-left: 30px; font-size: 14px; background-image: url(images/dateicon.png); /*引入图片图片*/ background-repeat: no-repeat; /*设置图片不重复*/ background-position: 5px 7px;border: 1px #cccccc solid;border-radius: 4px;background-color: #ffffff;" />
+    	</div>
+		<div style="height:342px;width:48%;float:left;background-color: white;margin: 15px 10px 15px 10px">
+	        <div class="home-text">
+	            <span>低产出原因汇总</span>
+	            <span id="lowText" style="margin-left: 120px; font-size: 16px;">低产出原因汇总</span>
+	        </div>
+	        <div class="home-content">
+	        	<div id="lowlocBT" style="float: left; width: 100%; height: 300px;"></div>
+	        </div>
+		</div> 
+		<div style="height:342px;width:48%;float:left;background-color: white;margin: 15px 10px 15px 10px">
+	        <div class="home-text">
+	            <span>无产出原因汇总</span>
+	            <span id="noText" style="margin-left: 120px; font-size: 16px;">无产出原因汇总</span>
+	        </div>
+	        <div class="home-content">
+	        	<div id="nolocBT" style="float: left; width: 100%; height: 300px;"></div>
+	        </div>
+		</div> 
+		<div style="height:342px;width:96%;float:left;background-color: white;margin: 15px 10px 15px 10px">
+	        <div class="home-text">
+	            <span>低产出分析月度数据</span>
+	        </div>
+	        <div class="home-content">
+	        	<div id="lowlocZXT" style="float: left; width: 100%; height: 300px;"></div>
+	        </div>
+		</div> 
+		<div style="height:400px;width:96%;float:left;background-color: white;margin: 15px 10px 15px 10px">
+	        <div class="home-text">
+	            <span>子部门低产出人员统计</span>
+	        </div>
+	        <div class="home-content">
+	        	<div id="lowlocZBM" style="float: left; width: 100%; height: 300px;"></div>
+	        </div>
+		</div> 
+	</div>
+    <script type="text/javascript">
+		//回到顶部
+		function callback(){
+			$("html,body").animate({scrollTop:0}, 200);
+		};
+		
+		var sumNum=0;
+		var myCharts1=echarts.init(document.getElementById("lowlocZXT"));
+		var myCharts2=echarts.init(document.getElementById("lowlocBT"));
+		var myCharts3=echarts.init(document.getElementById("nolocBT"));
+		var myCharts4=echarts.init(document.getElementById("lowlocZBM"));
+		function loadZXT(){
+			$.ajax({
+				url: getRootPath() + '/LowLoc/loadZXT',
+				type: 'post',
+				async: false,//是否异步，true为异步
+ 				data: {
+                    'clientType':$("#selectBig").selectpicker("val")=="2"?"0":"1",
+		        	'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串
+		        	'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+					'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+					'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串
+					'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+					'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+					'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join()//转换为字符串
+				},
+				success: function (data) {
+					var type=new Array();
+					var month=new Array();
+					var valLow=new Array();
+					var valNo=new Array();
+					_.each(data,function(list,index1){
+						_.each(list,function(val,index2){
+							if(val.sureLowloc=="低产出人员"){
+								type[index1]="低产出月度数据";
+								month[index2]=val.month;
+								valLow[index2]=val.num;
+							}else if(val.sureLowloc=="无产出人员"){
+								type[index1]="无产出月度数据";
+								month[index2]=val.month;
+								valNo[index2]=val.num;
+							}
+							
+						})
+					})
+					chartsZXT(type,month,valLow,valNo);
+				}
+			});
+		}
+		function chartsZXT(type,month,valLow,valNo){
+			//折线图
+			var options1={
+					//定义标题
+					title:{
+						
+					},	
+					//鼠标悬停
+					tooltip: {
+						trigger: 'axis'
+					},
+					//图标
+					legend:{
+						data:type
+					},
+					//x轴设置
+					xAxis:{
+						name:'月份',
+						splitLine:{show: false},//去除网格线	
+						data:month,
+						nameTextStyle:{//设置x轴标题属性
+							color:'#000000',
+							fontSize:14
+						},
+						axisTick:{//x轴刻度
+							show:false
+						},
+						axisLabel:{//x轴标示属性
+							interval: 0,
+							textStyle:{
+								color:'#000000',
+								fontSize:14
+							}
+						},
+						axisLine:{//设置轴线属性
+							lineStyle:{
+								color:'#2e8afc',
+								width:2					
+							}
+						}
+					},
+					//y轴设置
+					yAxis:{
+						name:'人数',
+						splitLine:{show: false},//去除网格线
+						nameTextStyle:{//设置y轴标题属性
+							color:'#000000',
+							fontSize:16
+						},
+						axisTick:{//y轴刻度
+							show:false
+						},
+						axisLabel:{//y轴标示属性
+							textStyle:{
+								color:'#000000',
+								fontSize:16
+							}
+						},
+						axisLine:{//设置轴线属性
+							lineStyle:{
+								color:'#2e8afc',
+								width:2						
+							}
+						}
+					},
+					//指定图表类型
+					series:[
+						{
+							name:type[0],
+							type:'line',
+							symbolSize: 5,//拐点大小
+							data:valLow
+						},{
+							name:type[1],
+							type:'line',
+							symbolSize: 5,//拐点大小
+							data:valNo
+						}
+					]
+			}
+			myCharts1.setOption(options1);
+		}
+		
+		function lowlocBT(){
+			$.ajax({
+				url: getRootPath() + '/LowLoc/lowlocBT',
+				type: 'post',
+				async: false,//是否异步，true为异步
+			 	data: {
+		        	'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串
+		        	'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+					'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+					'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串
+					'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+					'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+					'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+                    'clientType':$("#selectBig").selectpicker("val")=="2"?"0":"1",
+					'month' : $("#datepicker").val()
+				}, 
+				success: function (data) {
+					var reasonLow = [];
+					var seriesDataLow = [];
+					var reasonNo = [];
+					var seriesDataNo = [];
+					var lownum=0;
+					var nonum=0;
+					_.each(data,function(list,index){
+						if(index==0){//低产出
+							_.each(list,function(val,i){
+								lownum+=val.num;
+								reasonLow.push(val.lowLocReason);
+						        seriesDataLow.push({
+						            name: val.lowLocReason+" : "+val.num,
+						            value: val.num
+						        });
+							})
+						}else if(index==1){//无产出
+							_.each(list,function(val,i){
+								nonum+=val.num;
+								reasonNo.push(val.lowLocReason);
+								seriesDataNo.push({
+						            name: val.lowLocReason+" : "+val.num,
+						            value: val.num
+						        });
+							})
+						}
+					})
+					$("#lowText").text("人数："+lownum+"  占比："+(lownum/((sumNum==0?1:sumNum))*100).toFixed(2)+"%");
+					$("#noText").text("人数："+nonum+"  占比："+(nonum/((sumNum==0?1:sumNum))*100).toFixed(2)+"%");
+					chartsBT1(reasonLow,seriesDataLow);
+					chartsBT2(reasonNo,seriesDataNo);
+				}
+			});
+		}
+		function chartsBT1(reason,num){
+			//低产出各原因饼图
+			var options2={
+				//定义标题
+				title:{
+					
+				},	
+				//鼠标悬停
+				tooltip: {
+		        	trigger: 'item',
+					formatter: '{b} ({d}%)'
+		    	},
+				//图标
+				legend:{
+					
+				},
+				//指定图表类型
+				series:[
+					{
+						type: 'pie',
+		            	radius : '65%',
+		            	center: ['50%', '50%'],
+		            	selectedMode: 'single',
+						data:num
+					}
+				]
+			}
+			myCharts2.setOption(options2);
+		}
+		function chartsBT2(reason,num){
+			//低产出各原因饼图
+			var options3={
+				//定义标题
+				title:{
+					
+				},	
+				//鼠标悬停
+				tooltip: {
+		        	trigger: 'item',
+					formatter: '{b} ({d}%)'
+		    	},
+				//图标
+				legend:{
+					
+				},
+				//指定图表类型
+				series:[
+					{
+						type: 'pie',
+		            	radius : '65%',
+		            	center: ['50%', '50%'],
+		            	selectedMode: 'single',
+						data:num
+					}
+				]
+			}
+			myCharts3.setOption(options3);
+		}
+		
+		function lowlocPDU(){
+			$.ajax({
+				url: getRootPath() + '/LowLoc/lowlocPDU',
+				type: 'post',
+				async: false,//是否异步，true为异步
+ 				data: {
+		        	'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串
+		        	'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+					'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+					'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串
+					'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+					'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+					'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join(),//转换为字符串
+                    'clientType':$("#selectBig").selectpicker("val")=="2"?"0":"1",
+					'month' : $("#datepicker").val()
+				},
+				success: function (data) {
+					var type=new Array();
+					var pdu=new Array();
+					var valLow=new Array();
+					var valNo=new Array();
+					var valSome=new Array();
+					_.each(data,function(list,index1){
+						_.each(list,function(val,index2){
+							if(val.sureLowloc=="低产出人员"){
+								type[index1]="低产出人员";
+								pdu[index2]=val.pdu;
+								valLow[index2]=val.num;
+							}else if(val.sureLowloc=="无产出人员"){
+								type[index1]="无产出人员";
+								pdu[index2]=val.pdu;
+								valNo[index2]=val.num;
+							}else if(val.sureLowloc=="有产出人员"){
+								type[index1]="有产出人员";
+								pdu[index2]=val.pdu;
+								valSome[index2]=val.num;
+							}
+						})
+					})
+					var typeData=[];
+					var pduData=[];
+					var valData=[];
+					pduData=pdu;
+					typeData.push(type[0]);
+					valData.push({
+						name:type[0],
+			            type:'bar',
+			            barWidth:10,
+			            stack: '产出',
+			            data:valLow,
+			            itemStyle:{
+							normal:{
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1,[
+									{offset: 0, color: 'red'}
+								])				
+							},				
+			            }
+			        });
+					typeData.push(type[1]);
+					valData.push({
+						name:type[1],
+			            type:'bar',
+			            barWidth:10,
+			            stack: '产出',
+			            data:valNo,
+			            itemStyle:{
+							normal:{
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1,[
+									{offset: 0, color: '#333333'}
+								])				
+							},				
+			            }
+			        });
+					typeData.push(type[2]);
+					valData.push({
+						name:type[2],
+			            type:'bar',
+			            barWidth:10,
+			            stack: '产出',
+			            data:valSome,
+			            itemStyle:{
+							normal:{
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1,[
+									{offset: 0, color: '#81ea5d'}
+								])				
+							},				
+			            }
+			        });
+					chartsBAR(typeData,pduData,valData);
+				}
+			});
+		}
+		function chartsBAR(typeData,pduData,valData){
+			//低产出各原因饼图
+			var option4 = {
+				    tooltip : {
+				        trigger: 'axis',
+				        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+				            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+				        }
+				    },
+				    legend: {
+				        data:typeData
+				    },
+				    grid: {
+				        left: '3%',
+				        right: '4%',
+				        bottom: '30%',
+				        containLabel: true
+				    },
+				    xAxis : [
+				        {
+				            type : 'category',
+				            data : pduData,
+				            axisLabel : {//坐标轴刻度标签的相关设置。
+				                interval:0,
+				                rotate:"45"
+				            }
+				        },
+				    ],
+				    yAxis : [
+				        {
+				            type : 'value'
+				        }
+				    ],
+				    series : valData
+				};
+			myCharts4.setOption(option4);
+		}
+		
+		function kaifaNum(){
+			$.ajax({
+				url: getRootPath() + '/LowLoc/kaifaNum',
+				type: 'post',
+				async: false,//是否异步，true为异步
+ 				data: {
+                    'clientType':$("#selectBig").selectpicker("val")=="2"?"0":"1",
+		        	'area': $("#usertype1").selectpicker("val")==null?null:$("#usertype1").selectpicker("val").join(),//转换为字符串
+		        	'hwpdu': $("#usertype3").selectpicker("val")==null?null:$("#usertype3").selectpicker("val").join(),//转换为字符串
+					'hwzpdu': $("#usertype4").selectpicker("val")==null?null:$("#usertype4").selectpicker("val").join(),//转换为字符串
+					'pduSpdt': $("#usertype5").selectpicker("val")==null?null:$("#usertype5").selectpicker("val").join(),//转换为字符串
+					'bu': $("#usertype6").selectpicker("val")==null?null:$("#usertype6").selectpicker("val").join(),//转换为字符串
+					'pdu': $("#usertype7").selectpicker("val")==null?null:$("#usertype7").selectpicker("val").join(),//转换为字符串
+					'du': $("#usertype8").selectpicker("val")==null?null:$("#usertype8").selectpicker("val").join()//转换为字符串
+				},
+				success: function (data) {
+					sumNum=data;
+				}
+			});
+			lowlocBT();
+		}
+		
+		function changeDate(){
+			$("#datepicker").change(function(){
+				kaifaNum();
+				loadZXT();
+				//lowlocBT();
+				lowlocPDU();
+			})
+		}
+		
+		$(document).ready(function(){
+			var today=new Date();
+		  	var year=today.getYear()+1900;
+		  	var month=today.getMonth();
+		  	if(month<10 && month>=1){
+		  		month="0"+month;
+		  	}else if(month==0){
+		  		month="12";
+		  		year=year-1;
+		  	}
+			var date=year+"-"+month;  
+	  		$("#datepicker").datepicker({
+	    	      changeMonth: true,
+	    	      changeYear: true,
+	    	      dateFormat: 'yy-mm',
+	    	      prevButton: true,            
+	    	      nextButton: true,
+	    	});
+	  		$("#datepicker").val(date);
+	  		$("#ui-datepicker-div").css("display","none");
+	  		kaifaNum();
+			loadZXT();
+			//lowlocBT();
+			lowlocPDU();
+			changeDate();
+			//鼠标移入移出悬浮框事件
+		    $("#retop").mouseover(function() {
+		    	document.getElementById("retop").style.display="none";
+		    	document.getElementById("retop2").style.display="inline";
+		    });
+		    $("#retop2").mouseout(function() {
+		    	document.getElementById("retop").style.display="inline";
+		    	document.getElementById("retop2").style.display="none";
+		    });
+		    
+		    $("#feedback").mouseover(function() {
+		    	document.getElementById("back").style.color="#367FA9";
+		    });
+		    $("#feedback").mouseout(function() {
+		    	document.getElementById("back").style.color="white";
+		    });
+		})
+    </script>
+</body>
+</html>

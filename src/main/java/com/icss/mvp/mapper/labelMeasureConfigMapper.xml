@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.LabelMeasureConfigDao" >
+	<resultMap id="labelMeasureConfigMap" type="com.icss.mvp.entity.LabelMeasureConfig" >
+		<id column="ID" property="id"/>
+		<result column="CREATE_TIME" property="createTime"/>
+		<result column="MODIFY_TIME" property="modifyTime"/>
+		<result column="IS_DELETED" property="isDeleted"/>
+		<result column="PROJECT_LABLE_ID" property="projectLableId"/>
+		<result column="MEASURE_ID" property="measureId"/>
+		<result column="ORDER" property="order"/>
+	</resultMap>
+	<!--新增一条LabelMeasureConfig记录-->
+	<insert id="insertLabelMeasureConfig" parameterType="labelMeasureConfig" useGeneratedKeys="true" keyProperty="id" >
+		insert into label_measure_config
+		(ID,CREATE_TIME,MODIFY_TIME,IS_DELETED,PROJECT_LABLE_ID,MEASURE_ID,ORDER)
+		values 
+		(#{id},#{createTime},#{modifyTime},#{isDeleted},#{projectLableId},#{measureId},#{order})
+	</insert>
+	
+	<!--修改指定LabelMeasureConfig记录-->
+	<update id="updateLabelMeasureConfig" parameterType="labelMeasureConfig" >
+		update label_measure_config 
+		<set>
+		    <if test="createTime != null">CREATE_TIME=#{createTime},</if>
+		    <if test="modifyTime != null">MODIFY_TIME=#{modifyTime},</if>
+		    <if test="isDeleted != null">IS_DELETED=#{isDeleted},</if>
+		    <if test="projectLableId != null">PROJECT_LABLE_ID=#{projectLableId},</if>
+		    <if test="measureId != null">MEASURE_ID=#{measureId},</if>
+		    <if test="order != null">ORDER=#{order},</if>
+		</set>
+		where ID=#{id}
+	</update>
+	
+	<!--通过主键id查询指定LabelMeasureConfig记录-->
+	<select id="getLabelMeasureConfigById" resultMap="labelMeasureConfigMap" parameterType="String" >
+		select * from label_measure_config where ID=#{id}
+	</select>
+	
+	
+	<!--通过主键id单个删除-->
+	<delete id="deleteLabelMeasureConfigById" parameterType="String" >
+		delete from label_measure_config where ID=#{id}
+	</delete>
+	
+	
+	<!--批量删除-->
+	<delete id="deleteLabelMeasureConfigByIdList" parameterType="List" >
+		delete from label_measure_config where id in
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		#{item} 
+		</foreach> 
+	</delete>
+	
+	
+	
+	<select id="getLabelMeasureConfigForPage" resultMap="labelMeasureConfigMap" parameterType="Map">
+		select * from label_measure_config 
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+		LIMIT #{startNo},#{pageSize}
+	</select>
+	
+	<select id="getLabelMeasureConfigCount" resultType="Integer" parameterType="Map">
+		select count(0) from label_measure_config
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+	</select>
+	
+	<select id="getAllLabelMeasureConfig" resultMap="labelMeasureConfigMap">
+		select * from label_measure_config
+	</select>
+	
+	<select id="startTestCaseNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select sum(TESTCASE_VALUE) from testcase_statistics where TESTCASE_TYPE=1 and PRO_NO=#{proNo}
+	</select>
+	
+	<select id="testCaseCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select sum(TESTCASE_VALUE) from testcase_statistics where TESTCASE_TYPE=0 and PRO_NO=#{proNo}
+	</select>
+	
+	<select id="autoTestCaseNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from tbl_tmss_info where auto_execution_type='True' and no=#{proNo}
+	</select>
+	
+	<select id="dtsCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from dts_log 
+			where (colse_Type is null or colse_Type='' or colse_Type='Closure After Correction') 
+				and curent_Status!='Cancel' and no=#{proNo}
+	</select>
+	
+	<select id="solvedDtsCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from dts_log
+			where (colse_Type is null or colse_Type='' or colse_Type='Closure After Correction') 
+				and curent_Status!='Cancel' and curent_Status='Close'
+					and DATE_FORMAT( last_Updated_Time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+						and no=#{proNo}
+	</select>
+	
+	<select id="manualStartTestCaseCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select sum(TESTCASE_VALUE) from testcase_statistics where 
+			DATE_FORMAT( DATE, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' ) and
+				TESTCASE_TYPE=1 and PRO_NO=#{proNo}
+	</select>
+	
+	<select id="autoTestCaseStartPassedCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from tbl_tmss_info 
+			where auto_execution_type='True' and last_result='Passed' and no=#{proNo}
+	</select>
+	
+	<select id="newLocWx" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(MODIFYNUM) from svn_log where subString(AUTHOR,2) in 
+				(select HW_ACCOUNT from project_members_local where ROLE='开发工程师' and NO=#{proNo} and (svn_git_no="" or svn_git_no is null)) and NO=#{proNo} -->
+		SELECT SUM(MODIFYNUM) FROM svn_log
+		WHERE SUBSTRING(AUTHOR,2) IN(
+		SELECT mb.HW_ACCOUNT AS HW_ACCOUNT
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ROLE='开发工程师' AND ps.IS_DELETED = 0 AND NO=#{proNo}
+		AND (svn_git_no="" OR svn_git_no IS NULL)) AND NO=#{proNo}	
+	</select>
+	
+	<select id="newLoc" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(MODIFYNUM) from svn_log where AUTHOR in 
+				(select svn_git_no from project_members_local where ROLE='开发工程师' and NO=#{proNo} and svn_git_no!="" and svn_git_no is not null) and NO=#{proNo} -->
+		SELECT SUM(MODIFYNUM) FROM svn_log
+		WHERE AUTHOR IN (SELECT svn_git_no
+		FROM project_staff
+		WHERE ROLE='开发工程师' AND IS_DELETED = 0 AND NO=#{proNo} 
+		AND svn_git_no!="" AND svn_git_no IS NOT NULL) AND NO=#{proNo}
+	</select>
+	
+	<!-- 当月新增修改代码量 -->
+	<select id="dynewLocWx" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select IFNULL(sum(MODIFYNUM),0) from svn_log where subString(AUTHOR,2) in 
+			(select HW_ACCOUNT from project_members_local where ROLE='开发工程师' and NO=#{proNo} and (svn_git_no="" or svn_git_no is null)) and NO=#{proNo} 
+			and DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' ) -->
+		select IFNULL(sum(MODIFYNUM),0) from svn_log where subString(AUTHOR,2) in
+		(SELECT mb.HW_ACCOUNT AS HW_ACCOUNT
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ROLE='开发工程师' AND ps.IS_DELETED = 0 AND NO=#{proNo}
+		AND (svn_git_no="" OR svn_git_no IS NULL)) and NO=#{proNo}
+		and DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+	</select>
+	
+	<select id="dynewLoc" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select IFNULL(sum(MODIFYNUM),0) from svn_log where AUTHOR in 
+			(select svn_git_no from project_members_local where ROLE='开发工程师' and NO=#{proNo} and svn_git_no!="" and svn_git_no is not null) and NO=#{proNo}
+				and  DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' ) -->
+		select IFNULL(sum(MODIFYNUM),0) from svn_log where AUTHOR in
+		(SELECT svn_git_no FROM project_staff
+		WHERE ROLE='开发工程师' AND IS_DELETED = 0 and NO=#{proNo} 
+		and svn_git_no!="" and svn_git_no is not null) and NO=#{proNo}
+		and DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+	</select>
+	
+	<!-- 查询当月c++代码量 -->
+	<select id="queryCodeNumByc" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT IFNULL (SUM(FILE_MODIFYNUM),0) FROM `svn_log_file_modifynum` WHERE `FILE_TYPE` IN ${codeType}
+		AND `AUTHOR` IN ${authors} and  DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+	</select>
+	
+	<select id="queryCodeNumBycWX" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT IFNULL (SUM(FILE_MODIFYNUM),0) FROM `svn_log_file_modifynum` WHERE `FILE_TYPE` IN ${codeType}
+		AND `AUTHOR` IN ${authors} and  DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+	</select>
+	
+	<!-- 当月设计测试用例总数 -->
+	<select id="queryCXylzs" parameterType="java.lang.String" resultType="java.lang.Double">
+		select IFNULL(sum(TESTCASE_VALUE),0) from testcase_statistics where TESTCASE_TYPE=0 and PRO_NO=#{proNo} 
+		and DATE_FORMAT( DATE, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+	</select>
+	
+	
+	<select id="newTestCaseNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select sum(TESTCASE_VALUE) from testcase_statistics where TESTCASE_TYPE=0 and PRO_NO=#{proNo}
+	</select>
+	
+	<select id="testCaseAutoLocWx" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(MODIFYNUM) from svn_log where 
+			DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' ) and subString(AUTHOR,2) in 
+				(select HW_ACCOUNT from project_members_local 
+							where ROLE='测试工程师' and NO=#{proNo} and (svn_git_no="" or svn_git_no is null)) and NO=#{proNo} -->
+		select sum(MODIFYNUM) from svn_log where
+		DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' ) and
+		subString(AUTHOR,2) in
+		(SELECT mb.HW_ACCOUNT AS HW_ACCOUNT
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ROLE='测试工程师' AND ps.IS_DELETED = 0
+		and NO=#{proNo} and (svn_git_no="" or svn_git_no is null)) and NO=#{proNo}
+	</select>
+	
+	<select id="testCaseAutoLoc" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(MODIFYNUM) from svn_log where 
+			DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' ) and AUTHOR in 
+				(select svn_git_no from project_members_local 
+					where ROLE='测试工程师' and NO=#{proNo} and svn_git_no!="" and svn_git_no is not null) and NO=#{proNo} -->
+		select sum(MODIFYNUM) from svn_log where
+		DATE_FORMAT( COMMITTIME, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' ) 
+		and AUTHOR in (SELECT svn_git_no FROM project_staff
+		WHERE ROLE='测试工程师' AND IS_DELETED = 0 and NO=#{proNo} 
+		and svn_git_no!="" and svn_git_no is not null) and NO=#{proNo}
+	</select>
+	
+	<select id="allPeople" resultType="java.lang.String">
+		<!-- select HW_ACCOUNT from project_members_local where NO=#{proNo} -->
+		SELECT mb.HW_ACCOUNT AS HW_ACCOUNT
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		where NO=#{proNo} AND ps.IS_DELETED = 0
+	</select>
+	
+	<select id="solveHours" parameterType="java.lang.String" resultType="java.lang.String">
+		select VALUE from project_parameter_value_new where PARAMETER_ID=
+			(select id from parameter_info where name=#{type}) 
+				and DATE_FORMAT( MONTH, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+					and no=#{proNo}
+	</select>
+	
+	<select id="workTimes" parameterType="java.lang.String" resultType="java.lang.String">
+		select actual_labor_hour from tbl_time_information 
+			where DATE_FORMAT( statistical_time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+				and zr_account=(select ZR_ACCOUNT from project_members where AUTHOR=#{HWid}) group by zr_account
+	</select>
+	
+	<select id="changeToAuto">
+		update measure set COLLECT_TYPE ='自动采集' where name in ('自动化用例通过率','用例自动化率')
+	</select>
+	
+	<select id="changeToManual">
+		update measure set COLLECT_TYPE ='手动输入' where name in ('自动化用例通过率','用例自动化率')
+	</select>
+	
+</mapper>

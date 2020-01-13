@@ -1,0 +1,625 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<link href="css/Site.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/d3.v4.min.js"></script>
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/measureCalcu.js"></script>
+
+<style type="text/css">
+
+@-webkit-keyframes bounce-down {
+ 25% {-webkit-transform: translateY(-3px);}
+ 50%, 80% {-webkit-transform: translateY(0);}
+ 75% {-webkit-transform: translateY(3px);}
+}
+
+@keyframes bounce-down {
+ 25% {transform: translateY(-3px);}
+ 50%, 100% {transform: translateY(0);}
+ 75% {transform: translateY(3px);}
+}
+
+.animate-bounce-down{ 
+	background:#333; 
+	width: 20px; 
+	height: 20px; 
+	margin:20px auto;
+	-webkit-animation: bounce-down 1.5s linear infinite;
+	animation: bounce-down 1.5s linear infinite;
+}
+
+@-webkit-keyframes bounce-up {
+ 25% {-webkit-transform: translateY(3px);}
+ 50%, 100% {-webkit-transform: translateY(0);}
+ 75% {-webkit-transform: translateY(-3px);}
+}
+
+@keyframes bounce-up {
+ 25% {transform: translateY(3px);}
+ 50%, 100% {transform: translateY(0);}
+ 75% {transform: translateY(-3px);}
+}
+
+.animate-bounce-up{ 
+	background:#ddd; 
+	width: 20px; 
+	height: 20px; 
+	margin:20px auto;
+	-webkit-animation: 
+	bounce-up 1.4s linear infinite;
+	animation: bounce-up 1.4s linear infinite;
+}
+.xzBackColor{
+	background-color: red;
+}
+.menu ul li a{
+   	text-align: center;
+}
+</style>
+</head>
+<body>
+<div>
+	<!--时间下拉菜单-->
+<div  style="padding-top: 5px;">
+    <span><label id="nf">年份：</label><select id="myYear" onchange="GaiBian(this)"></select> </span>
+</div>
+	
+<div style="position:relative;    background-color: white;">
+	<canvas id="canvas" style="width:100%"></canvas>
+	
+ 	<div class="blank" style="position:absolute;clear:both; width: 100%; margin-top: -4px;padding: 0px;margin-left: 0px;margin-right: 0px;" id="waters">
+        <ul style="width: 100%; padding: 0px;">
+          <li id="liWidth1" style="border-right: 1px dashed #fff;">
+             <div id="qp1" class="animate-bounce-up"  onclick="divClick(1)"
+           	  style="display: inline-block;box-shadow: 0px 0px 50px #DCE9EF;text-align:center;
+              margin-right: 5px; border-radius: 50px; width: 60px;  height: 60px; 
+              background-color: #F57454; position: absolute;  bottom: 0px; left: 5%;  z-index:1; 
+              box-shadow: rgb(220, 233, 239) 0px 0px 20px;">
+                <span style="position: relative; top: 28%;font-size: 12px;text-align: center;font-family: -webkit-pictograph;" id="grgjsc"></span>
+            </div> 
+          </li>
+        
+        <li id="liWidth2" style="border-right: 1px dashed #fff;">
+            <div id="qp2" class="animate-bounce-up" onclick="divClick(2)"
+              style="display: inline-block; text-align:center;
+              margin-right: 5px; border-radius: 50px;
+              width: 60px;height: 60px; 
+              background-color: orange;position: absolute;bottom:0px; left: 19%;z-index:1;
+              box-shadow: rgb(220, 233, 239) 0px 0px 20px;">
+                <span style="position: relative; top: 28%;font-size: 12px;text-align: center;font-family: -webkit-pictograph;" id="bbgjsc"></span>
+            </div>
+        </li>
+        
+        
+        <li id="liWidth3" style="border-right: 1px dashed #fff;">
+            <div id="qp3" class="animate-bounce-up" onclick="divClick(3)" 
+            	style="display: inline-block;text-align:center;
+             margin-right: 5px; border-radius: 50px; /* 圆形边缘弧度 */
+             width: 60px; /* 宽度 */ height: 60px; /* 高度 */
+             background-color: #d8d80f;    position: absolute;bottom: 0px; left: 33%;
+                 box-shadow: rgb(220, 233, 239) 0px 0px 20px;">
+                <span id="hgyzzq" style="position: relative; top: 28%; font-size: 12px;text-align: center;font-family: -webkit-pictograph;"></span>
+            </div>
+
+        </li>
+        
+        
+        <li id="liWidth4" style=" border-right: 1px dashed #fff;">
+            <div id="qp4" class="animate-bounce-up"  onclick="divClick(4)"
+            style="display: inline-block; text-align:center;
+             margin-right: 4px; border-radius: 50px;
+             width: 60px;height: 60px; 
+             background-color: #56ec56;    position: absolute;bottom: 0px; left: 47%;    box-shadow: rgb(220, 233, 239) 0px 0px 20px;">
+                <span id="qlgnyzzq" style="position: relative; top: 28%;font-size: 12px;text-align: center;font-family: -webkit-pictograph;"></span>
+            </div>
+
+        </li>
+        
+        
+        <li id="liWidth5" style="border-right: 1px dashed #fff;">
+              <div id="qp5" class="animate-bounce-up" onclick="divClick(5)" style="display: inline-block;
+               margin-right: 5px; border-radius: 50px; /* 圆形边缘弧度 */
+             width: 60px; /* 宽度 */ height: 60px; /* 高度 */text-align:center;
+             background-color: #47d2d2;    position: absolute;bottom: 0px; left: 61%;    box-shadow: rgb(220, 233, 239) 0px 0px 20px;">
+                <span id="jjfayzzq"  style="position: relative; top: 28%;font-size: 12px;text-align: center;font-family: -webkit-pictograph;"></span>
+            </div>
+                
+        </li>
+        
+        <li  id="liWidth6" style="border-right: 1px dashed #fff;">
+                <div id="qp6" class="animate-bounce-up" onclick="divClick(6)"
+                	style="display: inline-block;text-align:center;
+             margin-right: 5px; border-radius: 50px; /* 圆形边缘弧度 */
+             width: 60px; /* 宽度 */ height: 60px; /* 高度 */
+             background-color: violet;    position: absolute;bottom: 0px; left:75%;    box-shadow: rgb(220, 233, 239) 0px 0px 20px;">
+                <span style="position: relative; top: 28%; font-size: 12px;text-align: center;font-family: -webkit-pictograph;">0</br>min</span>
+            </div>
+            
+         </li>
+        
+        <li
+                id="liWidth7"
+                style="border-right: 1px dashed #fff;">
+                <div id="qp7" class="animate-bounce-up" onclick="divClick(7)"
+                	style="display: inline-block;text-align:center;
+             margin-right: 5px; border-radius: 50px; /* 圆形边缘弧度 */
+             width: 60px; /* 宽度 */ height: 60px; /* 高度 */
+             background-color: violet;    position: absolute;bottom: 0px; left: 89%;    box-shadow: rgb(220, 233, 239) 0px 0px 20px;">
+                <span style="position: relative; top: 28%;font-size: 12px;text-align: center;font-family: -webkit-pictograph;">0</br>min</span>
+            </div>
+        
+        </li>
+        
+    </ul>
+ </div>
+</div>
+<div class="menu" style="width: 100%; margin-top: -4px; clear: both;padding: 0px;margin: 0px;">
+    <ul style="width: 100%;">
+			<li id="dh1"><a  id="six1" onclick="loadEcharts(1)" style="margin-left: 0px;background-color:#a5287a;line-height: 2em;">个人构建时长</a>
+			</li>
+			<li id="dh2"><a onclick="loadEcharts(2)" id="six2" style="line-height: 2em;">版本级构建时长</a>
+			</li>
+			<li id="dh3"><a onclick="loadEcharts(3)" id="six3" style="line-height: 2em;">回归验证周期</a>
+			</li>
+			<li id="dh4"><a onclick="loadEcharts(4)" id="six4" style="line-height: 2em;padding-left: 10px;">全量功能验证周期</a>
+			</li>
+			<li id="dh5"><a onclick="loadEcharts(5)" id="six5" style="line-height: 2em;padding-left: 10px;">解决方案验证周期</a></li>
+			<li id="dh6"><a onclick="loadEcharts(6)" id="six6" style="line-height: 2em;">特性CycleTime</a></li>
+			<li id="dh7"><a onclick="loadEcharts(7)" id="six7" style="line-height: 2em;padding-left: 10px;">story/功能点/特性</a></li>
+		</ul>
+</div>
+<!--指标图表显示  -->
+	<div id="tbshows" style="width:100%; height:380px;margin-top: 36px;overflow-y:hidden;padding-bottom: 20px;background-color:#f7f8f8;">
+	   <iframe id="myiframe" frameborder="no" allowtransparency ="no" scrolling="no" border="0" 
+	     style="width: 100%; height: 380px;margin: 0px;background-color: #f7f8f8;">
+	   </iframe>
+	</div>
+</div>
+	
+<script>
+
+var no = window.parent.projNo;
+ $(function(){
+		//初始化加载个人构建指标
+		 divClick(1);
+	 	 //初始化计算每个布局宽高度
+	 	 load();
+	     //设置年份的选择
+	     var myDate = new Date();
+	     var startYear = myDate.getFullYear();//起始年份
+	    // var endYear = myDate.getFullYear() + 5;//结束年份
+	     var obj = document.getElementById('myYear')
+	     for (var i = startYear; i >= startYear-5; i--) {
+	         obj.options.add(new Option(i, i));
+	     }	 
+		
+	 });
+
+//获取当前所选指标项
+var ul_li_value = "";
+function load(){
+	//获取河流div宽度
+	var waterLength = $("#canvas").width();
+	
+	var li_length = (waterLength)/7;
+	var dh1 = document.getElementById('dh1');
+	var dh2 = document.getElementById('dh2');
+	var dh3 = document.getElementById('dh3');
+	var dh4 = document.getElementById('dh4');
+	var dh5 = document.getElementById('dh5');
+	var dh6 = document.getElementById('dh6');
+	var dh7 = document.getElementById('dh7');
+	
+	dh1.style.width= ""+li_length+"px"; 
+	dh2.style.width= ""+li_length+"px";
+	dh3.style.width= ""+li_length+"px"; 
+	dh4.style.width= ""+li_length+"px"; 
+	dh5.style.width= ""+li_length+"px"; 
+	dh6.style.width= ""+li_length+"px"; 
+	dh7.style.width= ""+li_length+"px"; 
+}
+
+//气泡点击事件
+function divClick(sel){
+	loadEcharts(sel);
+	defaultBackColor();
+	if(sel == '1'){
+		$("#qp1").css({"background-color":"white"});
+	}else if(sel == '2'){
+		$("#qp2").css({"background-color":"white"});
+	}else if(sel == '3'){
+		$("#qp3").css({"background-color":"white"});
+	}else if(sel == '4'){
+		$("#qp4").css({"background-color":"white"});
+	}else if(sel == '5'){
+		$("#qp5").css({"background-color":"white"});
+	}else if(sel == '6'){
+		$("#qp6").css({"background-color":"white"});
+	}else if(sel == '7'){
+		$("#qp7").css({"background-color":"white"});
+	}
+}
+
+function defaultBackColor(){
+	//气泡默认背景
+	$("#qp1").css({"background-color":"#F57454"});
+	$("#qp2").css({"background-color":"orange"});
+	$("#qp3").css({"background-color":"#d8d80f"});
+	$("#qp4").css({"background-color":"#56ec56"});
+	$("#qp5").css({"background-color":"#47d2d2"});
+	$("#qp6").css({"background-color":"#6cb2ef"});
+	$("#qp7").css({"background-color":"violet"});
+}
+
+
+
+//默认加载构建时长
+function loadEcharts(val) {
+		$("#six1").css({"background-color":""});
+		$("#six2").css({"background-color":""});
+		$("#six3").css({"background-color":""});
+		$("#six4").css({"background-color":""});
+		$("#six5").css({"background-color":""});
+		$("#six6").css({"background-color":""});
+		$("#six7").css({"background-color":""});
+		
+		defaultBackColor();
+	 
+	    ul_li_value = val;
+	    var ifm = document.getElementById("myiframe");
+	   //获取当前选中的年份
+	    var yearNow = $('#myYear option:selected') .val();
+    if (val == 1) {
+    	$("#six1").css({"background-color":"#a5287a"});
+    	$("#qp1").css({"background-color":"white"});
+        ifm.src = "/mvp/view/HTML/personalbuild.html";
+    } else if (val == 2) {
+    	$("#six2").css({"background-color":"#a5287a"});
+    	$("#qp2").css({"background-color":"white"});
+        ifm.src = "/mvp/view/HTML/versionstruc.html";
+    } else if (val == 3) {
+    	$("#six3").css({"background-color":"#a5287a"});
+    	$("#qp3").css({"background-color":"white"});
+    	ifm.src = "/mvp/view/HTML/verificationCycle.html";
+    } else if (val == 4) {
+    	$("#six4").css({"background-color":"#a5287a"});
+    	$("#qp4").css({"background-color":"white"});
+    	 ifm.src ="/mvp/view/HTML/verificationCycleTotal.html";
+    } else if (val == 5) {
+    	$("#six5").css({"background-color":"#a5287a"});
+    	$("#qp5").css({"background-color":"white"});
+    	ifm.src ="/mvp/view/HTML/verificationCycleSoluTIon.html";
+    } else if (val == 6) {
+    	$("#six6").css({"background-color":"#a5287a"});
+    	$("#qp6").css({"background-color":"white"});
+        ifm.src = "/mvp/view/HTML/cycleTime.html";
+    } else if (val == 7) {
+    	$("#six7").css({"background-color":"#a5287a"});
+    	$("#qp7").css({"background-color":"white"});
+    	ifm.src = "/mvp/view/HTML/story.html";
+    }
+} 
+
+//改变窗体大小重新计算各指标宽度
+$(window).resize(function () {  
+	load();
+});
+	
+//年份选择事件
+
+function GaiBian(osel){
+	var yearNow = osel.options[osel.selectedIndex].value;
+	//选择下拉菜单加载对应指标
+	loadEcharts(ul_li_value);
+}
+
+ $(function(){
+	 //获取最新个人构建时长
+	 $.ajax({
+			url: getRootPath() + '/personalBulidTime/queryBuildTimeNew', 
+			 data : {
+	        	 no : no
+	         },
+	         type : "post",
+	         success : function(result) {
+	        	 var ele= document .getElementById ("grgjsc");
+	        	 if(!result.result){
+					 ele.innerHTML = "0</br>min";
+				 }else{
+					 ele.innerHTML = result.result+"</br>min";
+				 }	
+	        	var grsc = Number(result.result);
+	        	var qp1 = document.getElementById('qp1');
+	        	var gd = ((grsc/200))*312;
+	        	if(gd>312){
+	        		gd = 312;
+	        	} 
+	        	qp1.style.bottom= gd+"px";
+	         }
+		});
+	//计算版本时长最新指标
+		$.ajax({
+			url: getRootPath() + '/icp-ci/queryNew', 
+			 data : {
+	        	 no : no
+	         },
+	         type : "post",
+	         success : function(result) {
+	        	 var ele= document .getElementById ("bbgjsc");
+	        	 if(!result.result){
+					 ele.innerHTML = "0</br>min";
+				 }else{
+					 ele.innerHTML = result.result+"</br>min";
+				 }		
+	        	//气泡最大高度不超过312px,河流总高度400
+	        	var bbsc = Number(result.result);
+	        	var qp2 = document.getElementById('qp2');
+	        	var gd = (bbsc/200)*312;
+				if(gd>312){
+	        		gd = 312;
+	        	} 
+	        	qp2.style.bottom= gd+"px";
+	         }
+		});
+	//计算回归验证周期最新指标
+		$.ajax({
+			url: getRootPath() + '/verificationCycle/ReturnValidateCycleToday', 
+			 data : {
+				 projNo : no
+	         },
+	         type : "post",
+	         success : function(result) {
+	        	 var ele= document .getElementById ("hgyzzq");
+	        	 if(!result.result){
+					 ele.innerHTML = "0</br>min";
+				 }else{
+					 ele.innerHTML = result.result+"</br>min";
+				 }	
+	        	//气泡最大高度不超过312px,河流总高度400
+	        	var bbsc = Number(result.result);
+	        	var qp3 = document.getElementById('qp3');
+	        	var gd = (bbsc/200)*312;
+				if(gd>312){
+	        		gd = 312;
+	        	} 
+	        	qp3.style.bottom= gd+"px";
+	         }
+		});
+	//计算全量功能验证周期最新指标
+		$.ajax({
+			url: getRootPath() + '/verificationCycle/totalValidateCycleToday', 
+			 data : {
+				 projNo : no
+	         },
+	         type : "post",
+	         success : function(result) {
+	        	 var ele= document .getElementById ("qlgnyzzq");
+	        	 if(!result.result){
+					 ele.innerHTML = "0</br>min";
+				 }else{
+					 ele.innerHTML = result.result+"</br>min";
+				 }	
+	        	//气泡最大高度不超过312px,河流总高度400
+	        	var bbsc = Number(result.result);
+	        	var qp4 = document.getElementById('qp4');
+	        	var gd = (bbsc/200)*312;
+				if(gd>312){
+	        		gd = 312;
+	        	} 
+	        	qp4.style.bottom= gd+"px";
+	         }
+		});
+	//计算解决方案验证周期最新指标
+		$.ajax({
+			url: getRootPath() + '/verificationCycle/totalValidateCycleToday', 
+			 data : {
+				 projNo : no
+	         },
+	         type : "post",
+	         success : function(result) {
+	        	 var ele= document .getElementById ("jjfayzzq");
+	        	 if(!result.result){
+					 ele.innerHTML = "0</br>min";
+				 }else{
+					 ele.innerHTML = result.result+"</br>min";
+				 }	
+	        	//气泡最大高度不超过312px,河流总高度400
+	        	var bbsc = Number(result.result);
+	        	var qp5 = document.getElementById('qp5');
+	        	var gd = (bbsc/200)*312;
+				if(gd>312){
+	        		gd = 312;
+	        	} 
+	        	qp5.style.bottom= gd+"px";
+	         }
+		});
+ });  
+
+    //波浪动画
+    var svg_height = 400, svg_width = 1200, wave_data = [ [], [] ], area = d3
+                    .area().y0(svg_height).curve(d3.curveBasis), //curve会进行平滑处理
+            svg_paths = [];
+    var max = 200; //控制速度
+    for (var i = 0; i < max; i++) {
+        var r = i / max * 2;
+        wave_data[0].push(r); //波浪一
+        wave_data[1].push(r + 1); //波浪二（+1代表偏移π）
+    }
+    var d = svg_width / (wave_data[0].length - 2);
+    svg_paths.push(d3.select('#svg-area path:first-child'));
+    svg_paths.push(d3.select('#svg-area path:last-child'));
+    function area_generator(data) {
+        var wave_height = 0.15; //波浪高度
+        var area_data = data
+                .map(function(y, i) {
+                    return [
+                        i * d,
+                        svg_height
+                        * (1 - (wave_height
+                        * Math.sin(y * Math.PI) + 2) / 3) ]; //+2将范围[-1,1]转成[1,3]
+                });
+        return function() {
+            return area(area_data);
+        };
+    }
+    function renderWave() {
+        svg_paths.forEach(function(svg_path, i) {
+            svg_path.attr('d', area_generator(wave_data[i]));
+            wave_data[i] = getNextData(wave_data[i]);
+        });
+        requestAnimationFrame(renderWave);
+    }
+    function getNextData(data) {
+        var r = data.slice(1);
+        r.push(data[0]);
+        return r;
+    }
+    requestAnimationFrame(renderWave);
+
+    // 波浪图
+    (function() {
+        for (var a = 0, b = [ 'ms', 'moz', 'webkit', 'o' ], c = 0; b.length > c
+        && !window.requestAnimationFrame; ++c)
+            window.requestAnimationFrame = window[b[c]
+            + 'RequestAnimationFrame'],
+                    window.cancelAnimationFrame = window[b[c]
+                            + 'CancelAnimationFrame']
+                            || window[b[c] + 'CancelRequestAnimationFrame'];
+        window.requestAnimationFrame
+        || (window.requestAnimationFrame = function(b) {
+            var d = (new Date).getTime(), e = Math.max(0,
+                    16 - (d - a)), f = window.setTimeout(
+                    function() {
+                        b(d + e)
+                    }, e);
+            return a = d + e, f
+        }), window.cancelAnimationFrame
+        || (window.cancelAnimationFrame = function(a) {
+            clearTimeout(a)
+        })
+    })();
+    
+    (function() {
+        var canvas = document.querySelector('#canvas');
+        var ctx = canvas.getContext('2d');
+        ctx.globalAlpha = 0.25;   
+        var stageWidth = 0;
+        var stageHeight = 0;
+        var stageWidth2 = 0;
+        var stageHeight2 = 0;
+        var totalLength2 = 0;
+
+        var distanceX = 0;
+        var distanceX1 = 0;
+        var config = {
+            height : 6,
+            waveLength : 70,
+            curveFactor : 1,
+            speed : -1
+        };
+        
+         var config1 = {
+                height : 10,
+                waveLength : 120,
+                curveFactor : 2,
+                speed : 2
+            }; 
+        var DELTA_WIDTH = 1;
+
+        function init() {
+            window.onresize = onResize;
+            onResize();
+            render();
+        }
+
+        function onResize() {
+         	//stageWidth = canvas.width = window.innerWidth;
+            stageWidth = canvas.width =  $("#canvas").width();
+            //stageHeight = canvas.height = window.innerHeight;
+            stageHeight = canvas.height = 400;
+            stageWidth2 = stageWidth / 2;
+            stageHeight2 = stageHeight / 2;
+            totalLength2 = Math.ceil(stageWidth2 / DELTA_WIDTH)
+                    * DELTA_WIDTH;
+            redraw();
+        }
+
+        function render() {
+            redraw();
+            requestAnimationFrame(render);
+        }
+
+        function _getHeight(distanceX, x) {
+            var offsetX = ((distanceX + x) / totalLength2 - 1)
+                    * (totalLength2 / config.waveLength);
+            var waveFactor = Math.cos((x / totalLength2 - 1) * Math.PI / 2);
+            return Math.cos(offsetX * Math.PI)
+                    * Math.pow(waveFactor, config.curveFactor)
+                    * config.height;
+        }
+
+        function redraw() {
+            var x = stageWidth2 - totalLength2;
+            var toX = x + totalLength2 * 2;
+            var centerY = stageHeight2;
+            ctx.save();
+            ctx.clearRect(0, 0, stageWidth, stageHeight);
+            ctx.beginPath();
+            ctx.moveTo(x, stageHeight);
+
+            for (; x < toX; x += DELTA_WIDTH) {
+                ctx.lineTo(x, centerY - _getHeight(distanceX, x));
+            }
+            ctx.lineTo(x - DELTA_WIDTH, stageHeight);
+            ctx.lineWidth = 4;
+             ctx.strokeStyle = '#c1eafe';
+            ctx.fillStyle = '#c1eafe'; 
+            ctx.fill();
+            ctx.stroke();
+            distanceX += config.speed;
+            redraw1();
+        }
+        function _getHeight1(distanceX, x) {
+            var offsetX = ((distanceX + x) / totalLength2 - 1)
+                    * (totalLength2 / config1.waveLength);
+            var waveFactor = Math.cos((x / totalLength2 - 1) * Math.PI / 2);
+            return Math.cos(offsetX * Math.PI)
+                    * Math.pow(waveFactor, config1.curveFactor)
+                    * config1.height;
+        }
+
+         function redraw1() {
+            var x = stageWidth2 - totalLength2;
+            var toX = x + totalLength2 * 2;
+            var centerY = stageHeight2;
+            ctx.restore();
+            // ctx.clearRect(0, 0, stageWidth, stageHeight+10);
+            ctx.beginPath();
+            ctx.moveTo(x, stageHeight);
+            for (; x < toX; x += DELTA_WIDTH) {
+                ctx.lineTo(x, centerY - _getHeight1(distanceX1, x));
+            }
+            ctx.lineTo(x - DELTA_WIDTH, stageHeight);
+            ctx.lineWidth = 4;
+            ctx.strokeStyle = 'rgb(143, 202, 253)';
+            ctx.fillStyle = 'rgb(143, 202, 253)'; 
+            ctx.fill();
+            ctx.globalCompositeOperation = "source-over";
+            ctx.stroke();
+            distanceX1 += config1.speed;
+        } 
+        init();
+    }())
+</script>
+</body>
+</html>

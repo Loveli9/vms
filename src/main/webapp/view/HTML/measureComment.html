@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/measureComment.js"></script>
+<style>
+.breadcrumb {
+	background-color: #fff;
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-bottom: 0px;
+	padding: 8px 0px;
+}
+.myTab{
+		padding-left: 20px;
+		padding-right: 20px;
+}
+</style>
+</head>
+<body>
+	<ol class="breadcrumb">
+		<li><a href="#" onclick="toProjectHome()">项目</a></li>
+	    <li>工作项</li>
+	    <li class="active">质量点评</li>
+	</ol>
+	<div class="myTab"> 
+		<div>  
+			<div style="margin-right: 20px;">
+			<div class=" pull-left" style="position: relative;top: 10px;width:600px;">
+			<select id="labelSel" style="float: left;font-size: 16px;width: 240px;height:30px;padding-left: 10px;padding-right: 10px;margin-left: 0px; border-radius: 5px;margin-bottom: 30px;" onchange="cateGoryChange()">
+			</select>
+			<button type="button" id="configBtn"  style="margin-left: 10px;float: left;border:1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 4px; width: 60px; height: 30px;outline: none;">配置</button>
+			<!-- <button id="exportbut" style="float: right;margin-top: 0px;margin-right: 10px;border:1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 5px; width: 60px; height: 26px;outline: none;">导出</button> -->
+			</div>
+			<table id="measureTable" style="width:100%"  border="0" cellspacing="0" cellpadding="0" class="table text-nowrap">
+			</table>
+			</div>
+		
+			
+		</div>
+    </div>
+    <div class="modal fade" id="iteConfigPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
+			data-backdrop="static">
+			<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:800px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;width: 95%;">
+					<h4 class="modal-title"  style="display: inline; margin-right: 310px;">
+						质量点评时间配置
+					</h4>
+				<button type="button" id="backBtn" data-dismiss="modal" style="float: right;border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">返回</button>
+				<button type="button" id="saveBtn"  style="float: right;border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">保存</button>
+				<button type="button" id="addBtn"  style="float: right;border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">新增</button>
+				</div>
+				<div class="modal-body" style="width: 95%;">
+					<div style="width: 100%; padding: 0px;">
+						<table id="configTable" style="width:100%"  border="0" cellspacing="0" cellpadding="0" class="table text-nowrap">		                 
+						</table>
+					</div>	
+				</div>	
+			</div>
+		</div>		
+	</div>
+</body>
+</html>

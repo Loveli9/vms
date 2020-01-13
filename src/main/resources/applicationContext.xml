@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.3.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!-- 加载配置文件 -->
+    <!-- <bean class="com.icss.lighttower.web.EncryptPropertyPlaceholderConfigurer">
+        <property name="locations"> <value>/WEB-INF/config/jdbc.properties</value>
+        </property> <property name="encryptNames"> <list> <value>jdbc.username</value>
+        <value>jdbc.password</value> </list> </property> </bean> -->
+
+    <!-- jdbc配置文件读取 -->
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_NEVER"/>
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+                <value>classpath:task.properties</value>
+                <value>classpath:application.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 数据源配置,使用应用内的DBCP数据库连接池 -->
+    <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <!--<property name="filters" value="brave" />-->
+        <!-- <property name="filters" value="${druid.pool.filters}" /> -->
+        <property name="maxActive" value="${druid.pool.maxActive}"/>
+        <property name="initialSize" value="${druid.pool.initialSize}"/>
+        <property name="maxWait" value="${druid.pool.maxWait}"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${druid.pool.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${druid.pool.minEvictableIdleTimeMillis}"/>
+        <property name="validationQuery" value="${druid.pool.validationQuery}"/>
+        <property name="testWhileIdle" value="${druid.pool.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${druid.pool.testOnBorrow}"/>
+        <property name="testOnReturn" value="${druid.pool.testOnReturn}"/>
+    </bean>
+
+    <!-- 2. mybatis的SqlSession的工厂: SqlSessionFactoryBean dataSource:引用数据源 MyBatis定义数据源,同意加载配置 -->
+    <bean id="sqlSessionFactory" class="com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="typeAliasesPackage" value="com.icss.mvp.entity"/>
+        <property name="mapperLocations" value="classpath:/com/icss/mvp/mapper/**/*Mapper.xml"/>
+    </bean>
+
+    <!-- 3. mybatis自动扫描加载Sql映射文件/接口 : MapperScannerConfigurer sqlSessionFactory
+        basePackage:指定sql映射文件/接口所在的包（自动扫描） -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.icss.mvp.dao"/>
+        <!-- 在spring里使用org.mybatis.spring.mapper.MapperScannerConfigurer 进行自动扫描的时候，设置了sqlSessionFactory
+            的话，可能会导致PropertyPlaceholderConfigurer失效，也就是用${jdbc.username}这样之类的表达式，将无法获取到properties文件里的内容。
+            导致这一原因是因为，MapperScannerConigurer实际是在解析加载bean定义阶段的，这个时候要是设置sqlSessionFactory的话，会导致提前初始化一些类，这个时候，PropertyPlaceholderConfigurer还没来得及替换定义中的变量，导致把表达式当作字符串复制了 -->
+        <!-- 改用sqlSessionFactoryBeanName注入就没有问题(不要使用sqlSessionFactory属性注入，使用sqlSessionFactoryBeanName注入)，因为这时不会立即初始化sqlSessionFactory,传入的只是名字，非bean，所以不会引发提前初始化问题 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+    <!-- 4. 事务管理 : DataSourceTransactionManager dataSource:引用上面定义的数据源 -->
+    <bean id="txManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- 5. 使用声明式事务 transaction-manager：引用上面定义的事务管理器 -->
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+    <context:component-scan base-package="com.icss.mvp"/>
+
+    <!--&lt;!&ndash; 5. 使用声明式事务 transaction-manager：引用上面定义的事务管理器 &ndash;&gt;-->
+    <!--<tx:advice id="txAdvice" transaction-manager="txManager">-->
+    <!--<tx:attributes>-->
+    <!--<tx:method name="create*" isolation="DEFAULT" propagation="REQUIRED"/>-->
+    <!--<tx:method name="update*" isolation="DEFAULT" propagation="REQUIRED"/>-->
+    <!--<tx:method name="delete*" isolation="DEFAULT" propagation="REQUIRED"/>-->
+    <!--<tx:method name="tx*" isolation="DEFAULT" propagation="REQUIRED"/>-->
+    <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+
+    <!--<aop:config>-->
+    <!--<aop:pointcut id="point" expression="execution(* com.icss.mvp.service.*.*(..))"/>-->
+    <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="point"/>-->
+    <!--</aop:config>-->
+
+    <!-- 启用CGliB -->
+    <aop:aspectj-autoproxy proxy-target-class="true" expose-proxy="true"/>
+
+    <bean id="pageHelperAspect" class="com.icss.mvp.entity.pageHelper.PageHelperAspect"/>
+</beans>

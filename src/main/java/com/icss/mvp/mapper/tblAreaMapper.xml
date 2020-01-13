@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.TblAreaDao" >
+	<resultMap id="tblAreaMap" type="com.icss.mvp.entity.TblArea" >
+		<id column="id" property="id"/>
+		<result column="area_code" property="areaCode"/>
+		<result column="area_name" property="areaName"/>
+		<result column="ignoe" property="ignoe"/>
+	</resultMap>
+	<resultMap id="projectTeamMap" type="com.icss.mvp.entity.ProjectTeam">
+		<id column="id" property="id"/>
+		<result column="team_id" property="teamNo"/>
+		<result column="team_name" property="teamName"/>
+	</resultMap>
+	<!--新增一条TblArea记录-->
+	<insert id="insertTblArea" parameterType="tblArea" useGeneratedKeys="true" keyProperty="id" >
+		insert into tbl_area
+		(id,area_code,area_name,ignoe)
+		values 
+		(#{id},#{areaCode},#{areaName},#{ignoe})
+	</insert>
+	
+	<!--修改指定TblArea记录-->
+	<update id="updateTblArea" parameterType="tblArea" >
+		update tbl_area 
+		<set>
+		    <if test="areaCode != null">area_code=#{areaCode},</if>
+		    <if test="areaName != null">area_name=#{areaName},</if>
+		    <if test="ignoe != null">ignoe=#{ignoe},</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<!--通过主键id查询指定TblArea记录-->
+	<select id="getTblAreaById" resultMap="tblAreaMap" parameterType="String" >
+		select * from tbl_area where id=#{id}
+	</select>
+	
+	
+	<!--通过主键id单个删除-->
+	<delete id="deleteTblAreaById" parameterType="String" >
+		delete from tbl_area where id=#{id}
+	</delete>
+	
+	
+	<!--批量删除-->
+	<delete id="deleteTblAreaByIdList" parameterType="List" >
+		delete from tbl_area where id in
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		#{item} 
+		</foreach> 
+	</delete>
+	
+	
+	
+	<select id="getTblAreaForPage" resultMap="tblAreaMap" parameterType="Map">
+		select * from tbl_area 
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+		LIMIT #{startNo},#{pageSize}
+	</select>
+	
+	<select id="getTblAreaCount" resultType="Integer" parameterType="Map">
+		select count(0) from tbl_area
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+	</select>
+	
+	<select id="getAllTblArea" resultMap="tblAreaMap">
+		select * from tbl_area order by area_code
+	</select>
+	
+	
+	<select id="getProjectArea" resultType="String">
+		select area from project_info GROUP BY area
+	</select>
+
+	<select id="getTblAreaByCodes" resultMap="tblAreaMap" parameterType="java.util.Set">
+		select * from tbl_area where 1 = 1
+		<if test=" set != null and set.size() != 0">
+			AND area_code in
+			<foreach collection="set" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		order by area_code
+	</select>
+	<select id="getArea" parameterType="java.lang.String" resultMap="tblAreaMap">
+		SELECT * from tbl_area where `area_name` = #{areaName}
+	</select>
+</mapper>

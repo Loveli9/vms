@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.system.IUserDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.system.UserEntity">
+        <result property="id" column="USERID"/>
+        <result property="name" column="USERNAME"/>
+        <!--<result property="nickname" column="USERNAME"/>-->
+        <result property="password" column="PASSWORD"/>
+        <result property="type" column="usertype"/>
+        <result property="grantedPermissionIds" column="permission_ids"/>
+
+        <result property="trunkOP" column="bu" />
+        <result property="branchOP" column="du" />
+        <result property="deptOP" column="dept" />
+
+        <result property="trunkHW" column="hwpdu" />
+        <result property="branchHW" column="hwzpdu" />
+        <result property="deptHW" column="pduspdt" />
+
+        <!--<result property="roleId" column="role_id"/>-->
+        <!--<result property="CREATER" column="CREATER" />-->
+        <result property="createTime" column="CREATETIME"/>
+        <!--<result property="UPDATER" column="UPDATER" />-->
+        <result property="modifyTime" column="UPDATETIME"/>
+        <!--<result property="IDENTITY" column="IDENTITY" />-->
+    </resultMap>
+
+    <select id="getUserInfo" parameterType="Map" resultMap="BaseResultMap">
+        SELECT * FROM `sys_user` `u` WHERE 1 = 1
+        <if test="user.ids != null and user.ids.size() != 0">
+            <choose>
+                <when test="user.ids.size() == 1">
+                    AND `u`.`USERID` =
+                </when>
+                <otherwise>
+                    AND `u`.`USERID` IN
+                </otherwise>
+            </choose>
+            <foreach collection="user.ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.names != null and user.names.size() != 0">
+            <choose>
+                <when test="user.names.size() == 1">
+                    AND `u`.`USERNAME` =
+                </when>
+                <otherwise>
+                    AND `u`.`USERNAME` IN
+                </otherwise>
+            </choose>
+            <foreach collection="user.names" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="user.password !=null and user.password != ''">
+            AND `u`.`PASSWORD` = #{user.password}
+        </if>
+        <if test="user.types != null and user.types.size() != 0">
+            <choose>
+                <when test="user.types.size() == 1">
+                    AND `u`.`usertype` =
+                </when>
+                <otherwise>
+                    AND `u`.`usertype` IN
+                </otherwise>
+            </choose>
+            <foreach collection="user.types" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ;
+    </select>
+
+    <!--<insert id="add" useGeneratedKeys="true" keyProperty="userId"-->
+    <!--parameterMap="com.icss.mvp.entity.system.UserEntity">-->
+
+    <!--</insert>-->
+
+    <insert id="replaceUserInfo" parameterType="com.icss.mvp.entity.system.UserEntity">
+        REPLACE INTO `sys_user`
+        (`USERID`, `USERNAME`, `PASSWORD`, `usertype`, `permission_ids`,
+        <if test="user.type == 1">
+            bu, du, dept,
+        </if>
+        <if test="user.type == 2">
+            hwpdu, hwzpdu, pduspdt,
+        </if>
+        `CREATETIME`, `UPDATETIME`)
+        VALUES
+        (#{user.id},#{user.name},#{user.password},#{user.type},#{user.grantedPermissionIds},
+        <if test="user.type == 1">
+            #{user.trunk}, #{user.branch}, #{user.dept},
+        </if>
+        <if test="user.type == 2">
+            #{user.trunk}, #{user.branch}, #{user.dept},
+        </if>
+        #{user.createTime},#{user.modifyTime});
+    </insert>
+
+    <insert id="alertUserInfo" parameterType="Map">
+        REPLACE INTO `sys_user`
+        (`USERID`, `USERNAME`,
+        <if test="user.trunk !=null and user.trunk != '' and user.type == 1">
+            bu, du, dept,
+        </if>
+        <if test="user.trunk !=null and user.trunk != '' and user.type == 2">
+            hwpdu, hwzpdu, pduspdt,
+        </if>
+        `usertype`, `permission_ids`, `CREATETIME`, `UPDATETIME`)
+        VALUES
+        (#{user.id}, #{user.name},
+        <if test="user.trunk !=null and user.trunk != '' and user.type == 1">
+            #{user.trunk}, #{user.branch}, #{user.dept},
+        </if>
+        <if test="user.trunk !=null and user.trunk != '' and user.type == 2">
+            #{user.trunk}, #{user.branch}, #{user.dept},
+        </if>
+        #{user.type}, #{user.grantedPermissionIds}, #{user.createTime}, #{user.modifyTime});
+    </insert>
+
+</mapper>

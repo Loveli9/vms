@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.MeasureRangeDao">
+    <resultMap type="com.icss.mvp.entity.MeasureRange" id="MeasureRangeMap">
+        <result property="id" column="id"/>
+        <result property="mesureId" column="measure_id"/>
+        <result property="upper" column="upper"/>
+        <result property="challenge" column="challenge"/>
+        <result property="target" column="target"/>
+        <result property="lower" column="lower"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="no" column="no"/>
+        <result property="collectType" column="collect_type"/>
+        <result property="computeRule" column="compute_rule"/>
+        <result property="label" column="label"/>
+        <result property="category" column="category"/>
+    </resultMap>
+    <resultMap type="com.icss.mvp.entity.TeamMeasureRange" id="TeamMeasureRangeMap">
+        <result property="id" column="id"/>
+        <result property="mesureId" column="measure_id"/>
+        <result property="upper" column="upper"/>
+        <result property="challenge" column="challenge"/>
+        <result property="target" column="target"/>
+        <result property="lower" column="lower"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="teamId" column="team_id"/>
+        <result property="collectType" column="collect_type"/>
+    </resultMap>
+
+    <resultMap type="com.icss.mvp.entity.MeasureConfigRecord" id="Mrecord">
+        <result property="id" column="id"/>
+        <result property="no" column="no"/>
+        <result property="lableId" column="lable_id"/>
+        <result property="measureIds" column="measure_ids"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.icss.mvp.entity.MeasureRange">
+		REPLACE INTO `measure_range` (`measure_id`,`upper`,`challenge`,`target`,`lower`,`create_time`,`update_time`,`no`,`collect_type`,`compute_rule`) VALUES (
+		#{mr.mesureId},#{mr.upper},#{mr.challenge},#{mr.target},#{mr.lower},#{mr.createTime},#{mr.updateTime},#{mr.no},#{mr.collectType},#{mr.computeRule})
+	</insert>
+
+    <!--新增team_measure_range-->
+    <insert id="insertByTeamId">
+		REPLACE INTO `team_measure_range` (`measure_id`,`upper`,`challenge`,`target`,`lower`,`create_time`,`update_time`,`team_id`,`collect_type`,`compute_rule`) VALUES (
+		#{mr.mesureId},#{mr.upper},#{mr.challenge},#{mr.target},#{mr.lower},#{mr.createTime},#{mr.updateTime},#{mr.no},#{mr.collectType},#{mr.computeRule})
+	</insert>
+
+    <!--更新measure-->
+    <update id="upDateRangeById" parameterType="com.icss.mvp.entity.MeasureRange">
+		UPDATE `measure_range` SET `UPPER` = #{mr.upper} ,`challenge` = #{mr.challenge},`target` = #{mr.target},`lower` = #{mr.lower}, `collect_type` = #{mr.collectType},
+		`measure_id` = #{mr.mesureId} , `no` = #{mr.no},`update_time` = #{mr.updateTime}, `compute_rule` = #{mr.computeRule}
+			 WHERE id = #{mr.id}
+	</update>
+
+    <update id="updateByTeamId">
+		UPDATE `team_measure_range` SET `UPPER` = #{mr.upper} ,`challenge` = #{mr.challenge},`target` = #{mr.target},`lower` = #{mr.lower},`update_time`=#{mr.updateTime}, `collect_type` = #{mr.collectType},
+		`compute_rule` = #{mr.computeRule}
+			 WHERE id = #{mr.id}
+	</update>
+
+    <select id="queryMeasureRange" parameterType="java.lang.String" resultMap="MeasureRangeMap">
+        SELECT *
+        FROM `measure_range`
+        WHERE `no` = #{proNo} AND `measure_id` = #{measureId}
+        ORDER BY `update_time` DESC
+        LIMIT 1
+    </select>
+    <select id="queryMeasureRangeByTeamId" parameterType="java.lang.String" resultMap="TeamMeasureRangeMap">
+        SELECT *
+        FROM `team_measure_range`
+        WHERE `team_id` = #{teamId} AND `measure_id` = #{measureId}
+    </select>
+
+    <delete id="deleteMeasureRange">
+		DELETE FROM `measure_range` WHERE NO = #{proNo}
+	</delete>
+
+    <!--团队内部项目指标继承-->
+    <insert id="copyMeasureConfigByProject">
+		INSERT INTO `measure_configuration_record` (`no`,`lable_id`,`measure_ids`,`update_time`)
+		SELECT #{proNo} AS NO,`lable_id`,`measure_ids`,NOW() FROM `measure_configuration_record` WHERE NO = #{oldNo}  ORDER BY `update_time` DESC LIMIT 1
+	</insert>
+
+    <!--临时-->
+    <select id="getRecord" resultMap="Mrecord">
+        SELECT *
+        FROM `measure_configuration_record`
+    </select>
+    <update id="updateConfigRecord">
+        UPDATE `measure_configuration_record` SET `measure_ids` = #{measureIds} WHERE id  = #{id}
+    </update>
+
+    <select id="getCheckIds" resultType="java.util.HashMap">
+        SELECT
+            t.id,
+            t1.id AS copy_id
+        FROM (
+                 SELECT
+                     m.*,
+                     l.`TITLE`
+                 FROM measure m, `label` l
+                 WHERE m.id NOT IN (
+                     SELECT id
+                     FROM in_tmpl_index
+                 ) AND (m.`VERSION` IS NULL OR m.`VERSION` = '' OR m.`VERSION` IN (SELECT VERSION
+                                                                                   FROM measure
+                                                                                   WHERE lable_id = '53'))
+                       AND m.`IS_DELETE` = 0 AND l.`ID` = m.`LABLE_ID` AND l.`IS_DELETED` = 0
+             ) t LEFT JOIN (
+                               SELECT
+                                   a.*,
+                                   b.`label`,
+                                   b.`category`
+                               FROM in_tmpl_index a, in_tmpl_label b, `in_tmpl_label_index` c
+                               WHERE a.`ID` = c.`index_id` AND b.`ID` = c.`label_id`
+                           ) t1 ON t.title = t1.label AND t.category = t1.category AND t.name = t1.name
+        GROUP BY t.id
+    </select>
+</mapper>

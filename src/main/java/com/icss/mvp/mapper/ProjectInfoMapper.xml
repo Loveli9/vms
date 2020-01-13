@@ -1,0 +1,794 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icss.mvp.dao.IProjectInfoDao">
+	<resultMap id="BaseResultMap"
+		type="com.icss.mvp.entity.ProjectInfo">
+		<result column="No" property="no" jdbcType="VARCHAR" />
+		<result column="NAME" property="name" jdbcType="VARCHAR" />
+		<result column="HWPDU" property="hwpdu" jdbcType="VARCHAR" />
+		<result column="HWZPDU" property="hwzpdu" jdbcType="VARCHAR" />
+		<result column="PDU_SPDT" property="pduSpdt" jdbcType="VARCHAR" />
+		<result column="AREA" property="area" jdbcType="VARCHAR" />
+		<result column="PROJECT_TYPE" property="projectType" jdbcType="VARCHAR" />
+		<result column="TYPE" property="type" jdbcType="VARCHAR" />
+		<result column="pm" property="pm" jdbcType="VARCHAR" />
+		<result column="START_DATE" property="startDate" jdbcType="TIMESTAMP" />
+		<result column="END_DATE" property="endDate" jdbcType="TIMESTAMP" />
+		<result column="IS_OFFSHORE" property="isOffshore"	jdbcType="VARCHAR" />
+		<result column="PROJECT_STATE" property="projectState" />
+		<result column="starType" property="starType" />
+		<result column="TEAMID" property="teamId" />
+	</resultMap>
+	<resultMap id="ProjectBoard"
+		type="com.icss.mvp.entity.ProjectBoard">
+		<result column="red" property="red"/>
+		<result column="yellow" property="yellow"/>
+		<result column="green" property="green"/>
+	</resultMap>
+
+	<sql id="sql_dept_fullname_hw">
+		SELECT
+		`dept`.`dept_id`,
+		concat( d.`dept_name`, '/',
+		`dept`.`full_name` ) AS `full_name`
+		FROM
+		(
+		SELECT
+		`dept`.`dept_id` AS
+		`dept_id`,
+		`branch`.`parent_id` AS `parent_id`,
+		concat(
+		`branch`.`dept_name`, '/', `dept`.`dept_name` ) AS `full_name`,
+		`dept`.`dept_level` AS `dept_level`
+		FROM
+		( `sys_hwdept` `dept` LEFT JOIN
+		`sys_hwdept` `branch` ON ( (
+		`branch`.`dept_id` = `dept`.`parent_id` )
+		) )
+		WHERE
+		( ( `dept`.`ignoe` = 0 ) AND ( `branch`.`ignoe` = 0 ) )
+		AND
+		`dept`.`dept_level` = 3
+		) dept
+		LEFT JOIN sys_hwdept d ON
+		dept.`parent_id` = d.`dept_id`
+		WHERE
+		d.ignoe = 0
+	</sql>
+	<sql id="sql_dept_fullname_op">
+		SELECT
+		`dept`.`dept_id`,
+		concat( d.`DEPT_NAME`, '/',
+		`dept`.`full_name` ) AS `full_name`
+		FROM
+		(
+		SELECT
+		`dept`.`dept_id` AS
+		`dept_id`,
+		`branch`.`PARENT_DEPT_ID` AS `parent_id`,
+		concat(
+		`branch`.`dept_name`, '/', `dept`.`dept_name` ) AS `full_name`,
+		`dept`.`dept_level` AS `dept_level`
+		FROM
+		( `op_department` `dept` LEFT
+		JOIN `op_department` `branch` ON ( (
+		`branch`.`DEPT_ID` =
+		`dept`.`PARENT_DEPT_ID` ) ) )
+		WHERE
+		( ( `dept`.`ENABLE` = 1 ) AND (
+		`branch`.`ENABLE` = 1 ) )
+		AND `dept`.`dept_level` = 4
+		) dept
+		LEFT JOIN
+		op_department d ON dept.`parent_id` = d.`DEPT_ID`
+		WHERE
+		d.`ENABLE` = 1
+	</sql>
+
+	<sql id="sql_column_project">
+		`p`.`NO` AS `No`,
+		`p`.`NAME` AS `NAME`,
+		`p`.`HWPDU` AS `HWPDU`,
+		`p`.`HWZPDU` AS `HWZPDU`,
+		`p`.`PDU_SPDT` AS `PDU_SPDT`,
+		`p`.`BU` AS `BU`,
+		`p`.`PDU` AS `PDU`,
+		`p`.`DU` AS `DU`,
+		`p`.`AREA` AS `AREA`,
+		`p`.`TYPE` AS `TYPE`,
+		`p`.`PROJECT_TYPE` AS `PROJECT_TYPE`,
+		`p`.`START_DATE` AS `START_DATE`,
+		`p`.`END_DATE` AS `END_DATE`,
+		`p`.`PROJECT_STATE` AS `PROJECT_STATE`,
+		`p`.`IS_OFFSHORE` AS `IS_OFFSHORE`,
+	</sql>
+
+	<select id="countByClient" parameterType="Map"
+		resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM
+		project_info p
+		<if test='client != null and client == "1"'>
+			LEFT JOIN (
+			<include refid="sql_dept_fullname_op" />
+			) d ON concat( `p`.`BU`, '/', `p`.`PDU`, '/', `p`.`DU` ) =
+			d.full_name
+		</if>
+		<if test='client == null or client != "1"'>
+			LEFT JOIN (
+			<include refid="sql_dept_fullname_hw" />
+			) d ON concat( `p`.`HWPDU`, '/', `p`.`HWZPDU`, '/', `p`.`PDU_SPDT` )
+			= d.full_name
+		</if>
+		LEFT JOIN tbl_area a ON a.area_name = p.AREA
+		<if test="manager != null and manager != ''">
+			LEFT JOIN (SELECT `NO`,GROUP_CONCAT(`NAME` ,' ') as `pm`
+			from
+			`project_member` group by `NO`) m
+			ON m.`NO` = p.`NO`
+		</if>
+		<if test="star != null and star != ''">
+			LEFT JOIN star_rating s ON s.`NO` = p.`NO`
+		</if>
+		WHERE
+		1 = 1
+		<if test="name != null and name != ''">
+			AND `p`.NAME like concat('%', #{name} ,'%')
+		</if>
+		<if test="manager != null and manager != ''">
+			AND `m`.pm like concat('%', #{manager} , '%')
+		</if>
+		<if test="areas != null and areas.size() != 0">
+			AND `a`.area_code in
+			<foreach collection="areas" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="status != null and status.size() != 0">
+			<choose>
+				<when test="status.size() == 1">
+					AND `p`.PROJECT_STATE =
+				</when>
+				<otherwise>
+					AND `p`.PROJECT_STATE IN
+				</otherwise>
+			</choose>
+			<foreach collection="status" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="depts != null and depts.size() != 0">
+			AND `d`.`dept_id` IN
+			<foreach collection="depts" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+
+		;
+	</select>
+
+	<select id="queryByClient" parameterType="Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="sql_column_project" />
+		`a`.`area_code` AS `areaCode`,
+		<if test="userName != null and userName != ''">
+			x.`id` as isFavorite,
+		</if>
+		<if test="star != null and star != ''">
+			s.level as starType,
+		</if>
+		substring_index( `m`.`pm`, ' ', 1 ) AS `pm`
+		FROM
+		project_info p
+		<if test='client != null and client == "1"'>
+			LEFT JOIN (
+			<include refid="sql_dept_fullname_op" />
+			) d ON concat( `p`.`BU`, '/', `p`.`PDU`, '/', `p`.`DU` ) =
+			d.full_name
+		</if>
+		<if test='client == null or client != "1"'>
+			LEFT JOIN (
+			<include refid="sql_dept_fullname_hw" />
+			) d ON concat( `p`.`HWPDU`, '/', `p`.`HWZPDU`, '/', `p`.`PDU_SPDT` )
+			= d.full_name
+		</if>
+		<if test="userName != null and userName != ''">
+			LEFT JOIN user_favorite_project x ON p.`NO` = x.project_id
+			and
+			x.user_id=#{userName}
+		</if>
+		LEFT JOIN tbl_area a ON a.area_name = p.AREA
+		LEFT JOIN (SELECT
+		`NO`,GROUP_CONCAT(`NAME` ,' ') as `pm` from
+		`project_member` group by
+		`NO`) m
+		ON m.`NO` = p.`NO`
+		<if test="star != null and star != ''">
+			LEFT JOIN star_rating s ON s.`NO` = p.`NO`
+		</if>
+		WHERE
+		1 = 1
+		<if test="name != null and name != ''">
+			AND `p`.NAME like concat('%', #{name} ,'%')
+		</if>
+		<if test="manager != null and manager != ''">
+			AND `m`.pm like concat('%', #{manager} , '%')
+		</if>
+		<if test="star != null and star != ''">
+			AND `s`.level = #{star}
+		</if>
+		<if test="areas != null and areas.size() != 0">
+			AND `a`.area_code in
+			<foreach collection="areas" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="status != null and status.size() != 0">
+			<choose>
+				<when test="status.size() == 1">
+					AND `p`.PROJECT_STATE =
+				</when>
+				<otherwise>
+					AND `p`.PROJECT_STATE IN
+				</otherwise>
+			</choose>
+			<foreach collection="status" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="depts != null and depts.size() != 0">
+			AND `d`.`dept_id` IN
+			<foreach collection="depts" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="sort!=null and sort!='' and order!=null and order!=''">
+			order by ${order} ${sort}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+		;
+	</select>
+
+	<select id="queryStarRating" parameterType="Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="sql_column_project" />
+		s.level as starType
+		FROM
+		project_info p
+		<if test='client != null and client == "1"'>
+			LEFT JOIN (
+			<include refid="sql_dept_fullname_op" />
+			) d ON concat( `p`.`BU`, '/', `p`.`PDU`, '/', `p`.`DU` ) =
+			d.full_name
+		</if>
+		<if test='client == null or client != "1"'>
+			LEFT JOIN (
+			<include refid="sql_dept_fullname_hw" />
+			) d ON concat( `p`.`HWPDU`, '/', `p`.`HWZPDU`, '/', `p`.`PDU_SPDT` )
+			= d.full_name
+		</if>
+		LEFT JOIN tbl_area a ON a.area_name = p.AREA
+		RIGHT JOIN star_rating s
+		ON s.`NO` = p.`NO`
+		WHERE
+		1 = 1
+		<if test="areas != null and areas.size() != 0">
+			AND `a`.area_code in
+			<foreach collection="areas" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="depts != null and depts.size() != 0">
+			AND `d`.`dept_id` IN
+			<foreach collection="depts" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		;
+	</select>
+
+	<select id="queryFavoriteProject"
+		parameterType="java.lang.String" resultMap="BaseResultMap">
+		<!-- SELECT m.`NO`,substring_index( `m`.`NAME`, ' ', 1 ) AS `pm`, p.START_DATE 
+			AS `START_DATE`,p.END_DATE AS END_DATE, p.NAME from `project_member` m, project_info 
+			p where p.no=m.no and p.no in (select project_id from user_favorite_project 
+			where user_id=#{userID}) group by m.`NO` -->
+		SELECT p.`NO`,substring_index( `p`.`PM`, ' ', 1 ) AS `pm`,
+		p.START_DATE AS `START_DATE`,p.END_DATE AS END_DATE, p.NAME from
+		project_info p where p.no in (select project_id from
+		user_favorite_project where user_id=#{userID})
+	</select>
+
+	<insert id="addFavoriteProject" parameterType="Map">
+		replace into
+		user_favorite_project(user_id, project_id)
+		VALUES(#{userID},#{proNo})
+	</insert>
+
+	<delete id="deleteFavoriteProject" parameterType="Map">
+		delete
+		from
+		user_favorite_project where user_id=#{userID} and
+		project_id=#{proNo}
+	</delete>
+
+	<select id="getSubNoByBu" parameterType="java.lang.String"
+		resultType="Map">
+		select PDU,group_concat(NO) as list
+		from project_info where
+		BU=#{Bu} and PROJECT_STATE = '在行' group
+		by PDU
+
+	</select>
+
+	<select id="getSubNoByPdu" parameterType="java.lang.String"
+		resultType="Map">
+		select DU,group_concat(NO) as list
+		from project_info where
+		PDU=#{Pdu} and PROJECT_STATE = '在行' group
+		by DU
+	</select>
+
+	<select id="getSubNoByHwpdu" parameterType="java.lang.String"
+		resultType="Map">
+		select HWZPDU,group_concat(NO) as list
+		from project_info
+		where HWPDU=#{Hwpdu} and PROJECT_STATE = '在行' group
+		by
+		HWZPDU
+	</select>
+
+	<select id="getSubNoByHwzpdu" parameterType="java.lang.String"
+		resultType="Map">
+		select PDU_SPDT,group_concat(NO) as list
+		from project_info
+		where HWZPDU=#{Hwzpdu} and PROJECT_STATE = '在行' group
+		by
+		PDU_SPDT
+	</select>
+
+	<select id="getNoByDu" parameterType="java.lang.String"
+		resultType="Map">
+		select DU,group_concat(NO) as list
+		from project_info where
+		DU=#{Du} and PROJECT_STATE = '在行' group
+		by DU
+	</select>
+	<select id="getNoBySpdt" parameterType="java.lang.String"
+		resultType="Map">
+		select PDU_SPDT,group_concat(NO) as list
+		from project_info
+		where PDU_SPDT=#{Pduspdt} and PROJECT_STATE = '在行' group
+		by PDU_SPDT
+	</select>
+
+    <select id="getNoByName" resultType="java.lang.String">
+		SELECT NO FROM `project_info` WHERE NAME = #{name}
+	</select>
+
+	<select id="countProject" parameterType="Map"
+		resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM
+		project_info p
+		<if test="userName != null and userName != ''">
+			LEFT JOIN user_favorite_project x ON p.`NO` = x.project_id
+			and
+			x.user_id=#{userName}
+		</if>
+		<if test="star != null and star != ''">
+			LEFT JOIN star_rating s ON s.`NO` = p.`NO`
+		</if>
+		WHERE
+		1 = 1
+		<include refid="sql_where" />
+	</select>
+
+	<select id="queryProject" parameterType="Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="sql_column_project" />
+		<if test="userName != null and userName != ''">
+			x.`id` as isFavorite,
+		</if>
+		`p`.PM AS `pm`
+		FROM
+		project_info p
+		<if test="userName != null and userName != ''">
+			LEFT JOIN user_favorite_project x ON p.`NO` = x.project_id
+			and
+			x.user_id=#{userName}
+		</if>
+		<if test="star != null and star != ''">
+			LEFT JOIN star_rating s ON s.`NO` = p.`NO`
+		</if>
+		WHERE
+		1 = 1
+		<include refid="sql_where" />
+		<if test="sort!=null and sort!='' and order!=null and order!=''">
+			order by ${order} ${sort}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryProjectInfo" parameterType="Map"
+		resultMap="BaseResultMap">
+		SELECT
+		<include refid="sql_column_project" />
+		`p`.PM AS `pm`
+		FROM
+		project_info p
+		WHERE p.TEAMID=#{teamId}
+		<include refid="sql_where" />
+		<if test="sort!=null and sort!='' and order!=null and order!=''">
+			order by ${order} ${sort}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<sql id="sql_where">
+		<if test="name != null and name != ''">
+			AND `p`.NAME like concat('%', #{name} ,'%')
+		</if>
+		<if test="manager != null and manager != ''">
+			AND `p`.PM like concat('%', #{manager} , '%')
+		</if>
+		<if test="star != null and star != ''">
+			AND `s`.level = #{star}
+		</if>
+		<if test="areas != null and areas.size() != 0">
+			AND `p`.AREAID in
+			<foreach collection="areas" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="status != null and status.size() != 0">
+			AND `p`.PROJECT_STATE IN
+			<foreach collection="status" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="hwpduId != null and hwpduId.size() != 0">
+			AND `p`.`HWPDUID` IN
+			<foreach collection="hwpduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="hwzpduId != null and hwzpduId.size() != 0">
+			AND `p`.`HWZPDUID` IN
+			<foreach collection="hwzpduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="pduSpdtId != null and pduSpdtId.size() != 0">
+			AND `p`.`PDU_SPDTID` IN
+			<foreach collection="pduSpdtId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="buId != null and buId.size() != 0">
+			AND `p`.`BUID` IN
+			<foreach collection="buId" item="item" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="pduId != null and pduId.size() != 0">
+			AND `p`.`PDUID` IN
+			<foreach collection="pduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="duId != null and duId.size() != 0">
+			AND `p`.`DUID` IN
+			<foreach collection="duId" item="item" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+
+	<select id="getProjectNameByNo" parameterType="String"
+		resultType="String">
+		SELECT NAME
+		FROM project_info
+		WHERE NO = #{noId}
+	</select>
+	<select id="getProjectNoByName" parameterType="String"
+		resultType="String">
+		SELECT NO
+		FROM project_info
+		WHERE NAME = #{name}
+	</select>
+
+	<select id="getProjectByPo" resultMap="BaseResultMap">
+		SELECT * FROM
+		`project_info` WHERE NAME = #{proName}
+	</select>
+
+	<select id="getNO" resultType="java.lang.String">
+	SELECT p.NO FROM `project_info` p
+	RIGHT JOIN
+	(SELECT pro_no FROM project_parameter_record
+	WHERE
+	DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+	parameter_id=162 AND
+	parameter_value =0) r ON r.pro_no = p.`NO`
+	WHERE p.HWZPDUID=#{bm}
+	<include refid="sql_where" />
+	</select>
+
+	<select id="getPdu" resultType="java.lang.String">
+		SELECT
+		<choose>
+			<when test='"0" == client'>
+				HWZPDU
+			</when>
+			<otherwise>
+				PDU
+			</otherwise>
+		</choose>
+		FROM `project_info`
+		WHERE PROJECT_STATE = '在行'
+		<choose>
+			<when test='"0" == client'>
+				AND HWZPDUID=#{bm}
+				GROUP BY HWZPDU
+			</when>
+			<otherwise>
+				AND PDUID=#{bm}
+				GROUP BY PDU
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getNoPD" resultType="java.lang.String">
+		SELECT HWZPDUID FROM
+		`project_info` WHERE HWPDUID='32' GROUP BY HWZPDUID
+	</select>
+
+	<select id="getPduspt" resultType="java.util.HashMap">
+		SELECT
+		<choose>
+			<when test='"0" == client'>
+				p.PDU_SPDT,p.PDU_SPDTID
+			</when>
+			<otherwise>
+				p.DU,p.DUID
+			</otherwise>
+		</choose>
+		FROM `project_info` p
+		WHERE p.PROJECT_STATE = '在行'
+		<!--<include refid="sql_where" />-->
+		<choose>
+			<when test='"0" == client'>
+				AND p.HWZPDUID=#{bm}
+				GROUP BY p.PDU_SPDT
+			</when>
+			<otherwise>
+				AND p.PDUID=#{bm}
+				GROUP BY p.DU
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getPduspt1" resultType="java.lang.String">
+		SELECT PDU_SPDT FROM
+		`project_info` WHERE PDU_SPDTID=#{pduspdt} GROUP BY
+		PDU_SPDT
+	</select>
+	<select id="getState" resultType="java.lang.String">
+     	<![CDATA[
+    		SELECT project_status FROM `project_review` WHERE    	
+    		DATE_FORMAT(statistical_time,'%Y-%m-%d')=#{date} AND  pro_no= #{proNo} and project_status!=0
+    	   ]]>
+	</select>
+	<select id="getNo1" resultType="java.lang.String">
+		SELECT pro_no FROM `project_review` WHERE pro_no IN
+		<foreach collection="no" item="no" separator="," open="("
+			close=")">
+			#{no}
+		</foreach>
+		GROUP BY pro_no
+	</select>
+
+	<select id="getNOByPduspt" resultType="java.lang.String">
+		SELECT p.NO FROM
+		`project_info` p
+		WHERE p.PROJECT_STATE = '在行'
+		<choose>
+			<when test='"0" == client'>
+				AND p.PDU_SPDTID=#{bm1}
+			</when>
+			<otherwise>
+				AND p.DUID=#{bm1}
+			</otherwise>
+		</choose>
+		<!--<include refid="sql_where" />-->
+	</select>
+
+	<select id="getStateNumber" resultType="ProjectBoard">
+		select
+		<![CDATA[ 
+			ifnull(SUM(project_status<70 AND project_status!=-1),0) AS red,
+			ifnull(SUM((project_status BETWEEN 70 AND 80) AND project_status != 80),0) AS yellow,
+			ifnull(SUM(project_status>=80),0) AS green
+	 	]]> 
+ 		FROM 
+		(SELECT * FROM `project_review` pr
+		,project_info t
+		WHERE pr.`pro_no`=t.`NO` AND t.PROJECT_STATE = '在行' ) AS p
+		 WHERE
+		DATE_FORMAT(p.statistical_time,'%Y-%m-%d')=#{date}
+		and p.pro_no in
+		<foreach collection="no" item="no" separator="," open="("
+			close=")">
+			#{no}
+		</foreach> 
+	</select>
+
+	<select id="getTwoWeekState" resultType="ProjectBoard">
+	SELECT
+	<![CDATA[	
+		 ifnull(SUM(rps1<70 and rps1!=-1 AND rps2<70 and rps2!=-1),0) as red,
+		 ifnull(SUM(rps1>=70 AND rps1<80 AND rps2>=70 AND rps2<80),0) as yellow
+    ]]>
+	FROM
+	(SELECT
+	project_status AS rps2 ,pro_no
+	FROM `project_review`
+	WHERE DATE_FORMAT(statistical_time, '%Y-%m-%d') = #{month}
+	) r1
+	INNER JOIN
+	(SELECT
+	project_status AS rps1 ,pro_no
+	FROM `project_review`
+	WHERE DATE_FORMAT(statistical_time, '%Y-%m-%d') = #{month1}
+	) r2 ON r2.pro_no = r1.pro_no
+	RIGHT JOIN
+   (SELECT pro_no FROM project_parameter_record
+    WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{month} AND
+    parameter_id=162 AND parameter_value =0) r ON r.pro_no = r2.pro_no
+	where r2.pro_no IN
+		<foreach collection="no" item="no" separator="," open="("
+			close=")">
+			#{no}
+		</foreach>
+	</select>
+	<select id="queryEffectiveProjects" resultMap="BaseResultMap">
+		SELECT
+		<include refid="sql_column_project" />
+		`p`.PM AS `pm`
+		FROM
+			(SELECT `NO`
+			FROM
+			code_gain_type
+			WHERE PARAMETER_ID =162 AND `TYPE`=0) c
+		inner join project_info p  on c.`NO` = p.`NO` 
+		where p.`PROJECT_STATE` = '在行' 
+	</select>
+	<!-- 上线项目数 -->
+	<select id="getProjectsInline" resultType="java.util.HashMap">
+				SELECT * FROM 
+		(SELECT
+			COUNT(DISTINCT s.`NO` ) AS lxNum
+		FROM
+			`project_schedule_plan` s 
+		LEFT JOIN `schedule_plan` l ON s.`id` = l.`project_schedule_id`
+		LEFT JOIN `project_info` p ON p.`NO` = s.`NO`
+		WHERE
+			l.`schedule_type` = 0
+		AND DATE_FORMAT(
+			l.`actual_finish_date`,
+			'%Y-%m'
+		) = DATE_FORMAT(
+			DATE_SUB(CURDATE(), INTERVAL 1 MONTH),
+			'%Y-%m'
+		)
+		AND p.`PROJECT_STATE` = '在行' AND s.`is_deleted` = 0 AND l.`is_deleted` = 0) a,
+		(SELECT
+			COUNT(DISTINCT s.`NO` ) AS jxNum
+		FROM
+			`project_schedule_plan` s 
+		LEFT JOIN `schedule_plan` l ON s.`id` = l.`project_schedule_id`
+		LEFT JOIN `project_info` p ON p.`NO` = s.`NO`
+		WHERE
+			l.`schedule_type` = 1
+		AND DATE_FORMAT(
+			l.`actual_finish_date`,
+			'%Y-%m'
+		) = DATE_FORMAT(
+			CURDATE(),  '%Y-%m'  
+		)
+		AND p.`PROJECT_STATE` = '关闭' AND s.`is_deleted` = 0 AND l.`is_deleted` = 0) b
+		<!-- (SELECT COUNT(*) AS inLinePro FROM `project_info` WHERE `PROJECT_STATE` = '在行') c -->
+	</select>
+	
+	<!-- 完成采集项目数 -->
+	<select id="getReleasePro" resultType="java.util.HashMap">
+		<!-- SELECT COUNT(c.`NO`) AS inline, COUNT(r.`pro_no`) AS excute
+		from
+			(
+			SELECT t.`NO`
+				FROM code_gain_type t 
+			WHERE t.PARAMETER_ID =162 AND t.`TYPE`=0 )
+			 c 
+			LEFT JOIN 
+			 (
+			SELECT `pro_no`
+			FROM 
+			 `project_review`
+			WHERE 	DATE_FORMAT(`statistical_time`,'%Y-%m-%d')= #{date})
+			  r ON c.`NO` = r.`pro_no` -->
+		SELECT
+		COUNT(c.`NO`) AS inline,
+		COUNT(r.`pro_no`) AS excute
+		FROM (
+		SELECT t.`NO`
+		FROM code_gain_type t
+		WHERE t.PARAMETER_ID = 162
+		AND t.`TYPE` = 0) c
+		LEFT JOIN (
+		SELECT `pro_no`
+		FROM `project_review`
+		WHERE DATE_FORMAT(`statistical_time`,'%Y-%m-%d') = #{date}) r
+		ON c.`NO` = r.`pro_no`
+		LEFT JOIN project_info p
+		ON c.NO = p.NO
+		WHERE p.`HWZPDUID` IS NOT NULL   
+	</select>
+	
+	<select id="queryDoneProjects" resultType="java.lang.Integer">
+		SELECT COUNT(*) AS addNum FROM
+		(SELECT * FROM `project_review` p LEFT JOIN `project_info` l ON p.`pro_no` = l.`NO` WHERE l.`PROJECT_STATE` = '在行' 
+		AND DATE_FORMAT(p.`statistical_time`,'%Y-%m-%d') = #{courrent}
+		GROUP BY p.`pro_no`) s
+	</select>
+	<select id="getTotalProNums"  parameterType="Map" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM project_info 
+		WHERE `PROJECT_STATE` = '在行'
+		<if test="hw != null and hw != '' and type == 2">
+       		AND  `HWPDUID` IN ${hw}
+		</if>
+		<if test="op != null and op != '' and type == 1">
+       	    AND `BUID` IN ${op}
+		</if>
+	</select>
+	
+	
+	<select id="checkboxOnclickData" resultType="java.util.HashMap">
+	    SELECT t1.no,t1.NAME,t1.PM
+	    FROM `project_info` t1
+	    RIGHT JOIN project_parameter_record r ON r.pro_no = t1.no
+	    WHERE DATE_FORMAT(r.create_time, '%Y-%m-%d') = #{month} AND
+	    r.parameter_id=162 AND r.parameter_value =0
+	    AND t1.no IN ${proNos}
+	    ORDER BY t1.no
+	</select>
+
+	<select id="getNameByNo" parameterType="java.lang.String" resultType="java.lang.String">
+	   select p.NAME from project_info p  where p.NO = #{no}
+	</select>
+</mapper>

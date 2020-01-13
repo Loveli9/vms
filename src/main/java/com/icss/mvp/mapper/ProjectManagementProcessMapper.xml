@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectManagementProcessDao">
+
+    <select id="measures" resultType="java.util.HashMap">
+        <!-- 		select m.ID,m.name,m.UNIT,m.UPPER,m.LOWER,m.TARGET,m.CHALLENGE,m.CATEGORY,m.COLLECT_TYPE from measure m  -->
+        <!-- 		where m.LABLE_ID=77 and m.IS_DELETE=0 order by m.CATEGORY -->
+        SELECT iti.ID, iti.name, iti.UNIT, iti.UPPER, iti.LOWER, iti.TARGET, iti.CHALLENGE, itl.category AS CATEGORY,
+        iti.COLLECT_TYPE
+        FROM in_tmpl_label_index itli
+        LEFT JOIN in_tmpl_label itl ON itli.label_id = itl.ID
+        LEFT JOIN in_tmpl_index iti ON itli.index_id = iti.ID
+        WHERE itli.label_id IN (340, 345, 353, 372)
+        AND iti.IS_DELETE = 0
+        ORDER BY itl.category, iti.ID
+    </select>
+
+    <select id="categorys" resultType="java.util.HashMap">
+        <!-- select m.CATEGORY,count(*) as num from measure m where m.LABLE_ID=77 and m.IS_DELETE=0
+        group by m.CATEGORY order by m.CATEGORY -->
+        SELECT itl.category AS CATEGORY, COUNT(*) AS num
+        FROM in_tmpl_label_index itli
+        LEFT JOIN in_tmpl_label itl ON itli.label_id = itl.ID
+        LEFT JOIN in_tmpl_index iti ON itli.index_id = iti.ID
+        WHERE itli.label_id IN (340, 345, 353, 372)
+        AND iti.IS_DELETE = 0
+        GROUP BY itl.category
+        ORDER BY itl.category
+    </select>
+
+    <select id="measureRanges" parameterType="java.lang.String" resultType="java.util.HashMap">
+        <!-- select mr.measure_id,mr.upper,mr.challenge,mr.target,mr.lower,mr.collect_type
+        from measure_range mr where mr.`no`=#{proNo}
+        and mr.measure_id in(select m.ID from measure m where m.LABLE_ID=77 and m.IS_DELETE=0) -->
+        SELECT
+        mr.measure_id,
+        mr.upper,
+        mr.challenge,
+        mr.target,
+        mr.lower,
+        mr.collect_type
+        FROM measure_range mr
+        WHERE mr.`no` = #{proNo}
+        AND mr.measure_id IN (SELECT iti.ID FROM in_tmpl_label_index itli
+        LEFT JOIN in_tmpl_index iti ON itli.index_id = iti.ID
+        WHERE itli.label_id IN (340, 345, 353, 372)
+        AND iti.IS_DELETE = 0 ORDER BY iti.ID)
+    </select>
+
+    <insert id="saveModule" parameterType="com.icss.mvp.entity.QualityPlanModule">
+		insert into qualityPlan_module(no,module,moduleName) values(#{no},#{module},#{moduleName})
+	</insert>
+
+    <select id="queryModule" parameterType="java.lang.String" resultType="com.icss.mvp.entity.QualityPlanModule">
+        SELECT *
+        FROM qualityPlan_module
+        WHERE no = #{no} AND module = #{module}
+    </select>
+
+    <select id="queryModules" parameterType="java.lang.String" resultType="com.icss.mvp.entity.QualityPlanModule">
+        SELECT *
+        FROM qualityplan_module
+        WHERE `no` = #{no}
+        ORDER BY `order` ASC
+    </select>
+
+    <delete id="deleteExceltable" parameterType="java.lang.String">
+		delete from excel_table where `no`=#{no} and module=#{module}
+	</delete>
+
+    <delete id="deleteQualityplanmodule" parameterType="java.lang.String">
+		delete from qualityplan_module where `no`=#{no} and moduleName=#{moduleName}
+	</delete>
+
+    <select id="queryMeasureList" parameterType="java.lang.String" resultType="com.icss.mvp.entity.MeasureComment">
+        <!--SELECT l.labelId ,l.labelTitle,l.c_id AS measureId, m.name AS measureName,
+        m.unit AS unit, m.category AS measureCategory, r.challenge AS challenge,
+        IFNULL(r.r_upper,m.m_upper) upper, IFNULL(r.r_target,m.m_target) target,
+        IFNULL(r.r_lower,m.m_lower) lower, IFNULL(r.r_compute_rule, m.m_compute_rule) computeRule,
+        IFNULL(r.r_collect_type,m.m_collect_type) collectType
+        FROM
+        (
+        SELECT t1.MEASURE_ID AS c_id, t4.l_id AS labelId, t4.title AS labelTitle
+        FROM label_measure_config t1,(
+        SELECT t2.id, t3.ID AS l_id, t3.TITLE AS title
+        FROM project_label_config t2, label t3
+        WHERE t2.project_id = #{proNo} AND t2.label_id = t3.`ID`
+        AND t2.is_deleted = 0 AND t3.IS_DELETED = 0 ) t4
+        WHERE t1.IS_DELETED = 0 AND t1.PROJECT_LABLE_ID = t4.id
+        ) l
+        LEFT JOIN
+        (
+        SELECT rr.measure_id AS r_id, rr.upper AS r_upper, rr.target AS r_target,
+        rr.lower AS r_lower, rr.collect_type AS r_collect_type, rr.challenge, rr.compute_rule AS r_compute_rule FROM
+        (SELECT * FROM measure_range WHERE NO = #{proNo} ORDER BY measure_id, update_time DESC) rr GROUP BY measure_id
+        ) r ON l.c_id = r.r_id
+        LEFT JOIN
+        (
+        SELECT ID AS m_id, name, UNIT AS unit, CATEGORY AS category,UPPER AS
+        m_upper, TARGET AS m_target, LOWER AS m_lower,
+        COLLECT_TYPE AS m_collect_type, COMPUTE_RULE AS m_compute_rule
+        FROM measure
+        ) m ON l.c_id = m.m_id -->
+        SELECT
+        a.name AS measureName,
+        a.unit AS unit,
+        a.`ID` AS measureId,
+        a.labelId,
+        IF(b.id IS NULL, a.`CHALLENGE`, b.`CHALLENGE`) AS challenge,
+        IF(b.id IS NULL, a.`UPPER`, b.UPPER) AS UPPER,
+        IF(b.id IS NULL, a.`TARGET`, b.`TARGET`) AS target,
+        IF(b.id IS NULL, a.`LOWER`, b.`LOWER`) AS LOWER,
+        IF(b.id IS NULL, a.`COMPUTE_RULE`, b.`COMPUTE_RULE`) AS computeRule,
+        IF(b.id IS NULL, a.`COLLECT_TYPE`, b.`COLLECT_TYPE`) AS collectType,
+        a.`label` AS labelTitle,
+        a.`category` AS measureCategory
+        FROM (
+        SELECT
+        a.*,
+        b.`label`,
+        b.`category`,
+        b.id AS labelId
+        FROM `in_tmpl_index` a, `in_tmpl_label`
+        b, `in_tmpl_label_index` c,
+        (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(a.measure_ids, ',', b.help_topic_id + 1), ',', -1) AS measure_id
+        FROM (SELECT measure_ids
+        FROM `measure_configuration_record`
+        WHERE NO = #{proNo}
+        ORDER BY
+        `update_time` DESC
+        LIMIT 1) a
+        LEFT JOIN mysql.help_topic b ON b.help_topic_id &lt;
+        (LENGTH(a.measure_ids) -
+        LENGTH(REPLACE(a.measure_ids, ',', '')) + 1)
+        ) t1
+        WHERE a.`ID` = c.`index_id` AND b.`ID` = c.`label_id` AND a.id = t1.measure_id
+        GROUP BY a.`ID`) a LEFT JOIN
+        (SELECT *
+        FROM (SELECT *
+        FROM `measure_range`
+        WHERE `no` = #{proNo}
+        ORDER BY `update_time` DESC) s
+        GROUP BY
+        s.measure_id) b ON b.`measure_id` = a.id
+    </select>
+
+</mapper>

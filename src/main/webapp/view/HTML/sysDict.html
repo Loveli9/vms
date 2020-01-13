@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/ztree/zTreeStyle.css" type="text/css"/>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css"/>
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css"/>
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../resources/ztree/jquery.ztree.all.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+
+    <!-- 引入拖拽插件 -->
+    <link href="../../resources/bootstrap/bootstrap-table-reorder-rows.min.css" rel="stylesheet"/>
+    <script src="../../resources/bootstrap/jquery.tablednd.min.js"></script>
+    <script src="../../resources/bootstrap/bootstrap-table-reorder-rows.min.js"></script>
+
+    <script type="text/javascript" src="js/sysDict.js"></script>
+    <style type="text/css">
+        .div-branch {
+            float: left;
+            width: 45%;
+            padding-top: 5px;
+            padding-left: 20px;
+        }
+
+        .div-detail {
+            float: left;
+            width: 52%;
+            padding-top: 5px;
+            padding-right: 20px;
+        }
+
+        .breadcrumb > .active {
+            color: #333333;
+        }
+
+        .breadcrumb {
+            background-color: white;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        .nav > li.active > a, .nav > li.active > a:focus, .nav > li.active > a:hover {
+            color: #3399ff;
+            background-color: #ffffff;
+            border-bottom: 5px #3399ff solid;
+        }
+
+        .nav > li > a:hover {
+            color: #3399ff;
+            background-color: #ffffff;
+        }
+
+        .nav > li > a {
+            color: #000000;
+            background-color: #ffffff;
+            text-decoration: none;
+        }
+
+        .navbar-nav > li > a, .navbar-nav > li.active > a, .navbar-nav > li.active > a:focus, .navbar-nav > li.active > a:hover {
+            padding-bottom: 10px;
+        }
+
+        .table {
+            table-layout: fixed;
+        }
+    </style>
+</head>
+<body>
+<ol class="breadcrumb">
+    <li>系统</li>
+    <li class="active">数据字典</li>
+</ol>
+
+<!--类目显示区域，列表，检索，操作-->
+<div class="div-branch">
+    <div class="col-sm-3" style="padding-left: 0px;padding-right: 2px">
+        <input type="text" class="form-control" name="name"
+               id="search_entry_name" placeholder="请输入类目名称"/>
+    </div>
+    <div class="btn-group">
+        <button id="btn_search_entry" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+        </button>
+        <button id="btn_reset_entry" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+        </button>
+        <button id="btn_add_entry" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+        </button>
+        <button id="btn_edit_entry" type="button" class="btn btn-default" style=" border-radius: 0">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+        </button>
+        <button id="btn_delete_entry" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+        </button>
+    </div>
+    <table id="branch" class="table text-nowrap"></table>
+</div>
+
+<!--条目显示区域，选定类目后显示其下所有条目-->
+<div class="div-detail" style="padding-left: 30px;">
+    <div class="col-sm-3" style="padding-left: 0px;padding-right: 2px">
+        <input type="text" class="form-control" name="name"
+               id="search_item_name" placeholder="请输入key"/>
+        <!--<input type="text" name="entryId" id="entryId" style="display: none"/>-->
+    </div>
+    <div class="btn-group">
+        <button id="btn_search_item" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+        </button>
+        <button id="btn_reset_item" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+        </button>
+        <button id="btn_add_item" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+        </button>
+        <button id="btn_edit_item" type="button" class="btn btn-default" style=" border-radius: 0">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+        </button>
+        <button id="btn_delete_item" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+        </button>
+    </div>
+    <table id="detail" data-use-row-attr-func="true"
+           data-reorderable-rows="true" class="table text-nowrap"></table>
+</div>
+
+<!-- 类目详情 -->
+<div class="modal fade" id="entryDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 60px;width:800px;margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;line-height: 100%;padding: 16px;">
+                <h4 id="entryHeader" class="modal-title" style="display: inline; margin-right: 310px;">新增类目</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <form id="entryDetailForm" method="post" class="form-horizontal">
+                    <input style="display: none" name="id" id="id"/>
+
+                    <div class="form-group">
+                        <label for="name" class="col-sm-2 control-label"><span
+                                style="color: red;padding-right: 5px;">*</span>名称</label>
+
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="name" id="name" placeholder="请输入名称"/>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <label for="code" class="col-sm-2 control-label"><span
+                                style="color: red;padding-right: 5px;">*</span>编码</label>
+
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="code" id="code" placeholder="请输入编码"/>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">备注</label>
+
+                        <div class="col-sm-8">
+                            <textarea class="form-control" name="description" id="description" rows="3"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group" style="float: right;margin: 0;">
+                    <div class="col-sm-2" style="width:100px">
+                        <button type="button" class="btn btn-primary btn-block" id="btnEntryAction">保存</button>
+                    </div>
+                    <div class="col-sm-2" style="width:100px">
+                        <button type="button" class="btn btn-default btn-block" id="btnEntryReturn">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 条目详情 -->
+<div class="modal fade" id="itemDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 60px;width:800px;margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;line-height: 100%;padding: 16px;">
+                <h4 id="itemHeader" class="modal-title" style="display: inline; margin-right: 310px;">新增条目</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <form id="itemDetailForm" method="post" class="form-horizontal">
+                    <input style="display: none" name="id" id="itemId"/>
+                    <input style="display: none" name="entryId" id="parentId"/>
+
+                    <div class="form-group">
+                        <label for="key" class="col-sm-2 control-label"><span
+                                style="color: red;padding-right: 5px;">*</span>键名</label>
+
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" name="key" id="key" placeholder="请输入键名"/>
+                        </div>
+                        <label for="code" class="col-sm-2 control-label"><span
+                                style="color: red;padding-right: 5px;">*</span>键值</label>
+
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="value" id="value" placeholder="请输入键值"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group" style="float: right;margin: 0;">
+                    <div class="col-sm-2" style="width:100px">
+                        <button type="button" class="btn btn-primary btn-block" id="btnItemAction">保存</button>
+                    </div>
+                    <div class="col-sm-2" style="width:100px">
+                        <button type="button" class="btn btn-default btn-block" id="btnItemReturn">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

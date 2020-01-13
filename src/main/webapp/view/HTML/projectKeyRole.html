@@ -1,0 +1,545 @@
+﻿﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>可视化度量平台</title>
+	<link rel="stylesheet" href="../../resources/ztree/zTreeStyle.css" type="text/css" />
+	<link rel="stylesheet" type="text/css" href="../../resources/bootstrap/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="../../resources/bootstrap/bootstrap-switch.min.css" />
+	<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/Icp-ci-Input.css" type="text/css" />
+	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css"/>
+	<script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+	<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+	<link rel="stylesheet" href="../../resources/css/jquery.orgchart.css" type="text/css" />
+
+	<!-- 消息提示插件 -->
+	<script type="text/javascript" src="js/toastr.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+	<script type="text/javascript" src="js/echarts.common.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+	<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-switch.min.js"></script>
+
+	<!--<script type="text/javascript" src="js/label-measure.js"></script>-->
+	<script type="text/javascript" src="../../resources/ztree/jquery.ztree.all.min.js"></script>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/css/style.css" type="text/css" />
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+	<script src="js/extendPagination.js"></script>
+	<script type="text/javascript" src="js/projectKeyRole.js"></script>
+	<script type="text/javascript" src="js/comm/fishBone.js"></script>
+	<style>
+		.trtable th{
+			text-algin:center;
+			font-size:12px;
+			color:#000;
+		}
+		.change-chart table {
+			table-layout: fixed;
+		}
+		.change-chart table.data-table tbody td{
+			line-height: 16px;
+			white-space:nowrap;
+			overflow:hidden;
+			text-overflow: ellipsis;
+		}
+		.change-chart table.data-table thead td {
+			line-height: 16px;
+		}
+		.demo--radio:checked + .demo--radioInput:after{background-color:#57ad68;border-radius:100%;content:"";display:inline-block;height:12px;margin:1px;width:12px}
+		.table>thead>tr>th {
+			text-align: center;
+			vertical-align: bottom;
+			border-bottom: 2px solid #ddd;
+		}
+		.trtable th {
+			text-algin: center;
+			font-size: 12px;
+			color: #000;
+		}
+		.table-a tbody>tr>td {
+			text-algin: center;
+			font-size: 12px;
+			color: #000;
+			border-bottom: 1px;
+		}
+		.table>thead {
+			background-color: #f3f7fe;
+			color: black;
+			font-size: 12px;
+		}
+		.back:hover{cursor: pointer;}
+		.fixed-table-toolbar .btn-group>.btn-group:last-child>.btn {
+			border-top-right-radius: 0px;
+			border-bottom-right-radius: 0px;
+		}
+		label{width:100px;}
+		.popup_de .popup_box{
+			width:300px;
+			height:150px;
+			font-family: '微软雅黑';
+			background-color: #fff;
+			border-radius:5px;
+			color:#333;
+		}
+		.popup_de .popup_btn{
+			display: inline-block;
+			width:100px;
+			height:30px;
+			border-radius: 3px;
+			border:1px solid #1ab394;
+			font-size:15px;
+			text-align: center;
+			line-height: 30px;
+			margin-right:15px;
+			cursor: pointer;
+		}
+		.popup_de .show_msg{
+			display: block;
+			width:100%;
+			text-align: center;
+			font-size:18px;
+			margin-top:40px;
+			margin-bottom: 20px;
+			padding:10px;
+		}
+		.popup_de .popup_close{
+			width:30px;
+			height:30px;
+			font-size:25px;
+			text-align: center;
+			display: inline-block;
+			cursor:pointer;
+			float: right;
+			border-top-right-radius: 5px;
+			line-height:30px;
+		}
+		.popup_de .popup_close:hover{
+			background-color: #1ab394;
+			color:#fff;
+		}
+		.popup_de .btn_submit{
+			background-color: #1ab394;
+			color:#fff;
+		}
+		.popup_de .btn_box{
+			text-align: center;
+		}
+		.radio input{
+			display: none;
+		}
+		.radio .radio-bg{
+			display: inline-block;
+			height: 18px;
+			width: 18px;
+			margin-right: 5px;
+			padding: 0;
+			background-color: #45bcb8;
+			border-radius: 100%;
+			vertical-align: top;
+			box-shadow: 0 1px 15px rgba(0, 0, 0, 0.1) inset, 0 1px 4px rgba(0, 0, 0, 0.1) inset, 1px -1px 2px rgba(0, 0, 0, 0.1);
+			cursor: pointer;
+			transition: all 0.2s ease;
+		}
+		.radio .radio-on{
+			display: none;
+			margin-top: 7px;
+		}
+		.radio input:checked + span.radio-on{
+			width: 10px;
+			height: 10px;
+			position: absolute;
+			border-radius: 100%;
+			background: #FFFFFF;
+			top: 4px;
+			left: 4px;
+			box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.4) inset;
+			background-image: linear-gradient(#ffffff 0, #e7e7e7 100%);
+			transform: scale(0, 0);
+			transition: all 0.2s ease;
+			transform: scale(1, 1);
+			display: inline-block;
+		}
+
+		.table {table-layout:fixed;}
+
+		.table tr td{
+			overflow: hidden;
+			text-overflow:ellipsis;
+			white-space: nowrap;
+			font-size: 12px;
+		}
+		.fixed-table-toolbar .columns label{
+			padding: 1px 0px 0px 11px;
+		}
+		.userManagerOMP-head td,.userManagerOMP-head th
+		{
+			border:1px solid #666;
+			font-size:12px;
+		}
+
+		.putUserManagerOMPOBox .pum-list{
+			height: 410px;
+			overflow-y: scroll;
+			padding-top: 10px;
+		}
+		.userHead th{
+			font-size:12px;
+			font-weight:600;
+		}
+		.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover {
+			border-bottom: 3px #3399ff solid;
+			font-weight: bold;
+			padding-top: 5px;
+			padding-bottom: 5px;
+			background-color: #eaebeb!important;
+			color: black;
+		}
+		.ztree *{
+			font-size: 16px;
+		}
+		#mytab .navbar-nav>li>a{
+			background-color: #ffffff !important;
+			line-height: 53px;
+		}
+		.main-content {
+			margin-top: 5px;
+		}
+		.btn-default {
+			margin-left: 5px !important;
+			border-radius: 4px !important;
+		}
+	</style>
+
+</head>
+<body id="main" style="">
+<div class="main-content" id="personManage">
+	<div id="mytab"style="background: #fff">
+		<input id="pmZR" value="" style="display: none;"/>
+		<div id="tab-gjjs">
+			<div id="keyName">
+				<div>
+					<div id="query-form" class=" pull-left" style="position: relative;margin-top: 10px;margin-bottom:10px;margin-left:15px;width: 600px;">
+						<div class="col-sm-3" style="padding-left: 0px; padding-right: 2px;">
+							<select class="form-control" id="position" name="position" placeholder="请选择角色">
+							</select>
+						</div>
+						<div class="col-sm-3"
+							 style="padding-left: 0px; padding-right: 2px">
+							<input type="text" class="form-control" name="roleName" id="roleName" placeholder="请输入姓名" />
+						</div>
+						<div class="col-sm-3" style="padding-left: 0px; padding-right: 2px">
+							<input type="text" class="form-control" name="zrAccount" id="zrAccount" placeholder="请输入中软工号" />
+						</div>
+						<div class="btn-group" style="top: 0px;margin-left: 0px">
+							<button id="search_btn" type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+							</button>
+							<button id="clear_btn" type="button" class="btn btn-default">
+								<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+							</button>
+						</div>
+					</div>
+					<div class="btn-group" id="toolbar"style="margin-right: 15px;">
+						<button id="btn_refresh" type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>刷新
+						</button>
+						<button id="btn_add" type="button" class="btn btn-default"style="background-color: rgb(29, 144, 253);border-color: rgb(29, 144, 253)">
+							<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						</button>
+						<button id="btn_delete" type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						</button>
+					</div>
+				</div>
+				<table id="mytabs" class="table text-nowrap"></table>
+			</div>
+		</div>
+
+		<div class="modal fade" id="iteAddPage" tabindex="-1" role="dialog"
+			 aria-labelledby="myModalLabel" aria-hidden="true"
+			 data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content"
+					 style="top: 60px; width: 800px; margin-left: -15%;">
+					<div class="modal-header"
+						 style="border-bottom-width: 5px; padding-top: 10px; padding-bottom: 10px; line-height: 100%; padding: 16px;">
+						<h4 class="modal-title" id="uploadModalLabel"
+							style="display: inline; margin-right: 310px;">新增关键角色</h4>
+					</div>
+					<div class="modal-body" style="width: 100%;">
+						<form id="addForm" method="post" class="form-horizontal">
+							<input style="" type="hidden" class="form-control" name="userid"
+								   id="userids" />
+							<div class="form-group">
+								<label for="zrAccountAdd" class="col-sm-2 control-label"><span
+										style="color: red; padding-right: 5px;">*</span>中软工号</label>
+								<div class="col-md-4">
+									<input placeholder="请输入中软工号" class="form-control" type="text"
+										   id="zrAccountAdd" name="zrAccount" />
+								</div>
+								<label for="roleNameAdd" class="col-sm-2 control-label">姓名</label>
+								<div class="col-md-4">
+									<input placeholder="请输入姓名" class="form-control" type="text"
+										   id="roleNameAdd" name="name" />
+								</div>
+							</div>
+							<!-- <div class="hr-line-dashed"></div>-->
+							<div class="form-group">
+								<label for="positionAdd" class="col-sm-2 control-label"></span>角色</label>
+								<div class="col-md-4">
+									<select class="form-control" id="positionAdd" name="position">
+									</select>
+								</div>
+								<label for="hwAccountAdd" class="col-sm-2 control-label">华为工号</label>
+								<div class="col-md-4">
+									<input placeholder="请输入华为工号" class="form-control" type="text"
+										   id="hwAccountAdd" name="hwAccount" />
+								</div>
+							</div>
+							<!-- <div class="hr-line-dashed"></div>-->
+							<div class="form-group">
+								<label for="rdpmExam" class="col-sm-2 control-label"></span>RDPM考试</label>
+								<div class="col-md-4">
+									<select class="form-control" id="rdpmExam" name="rdpmExam">
+									</select>
+								</div>
+								<label for="replyResults" class="col-sm-2 control-label"></span>答辩结果</label>
+								<div class="col-md-4">
+									<select class="form-control" id="replyResults"
+											name="replyResults">
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="proCompetence" class="col-sm-2 control-label"></span>胜任度</label>
+								<div class="col-md-4">
+									<select class="form-control" id="proCompetence"
+											name="proCompetence">
+									</select>
+								</div>
+								<label for="statusAdd" class="col-sm-2 control-label"></span>状态</label>
+								<div class="col-md-4">
+									<select class="form-control" id="statusAdd" name="status1">
+									</select>
+								</div>
+							</div>
+							<div class="form-group" style="padding-left: 170px">
+								<div class="col-sm-2 col-sm-offset-2">
+									<button type="button" class="btn btn-primary btn-block"
+											id="add_saveBtn">保存</button>
+								</div>
+								<div class="col-sm-2 col-sm-offset-1">
+									<button type="button" class="btn btn-default btn-block"
+											id="add_backBtn">返回</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="roleConfiguration" tabindex="-1"
+			 role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+			 data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content" style="top: 60px; width: 800px; margin-left: -50px;">
+					<div class="modal-header" style="border-bottom-width: 5px; padding-top: 10px; padding-bottom: 10px; line-height: 100%; padding: 16px;">
+						<h4 class="modal-title" id="uploadModalLabel" style="color: #3399ff;display: inline; margin-right: 310px;margin-top:10px;">新增角色</h4>
+						<button id="post_backBtn" type="button" class="btn btn-default" style="height:30px;margin-right:5px;float:right;color: #1ab394;border: 1px #1ab394 solid;">
+							<span class="glyphicon glyphicon-resize-small" aria-hidden="true"></span>返回
+						</button>
+						<button id="majorDuty_add" type="button" class="btn btn-default" style="height:30px;margin-right:5px;float:right;color: #1ab394;border: 1px #1ab394 solid;">
+							<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						</button>
+					</div>
+					<div class="modal-body" style="width: 100%;">
+						<form method="post" class="form-horizontal" style="width: 100%;">
+							<div class="form-group" style="width: 80%;margin-left:10%;">
+								<div id="majorDuty"></div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="modal fade" id="majorDutyAddPage" tabindex="-1"
+			 role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+			 data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content" style="top: 60px; width: 800px; margin-left: -50px;">
+					<div class="modal-header" style="border-bottom-width: 5px; padding-top: 10px; padding-bottom: 10px; line-height: 100%; padding: 16px;">
+						<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">新增角色</h4>
+					</div>
+					<div class="modal-body" style="width: 100%;">
+						<form id="addDemandName" method="post" class="form-horizontal">
+							<input style="" type="hidden" class="form-control" name="userid"
+								   id="userid" />
+							<div style="height:20px;"></div>
+							<div class="form-group">
+								<label for="positionMajorDuty" class="col-sm-2 control-label"></span>岗位</label>
+								<div class="col-md-4">
+									<select class="form-control" id="positionMajorDuty" name="position" style="width: 90%;">
+									</select>
+								</div>
+								<label for="MajorDutyDemand" class="col-sm-2 control-label" style="margin-left: -50px;">需求</label>
+								<div class="col-md-4">
+									<input placeholder="请输入需求人数" class="form-control" type="text"
+										   id="MajorDutyDemand" name="demand_number" />
+								</div>
+							</div>
+							<div style="height:20px;"></div>
+							<div class="form-group" style="padding-left: 150px">
+								<div class="col-sm-2 col-sm-offset-2">
+									<button type="button" class="btn btn-primary btn-block"
+											id="MajorDuty_saveBtn">保存</button>
+								</div>
+								<div class="col-sm-2 col-sm-offset-1">
+									<button type="button" class="btn btn-default btn-block"
+											id="MajorDuty_backBtn">返回</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="editPage" tabindex="-1" role="dialog"
+			 aria-labelledby="myModalLabel" aria-hidden="true"
+			 data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content"
+					 style="top: 60px; width: 800px; margin-left: -50px;">
+					<div class="modal-header"
+						 style="border-bottom-width: 5px; padding-top: 10px; padding-bottom: 10px; line-height: 100%; padding: 16px;">
+						<h4 class="modal-title" id="uploadModalLabel"
+							style="display: inline; margin-right: 310px;">关键角色编辑</h4>
+					</div>
+					<div class="modal-body" style="width: 100%;">
+						<form id="editForm" method="post" class="form-horizontal">
+							<input style="display: none" type="text" class="form-control"
+								   name="id" id="editId" /> <input style="display: none"
+																   type="text" class="form-control" name="proNo" id="editProNo" />
+							<div class="form-group">
+								<label class="col-sm-2 control-label" style="display: none"><span
+										style="color: red; padding-right: 5px;">*</span>项目编号</label>
+								<div class="col-sm-10">
+									<input type="text" style="display: none" disabled="disabled " class="form-control" name="no"id="editItemNo" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="editRoleName" class="col-sm-2 control-label">姓名</label>
+								<div class="col-md-4">
+									<input placeholder="请输入姓名" class="form-control" type="text"
+										   id="editRoleName" name="name" />
+								</div>
+								<label for="editZrAccount" class="col-sm-2 control-label"><span
+										style="color: red; padding-right: 5px;">*</span>中软工号</label>
+								<div class="col-md-4">
+									<input placeholder="请输入中软工号" disabled="disabled"
+										   class="form-control" type="text" id="editZrAccount"
+										   name="zrAccount" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="editPosition" class="col-sm-2 control-label"></span>角色</label>
+								<div class="col-md-4">
+									<select class="form-control" id="editPosition" name="position">
+									</select>
+								</div>
+								<label for="editHwAccount" class="col-sm-2 control-label">华为工号</label>
+								<div class="col-md-4">
+									<input placeholder="请输入华为工号" class="form-control" type="text"
+										   id="editHwAccount" name="hwAccount" />
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="editRdpmExam" class="col-sm-2 control-label"></span>RDPM考试</label>
+								<div class="col-md-4">
+									<select class="form-control" id="editRdpmExam" name="rdpmExam">
+									</select>
+								</div>
+								<label for="editReplyResults" class="col-sm-2 control-label"></span>答辩结果</label>
+								<div class="col-md-4">
+									<select class="form-control" id="editReplyResults"
+											name="replyResults">
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="editProCompetence" class="col-sm-2 control-label"></span>胜任度</label>
+								<div class="col-md-4">
+									<select class="form-control" id="editProCompetence"
+											name="proCompetence">
+									</select>
+								</div>
+								<label for="editStatus" class="col-sm-2 control-label"></span>状态</label>
+								<div class="col-md-4">
+									<select class="form-control" id="editStatus" name="Status">
+									</select>
+								</div>
+							</div>
+							<div class="form-group" style="padding-left: 170px">
+								<div class="col-sm-2 col-sm-offset-2">
+									<button type="button" class="btn btn-primary btn-block"
+											id="edit_saveBtn">保存</button>
+								</div>
+								<div class="col-sm-2 col-sm-offset-1">
+									<button type="button" class="btn btn-default btn-block"
+											id="edit_backBtn">返回</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript">
+	function check(){
+		var allcheck=document.getElementById("checkbox");
+		var othercheck=document.getElementsByName("checkbox");
+		for(var i=0;i<othercheck.length;i++){
+			if(allcheck.checked){
+				othercheck[i].checked=true;
+			}else{
+				othercheck[i].checked=false;
+			}
+		}
+	}
+
+	$(document).ready(function(){
+		var Menus = getCookie('Menulist');
+		if ("管理员" == getCookie('Currentpername') ||
+				(-1 != Menus.indexOf("-71-") &&
+						(-1 != $.inArray(getCookie('username'), getMemberAccount()) || $("#pmZR").val() == getPMZRAccountByHW()))) {
+			var tab4 = '<li tabname="tab-tdcy" class="active"><a id="tdcyinfo" onclick="Loadingtdcy()">团队成员</a></li>';
+			$("#peizhi").append(tab4);
+		}
+		if (Menus.indexOf("-72-") != -1) {
+			var tab5 = '<li tabname="tab-gjjs" id="tab_gjjs" onclick="keyNameNone()"><a href="###">关键角色</a></li>';
+			$("#peizhi").append(tab5);
+		}
+	})
+</script>
+</html>

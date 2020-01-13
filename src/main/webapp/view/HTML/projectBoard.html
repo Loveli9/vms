@@ -1,0 +1,420 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    
+      <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+	<script type="text/javascript" src="js/toastr.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>   
+	<script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="js/comm/tableComm.js"></script>
+    <script type="text/javascript" src="js/projectBoard.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <style>
+		.example {
+			width: 100%;
+			height: 300px;
+			font-size: 40px;
+			text-align: center;
+			margin: 10px auto;
+			background-color: white;
+		}
+
+		#nav {
+			width: 30px;
+			height: 65px;
+			position: fixed;
+			right: 2px;
+			top: 50%;
+			z-index: 9999;
+		}
+
+		.retop {
+			width: 30px;
+			height: 30px;
+			float: right;
+			margin-top: 2px;
+		}
+
+		.retop2 {
+			float: right;
+			margin-top: 2px;
+		}
+
+		.retop span {
+			color: white;
+		}
+
+		.trans {
+			display: none;
+			width: 54px;
+			height: 37px;
+			opacity: 0;
+			position: relative;
+			margin-top: -37px;
+			cursor: pointer;
+		}
+
+		.datagrid-view {
+			height: 840px !important;
+		}
+
+		.panel {
+			background-color: #fafafa !important;
+		}
+
+		.title {
+			height: 30px;
+			width: 40%;
+			font-size: 16px;
+			margin-left: 5%;
+			float: left;
+			margin-top: 15px;
+			font-weight: bold;
+			color: black;
+			background-color: white;
+		}
+
+		a {
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: none;
+			color: rgba(255, 255, 255, 1);
+			cursor: pointer;
+		}
+
+		.home-content {
+
+		}
+
+		.home-text {
+			color: #666;
+			font-size: 18px;
+			font-weight: 400;
+			margin: 10px 0px 10px 20px;
+		}
+
+		.home-361 {
+			float: right;
+			width: 165px;
+			height: 52px;
+			margin: 0px 20px 20px 0px;
+		}
+
+		.home-font-pro {
+			font-size: 16px;
+			color: white;
+			text-align: left;
+			line-height: 52px;
+			padding-left: 10px;
+			width: auto;
+			float: left;
+		}
+
+		.home-font-num {
+			font-size: 24px;
+			text-align: right;
+			line-height: 52px;
+			float: right;
+			color: white;
+			padding-right: 10px;
+			width: auto;
+		}
+
+		.home-font-num a {
+			color: white;
+		}
+
+		.homeSelect {
+			float: right;
+			width: 120px;
+			height: 32px;
+			margin-left: 10px;
+			margin-top: 13px;
+		}
+
+		.homeSelect .form-control {
+			border: 0 !important;
+		}
+
+		.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover {
+			color: #3399ff;
+			/*background-color: #f7f8f8;*/
+			border-bottom: 5px #3399ff solid;
+		}
+
+		.nav>li>a:hover {
+			color: #3399ff;
+			/*background-color: #f7f8f8;*/
+		}
+
+		.nav>li>a {
+			color: #000000;
+			/*background-color: #f7f8f8;*/
+			text-decoration: none;
+		}
+
+		.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus,
+			.navbar-nav>li.active>a:hover {
+			padding-bottom: 12px;
+		}
+
+		.change-chart table.data-table tbody td {
+			line-height: 16px;
+		}
+
+		.breadcrumb>.active {
+			color: red;
+		}
+
+		.breadcrumb {
+			background-color: #fff;
+			margin-left: 30px;
+			margin-right: 50px;
+			margin-bottom: 0px;
+			padding: 8px 0px;
+		}
+
+		.imageInput {
+			background-image: url(images/banner_02.png);
+			background-repeat: no-repeat;
+			background-position: 50% 50%;
+		}
+
+		.weekSelection {
+			float: left;
+			width: 70px;
+			height: 24px;
+			margin-left: 0px;
+			border: 1px solid #3399ff;
+			font-size: 14px;
+			text-align: center;
+			line-height: 24px;
+			color: #333333;
+			cursor: pointer;
+		}
+
+		.tableCenter>thead>tr>td, .tableCenter>thead>tr>th, .tableCenter>tbody>tr>td,
+			.tableCenter>tbody>tr>th {
+			text-align: center;
+			vertical-align: middle;
+		}
+
+		.table {
+			table-layout: fixed;
+		}
+
+		.table>thead:first-child>tr:first-child>th {
+			border-top-left-radius: 0px !important;
+		}
+
+		.bootstrap-table .table:not (.table-condensed ) >tbody>tr>td {
+			border-right: 1px solid transparent !important;
+		}
+
+		.fixed-table-container {
+			border-width: 0px;
+		}
+
+		.state {
+			float: left;
+			font-size: 16px;
+			height: 37px;
+			width: 100%;
+			margin-top: 10px;
+			text-align: center;
+			position: relative;
+		}
+
+		.navigation {
+			float: left;
+			color: #000;
+			margin-left: 15px;
+			width: 62px;
+			cursor: pointer;
+			height: 29px;
+			line-height: 29px;
+		}
+
+		.curent {
+			border-bottom: 6px solid #289AF0;
+			color: #289AF0;
+			font-weight: bold;
+		}
+
+		.navigation:hover {
+			color: #289AF0;
+		}
+
+		.btn-default {
+			background: #eaebeb;
+			border: 0px;
+			padding-top: 12px;
+		}
+
+		.bootstrap-select .dropdown-toggle:focus {
+			outline: 0 none !important;
+		}
+
+		.table>thead {
+			background-color: #26AB8E;
+			color: white;
+		}
+
+		.problems {
+			float: left;
+			margin-left: 20px;
+			font-size: 14px;
+			margin-top: 15px;
+			cursor:pointer;
+		}
+
+		.selected {
+			font-weight: bold;
+			color: #289AF0;
+		}
+	</style>
+	<script>
+        $(document).on("click", "ul.navbar-nav li", function () {
+            $("ul.navbar-nav li").removeClass("active");
+            _.each($("ul.navbar-nav li"), function (tab, index) {
+                $("#" + $(tab).attr("tabname")).css('display', 'none');
+            });
+            $(this).addClass("active");
+            var id = $(this).attr("tabname");
+            $("#" + id).css('display', 'block');
+        });
+	</script>
+</head>
+<body style="line-height: 24px;background: #eaebeb;">
+    <div style="margin-left: 4%;padding-top: 1%;">
+        <div class="state" style="width:70%;">
+			<ul id="projectBoard" class="nav navbar-nav topNav" style="font-size: 16px;float: none;margin-left:0px;"></ul>
+			<!--<div class="navigation curent" style="margin-left:0px;">
+				<span>总览</span>
+			</div>
+			<div class="navigation">
+				<span>质量</span>
+			</div>
+			<div class="navigation">
+				<span>资源</span>
+			</div>
+			<div class="navigation">
+				<span>进度</span>
+			</div>
+			<div class="navigation">
+				<span>变更</span>
+			</div>
+			<div class="navigation">
+				<span>效率</span>
+			</div>
+			<div class="navigation">
+				<span>问题</span>
+			</div>
+			<div class="navigation">
+				<span>QMS</span>
+			</div>-->
+		</div>
+		<div class="homeSelect" id="select9" style="float:right;margin-right:3.5%;margin-top: 0px;">
+			<select id="currentDate" style="background: #eaebeb;border: 0px;" onchange="DateOnchange()" title="当前日期" class="selectpicker show-tick form-control" data-live-search="false">
+			</select>
+		</div>
+    </div>
+	<div id="tab-kb" style="display: none;float:left;margin-top: 0.5%;">
+		<div style="height:380px;width:45%;float:left;margin-left: 3.5%;padding-top: 2%;background: white;">
+			<div style="height: 60px;width:100%;">
+				<div style="float: left;height: 60px;width: 100px;margin-left: 50px">
+					<div style="float: left;height: 60px;width: 10px;background-color: red;"></div>
+					<div style="float: left;height: 40px;width: 80px;font-size: 20px;margin-left: 10px;">风险项目</div>
+					<div id="red" style="margin-top: 40px;margin-left:20px;font-size: 20px;"></div>
+				</div>
+				<div style="float: left;height: 60px;width: 100px;margin-left:60px;">
+					<div style="float: left;height: 60px;width: 10px;background-color: yellow;"></div>
+					<div style="float: left;height: 40px;width: 80px;font-size: 20px;margin-left: 10px;">预警项目</div>
+					<div id="yellow" style="margin-top: 40px;margin-left:20px;font-size: 20px;"></div>
+				</div>
+
+				<div style="float: left;height: 60px;width: 100px;margin-left:60px;">
+					<div style="float: left;height: 60px;width: 10px;background-color: green;"></div>
+					<div style="float: left;height: 40px;width: 80px;font-size: 20px;margin-left: 10px;">正常项目</div>
+					<div id="green" style="margin-top: 40px;margin-left:20px;font-size: 20px;"></div>
+				</div>
+			</div>
+			<div class="title">项目状态走势</div>
+			<div id="projectstate" style="border: 0px;float: left;height: 250px;width:90%;margin-left: 20px;"></div>
+		</div>
+		<div style="height:380px;width:45%;float:left;margin-left: 3%;padding-top: 2%;background: white;">
+			<div style="height: 60px;width:100%;">
+				<div style="float: left;height: 60px;width: 200px;margin-left:50px;">
+					<div style="float: left;height: 60px;width: 10px;background-color: red;"></div>
+					<div style="float: left;height: 40px;width:180px;font-size: 20px;margin-left: 10px;">连续两周风险项目</div>
+					<div id="red1" style="margin-top: 40px;margin-left:20px;font-size: 20px;"></div>
+				</div>
+				<div style="float: left;height: 60px;width: 200px;margin-left:50px;">
+					<div style="float: left;height: 60px;width: 10px;background-color: yellow;"></div>
+					<div style="float: left;height: 40px;width: 180px;font-size: 20px;margin-left: 10px;">连续两周预警项目</div>
+					<div id="yellow1" style="margin-top: 40px;margin-left:20px;font-size: 20px;"></div>
+				</div>
+			</div>
+			<div class="title">连续两周风险/预警项目走势</div>
+			<div id="divweek" style="border: 0px;height:250px;width:90%;margin-left: 20px;"></div>
+		</div>
+		<span style="float:left;font-size:20px;color:#333333;margin-left:4%;margin-top: 1%;">部门统计</span>
+		<div style="width:91%;margin-left: 3.5%;float: left;margin-top: 1%;background: white;padding:1%;padding-top:0px;margin-bottom: 30px;">
+			<div style="width:100%;">
+				<table id="mytable"></table>
+			</div>
+		</div>
+	</div>
+	<div id="problem" style="display: none;width:100%;margin-top: 4%;">
+		<div style="float: left;margin-left: 3.5%;background: #fff;width: 93%;">
+			<ul id="question">
+				<li class="problems selected"><span>总览</span></li>
+				<li class="problems"><span>361</span></li>
+				<li class="problems"><span>AAR</span></li>
+				<li class="problems"><span>质量回溯</span></li>
+				<li class="problems"><span>开工会审计</span></li>
+			</ul>
+		</div>
+		<div style="background: white;width:93%;margin-left: 3.5%;height:320px;float: left;">
+			<div id="histogram" style="width:100%;height:95%;border: 0px;"></div>
+		</div>
+		<div style="float: left;width:91%;margin-left: 3.5%;margin-top: 2%;background: white;padding:1%;margin-bottom: 30px;">
+			<div style="width:100%;">
+				<table id="zonglanAnalysis"></table>
+				<table id="StatesProblem" style="display: none;"></table>
+			</div>
+		</div>
+	</div>
+	<div id="qmsSelfchecking" style="display: none;width:100%;margin-top: 4%;">
+		<div style="float: left;width:91%;margin-left: 3.5%;background: white;padding:1%;margin-bottom: 30px;">
+			<div style="width:100%;">
+				<table id="qmsTable"></table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

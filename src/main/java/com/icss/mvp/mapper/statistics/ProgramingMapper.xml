@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.statistics.IProgramingDao">
+	<resultMap id="BaseResultMap"
+		type="com.icss.mvp.entity.capacity.WorkloadEntity">
+		<result column="author" property="author" />
+		<result column="month" property="period" />
+		<result column="type" property="fileType" />
+		<result column="val" property="weight" />
+		<result column="amount" property="amount" />
+	</resultMap>
+
+	<resultMap id="MemberMap"
+		type="com.icss.mvp.entity.capacity.AbilityEntity">
+		<result column="NAME" property="name" />
+		<result column="HW_ACCOUNT" property="account" />
+		<result column="svn_git_no" property="relatedAccount" />
+		<result column="ROLE" property="role" />
+	</resultMap>
+
+	<resultMap id="LanguageMap"
+		type="com.icss.mvp.entity.capacity.LanguageEntity">
+		<result column="name" property="fileType" />
+		<result column="val" property="weight" />
+	</resultMap>
+
+	<resultMap id="CompositeMap"
+		type="com.icss.mvp.entity.capacity.AbilityEntity">
+		<result column="author" property="relatedAccount" />
+		<!--&lt;!&ndash;association:一对一关联映射&ndash;&gt; -->
+		<!--<association property="dept" javaType="com.example.data.Dept"> -->
+		<!--<id column="id" property="id"/> -->
+		<!--<result column="dept_name" property="deptName"/> -->
+		<!--</association> -->
+
+		<!-- collection：一对多关联映射 property表示集合类型属性名称 ofType表示集合中的对象的类型 -->
+		<collection property="workload"
+			ofType="com.icss.mvp.entity.capacity.WorkloadEntity">
+			<result column="author" property="author" />
+			<result column="month" property="period" />
+			<collection property="record"
+				ofType="com.icss.mvp.entity.capacity.RecordEntity">
+				<result column="author" property="author" />
+				<result column="month" property="period" />
+				<result column="amount" property="commitLine" />
+				<result column="type" property="fileType" />
+				<result column="val" property="weight" />
+			</collection>
+		</collection>
+	</resultMap>
+
+	<resultMap id="CommitMap"
+		type="com.icss.mvp.entity.capacity.AbilityEntity">
+		<result column="author" property="relatedAccount" />
+		<collection property="workload"
+			ofType="com.icss.mvp.entity.capacity.WorkloadEntity">
+			<result column="author" property="author" />
+			<result column="month" property="period" />
+			<result column="times" property="times" />
+			<result column="last" property="lastCommitTime" />
+		</collection>
+	</resultMap>
+
+
+
+	<select id="summarizeCommitMonthly" resultMap="BaseResultMap">
+		SELECT Date_format(`COMMITTIME`, '%Y.%m') AS `month`,
+		Count(*) AS `amount`
+		FROM `svn_log`
+		WHERE `NO` = #{projectId}
+        <![CDATA[
+            AND `COMMITTIME` >= #{begin}
+            AND `COMMITTIME` < #{end}
+        ]]>
+		GROUP BY Date_format(`COMMITTIME`, '%Y.%m')
+	</select>
+
+	<select id="summarizeAmountMonthly" resultMap="BaseResultMap">
+		SELECT
+		`month`,
+		Round(Sum(s.`FILE_MODIFYNUM` * Ifnull(d.val, 0))) AS `amount`
+		FROM (SELECT f.`FILE_TYPE`,
+		f.`FILE_MODIFYNUM`,
+		f.`AUTHOR`,
+		Date_format(f.`COMMITTIME`, '%Y.%m') AS `month`
+		FROM `svn_log_file_modifynum` f
+		LEFT JOIN `svn_log` l
+		ON f.`SVN_LOG_ID` = l.`ID`
+		WHERE l.`NO` = #{projectId}
+        <![CDATA[
+            AND f.`COMMITTIME` >= #{begin}
+            AND f.`COMMITTIME` < #{end}
+        ]]>
+		<if test="codeType.size() != 0">
+			and f.`FILE_TYPE` in
+			<foreach collection="codeType" item="item" separator=","
+				open="(" close=")"> #{item}
+			</foreach>
+		</if>
+		) s
+		<!-- LEFT JOIN (SELECT b.name,b.val
+		FROM `sys_dict` a,
+		`sys_dict_item` b
+		WHERE a.`code` = 'code_type'
+		AND b.`sys_dict_id` = a.`id`) d -->
+		LEFT JOIN (select v.`key` as name, v.value as val from v_dictionary v
+		where code = 'code_type') d
+		ON d.name = s.`FILE_TYPE`
+		GROUP BY s.`month`
+	</select>
+
+	<!-- <select id="getTeamMembers" resultMap="MemberMap">
+		SELECT m.* FROM project_members_local m
+		LEFT JOIN project_info p ON
+		m.NO=p.NO
+		LEFT JOIN project_team pt ON m.NO=pt.no
+		WHERE (p.pm=(SELECT PM
+		FROM project_info WHERE NO=#{no})
+		OR pt.team_name=(SELECT team_name FROM
+		project_team WHERE NO=#{no})
+		OR m.NO=#{no})
+		<if test="role.size() != 0">
+			and ROLE in
+			<foreach collection="role" item="item" separator="," open="("
+				close=")"> #{item}
+			</foreach>
+		</if>
+		GROUP BY m.HW_ACCOUNT
+	</select> -->
+
+	<!-- <select id="getLanguage" resultMap="LanguageMap">
+		SELECT b.name,b.val
+		FROM `sys_dict` a,
+		`sys_dict_item` b
+		WHERE a.`code` = 'code_type'
+		AND b.`sys_dict_id` = a.`id`
+	</select> -->
+
+	<select id="metricRespectiveMonthly" resultMap="BaseResultMap">
+		SELECT f.`AUTHOR` AS `author`,
+		Date_format(f.`COMMITTIME`, '%Y.%m') AS `month`,
+		f.`FILE_TYPE` AS `type`,
+		t3.`val`,
+		Sum(f.`FILE_MODIFYNUM`) AS `amount`
+		FROM `svn_log_file_modifynum` f
+		LEFT JOIN `svn_log` s
+		ON f.`SVN_LOG_ID` = s.`ID`
+		<!-- LEFT JOIN (SELECT b.name,
+		b.val
+		FROM `sys_dict` a,
+		`sys_dict_item` b
+		WHERE a.`code` = 'code_type'
+		AND b.`sys_dict_id` = a.`id`) t3 -->
+		LEFT JOIN (select v.`key` as name, v.value as val from v_dictionary v
+		where code = 'code_type') t3
+		ON t3.name = f.`FILE_TYPE`
+		WHERE s.`NO` = #{projectId}
+        <![CDATA[
+            AND f.`COMMITTIME` >= #{begin}
+            AND f.`COMMITTIME` < #{end}
+        ]]>
+		AND f.`FILE_MODIFYNUM` > 0
+		AND Ifnull(t3.val, 0) > 0
+		<if test="codeType.size() != 0">
+			and f.`FILE_TYPE` in
+			<foreach collection="codeType" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		GROUP BY Date_format(f.`COMMITTIME`, '%Y.%m'),
+		f.`AUTHOR`,
+		f.`FILE_TYPE`,
+		t3.val
+		ORDER BY `author`,
+		`month`,
+		`type`
+	</select>
+
+	<select id="metricRespective" resultMap="CompositeMap">
+		SELECT f.`AUTHOR` AS author,
+		f.`FILE_TYPE` AS type,
+		Date_format(f.`COMMITTIME`, #{pattern}) AS month,
+		Sum(f.`FILE_MODIFYNUM`) AS amount,
+		i.`val`
+		FROM `svn_log_file_modifynum` f,
+		`svn_log` l,
+		`sys_dict_item` i
+		WHERE l.`ID` = f.`SVN_LOG_ID`
+		AND f.`FILE_TYPE` = i.`name`
+		AND f.`FILE_MODIFYNUM` > 0
+		AND i.`sys_dict_id` = #{dictId}
+		AND f.`COMMITTIME` BETWEEN #{begin} AND #{end}
+		AND l.`NO` = #{projectId}
+		GROUP BY f.`AUTHOR`,
+		f.`FILE_TYPE`,
+		Date_format(f.`COMMITTIME`, #{pattern})
+	</select>
+
+	<select id="metricCommit" resultMap="CommitMap">
+		SELECT s.`AUTHOR`,
+		Date_format(s.`COMMITTIME`, #{pattern}) AS month,
+		Count(*) AS times,
+		Max(s.`COMMITTIME`) AS last
+		FROM `svn_log` s
+		WHERE s.`NO` = #{projectId}
+		AND s.`COMMITTIME` BETWEEN #{begin} AND #{end}
+		GROUP BY s.`AUTHOR`,
+		Date_format(s.`COMMITTIME`, #{pattern})
+	</select>
+</mapper>

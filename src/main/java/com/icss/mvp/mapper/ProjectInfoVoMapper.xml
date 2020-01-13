@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icss.mvp.dao.ProjectInfoVoDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.ProjectInfoVo">
+        <result column="No" property="no" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="hwDeptNo" property="hwdeptno" jdbcType="BIGINT"/>
+        <result column="HWPDU" property="hwpdu" jdbcType="VARCHAR"/>
+        <result column="HWZPDU" property="hwzpdu" jdbcType="VARCHAR"/>
+        <result column="PDU_SPDT" property="pduSpdt" jdbcType="VARCHAR"/>
+        <result column="optDeptNo" property="optdeptno" jdbcType="VARCHAR"/>
+        <result column="areaName" property="area" jdbcType="VARCHAR"/>
+        <result column="areaCode" property="areacode" jdbcType="VARCHAR"/>
+        <result column="TYPE" property="type" jdbcType="VARCHAR"/>
+        <result column="pm" property="pm" jdbcType="VARCHAR"/>
+        <result column="pmId" property="pmid" jdbcType="VARCHAR"/>
+        <result column="START_DATE" property="startDate" jdbcType="TIMESTAMP"/>
+        <result column="END_DATE" property="endDate" jdbcType="TIMESTAMP"/>
+        <result column="IS_OFFSHORE" property="isOffshore" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="projectInfo" type="com.icss.mvp.entity.ProjectInfo">
+        <result column="No" property="no" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="PM" property="pm" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="projectInfoCount" parameterType="Map" resultType="java.lang.Integer">
+        select
+        count(1)
+        from project_info t1
+        <where>
+            <include refid="sql_where"/>
+        </where>
+    </select>
+
+    <select id="projectCountByProjectId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        <!-- SELECT COUNT(1) FROM (SELECT a.*
+		FROM `project_info` a,
+		project_info b,
+		`measure_configuration_record` m
+		WHERE a.`TEAMID` = b.`TEAMID`
+		AND b.no = #{projectId}
+		AND a.`NO` = m.`no`
+		GROUP BY a.`NO`) res -->
+
+        SELECT COUNT(1) FROM (SELECT
+        p.NO,
+        p.NAME,
+        p.PM
+        FROM project_info p
+        WHERE p.TEAMNAME=(SELECT TEAMNAME FROM project_info WHERE NO=#{projectId})
+        ) res
+    </select>
+
+    <select id="projectInfos" parameterType="Map" resultMap="BaseResultMap">
+        <![CDATA[
+        select
+        t1.NO as NO,
+        t1.NAME as NAME,
+        t1.PM as PM,
+        t1.HWPDU as HWPDU,
+        t1.HWZPDU as HWZPDU,
+        t1.PDU_SPDT as PDUSPDT,
+        t1.BU as BU,
+        t1.PDU as PDU,
+        t1.DU as DU,
+        t1.AREA as AREA,
+        t1.TYPE as TYPE,
+        t1.PROJECT_STATE as PROJECTSTATE
+        from project_info t1
+    ]]>
+        <where>
+            1=1
+            <include refid="sql_where"/>
+            order by t1.PROJECT_STATE desc
+            <if test="fromIndex != null and pageSize != null">
+                limit #{fromIndex}, #{pageSize}
+            </if>
+        </where>
+    </select>
+    <select id="getProjectInfos" parameterType="Map" resultMap="projectInfo">
+        SELECT
+        p.NO,
+        p.NAME,
+        p.PM
+        FROM project_info p
+        WHERE p.TEAMNAME=(SELECT TEAMNAME FROM project_info WHERE NO=#{projectId})
+        order by p.PROJECT_STATE desc
+        <if test="fromIndex != null and pageSize != null">
+            limit #{fromIndex}, #{pageSize}
+        </if>
+
+        <!-- SELECT
+            a.NO,
+            a.NAME,
+            a.PM
+            FROM
+            `project_info` a,
+            project_info b ,
+            `measure_configuration_record` m
+            WHERE a.`TEAMID` = b.`TEAMID` AND b.no = #{projectId}
+            AND a.`NO` = m.`no`  GROUP BY a.`NO`
+            <if test="fromIndex != null and pageSize != null">
+              limit #{fromIndex}, #{pageSize}
+            </if> -->
+
+    </select>
+
+    <!--消费者业务线  项目信息分页查询 -->
+    <select id="queryProjectInfos" parameterType="Map" resultMap="BaseResultMap">
+        SELECT
+        t1.name AS NAME,
+        t1.hwzpdu AS HWZPDU,
+        t1.hwpdu AS HWPDU ,
+        t1.pdu_spdt AS PDU_SPDT,
+        t1.area AS areaName,
+        t1.start_date AS START_DATE,
+        t1.end_date AS END_DATE,
+        t1.pm ,
+        t1.no AS NO
+        FROM project_info t1
+        <where>
+            <include refid="sql_where"/>
+        </where>
+        <if test="null != pageSize and  null != offset">
+            LIMIT #{offset},#{pageSize}
+        </if>
+    </select>
+
+    <!--消费者业务线  项目统计 -->
+    <select id="queryProjectInfosCount" parameterType="Map" resultType="java.lang.Integer">
+        select count(1)
+        from project_info t1
+        <where>
+            <include refid="sql_where"/>
+        </where>
+    </select>
+
+    <select id="queryPDUInfosCount" parameterType="Map" resultType="java.lang.Integer">
+        select COUNT(DISTINCT t1.pdu_spdt)
+        from project_info t1
+        <where>
+            <include refid="sql_where"/>
+        </where>
+    </select>
+
+    <!--消费者业务线  PDU部门数统计 -->
+    <select id="queryProjectPDUInfosCount" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT pdu_spdt)
+        FROM project_info WHERE  pdu_spdt IS NOT NULL;
+        <where>
+            <include refid="sql_where"/>
+        </where>
+    </select>
+
+    <!--消费者业务线  PDU部门下所有项目统计 -->
+    <select id="getCousumerQualityPDUProjectNum" resultType="java.lang.Double">
+        SELECT COUNT(pdu_spdt) FROM project_info
+        WHERE  pdu_spdt = #{pduSpdt} 
+       </select>
+
+    <!--消费者业务线  PDU部门查询 -->
+    <select id="getCousumerQualityPDUIndex" resultType="com.icss.mvp.entity.CousumerQuality">
+        SELECT m.measure_id AS measureId, SUM(m.measure_value) AS measureValue
+        FROM (SELECT t.no,t.measure_id,t.measure_value
+        FROM  (SELECT * FROM measure_history_detail WHERE  NO IN(SELECT NO FROM project_info
+        WHERE  pdu_spdt = #{pduSpdt} )
+        AND measure_id in
+        <foreach collection="idsList" open="(" close=")" separator=","
+                 item="item">
+            #{item}
+        </foreach>
+        ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC) t
+        GROUP BY t.no,t.measure_id) m
+        GROUP BY m.measure_id
+    </select>
+    <!--消费者业务线  部门信息查询 -->
+    <select id="queryProjectPDUInfos" parameterType="Map" resultType="java.lang.String">
+        SELECT
+        distinct t1.pdu_spdt
+        FROM project_info t1
+        <where>
+            <include refid="sql_where"/>
+        </where>
+        <if test="null != pageSize and  null != offset">
+            LIMIT #{offset},#{pageSize}
+        </if>
+    </select>
+
+    <select id="projectNos" parameterType="Map" resultType="java.lang.String">
+        select
+        t1.No as no
+        from project_info t1
+        <where>
+            <include refid="sql_where"/>
+        </where>
+    </select>
+
+    <select id="projectStatesProblem" resultType="java.lang.String">
+        SELECT t1.DU FROM project_maturity_comments c
+        LEFT JOIN `project_info` t1 ON t1.NO = c.NO
+        WHERE c.is_deleted = '0' AND DATE_FORMAT(c.finish_time, '%Y-%m-%d') &gt;= #{startDate} AND DATE_FORMAT(c.finish_time, '%Y-%m-%d') &lt;= #{endDate}
+        AND c.is_361 IS NOT NULL
+        <include refid="sql_where"/>
+        <if test='type!=null and type!= "0"'>
+            AND is_361 = #{type}
+        </if>
+        AND t1.PROJECT_STATE = '在行'
+        ORDER BY DU
+    </select>
+
+    <sql id="sql_where">
+        <if test="name!=null and name!=''">
+            AND t1.NAME like concat('%', #{name} ,'%')
+        </if>
+        <if test="pm!=null and pm!=''">
+            AND t1.pm like concat('%', #{pm} , '%')
+        </if>
+        <if test="areas != null and areas.size() != 0">
+            AND `t1`.AREAID in
+            <foreach collection="areas" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="status != null and status.size() != 0">
+            AND `t1`.PROJECT_STATE IN
+            <foreach collection="status" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwpduId != null and hwpduId.size() != 0">
+            AND `t1`.`HWPDUID` IN
+            <foreach collection="hwpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwzpduId != null and hwzpduId.size() != 0">
+            AND `t1`.`HWZPDUID` IN
+            <foreach collection="hwzpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduSpdtId != null and pduSpdtId.size() != 0">
+            AND `t1`.`PDU_SPDTID` IN
+            <foreach collection="pduSpdtId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="buId != null and buId.size() != 0">
+            AND `t1`.`BUID` IN
+            <foreach collection="buId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduId != null and pduId.size() != 0">
+            AND `t1`.`PDUID` IN
+            <foreach collection="pduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="duId != null and duId.size() != 0">
+            AND `t1`.`DUID` IN
+            <foreach collection="duId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="projectScheduleList" parameterType="Map" resultMap="BaseResultMap">
+        select
+        t1.no as NO,
+        t1.NAME as NAME,
+        t1.pm as PM,
+        t1.HWPDU as HWPDU,
+        t1.HWZPDU as HWZPDU,
+        t1.PDU_SPDT as PDUSPDT,
+        t1.AREA as AREA,
+        t1.TYPE as TYPE,
+        t1.PROJECT_STATE as PROJECTSTATE,
+        t1.START_DATE as START_DATE,
+        t1.END_DATE as END_DATE
+        from v_project_info t1
+        where
+        1 = 1
+        <if test=" list != null and list.size() != 0">
+            AND t1.no IN
+            <foreach collection="list" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+
+        </if>
+        <if test="null != name and '' != name">
+            AND t1.name like concat('%', #{name} ,'%')
+
+        </if>
+        order by t1.END_DATE
+    </select>
+
+    <select id="fetchProjectInfoByKey" parameterType="Map" resultMap="BaseResultMap">
+    <![CDATA[
+        select
+        t1.no as NO,
+        t1.NAME as NAME,
+        t1.HWPDU as HWPDU,
+        t1.HWZPDU as HWZPDU,
+        t1.PDU_SPDT as PDUSPDT,
+        t1.BU as BU,
+        t1.PDU as PDU,
+        t1.DU as DU,
+        t1.AREA as AREA,
+        t1.TYPE as TYPE,
+        t1.PROJECT_STATE as PROJECTSTATE,
+        t1.START_DATE
+        from project_info t1
+        where  t1.No = #{proNo}
+    ]]>
+    </select>
+
+    <select id="followProjectNos" parameterType="Map" resultType="com.icss.mvp.entity.ProjectInfo">
+        SELECT t1.No AS no,t1.name,t1.pm
+        FROM project_info t1
+        RIGHT JOIN `user_report_project` ur ON t1.`NO` = ur.`no`
+        where ur.userId = #{username}
+        <include refid="sql_where"/>
+        ORDER BY no DESC
+    </select>
+
+    <select id="collectedProjectNos" parameterType="Map" resultType="java.lang.String">
+        SELECT t1.No AS no
+        FROM project_info t1
+        LEFT JOIN `user_report_project` ur ON t1.`NO` = ur.`no` AND ur.userId = #{username}
+        where 1=1
+        <if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+        <include refid="sql_where"/>
+    </select>
+
+    <select id="getUserAccounts" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT RIGHT(ZR_ACCOUNT,6) AS zrAccount ,HW_ACCOUNT AS hwAccount 
+        FROM `member_base` WHERE ZR_ACCOUNT = #{username} OR HW_ACCOUNT = #{username} LIMIT 1
+	</select>
+
+    <select id="getOnsiteNums" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT *
+        FROM
+        <!-- 获取需求未完成涉及项目 -->
+        <if test='type == "1"'>
+            (
+            SELECT t1.`pro_no` AS demand
+            FROM iterative_work_manage t1
+            WHERE t1.person_liable LIKE CONCAT('%',#{zr},'%') AND t1.`is_deleted` = 0 AND
+            (t1.`status` != '6' OR t1.`status` IS NULL)
+            AND t1.`id` NOT IN (
+            SELECT taskId FROM `message_tips` WHERE TYPE = '1' AND zrAccount = #{zr}
+            )
+            GROUP BY t1.pro_no
+            ) tc
+        </if>
+        <!-- 获取风险未完成涉及项目-->
+        <if test='type == "2"'>
+            (
+            SELECT NO AS risk  FROM project_maturity_comments
+            WHERE person_liable LIKE CONCAT('%',#{zr},'%') AND (state != 'Closed' OR state IS NULL)
+            AND id NOT IN (
+            SELECT taskId FROM `message_tips` WHERE TYPE = '2' AND zrAccount = #{zr}
+            )
+            GROUP BY NO
+            ) p
+        </if>
+        <!-- 获取qms未完成涉及项目 -->
+        <if test='type == "3"'>
+            (
+            SELECT NO AS qms FROM qms_result
+            WHERE dutyPerson LIKE CONCAT('%',#{hw},'%') AND TYPE = '3' AND (state != 'Closed' OR state IS NULL)
+            AND id NOT IN (
+            SELECT taskId FROM `message_tips` WHERE TYPE = '3' AND zrAccount = #{zr}
+            )
+            GROUP BY NO
+            ) qr
+        </if>
+    </select>
+
+    <select id="getOnsiteNews" parameterType="java.lang.String" resultType="com.icss.mvp.entity.OnsiteNews">
+        SELECT i.`NO`,i.`NAME` AS projectName,tc.demand,p.risk,qr.qms
+        FROM `project_info` i
+        LEFT JOIN
+        <!-- 获取需求未完成任务数 -->
+        (
+        SELECT t1.`pro_no` AS NO,SUM(t1.topic IS NOT NULL) AS demand
+        FROM iterative_work_manage t1
+        WHERE t1.person_liable LIKE CONCAT('%',#{zr},'%') AND t1.`is_deleted` = 0 AND
+        (t1.`status` != '6' OR t1.`status` IS NULL)
+        AND t1.`id` NOT IN (
+        SELECT taskId FROM `message_tips` WHERE TYPE = '1' AND zrAccount = #{zr}
+        )
+        GROUP BY t1.pro_no
+        ) tc ON i.`NO` = tc.no
+        LEFT JOIN
+        <!-- 获取风险未完成任务数 -->
+        (
+        SELECT NO,SUM(question IS NOT NULL) AS risk
+        FROM project_maturity_comments
+        WHERE person_liable LIKE CONCAT('%',#{zr},'%') AND (state != 'Closed' OR state IS NULL)
+        AND id NOT IN (
+        SELECT taskId FROM `message_tips` WHERE TYPE = '2' AND zrAccount = #{zr}
+        )
+        GROUP BY NO
+        ) p ON i.`NO` = p.no
+        LEFT JOIN
+        <!-- 获取qms未完成任务数 -->
+        (
+        SELECT NO,SUM(qmsId IS NOT NULL) AS qms
+        FROM qms_result WHERE dutyPerson LIKE CONCAT('%',#{hw},'%') AND TYPE = '3' AND (state
+        != 'Closed' OR state IS NULL)
+        AND id NOT IN (
+        SELECT taskId FROM `message_tips` WHERE TYPE = '3' AND zrAccount = #{zr}
+        )
+        GROUP BY NO
+        ) qr ON i.`NO` = qr.no
+        WHERE i.`NO` IN ${proNos}
+        GROUP BY i.`NO`
+    </select>
+
+    <select id="getNewsIds" parameterType="java.lang.String" resultType="java.lang.String">
+        <!-- 获取需求未完成涉及的任务id -->
+        <if test='type == "1"'>
+            SELECT t1.`id`
+            FROM iterative_work_manage t1
+            WHERE t1.person_liable LIKE CONCAT('%',#{zh},'%') AND t1.`is_deleted` = 0 AND
+            (t1.`status` != '6' OR t1.`status` IS NULL)
+            AND t1.`id` NOT IN (
+            SELECT taskId FROM `message_tips` WHERE TYPE = '1' AND zrAccount = #{zh}
+            )
+        </if>
+        <!-- 获取风险未完成涉及的任务id-->
+        <if test='type == "2"'>
+            SELECT id FROM project_maturity_comments
+            WHERE person_liable LIKE CONCAT('%',#{zh},'%') AND (state != 'Closed' OR state IS NULL) AND NO = #{proNo}
+            AND id NOT IN(
+            SELECT taskId FROM `message_tips` WHERE TYPE = '2' AND zrAccount = #{zh}
+            )
+        </if>
+        <!-- 获取qms未完成涉及的任务id -->
+        <if test='type == "3"'>
+            SELECT id FROM qms_result
+            WHERE dutyPerson LIKE CONCAT('%',#{zh},'%') AND TYPE = '3' AND (state != 'Closed' OR state IS NULL) AND NO = #{proNo}
+            AND id NOT IN(
+            SELECT taskId FROM `message_tips` WHERE TYPE = '3' AND zrAccount = #{zh}
+            )
+        </if>
+    </select>
+
+    <insert id="saveReadedNews" parameterType="java.util.List">
+        replace into message_tips (taskId,no,type,zrAccount,readTime)
+        values
+        <foreach collection="data" item="item" index="index" separator=",">
+            (#{item.taskId},#{item.no},#{item.type},#{item.zrAccount},#{item.readTime})
+        </foreach>
+    </insert>
+
+    <select id="getReadedNews" parameterType="java.lang.String" resultType="com.icss.mvp.entity.OnsiteNews">
+        SELECT * FROM
+        (SELECT m.no,p.name AS projectName,m.readTime,SUM(m.type = '1') AS demand,SUM(m.type = '2')
+        AS risk,SUM(m.type = '3') AS qms
+        FROM `message_tips` m
+        LEFT JOIN `project_info` p ON p.`NO` = m.`no`
+        WHERE m.zrAccount = #{zr}
+        GROUP BY m.`no`,m.`readTime`) a
+        ORDER BY a.readTime DESC
+	</select>
+
+    <resultMap id="stationInformation" type="com.icss.mvp.entity.StationInformation">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="sender" property="sender" jdbcType="VARCHAR"/>
+        <result column="receiver" property="receiver" jdbcType="VARCHAR"/>
+        <result column="sendTime" property="send_time" jdbcType="TIMESTAMP"/>
+        <result column="information" property="information" jdbcType="VARCHAR"/>
+        <result column="receivingTime" property="receiving_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 站内信息查询 -->
+    <select id="getReadedNewsClone" resultMap="stationInformation">
+        SELECT IFNULL(u.`USERNAME`,s.`sender`) AS sender,s.id,s.`receiver`,s.`information`,s.`send_time`,s.`receiving_time`
+        FROM `station_information` s
+        LEFT JOIN `sys_user` u ON u.`USERID` = s.`sender`
+        WHERE (s.`receiver` = #{account} OR s.`receiver` = #{account}) AND s.is_delete = 0
+        ORDER BY s.id DESC
+    </select>
+
+    <!-- 站内信息查询 -->
+    <update id="updateInformation">
+        UPDATE `station_information` SET receiving_time = #{time} WHERE id IN ${ids}
+    </update>
+
+    <!-- 存储发送的信息 -->
+    <insert id="saveInformation">
+		INSERT INTO `station_information`
+		(sender, receiver, information,send_time) VALUES
+		(#{data.sender},#{data.receiver},#{data.information}, #{data.sendTime});
+	</insert>
+</mapper>

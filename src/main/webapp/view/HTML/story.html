@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+</head>
+<body style="background-color: white;">
+<!-- 折线图 -->
+<div id="main" style="width: 600px;height:400px;"></div>
+<script type="text/javascript">
+	  var no = window.parent.parent.projNo;
+	  var myChart = echarts.init(document.getElementById('main'));
+      myChart.showLoading();
+      // 显示标题，图例和空的坐标轴
+      myChart.setOption({
+      	title : {
+ 	        text: 'story/功能点/特性',
+ 	        subtext: '单位：minute'
+      	},
+     	    tooltip : {
+     	        trigger: 'axis'
+     	    },
+     	    legend: {
+     	        data:['story/功能点/特性']
+     	    },
+     	    toolbox: {
+     	        show : true,
+     	        feature : {
+     	            mark : {show: true},
+     	            dataView : {show: true, readOnly: false},
+     	            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+     	            restore : {show: true},
+     	            saveAsImage : {show: true}
+     	        }
+     	    },
+      	calculable : true,
+     	    xAxis : [
+     	        {
+     	            type : 'category',
+     	            boundaryGap : false,
+     	            //data : ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+     	           data : ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+     	           axisLine:{
+  	                lineStyle:{
+  	                    color:'#479de6',
+  	                    width:2
+  	                }
+  	            },
+     	        }
+     	    ],
+     	    yAxis : [
+     	        {
+     	            type : 'value',
+     	            data : [],
+     	           axisLine:{
+                       lineStyle:{
+                           color:'#479de6',
+                           width:2,//这里是为了突出显示加上的
+                       }
+                   } 
+     	        }
+     	    ],
+     	    series : [
+     	        {
+     	            name:'story/功能点/特性',
+     	            type:'line',
+     	           symbolSize:5,
+                   color:['#f14a46'],
+                   itemStyle:{
+                       normal:{
+                           lineStyle:{
+                               width:2,
+                               type:'solid'  //'dotted'虚线 'solid'实线
+                           }
+                       }
+                   },
+     	           // itemStyle: {normal: {areaStyle: {type: 'default'}}},
+     	        }
+     	    ]
+       });
+       var y_value = [];
+	   function loadEcharts(){
+		   //获取年份插件选中的值
+	       var yearNow = parent.$('#myYear option:selected') .val();
+	       $.ajax({
+	           type : "post",
+	           async : false,//是否异步，true为异步        
+	           url: '',   
+	           data : {
+					projNo : no,
+					yearNow : yearNow
+	           },
+	           dataType : "json",       
+	           success : function(result) {
+	               //请求成功时执行该函数内容，result即为服务器返回的json对象
+	               if (result) {
+	              	 y_value.push(result.mon01==null?0:result.mon01);
+	              	 y_value.push(result.mon02==null?0:result.mon02);
+	              	 y_value.push(result.mon03==null?0:result.mon03);
+	              	 y_value.push(result.mon04==null?0:result.mon04);
+	              	 y_value.push(result.mon05==null?0:result.mon05);
+	              	 y_value.push(result.mon06==null?0:result.mon06);
+	              	 y_value.push(result.mon07==null?0:result.mon07);
+	              	 y_value.push(result.mon08==null?0:result.mon08);
+	              	 y_value.push(result.mon09==null?0:result.mon09);
+	              	 y_value.push(result.mon10==null?0:result.mon10);
+	              	 y_value.push(result.mon11==null?0:result.mon11);
+	              	 y_value.push(result.mon12==null?0:result.mon12);
+	                   myChart.hideLoading();    //隐藏加载动画
+	                   myChart.setOption({        //加载数据图表
+	                    series: [{
+	                        // 根据名字对应到相应的系列
+	                        name: 'story/功能点/特性',
+	                        data: y_value
+	                    }]
+	                   });
+	               }
+	           
+	          },
+	          error : function(errorMsg) {
+	          	 //  alert("图表请求数据失败!");
+	          	   myChart.hideLoading();
+	          }
+	      }); 
+       } 
+	   function loadVersionBuildTime(){
+	       $.ajax({
+	           type : "post",
+	           async : false,//是否异步，true为异步        
+	           url: '',   
+	           data : {
+					'year': parent.$("#year").selectpicker("val"),
+					'area': parent.$("#usertype1").selectpicker("val")==null?null:parent.$("#usertype1").selectpicker("val").join(),//转换为字符串
+	            	'hwpdu': parent.$("#usertype3").selectpicker("val")==null?null:parent.$("#usertype3").selectpicker("val").join(),//转换为字符串
+	    			'hwzpdu': parent.$("#usertype4").selectpicker("val")==null?null:parent.$("#usertype4").selectpicker("val").join(),//转换为字符串
+	    			'pduSpdt': parent.$("#usertype5").selectpicker("val")==null?null:parent.$("#usertype5").selectpicker("val").join(),//转换为字符串
+	    			'bu': parent.$("#usertype6").selectpicker("val")==null?null:parent.$("#usertype6").selectpicker("val").join(),//转换为字符串
+	    			'pdu': parent.$("#usertype7").selectpicker("val")==null?null:parent.$("#usertype7").selectpicker("val").join(),//转换为字符串
+	    			'du': parent.$("#usertype8").selectpicker("val")==null?null:parent.$("#usertype8").selectpicker("val").join()//转换为字符串
+	           },
+	           dataType : "json",       
+	           success : function(result) {
+	               //请求成功时执行该函数内容，result即为服务器返回的json对象
+	               if (result) {
+	              	 y_value.push(result.mon01==null?0:result.mon01);
+	              	 y_value.push(result.mon02==null?0:result.mon02);
+	              	 y_value.push(result.mon03==null?0:result.mon03);
+	              	 y_value.push(result.mon04==null?0:result.mon04);
+	              	 y_value.push(result.mon05==null?0:result.mon05);
+	              	 y_value.push(result.mon06==null?0:result.mon06);
+	              	 y_value.push(result.mon07==null?0:result.mon07);
+	              	 y_value.push(result.mon08==null?0:result.mon08);
+	              	 y_value.push(result.mon09==null?0:result.mon09);
+	              	 y_value.push(result.mon10==null?0:result.mon10);
+	              	 y_value.push(result.mon11==null?0:result.mon11);
+	              	 y_value.push(result.mon12==null?0:result.mon12);
+	                   myChart.hideLoading();    //隐藏加载动画
+	                   myChart.setOption({        //加载数据图表
+	                    series: [{
+	                        // 根据名字对应到相应的系列
+	                        name: 'story/功能点/特性',
+	                        data: y_value
+	                    }]
+	                   });
+	               }
+	           
+	          },
+	          error : function(errorMsg) {
+	          	   //alert("图表请求数据失败!");
+	          	   myChart.hideLoading();
+	          }
+	      }); 
+       } 
+	   
+	   
+       $(document).ready(function () {
+			var flag = parent.homeOrItem;
+			if(flag == '1'){//首页
+				loadVersionBuildTime();
+			}else{//项目6+1
+				loadEcharts();
+			}
+       }) 
+</script>
+</body>
+</html>

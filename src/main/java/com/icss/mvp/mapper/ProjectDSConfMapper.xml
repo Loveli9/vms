@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectSourceConfigDao">
+	<resultMap id="ProjDSMap" type="com.icss.mvp.entity.ProjectDataSourceInfo">
+	  <result property="no" column="NO" />
+	  <result property="source_value" column="SOURCE_VALUE"/>
+	  <result property="url" column="URL"/>
+	  <result property="user" column="USER"/>
+	  <result property="password" column="PASSWORD"/>
+	  <result property="createDate" column="CREATE_DATE"/>
+	  <result property="creator" column="CREATOR"/>
+	  <result property="updateDate" column="UPDATE_DATE"/>
+	  <result property="updateUser" column="UPDATE_USER"/>
+	  <result property="version" column="VERSION"/>
+	</resultMap>
+	<resultMap id="repositoryInfo" type="com.icss.mvp.entity.RepositoryInfo">
+	  <result property="id" column="id" />
+	  <result property="createTime" column="create_time"/>
+	  <result property="modifyTime" column="modify_time"/>
+	  <result property="isDeleted" column="is_deleted"/>
+	  <result property="type" column="type"/>
+	  <result property="url" column="url"/>
+	  <result property="branch" column="branch"/>
+	  <result property="scope" column="scope"/>
+	  <result property="otherAccount" column="other_account"/>
+	  <result property="proConfId" column="proConfId"/>
+	</resultMap>
+	<resultMap id="projectConfigInfo" type="com.icss.mvp.entity.ProjectConfigInfo">
+	  <result property="id" column="id" />
+	  <result property="createTime" column="create_time"/>
+	  <result property="modifyTime" column="modify_time"/>
+	  <result property="isDeleted" column="is_deleted"/>
+	  <result property="projectId" column="project_id"/>
+	  <result property="repositoryId" column="repository_id"/>
+	</resultMap>
+	<resultMap id="collectionJobInfo" type="com.icss.mvp.entity.CollectionJobInfo">
+	  <result property="id" column="id" />
+	  <result property="no" column="no"/>
+	  <result property="name" column="name"/>
+	  <result property="types" column="types"/>
+	  <result property="ids" column="ids"/>
+	  <result property="selectedIds" column="selected_ids"/>
+	  <result property="progressLast" column="progress_last"/>
+	  <result property="num" column="num"/>
+	  <result property="modifyTime" column="modify_time"/>
+	</resultMap>
+
+	<select id="queryProjDSInfo" resultMap="ProjDSMap">
+			select * from source_config
+		    WHERE 1=1
+		 <choose>
+			<when test = "projNo!=null and projNo!=''">
+				AND NO = #{projNo}
+			</when>
+			<otherwise>
+				AND 0=1
+			</otherwise> 
+		</choose>
+		<if test="sort!=null and sort!='' and order!=null and order!=''">  
+	   		order by ${sort} ${order}
+	    </if>
+	</select>
+	<select id="queryProjDSByKey" resultMap="ProjDSMap">
+		select * 
+		from source_config
+		where 1=1
+		<choose>
+			<when test = "projNo!=null and projNo!=''">
+				AND NO = #{projNo}
+			</when>
+			<otherwise>
+				AND 0=1
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="source_value!=null and source_value!=''">
+				AND SOURCE_VALUE = #{source_value}
+			</when>
+			<otherwise>
+				AND 0=1
+			</otherwise>
+		</choose>
+	</select>
+	<insert id="insertProjDS" parameterType="com.icss.mvp.entity.ProjectDataSourceInfo">
+		INSERT INTO source_config (NO,SOURCE_VALUE,URL,USER,PASSWORD,CREATE_DATE,CREATOR,VERSION)
+		VALUES(#{no},#{source_value},#{url},#{user},#{password},#{createDate},#{creator},#{version})
+	</insert>
+	<update id="updateProjDS" parameterType="com.icss.mvp.entity.ProjectDataSourceInfo">
+		UPDATE source_config SET
+		URL=#{url},USER=#{user},PASSWORD=#{password},VERSION=#{version},
+		UPDATE_DATE=#{updateDate},UPDATE_USER=#{updateUser}
+		WHERE
+		NO=#{no} AND  SOURCE_VALUE=#{source_value}
+	</update>
+	<delete id="delProjDS" parameterType="com.icss.mvp.entity.ProjectDataSourceInfo">
+		DELETE FROM source_config
+		WHERE
+		NO=#{no} AND  SOURCE_VALUE=#{source_value}
+	</delete>
+	<select id="queryAllDS" resultMap="ProjDSMap">
+		SELECT *
+		FROM source_config
+		WHERE 1=1
+	</select>
+	<select id="queryDSBySource" resultMap="ProjDSMap" parameterType="java.lang.String">
+		SELECT *
+		FROM source_config
+		WHERE SOURCE_VALUE = #{source_value}
+	</select>
+	<select id="queryDSByNo" resultType="com.icss.mvp.entity.ProjectDataSourceInfo" parameterType="java.lang.String">
+		SELECT *
+		FROM source_config
+		WHERE NO = #{no}
+	</select>
+	<insert id="inserturl" parameterType="com.icss.mvp.entity.ProjectDataSourceInfo">
+	INSERT INTO source_config (NO,SOURCE_VALUE,URL,USER,PASSWORD,CREATE_DATE,CREATOR,VERSION,GITURL,ISOURL,CIURL,TMURL,GITBRANCH,SCOPE) 
+		VALUES(#{projDSInfo.no},#{projDSInfo.source_value},#{projDSInfo.url},#{projDSInfo.user},#{projDSInfo.password},#{projDSInfo.createDate},#{projDSInfo.creator},#{projDSInfo.version},#{projDSInfo.giturl},#{projDSInfo.isourl},#{projDSInfo.ciurl},#{projDSInfo.tmurl},#{projDSInfo.gitbranch},#{projDSInfo.scope});
+	</insert>
+	
+	<update id="updateurl" parameterType="com.icss.mvp.entity.ProjectDataSourceInfo">
+	UPDATE source_config SET
+		URL=#{projDSInfo.url},UPDATE_USER=#{projDSInfo.updateUser},VERSION=#{projDSInfo.version},
+		UPDATE_DATE=#{projDSInfo.updateDate},GITURL=#{projDSInfo.giturl},ISOURL=#{projDSInfo.isourl},CIURL=#{projDSInfo.ciurl},TMURL=#{projDSInfo.tmurl},GITBRANCH=#{projDSInfo.gitbranch},SCOPE=#{projDSInfo.scope}
+		WHERE
+		NO=#{projDSInfo.no} 	
+	</update>
+	
+	<select id="searchUrlById" parameterType="java.lang.Integer" resultType="java.lang.String">
+	select url from repository where id = #{Id}
+	</select>
+	
+	<insert id="insertRepository" parameterType="com.icss.mvp.entity.RepositoryInfo" useGeneratedKeys="true" keyProperty="repInfo.id">
+		INSERT INTO repository (create_time,modify_time,is_deleted,type,url,branch,scope,other_account) 
+		VALUES(#{repInfo.createTime},#{repInfo.modifyTime},#{repInfo.isDeleted},#{repInfo.type},
+		#{repInfo.url},#{repInfo.branch},#{repInfo.scope},#{repInfo.otherAccount});
+	</insert>
+	<insert id="replaceRepository" parameterType="com.icss.mvp.entity.RepositoryInfo">
+		REPLACE INTO repository (id,create_time,modify_time,is_deleted,type,url,branch,scope,other_account) 
+		VALUES(#{repInfo.id},#{repInfo.createTime},#{repInfo.modifyTime},#{repInfo.isDeleted},#{repInfo.type},
+		#{repInfo.url},#{repInfo.branch},#{repInfo.scope},#{repInfo.otherAccount});
+	</insert>
+	<insert id="insertToRepository" parameterType="com.icss.mvp.entity.RepositoryInfo">
+		insert INTO repository (create_time,modify_time,is_deleted,type,url,branch,scope,other_account) 
+		VALUES(#{repInfo.createTime},#{repInfo.modifyTime},#{repInfo.isDeleted},#{repInfo.type},
+		#{repInfo.url},#{repInfo.branch},#{repInfo.scope},#{repInfo.otherAccount});
+	</insert>
+	<select id="searchRepositoryByNo" parameterType="java.lang.String" resultMap="repositoryInfo">
+		select a.*,b.id as proConfId from repository a,project_config b 
+		where b.project_id = #{projNo} 
+		and b.repository_id=a.id
+		order by a.id
+	</select>
+	<select id="searchRepositoryByIds" parameterType="java.lang.String" resultMap="repositoryInfo">
+		select * from repository
+		where id in ${ids} 
+	</select>
+	<select id="searchProjectConfigByIds" parameterType="java.lang.String" resultMap="projectConfigInfo">
+		select * from project_config
+		where repository_id in ${ids} 
+	</select>
+
+	<select id="searchRepositoryByNos" parameterType="java.lang.String" resultMap="repositoryInfo">
+		select a.*,b.id as proConfId from repository a,project_config b 
+		where b.project_id = #{projNo} 
+		and b.repository_id=a.id
+		and a.type =#{type}
+		and a.id = #{id}
+		order by a.id
+	</select>
+
+	<select id="searchRepositoryByNoHasOtherAcc" parameterType="java.lang.String" resultMap="repositoryInfo">
+		select a.*,b.id as proConfId from repository a,project_config b 
+		where b.project_id = #{projNo} 
+		and b.repository_id=a.id
+		and a.other_account="0"
+		order by a.id
+	</select>
+
+	<insert id="insertProjectConfig" parameterType="com.icss.mvp.entity.ProjectConfigInfo">
+		INSERT INTO project_config (create_time,modify_time,is_deleted,project_id,repository_id) 
+		VALUES(#{projConfInfo.createTime},#{projConfInfo.modifyTime},#{projConfInfo.isDeleted},
+		#{projConfInfo.projectId},#{projConfInfo.repositoryId});
+	</insert>
+	<delete id="delRepository">
+		DELETE FROM repository
+		WHERE id in (${ids})
+	</delete>
+	<delete id="delProjectConfig">
+		DELETE FROM project_config
+		WHERE id in (${ids})
+	</delete>
+	<delete id="delProjectConfigByReId">
+		DELETE FROM project_config
+		WHERE repository_id in (${ids}) AND project_id=#{projNo}
+	</delete>
+	<delete id="delSvnLogTime">
+		DELETE FROM svn_log_time
+		WHERE NO = #{projNo} 
+		AND repository_id in (${ids})
+	</delete>
+	<delete id="delSvnLogTimeById">
+		DELETE FROM svn_log_time
+		WHERE repository_id in (${ids})
+	</delete>
+	
+	<delete id="delCollectionJob">
+		DELETE FROM collection_job
+		WHERE id in (${ids})
+	</delete>
+	<insert id="insertCollectionJob" parameterType="com.icss.mvp.entity.CollectionJobInfo" useGeneratedKeys="true" keyProperty="repInfo.id">
+		INSERT INTO collection_job (no,name,types,ids,selected_ids,progress_last,num) 
+		VALUES(#{repInfo.no},#{repInfo.name},#{repInfo.types},#{repInfo.ids},#{repInfo.selectedIds},#{repInfo.progressLast},#{repInfo.num});
+	</insert>
+	<insert id="replaceCollectionJob" parameterType="com.icss.mvp.entity.CollectionJobInfo">
+		REPLACE INTO collection_job (id,no,name,types,ids,selected_ids,progress_last) 
+		VALUES(#{repInfo.id},#{repInfo.no},#{repInfo.name},#{repInfo.types},#{repInfo.ids},#{repInfo.selectedIds},#{repInfo.progressLast});
+	</insert>
+	<update id="updateCollectionJob" parameterType="com.icss.mvp.entity.CollectionJobInfo">
+		UPDATE
+		collection_job SET
+		no=#{repInfo.no},name=#{repInfo.name},types=#{repInfo.types},ids=#{repInfo.ids},
+		selected_ids=#{repInfo.selectedIds}
+		WHERE id=#{repInfo.id}
+	</update>
+	<update id="searchConfigReNum" parameterType="java.lang.String">
+		UPDATE collection_job SET num=#{num},progress_last=#{progressLast},modify_time=NOW() WHERE id=#{id}
+	</update>
+	<select id="searchCollectionJob" parameterType="java.lang.String" resultMap="collectionJobInfo">
+		<!-- select * from collection_job
+		where no = #{projectId}  -->
+		SELECT cj.id,cj.no,cj.name,cj.types,cj.ids,cj.selected_ids,cj.progress_last,cj.num,p.NAME as proName,IFNULL(cj.modify_time,p.START_DATE)AS modify_time FROM collection_job cj
+		LEFT JOIN project_info p ON cj.no=p.NO
+		WHERE cj.no = #{projectId}
+	</select>
+	
+	<select id="getProjNameByNo" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT NAME FROM project_info WHERE NO = #{projectId}
+	</select>
+	
+	<select id="searchCollectionJobByTeam" parameterType="java.lang.String" resultMap="collectionJobInfo">
+		SELECT cj.id,cj.no,cj.name,cj.types,cj.ids,cj.selected_ids,cj.progress_last,cj.num,IFNULL(cj.modify_time,p.START_DATE)AS modify_time FROM collection_job cj
+		LEFT JOIN project_info p ON cj.no=p.NO
+		WHERE p.TEAMNAME=(SELECT TEAMNAME FROM project_info WHERE NO=#{projectId})
+		OR p.PM=(SELECT PM FROM project_info WHERE NO=#{projectId})
+		OR cj.no=#{projectId}
+	</select>
+	<select id="getRepository" parameterType="java.lang.String" resultMap="repositoryInfo">
+		SELECT * FROM repository WHERE id=#{id}
+	</select>
+	<insert id="saveRepository" parameterType="com.icss.mvp.entity.RepositoryInfo" useGeneratedKeys="true" keyProperty="repository.id">
+		INSERT INTO repository (create_time,modify_time,is_deleted,type,url,branch,scope,other_account) 
+		VALUES(NOW(),NOW(),0,#{repository.type},#{repository.url},#{repository.branch},#{repository.scope},#{repository.otherAccount})
+	</insert>
+	<insert id="saveCollectionJob" parameterType="com.icss.mvp.entity.CollectionJobInfo" useGeneratedKeys="true" keyProperty="collectionJobInfo.id">
+		INSERT INTO collection_job (no,name,types,ids,selected_ids,progress_last,num,modify_time) 
+		VALUES(#{collectionJob.no},#{collectionJob.name},#{collectionJob.types},#{collectionJob.ids},#{collectionJob.selectedIds},#{collectionJob.progressLast},#{collectionJob.num},#{collectionJob.modifyTime});
+	</insert>
+	<insert id="saveProjectConfig" parameterType="java.lang.String">
+		INSERT INTO project_config (create_time,modify_time,is_deleted,project_id,repository_id) 
+		VALUES(NOW(),NOW(),0,#{projectId},#{repositoryId})
+	</insert>
+	<select id="getRepositoryId"  parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT repository_id 
+		FROM project_config 
+		WHERE project_id = #{no}
+	</select>
+	<select id="searchCollectionJobById" parameterType="java.lang.String" resultMap="collectionJobInfo">
+		select * from collection_job
+		where id = #{id} 
+	</select>
+	
+	<select id="getRepositoryIdByServiceId"  parameterType="java.lang.String" resultType="java.lang.Integer">
+		select repository_id 
+		from project_config
+		where project_id = #{serviceId} 
+	</select>
+</mapper>

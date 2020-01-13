@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/iteratorWorkloadDeviation.js"></script>
+<style>
+ 	.breadcrumb > .active {
+    	color: #333333;
+	}
+	.breadcrumb {
+	    background-color: #fff;
+	    margin-left: 20px;
+	    margin-right: 20px;
+	    margin-bottom: 0px;
+	    padding: 8px 0px;
+	}
+	.change-chart table.data-table tbody td{
+	    line-height: 16px;
+	    height: 18px;
+	}
+	.change-chart table.data-table thead td {
+		line-height: 16px;
+		height: 18px;
+		white-space: nowrap; 
+	}
+</style>
+</head>
+<body>
+	<ol class="breadcrumb">
+	    <li>路径：迭代管理</li>
+	    <li class="active">迭代工作量偏差</li>
+	</ol>
+	<!-- 表格 -->
+	<div style="margin: 20px;">
+		<div><span>迭代工作量偏差</span></div>
+		<div class="modal-body change-chart" style="width: 100%;padding: 0px;">
+			<table id="iteratorWorkloadDeviation" style="width:100%"  border="0" cellspacing="0" cellpadding="0" class="data-table">
+                 <thead>
+                     <tr bgcolor="#e8e8e8">
+                         <td style="width:10%;">迭代(或时间)</td>
+                         <td >迭代工作量偏差(%)</td>
+                         <td >迭代估算工作量(人天)</td>
+                         <td >迭代实际工作量(人天)</td>
+                         <td >迭代实际工时(人时)</td>
+                     </tr>
+                 </thead>
+                 <tbody>
+                 </tbody>
+	    	</table>
+		</div>
+	</div>
+</body>
+</html>

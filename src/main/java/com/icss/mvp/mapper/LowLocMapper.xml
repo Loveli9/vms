@@ -1,0 +1,1086 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ILowLocDao">
+    <select id="projectNos" resultType="java.lang.String">
+        select
+        t1.No as no
+        from v_project_info t1
+        WHERE
+        1 = 1 AND t1.PROJECT_STATE = '在行'
+        <if test="name!=null and name!=''">
+            AND t1.NAME like concat('%', #{name} ,'%')
+        </if>
+        <if test="pm!=null and pm!=''">
+            AND t1.pm like concat('%', #{pm} , '%')
+        </if>
+        <if test="area != null and area.size() != 0">
+            AND t1.areaCode in
+            <foreach collection="area" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test=" hwDepts != null and hwDepts.size() != 0">
+            AND t1.hwDeptNo IN
+            <foreach collection="hwDepts" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test=" optDepts != null and optDepts.size() != 0">
+            AND t1.optDeptNo IN
+            <foreach collection="optDepts" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    
+	<select id="queryLowLocReasons" resultType="java.lang.String">
+		<!-- select VALUE from code_master_info where NOTE='LowLoc' and CODEKEY='1'; -->
+		select v.value from v_dictionary v where v.code='1' and v.name='低产出人员分析';	
+	</select>
+	
+	<select id="queryNoLocReasons" resultType="java.lang.String">
+		<!-- select VALUE from code_master_info where NOTE='LowLoc' and CODEKEY='0'; -->
+		select v.value from v_dictionary v where v.code='0' and v.name='无产出人员分析';		
+	</select>
+	
+	<select id="queryPDU" parameterType="java.lang.String" resultType="java.lang.String">
+		select PDU_SPDT from project_info where no=#{proNo}
+	</select>
+	
+	<select id="queryMember" parameterType="java.lang.String" resultType="java.util.HashMap">
+		<!-- select NAME,HW_ACCOUNT as account,svn_git_no as svngit from project_members_local 
+		where ROLE='开发工程师' and NO=#{proNo} -->
+		SELECT NAME,HW_ACCOUNT as account,SVN_GIT_NO as svngit
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ROLE='开发工程师' AND NO =#{proNo} AND ps.IS_DELETED = 0
+	</select>
+	
+	<select id="queryTongjiType" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select TYPE from code_gain_type where no=#{proNo} and PARAMETER_ID=160
+	</select>
+	
+	<select id="queryLoc" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(t2.FILE_MODIFYNUM * IFNULL(t3.val, 0)) from svn_log t1 left join svn_log_file_modifynum t2 on t1.`ID` = t2.`SVN_LOG_ID` 
+		LEFT JOIN (SELECT b.name,b.val FROM `sys_dict` a,`sys_dict_item` b 
+		WHERE a.`code` = 'code_type' AND b.`sys_dict_id` = a.`id`) t3
+		ON t3.name = t2.`FILE_TYPE` where t1.AUTHOR=#{account}  and t1.`NO`=#{no} and date_format(t1.COMMITTIME,'%Y%m')<=#{month} -->
+		<![CDATA[
+			select sum(t2.FILE_MODIFYNUM * IFNULL(t3.val, 0)) from svn_log t1 left join svn_log_file_modifynum t2 on t1.`ID` = t2.`SVN_LOG_ID` 
+			LEFT JOIN (select v.`key` as name, v.value as val from v_dictionary v
+			where code = 'code_type') t3
+			ON t3.name = t2.`FILE_TYPE` where t1.AUTHOR=#{account}  and t1.`NO`=#{no} and date_format(t1.COMMITTIME,'%Y%m')<=#{month}
+		]]>
+	</select>
+	
+  	<select id="queryLocWx" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select sum(t2.FILE_MODIFYNUM * IFNULL(t3.val, 0)) from svn_log t1 left join svn_log_file_modifynum t2 on t1.`ID` = t2.`SVN_LOG_ID` 
+		LEFT JOIN (SELECT b.name,b.val FROM `sys_dict` a,`sys_dict_item` b 
+		WHERE a.`code` = 'code_type' AND b.`sys_dict_id` = a.`id`) t3
+		ON t3.name = t2.`FILE_TYPE` where subString(t1.AUTHOR,2)=#{account}  and t1.`NO`=#{no} and date_format(t1.COMMITTIME,'%Y%m')<=#{month} -->
+		<![CDATA[
+			select sum(t2.FILE_MODIFYNUM * IFNULL(t3.val, 0)) from svn_log t1 left join svn_log_file_modifynum t2 on t1.`ID` = t2.`SVN_LOG_ID` 
+			LEFT JOIN (select v.`key` as name, v.value as val from v_dictionary v
+			where code = 'code_type') t3 
+			ON t3.name = t2.`FILE_TYPE` where subString(t1.AUTHOR,2)=#{account}  and t1.`NO`=#{no} and date_format(t1.COMMITTIME,'%Y%m')<=#{month}
+		]]>
+	</select>	
+	
+	<select id="queryLocByMessage" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- SELECT SUM(t1.FILE_MODIFYNUM * IFNULL(t2.val, 0)) FROM svn_log t LEFT JOIN svn_log_file_modifynum t1 ON t.ID = t1.SVN_LOG_ID 
+		LEFT JOIN (SELECT b.name,b.val FROM `sys_dict` a,`sys_dict_item` b 
+		WHERE a.`code` = 'code_type' AND b.`sys_dict_id` = a.`id`) t2 
+		ON t2.name = t1.`FILE_TYPE` WHERE t.no=#{no} and date_format(t1.COMMITTIME,'%Y%m')<=#{month} AND t1.MESSAGE_AUTHOR LIKE concat(concat('%',#{author}),'%') -->
+		<![CDATA[
+			SELECT SUM(t1.FILE_MODIFYNUM * IFNULL(t2.val, 0)) FROM svn_log t LEFT JOIN svn_log_file_modifynum t1 ON t.ID = t1.SVN_LOG_ID 
+			LEFT JOIN (select v.`key` as name, v.value as val from v_dictionary v
+			where code = 'code_type') t2 
+			ON t2.name = t1.`FILE_TYPE` WHERE t.no=#{no} and date_format(t1.COMMITTIME,'%Y%m')<=#{month} AND t1.MESSAGE_AUTHOR LIKE concat(concat('%',#{author}),'%')
+		]]>
+	</select>
+
+	<select id="queryFromLowloc" resultType="com.icss.mvp.entity.LowLoc">
+	<![CDATA[
+		select * from lowloc where projNo=#{proNo} and account=#{account} and date_format(month,'%Y%m')=#{month} and loc<#{standard}
+	]]>	
+	</select>
+ 
+ 	<insert id="saveLowLoc" parameterType="com.icss.mvp.entity.LowLoc">
+ 		insert into lowloc values (#{lowloc.projNo},#{lowloc.pdu},#{lowloc.name},#{lowloc.account},#{lowloc.loc},#{lowloc.sureLowloc},#{lowloc.lowLocReason},#{lowloc.remark},#{lowloc.month},#{lowloc.standard})
+ 	</insert>
+
+	<delete id="deleteHavedLowLoc" parameterType="java.lang.String">
+		delete from lowloc where date_format(month,'%Y%m')=#{month} and projNo=#{proNo}
+	</delete>
+	
+	<select id="queryCountnoAndCountlow" resultType="java.util.HashMap">
+		select pdu,sum(sureLowloc='无产出人员') as countno,sum(sureLowloc='低产出人员') as countlow
+			from lowloc group by pdu
+	</select>
+ 
+    <select id="queryCountnoAndCountlow1" resultType="java.util.HashMap">
+		select pdu,sum(sureLowloc='无产出人员') as countno,sum(sureLowloc='低产出人员') as countlow
+			from lowloc where projNO=#{no} and date_format(month,'%Y%m')=#{month} group by pdu
+	</select>
+	
+	<select id="queryPDUs" resultType="java.lang.String">
+		select PDU_SPDT from project_info group by PDU_SPDT
+	</select>
+ 
+    <select id="queryPDUs1" resultType="java.lang.String">
+		select PDU_SPDT from project_info where NO=#{no}
+	</select>
+	
+	<select id="queryPDUNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) as personum from lowloc where pdu=#{pdu}
+	</select>
+ 
+    <select id="AnalysisSummary" resultType="java.util.HashMap">
+     SELECT * FROM 
+     (SELECT l.`name` AS staff,l.account AS account,p.NAME AS department,p.HWPDU AS subproduct,p.PDU_SPDT AS spdu,
+        p.HWZPDU AS project
+     FROM lowloc l LEFT JOIN project_info p ON l.projNo = p.`No`
+     WHERE l.projNo=#{line} AND l.sureLowloc =#{column} AND DATE_FORMAT(l.MONTH,'%Y%m')=#{month}
+		<include refid="sql_where"/>
+     ) low 
+     LEFT JOIN
+    (SELECT AUTHOR,FILE_TYPE AS stype,FILE_MODIFYNUM AS counts
+     FROM svn_log_file_modifynum 
+     WHERE DATE_FORMAT(COMMITTIME,'%Y%m') =#{month}
+     ) s ON low.account= s.AUTHOR
+    </select>
+ 
+ <select id="zeroMember" resultType="java.util.HashMap">
+     SELECT * FROM 
+     (SELECT l.`name` AS staff,l.account AS account,p.NAME AS department,p.HWPDU AS subproduct,p.PDU_SPDT AS spdu,
+        p.HWZPDU AS project
+     FROM lowloc l LEFT JOIN project_info p ON l.projNo = p.`NO`
+     WHERE l.projNo=#{line} AND l.sureLowloc ='无产出人员' AND DATE_FORMAT(l.MONTH,'%Y%m')=#{month}
+     AND lowLocReason = #{column}
+	 <include refid="sql_where"/>
+     ) low 
+     LEFT JOIN
+    (SELECT AUTHOR,FILE_TYPE AS stype,FILE_MODIFYNUM AS counts
+     FROM svn_log_file_modifynum 
+     WHERE DATE_FORMAT(COMMITTIME,'%Y%m') =#{month}
+     ) s ON low.account= s.AUTHOR
+    </select>
+ 
+ <select id="lowMember" resultType="java.util.HashMap">
+     SELECT * FROM
+	 (SELECT l.`name` AS staff,l.account AS account,p.NAME AS department,p.HWPDU AS subproduct,p.PDU_SPDT AS spdu,
+	 p.HWZPDU AS project
+	 FROM lowloc l LEFT JOIN project_info p ON l.projNo = p.`NO`
+     WHERE l.projNo=#{line} AND l.sureLowloc ='低产出人员' AND DATE_FORMAT(l.MONTH,'%Y%m')=#{month}
+     AND lowLocReason = #{column}
+	 <include refid="sql_where"/>
+     ) low 
+     LEFT JOIN
+    (SELECT AUTHOR,FILE_TYPE AS stype,FILE_MODIFYNUM AS counts
+     FROM svn_log_file_modifynum 
+     WHERE DATE_FORMAT(COMMITTIME,'%Y%m') =#{month}
+     ) s ON low.account= s.AUTHOR
+    </select>
+ 
+    <select id="queryPDUNum1" resultType="java.util.HashMap">
+	    <!-- SELECT * FROM 
+	    (SELECT p.`NO` AS nos,p.PDU_SPDT as spdu,l.sureLowloc, COUNT(DISTINCT (l.`name`)) AS counts
+	    FROM lowloc l LEFT JOIN project_info p
+	    ON l.projNo = p.`NO`
+	    WHERE  p.`PDU_SPDT` IS NOT NULL and date_format(month,'%Y%m')=#{month}
+	    GROUP BY  p.PDU_SPDT,l.sureLowloc,l.`month`
+	    ORDER BY l.`month`) low INNER JOIN 
+	    (SELECT p.PDU_SPDT as spdu, COUNT(DISTINCT(m.`name`)) AS num FROM `project_members_local` m LEFT JOIN project_info p
+	    ON m.no = p.`NO`
+	    WHERE p.`PDU_SPDT` IS NOT NULL
+			<include refid="sql_where"/>
+	    GROUP BY p.pdu_spdt) mem
+	    ON low.spdu  = mem.spdu -->
+	    SELECT * FROM 
+	    (SELECT p.`NO` AS nos,p.PDU_SPDT as spdu,l.sureLowloc, COUNT(DISTINCT (l.`name`)) AS counts
+	    FROM lowloc l LEFT JOIN project_info p
+	    ON l.projNo = p.`NO`
+	    WHERE  p.`PDU_SPDT` IS NOT NULL and date_format(month,'%Y%m')=#{month}
+	    GROUP BY  p.PDU_SPDT,l.sureLowloc,l.`month`
+	    ORDER BY l.`month`) low INNER JOIN 
+	    (SELECT p.PDU_SPDT as spdu, COUNT(DISTINCT(m.`name`)) AS num 
+		 FROM (SELECT NAME as name,NO as no
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.IS_DELETED = 0) m LEFT JOIN project_info p
+	    ON m.no = p.`NO`
+	    WHERE p.`PDU_SPDT` IS NOT NULL
+	    	<include refid="sql_where"/>
+	    GROUP BY p.pdu_spdt) mem
+	    ON low.spdu  = mem.spdu
+	</select>
+	
+	<select id="queryCountnoAndCount" resultType="java.util.HashMap">
+	    <!-- SELECT * FROM 
+	    (SELECT p.`No` AS nos,p.pdu_spdt as spdu,l.sureLowloc, COUNT(DISTINCT (l.`name`)) AS counts
+	    FROM lowloc l LEFT JOIN v_project_info p 
+	    ON l.projNo = p.`No`
+	    WHERE  p.`PDU_SPDT` IS NOT NULL and date_format(month,'%Y%m')=#{month} and l.projNo IN ${no}
+	    GROUP BY  p.pdu_spdt,l.sureLowloc,l.`month`
+	    ORDER BY l.`month`) low INNER JOIN 
+	    (SELECT p.pdu_spdt as spdu, COUNT(DISTINCT(m.`name`)) AS num FROM `project_members_local` m LEFT JOIN v_project_info p 
+	    ON m.no = p.`No`
+	    WHERE p.`PDU_SPDT` IS NOT NULL
+	    GROUP BY p.pdu_spdt) mem
+	    ON low.spdu  = mem.spdu -->
+	    SELECT * FROM 
+	    (SELECT p.`No` AS nos,p.pdu_spdt as spdu,l.sureLowloc, COUNT(DISTINCT (l.`name`)) AS counts
+	    FROM lowloc l LEFT JOIN v_project_info p 
+	    ON l.projNo = p.`No`
+	    WHERE  p.`PDU_SPDT` IS NOT NULL and date_format(month,'%Y%m')=#{month} and l.projNo IN ${no}
+	    GROUP BY  p.pdu_spdt,l.sureLowloc,l.`month`
+	    ORDER BY l.`month`) low INNER JOIN 
+	    (SELECT p.pdu_spdt as spdu, COUNT(DISTINCT(m.`name`)) AS num FROM (SELECT NAME as name,NO as no
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.IS_DELETED = 0) m LEFT JOIN v_project_info p 
+	    ON m.no = p.`No`
+	    WHERE p.`PDU_SPDT` IS NOT NULL
+	    GROUP BY p.pdu_spdt) mem
+	    ON low.spdu  = mem.spdu
+	</select>
+ 
+	<select id="queryProName" parameterType="java.lang.String" resultType="java.lang.String">
+		select NAME from project_info where no=#{proNo}
+	</select>
+ 
+	<select id="queryPDUfromLowloc" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT l.projNo AS nos,p.pdu_spdt AS spdu,l.lowLocReason AS reason, COUNT(DISTINCT (l.`name`)) AS counts 
+        FROM lowloc l LEFT JOIN v_project_info p ON l.projNo = p.`No`
+        WHERE p.`PDU_SPDT` IS NOT NULL AND l.sureLowLoc = '无产出人员'   AND DATE_FORMAT(MONTH,'%Y%m')=#{month} AND l.`projNo` IN ${no}
+        GROUP BY p.pdu_spdt,l.lowLocReason
+	</select>
+    <select id="queryPDUfromLowloczero" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT l.projNo AS nos,p.pdu_spdt AS spdu,l.lowLocReason AS reason, COUNT(DISTINCT (l.`name`)) AS counts 
+        FROM lowloc l LEFT JOIN v_project_info p ON l.projNo = p.`No`
+        WHERE p.`PDU_SPDT` IS NOT NULL AND l.sureLowLoc = '低产出人员'   AND DATE_FORMAT(MONTH,'%Y%m')=#{month} AND l.`projNo` IN ${no}
+        GROUP BY p.pdu_spdt,l.lowLocReason
+	</select>
+    <select id="queryPDUfromLowloc2" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT l.projNo as nos,p.pdu_spdt AS spdu,l.lowLocReason AS reason, COUNT(DISTINCT (l.`name`)) AS counts 
+        FROM lowloc l LEFT JOIN project_info p ON l.projNo = p.`NO`
+        WHERE p.`PDU_SPDT` IS NOT NULL AND l.sureLowLoc = '无产出人员'   AND DATE_FORMAT(MONTH,'%Y%m')=#{month}
+		<include refid="sql_where"/>
+        GROUP BY p.pdu_spdt,l.lowLocReason
+	</select>
+ 
+    <select id="queryPDUfromLowloc3" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT l.projNo as nos,p.pdu_spdt AS spdu,l.lowLocReason AS reason, COUNT(DISTINCT (l.`name`)) AS counts 
+        FROM lowloc l LEFT JOIN project_info p ON l.projNo = p.`NO`
+        WHERE p.`PDU_SPDT` IS NOT NULL AND l.sureLowLoc = '低产出人员'   AND DATE_FORMAT(MONTH,'%Y%m')=#{month}
+		<include refid="sql_where"/>
+        GROUP BY p.pdu_spdt,l.lowLocReason
+	</select>
+ 
+	<select id="queryLowlocNum" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select sureLowloc,lowLocReason,count(*) as num from lowloc 
+			where pdu=#{pdu} group by sureLowloc,lowLocReason
+	</select>
+ 
+	<select id="queryLowlocCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) as num from lowloc where pdu=#{pdu} and sureLowloc=#{type};
+	</select>
+ 
+	<!-- <select id="queryReasonCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from lowloc 
+			where sureLowloc=#{sureLowloc} and lowLocReason=#{lowLocReason}
+	</select> -->
+ 
+	<select id="queryLowlocDetail" resultType="com.icss.mvp.entity.LowLoc">
+		select * from lowloc WHERE DATE_FORMAT(MONTH,'%Y%m')=#{month} AND projNo IN ${no} order by pdu,month
+	</select>
+ 
+	<select id="queryDoingPro" resultType="java.util.HashMap">
+		SELECT NO,NAME,PM,PDU FROM(
+			SELECT PRO.NO,PRO.NAME AS NAME,PRO.PDU_SPDT AS PDU,
+					(SELECT PROJECT_MEMBER.NAME FROM PROJECT_MEMBER WHERE PROJECT_MEMBER.NO = PRO.NO 
+					AND PROJECT_MEMBER.POSITION = 'PM' LIMIT 1) AS PM 
+			FROM PROJECT_INFO PRO where END_DATE>now()
+		) B order by PDU;
+	</select>
+ 
+ 
+ 
+	<select id="queryCountEverymonth" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT  DISTINCT p.no as nos,p.name as entryName,p.pdu_spdt AS spdu,pm,num
+        FROM project_info p
+        LEFT JOIN   
+        (SELECT projNo, COUNT(DISTINCT (NAME)) AS num
+        FROM lowloc
+        WHERE DATE_FORMAT(MONTH,'%Y%m')=#{month}
+        GROUP BY projNo) l ON p.no = l.projNo
+        WHERE p.No = l.projNo
+		<include refid="sql_where"/>
+	</select>
+ 
+	<select id="queryCountFromLowloc" resultType="java.util.HashMap">
+		SELECT sureLowloc,COUNT(*) AS alls FROM lowloc l 
+        INNER JOIN project_info p ON l.projNo = p.`No`
+        WHERE DATE_FORMAT(l.month,'%Y%m') =#{month}
+		<include refid="sql_where"/>
+        GROUP BY sureLowloc
+	</select>
+ 
+	<select id="queryCountByMonth" resultType="java.util.HashMap">
+		<!-- select month,sum(sureLowloc='无产出人员') as countno,sum(sureLowloc='低产出人员') as countlow
+			from lowloc group by month -->
+		SELECT month,SUM(sureLowloc='无产出人员') AS countno,SUM(sureLowloc='低产出人员') AS countlow
+        FROM lowloc l
+        INNER JOIN project_info p ON l.projNo = p.`No`
+        WHERE 1=1
+		<include refid="sql_where"/>
+        GROUP BY month
+	</select>
+	
+	<select id="queryEveryReasonForNo" resultType="java.util.HashMap">
+		select lowLocReason,count(*) as nonum from lowloc where sureLowloc='无产出人员' group by lowLocReason
+	</select>
+ 
+	<select id="queryEveryReasonForLow" resultType="java.util.HashMap">
+		select lowLocReason,count(*) as lownum from lowloc where sureLowloc='低产出人员' group by lowLocReason
+	</select>
+ 
+	<select id="lowlocBT" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select lowLocReason,count(*) as num from lowloc where sureLowloc='低产出人员' 
+			and projNo in(select NO from project_info where 1=1	
+	]]>
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		and HWPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		and HWZPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		and PDU_SPDT in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" bu != null and bu.size() != 0">
+		and BU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		and PDU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		and DU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=4 AND DEPT_ID IN 
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<![CDATA[
+		) 
+	]]>
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	<![CDATA[
+		group by lowLocReason
+	]]>
+	</select>
+ 
+	<select id="nolocBT" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select lowLocReason,count(*) as num from lowloc where sureLowloc='无产出人员' 
+			and projNo in(select NO from project_info where 1=1	
+	]]>
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		and HWPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		and HWZPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		and PDU_SPDT in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" bu != null and bu.size() != 0">
+		and BU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		and PDU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		and DU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=4 AND DEPT_ID IN 
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<![CDATA[
+		) 
+	]]>
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	<![CDATA[
+		group by lowLocReason
+	]]>
+	</select>
+ 
+	<select id="kaifaNum" parameterType = "java.util.HashMap" resultType="java.lang.Integer">
+		<![CDATA[
+			<!-- select count(*) as num from project_members_local where ROLE='开发工程师' and NO in(
+			select NO from project_info where 1=1 -->
+			select count(*) as num from project_staff where ROLE='开发工程师' and IS_DELETED = 0 and NO in(
+			select NO from project_info where 1=1)
+		]]>
+		<if test="area != null and area.size() != 0">
+			and AREA in (select area_name from tbl_area where 1=1 and area_code in
+			<foreach collection="area" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test="hwpdu != null and hwpdu.size() != 0">
+			and HWPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+			<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" hwzpdu != null and hwzpdu.size() != 0">
+			and HWZPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+			<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" pduSpdt != null and pduSpdt.size() != 0">
+			and PDU_SPDT in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+			<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" bu != null and bu.size() != 0">
+			and BU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+			<foreach collection="bu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" pdu != null and pdu.size() != 0">
+			and PDU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+			<foreach collection="pdu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" du != null and du.size() != 0">
+			and DU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=4 AND DEPT_ID IN 
+			<foreach collection="du" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<![CDATA[
+			)
+		]]>
+	</select>
+
+	<select id="lowlocPDU" parameterType = "java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select sum(sureLowloc='无产出人员') as countno,sum(sureLowloc='低产出人员') as countlow
+			from lowloc where projNo=#{proNo} and subStr(month,1,7)=#{month}
+	]]>
+	</select>
+	
+	<select id="loadZBM" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select no,HWZPDU,PDU_SPDT as PDUSPDT,PDU,DU from project_info where 1=1
+	]]>
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		and HWPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		and HWZPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		and PDU_SPDT in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" bu != null and bu.size() != 0">
+		and BU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		and PDU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		and DU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=4 AND DEPT_ID IN 
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	</select>
+	
+	<select id="getPDU" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[
+			select no,PDU from project_info where PROJECT_STATE='在行'
+		]]>
+		<if test=" bu != null and bu.size() != 0">
+			and BU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN
+			<foreach collection="bu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>
+		<if test="area != null and area.size() != 0">
+			and AREA in (select area_name from tbl_area where 1=1 and area_code in
+			<foreach collection="area" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>
+	</select>
+	
+	<select id="getAllPDU" parameterType = "java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select DEPT_ID as deptId,DEPT_NAME as deptName from op_department where DEPT_LEVEL=3 and ENABLE='1' and PARENT_DEPT_ID in
+	]]>
+	<if test=" bu != null and bu.size() != 0">
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+	
+	<select id="getDU" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select no,DU from project_info where 1=1
+	]]>
+	<if test=" bu != null and bu.size() != 0">
+		and BU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		and PDU in (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	</select>
+	
+	<select id="getAllDU" parameterType = "java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select DEPT_ID as deptId,DEPT_NAME as deptName from op_department where DEPT_LEVEL=4 and ENABLE='1' and PARENT_DEPT_ID in
+	]]>
+	<if test=" pdu != null and pdu.size() != 0">
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+	
+	<select id="getHWZPDU" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select no,HWZPDU from project_info where 1=1
+	]]>
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		and HWPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>		
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	</select>
+	
+	<select id="getAllHWZPDU" parameterType = "java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select dept_id as deptId,dept_name as deptName from sys_hwdept where dept_level=2 and parent_id in
+	]]>
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+	
+	<select id="getAllAreas" parameterType = "java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select area_code as deptId,area_name as deptName from tbl_area where area_code in
+	]]>
+	<if test="area != null and area.size() != 0">
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+	
+	<select id="getPDUSPDT" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select no,PDU_SPDT as PDUSPDT from project_info where 1=1
+	]]>
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		and HWPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		and HWZPDU in (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	</select>
+	
+	<select id="getAllPDUSPDT" parameterType = "java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select dept_id as deptId,dept_name as deptName from sys_hwdept where dept_level=3 and parent_id in
+	]]>
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+	
+	<select id="getAllMembers" parameterType="java.lang.String" resultType="java.lang.Integer">
+	<![CDATA[
+		<!-- select count(*) from project_members_local where no=#{no} -->
+		select count(*) from project_staff where no=#{no} and IS_DELETED = 0
+	]]>
+	</select>
+	
+	<select id="getLowlocMembers" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select sum(sureLowloc='无产出人员') as countno,sum(sureLowloc='低产出人员') as countlow
+			from lowloc where subStr(month,1,7)=#{month} and projNo=#{no}
+	]]>
+	</select>
+	
+	<select id="lowlocBTfromViewOP" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select lowLocReason,count(*) as num from v_lowloc_op where sureLowloc='低产出人员'
+	]]>
+	<if test=" bu != null and bu.size() != 0">
+		and trunk_id in 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		and branch_id in 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		and dept_id in  
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	<![CDATA[
+		group by lowLocReason
+	]]>
+	</select>
+ 
+ 	<select id="lowlocBTfromViewHW" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select lowLocReason,count(*) as num from v_lowloc_hw where sureLowloc='低产出人员'
+	]]>
+	<if test=" hwpdu != null and hwpdu.size() != 0">
+		and trunk_id in 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		and branch_id in 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		and dept_id in  
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	<![CDATA[
+		group by lowLocReason
+	]]>
+	</select>
+ 
+ 	<select id="lowlocBTfromViewArea" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select lowLocReason,count(*) as num from v_lowloc_area where sureLowloc='低产出人员'
+	]]>
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	<![CDATA[
+		group by lowLocReason
+	]]>
+	</select>
+ 
+	<select id="nolocBTfromViewOP" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select lowLocReason,count(*) as num from v_lowloc_op where sureLowloc='无产出人员' 
+	]]>
+	<if test=" bu != null and bu.size() != 0">
+		and trunk_id in 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		and branch_id in 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		and dept_id in  
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	<![CDATA[
+		group by lowLocReason
+	]]>
+	</select>
+	
+	<select id="nolocBTfromViewHW" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select lowLocReason,count(*) as num from v_lowloc_hw where sureLowloc='无产出人员' 
+	]]>
+	<if test=" hwpdu != null and hwpdu.size() != 0">
+		and trunk_id in 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		and branch_id in 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		and dept_id in  
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	<![CDATA[
+		group by lowLocReason
+	]]>
+	</select>
+	
+	<select id="nolocBTfromViewArea" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select lowLocReason,count(*) as num from v_lowloc_area where sureLowloc='无产出人员' 
+	]]>
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	<![CDATA[
+		group by lowLocReason
+	]]>
+	</select>
+	
+	<select id="loadZXTfromViewOP" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select month,sum(sureLowloc='无产出人员') as countno,sum(sureLowloc='低产出人员') as countlow
+			from v_lowloc_op where 1=1
+	]]>
+	<if test=" bu != null and bu.size() != 0">
+		and trunk_id in 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		and branch_id in 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		and dept_id in  
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<![CDATA[
+		group by month order by month
+	]]>
+	</select>
+ 
+	<select id="loadZXTfromViewHW" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select month,sum(sureLowloc='无产出人员') as countno,sum(sureLowloc='低产出人员') as countlow
+			from v_lowloc_hw where 1=1
+	]]>
+	<if test=" hwpdu != null and hwpdu.size() != 0">
+		and trunk_id in 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		and branch_id in 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		and dept_id in  
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	<![CDATA[
+		group by month order by month
+	]]>
+	</select>
+	
+	<select id="loadZXTfromViewArea" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select month,sum(sureLowloc='无产出人员') as countno,sum(sureLowloc='低产出人员') as countlow
+			from v_lowloc_area where 1=1
+	]]>
+	<if test="area != null and area.size() != 0">
+		and AREA in (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<![CDATA[
+		group by month order by month
+	]]>
+	</select>
+	
+	<select id="lowlocAllProjNofromOPbyPDU" parameterType = "java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select projNo from v_lowloc_op where branch_id=#{id} group by projNo
+	]]>
+	</select>
+ 
+	<select id="lowlocAllProjNofromOPbyDU" parameterType = "java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select projNo from v_lowloc_op where dept_id=#{id} group by projNo
+	]]>
+	</select>
+ 
+	<select id="lowlocAllProjNofromHWbyHWZPDU" parameterType = "java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select projNo from v_lowloc_hw where branch_id=#{id} group by projNo
+	]]>
+	</select>
+ 
+	<select id="lowlocAllProjNofromHWbyPDUSPDT" parameterType = "java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select projNo from v_lowloc_hw where dept_id=#{id} group by projNo
+	]]>
+	</select>
+ 
+	<select id="lowlocAllProjNofromArea" parameterType = "java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select projNo from v_lowloc_area where AREA=(select area_name from tbl_area where area_code=#{id}) group by projNo
+	]]>
+	</select>
+
+	<select id="queryCountMonthByNo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		<!-- SELECT  DISTINCT p.name,pm,bumen,num
+		FROM v_project_info p
+		LEFT JOIN (SELECT projNo,pdu AS bumen, COUNT(DISTINCT (NAME)) AS num FROM lowloc
+		WHERE DATE_FORMAT(MONTH,'%Y%m')=#{mouth}  GROUP BY projNo) l ON p.no = l.projNo
+		LEFT JOIN project_members_local q ON p.no = q.NO
+		WHERE projNO=#{no} -->
+		SELECT  DISTINCT p.name,pm,bumen,num
+		FROM v_project_info p
+		LEFT JOIN (SELECT projNo,pdu AS bumen, COUNT(DISTINCT (NAME)) AS num FROM lowloc
+		WHERE DATE_FORMAT(MONTH,'%Y%m')=#{mouth} GROUP BY projNo) l ON p.no = l.projNo
+		LEFT JOIN project_staff q ON p.no = q.NO
+		WHERE projNO=#{no} and q.IS_DELETED = 0
+	</select>
+
+	<sql id="sql_where">
+		<if test="hwpduId != null and hwpduId.size() != 0">
+			AND `p`.`HWPDUID` IN
+			<foreach collection="hwpduId" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="hwzpduId != null and hwzpduId.size() != 0">
+			AND `p`.`HWZPDUID` IN
+			<foreach collection="hwzpduId" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="pduSpdtId != null and pduSpdtId.size() != 0">
+			AND `p`.`PDU_SPDTID` IN
+			<foreach collection="pduSpdtId" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="buId != null and buId.size() != 0">
+			AND `p`.`BUID` IN
+			<foreach collection="buId" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="pduId != null and pduId.size() != 0">
+			AND `p`.`PDUID` IN
+			<foreach collection="pduId" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="duId != null and duId.size() != 0">
+			AND `p`.`DUID` IN
+			<foreach collection="duId" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="areaId != null and areaId.size() != 0">
+			AND `p`.`AREAID` IN
+			<foreach collection="areaId" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+</mapper>

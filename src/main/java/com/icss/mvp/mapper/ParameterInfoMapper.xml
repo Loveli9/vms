@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IParameterInfo">
+
+	<select id="queryParameterInfo" parameterType="com.icss.mvp.entity.ParameterInfo"
+		resultType="com.icss.mvp.entity.ParameterInfo">
+		SELECT * from
+		parameter_info
+	</select>
+	
+	<select id="queryParamId" parameterType="int"
+		resultType="com.icss.mvp.entity.ParameterInfo">
+		SELECT * from
+		parameter_info where id=#{paramId} 
+	</select>
+	
+	<select id="queryid" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT ID AS PARAID FROM PARAMETER_INFO WHERE NAME=#{paraName}
+	</select>
+	
+	<select id="queryByIds" resultType="java.util.HashMap">
+		SELECT * FROM parameter_info WHERE PARAMETER_ID in (#{paraId})
+	</select>
+	<select id="processCapability"  resultType="java.util.HashMap">
+		SELECT * FROM PROJECT_PARAMETER_VALUE_NEW WHERE NO=#{projNo} AND PARAMETER_ID=#{paraId}
+	</select>
+	<select id="queryProcessCapability"  resultType="java.util.HashMap">
+		SELECT a.* FROM PROJECT_PARAMETER_VALUE_NEW a,
+		(SELECT MAX(MONTH) as MONTH,PARAMETER_ID 
+		from PROJECT_PARAMETER_VALUE_NEW 
+		where NO=#{projNo} AND PARAMETER_ID in (#{parameters}) group by PARAMETER_ID) b  
+		WHERE a.MONTH=b.MONTH and a.PARAMETER_ID=b.PARAMETER_ID and NO=#{projNo};
+	</select>
+	
+</mapper>

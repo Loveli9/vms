@@ -1,0 +1,1040 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" type="text/css"
+	href="../../resources/bootstrap/bootstrap.min.css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<link rel="stylesheet" href="css/Icp-ci-Input.css" type="text/css" />
+<link rel="stylesheet"
+	href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript"
+	src="../../resources/jquery/jquery.form.js"></script>
+<script type="text/javascript"
+	src="../../resources/easyui/jquery.easyui.min.js"></script>
+<!-- 消息提示插件 -->
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript"
+	src="../../resources/js/comm/bootstrap-message.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript"
+	src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript"
+	src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/collectionService.js"></script>
+<style>
+.trtable {
+	display: table;
+	width: 100%;
+	table-layout: fixed;
+	text-align: center;
+}
+
+div[id='tab-cjpz']>div>div>span {
+	width: 120px;
+	display: block;
+	line-height: 30px;
+	float: left;
+}
+
+.thumb {
+	background-color: #f7f8f8;
+	padding: 10px 0px;
+}
+
+.change-chart table {
+	table-layout: fixed;
+}
+
+.change-chart table.data-table tbody td {
+	line-height: 16px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.change-chart table.data-table thead td {
+	line-height: 16px;
+}
+
+.config1 {
+	margin: 0px 20px;
+}
+
+.config2 {
+	display: grid;
+	width: 100%;
+	padding: 8px;
+	text-align: right;
+	padding-right: 15%;
+}
+
+.config2>div {
+	margin-bottom: 0px;
+	margin-top: 5px;
+	line-height: 20px;
+}
+
+.col-sm-2 {
+	width: 13%;
+	text-align: right;
+	line-height: 35px;
+}
+
+.col-sm-offset-2 {
+	margin-left: 13%;
+}
+
+.checkbox {
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
+.configInput {
+	height: 38px;
+	width: 80%;
+	margin-left: 20px;
+}
+
+.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover {
+	border-color: #f00;
+	border-width: 3px;
+	border-style: solid;
+}
+
+.hasDate {
+	border-color: #ffffff;
+	border-width: 3px;
+	border-style: solid;
+}
+
+.hasDateYuan {
+	background-color: #c5c5c5
+}
+
+.nav>li>a, .nav>li>a:hover {
+	z-index: -1;
+	border-radius: 5px;
+	width: 135px;
+	height: 85px;
+	line-height: 50px;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.nav>li {
+	margin-right: 20px;
+}
+
+.divgezi {
+	float: left;
+	width: 280px;
+	height: 140px;
+	margin: 10px;
+	border-color: #ddd;
+	border-width: 1px;
+	border-radius: 10px;
+	border-style: solid;
+	background-color: #f9f9f9;
+}
+
+.divgezi>a, .divgezi>a:focus, .divgezi>a:hover {
+	width: 100%;
+	height: 100%;
+	display: block;
+	color: #000000;
+	text-decoration: none;
+}
+
+.JobName {
+	margin-left: 20px;
+	margin-top: 5px;
+	color: #000000;
+	font-size: 16px;
+}
+
+.cjwcd {
+	float: left;
+	text-align: center;
+	border-right: 3px #e2e3e4 solid;
+	width: 50%;
+	height: 55px;
+}
+
+.caijiType {
+	float: left;
+	padding-left: 10px;
+	font-size: 12px;
+}
+
+.footType {
+	background-color: #c1c1c1;
+	height: 35px;
+	line-height: 35px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.startCollect {
+	float: right;
+	margin-right: 5px;
+	border: 1px #e41f2b solid;
+	background-color: #e41f2b;
+	color: white;
+	border-radius: 5px;
+	width: 80px;
+	height: 25px;
+	line-height: 23px;
+	margin-top: 5px;
+	font-size: 12px;
+	outline: none;
+}
+
+.startCollect:hover {
+	background-color: #ff0000;
+	color: #ffffff;
+}
+
+.cancelButton {
+	background-color: #ffffff;
+	color: #e41f2b;
+	margin-left: 20px;
+}
+
+.floatNoButton {
+	float: none;
+}
+
+.Button {
+	width: 100px;
+	height: 30px;
+	line-height: 28px;
+}
+
+.glyphicon {
+	margin-top: 7px;
+	font-size: 20px;
+	float: right;
+	margin-right: 10px;
+	color: #fff;
+}
+
+.glyphiconNew {
+	margin-top: 7px;
+	font-size: 20px;
+	color: #f00;
+	float: none;
+	margin: 0px 10px;
+}
+
+.sign {
+	float: right;
+	display: inline-block;
+	margin-right: 10px;
+	margin-top: 5px;
+	border-radius: 50px;
+	width: 10px;
+	height: 10px;
+}
+
+.marginSign {
+	float: right;
+	display: inline-block;
+	border-radius: 50px;
+	width: 30px;
+	height: 30px;
+	margin-top: -39px;
+	margin-right: -11px;
+	color: #ffffff;
+	z-index: 5;
+}
+
+.sign-green {
+	background-color: #1adc21;
+}
+
+.sign-yellow {
+	background-color: #f7b547;
+}
+
+.sign-red {
+	background-color: #ff0000;
+}
+
+.logoBack {
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+
+.logosvn {
+	background-image: url(images/SVN.png);
+}
+
+.logogit {
+	background-image: url(images/GIT.png);
+}
+
+.logodts {
+	background-image: url(images/DTS.png);
+}
+
+.logotmss {
+	background-image: url(images/TMSS.png);
+}
+
+.logoicp {
+	background-image: url(images/ICP.png);
+}
+
+.logosmartIDE {
+	background-image: url(images/SmartIDE.png);
+}
+
+.logoyunlong {
+	background-image: url(images/yunlong.png);
+}
+
+.breadcrumb {
+	background-color: #fff;
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-bottom: 0px;
+	padding: 8px 0px;
+}
+
+.selectNum {
+	width: 25px;
+	height: 25px;
+	line-height: 25px;
+	margin-top: -14px;
+	margin-left: 88px;
+	background-color: #c5c5c5;
+	border-radius: 50%;
+	font-size: 16px;
+	color: #ffffff;
+}
+</style>
+<script type="text/javascript">
+
+
+	$(document).on("click", "ul.navbar-nav li", function() {
+		$("ul.navbar-nav li").removeClass("active");
+		_.each($("ul.navbar-nav li"), function(tab, index) {
+			$("#" + $(tab).attr("tabname")).css('display', 'none');
+		});
+		$(this).addClass("active");
+		var id = $(this).attr("tabname");
+		$("#" + id).css('display', 'block');
+	});
+	$(document).on("click", "#newJob", function() {
+		$("#svnTable tbody tr").remove();
+		$("#gitTable tbody tr").remove();
+		$("#dtsTable tbody tr").remove();
+		$("#tmssTable tbody tr").remove();
+		$("#icp-ciTable tbody tr").remove();
+		$("#smartIDETable tbody tr").remove();
+		$("#yunlongTable tbody tr").remove();
+		$("#colletionName").val("");
+		$("li[tabname^=tab-] a").removeClass("hasDate");
+		$("li[tabname^=tab-] a div").css("display", "none");
+
+		$("#step-1").css('display', 'none');
+		$("#step-2").css('display', 'block');
+	});
+</script>
+</head>
+<body>
+	<!-- step-1,采集任务展示页面 -->
+	<div id="step-1">
+		<ol class="breadcrumb" id="itemPath">
+			<li>项目</li>
+			<li>采集</li>
+			<li class="active">采集配置任务</li>
+		</ol>
+
+		<div id="tab-one"
+			style="margin: 20px; display: inline-table; width: 1000px;">
+			<div class="divgezi" style="border-style: dashed;">
+				<a id="newJob" href="#" style="text-align: center; color: #b1b1b1;">
+					<div
+						style="margin-top: 20%; margin-left: 45%; width: 10%; border-top: 2px #b1b1b1 solid;"></div>
+					<div
+						style="margin-top: -5%; margin-left: 50%; height: 20%; border-left: 2px #b1b1b1 solid;"></div>
+					<span style="">新建任务</span>
+				</a>
+			</div>
+			<div name="collectionJobModu" class="divgezi">
+				<a id="editJob" href="#" style="width: auto; height: auto;">
+					<div style="height: 100px; color: #b1b1b1;">
+						<div class="JobName">
+							任务名称
+							<div class="sign sign-green"></div>
+						</div>
+
+						<div style="margin-left: 20px;">最近采集时间：2018-07-24</div>
+						<div class="cjwcd">
+							<div style="font-size: 24px; color: #000000;">100%</div>
+							<div style="font-size: 12px;">采集完成度</div>
+						</div>
+						<div class="caijiType">
+							<div>SVN</div>
+							<div>GIT</div>
+							<div>TMSS</div>
+						</div>
+						<div class="caijiType">
+							<div>SVN</div>
+							<div>GIT</div>
+							<div>TMSS</div>
+						</div>
+					</div>
+				</a>
+				<div class="footType">
+					<button type="button" id="startCollect" class="startCollect">开始采集</button>
+					<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+					<span class="glyphicon glyphicon-duplicate" aria-hidden="true"></span>
+					<a id="editJob1" href="#"><span
+						class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- step-2,配置页面 -->
+	<div id="step-2" style="display: none;">
+		<ol class="breadcrumb" id="itemPath">
+			<li>项目</li>
+			<li>采集</li>
+			<li class="active">新建任务</li>
+		</ol>
+		<div>
+			<div style="float: left; margin: 20px; font-weight: 700;">
+				<label class="col-lg-3 control-label"
+					style="width: 115px; padding-left: 0px;"><span
+					style="color: red; margin-right: 3px;">*</span>任务名称:</label>
+			</div>
+			<div style="height: 80px;">
+				<div class="col-sm-10"
+					style="margin-top: 15px; padding-left: 0px; padding-right: 175px;">
+					<input type="text" id="colletionName" class="form-control"
+						placeholder="请输入采集任务名称" />
+				</div>
+			</div>
+		</div>
+		<div>
+			<div style="float: left; margin: 0px 20px; font-weight: 700;">
+				<label class="col-lg-3 control-label"
+					style="width: 115px; padding-left: 0px;"><span
+					style="color: red; margin-right: 3px;">*</span>选择采集项:</label>
+			</div>
+			<div style="height: 210px; margin: 10px; margin-bottom: 15px;">
+				<ul class="nav navbar-nav" style="font-size: 16px; width: 80%;">
+					<li tabname="tab-svn" class="active"><a href="#"
+						class="logoBack logosvn">
+							<div class="selectNum" style="display: none;"></div>
+					</a>
+						<div id="isSelect-svn" name="isSelect"
+							class="marginSign hasDateYuan">
+							<span class="glyphicon glyphicon-ok" aria-hidden="true"
+								style="margin-top: 5px; margin-right: 6px; font-size: 18px;"></span>
+						</div></li>
+					<li tabname="tab-git"><a href="#" class="logoBack logogit">
+							<div class="selectNum" style="display: none;"></div>
+					</a>
+						<div id="isSelect-git" name="isSelect"
+							class="marginSign hasDateYuan">
+							<span class="glyphicon glyphicon-ok" aria-hidden="true"
+								style="margin-top: 5px; margin-right: 6px; font-size: 18px;"></span>
+						</div></li>
+					<li tabname="tab-dts"><a href="#" class="logoBack logodts">
+							<div class="selectNum" style="display: none;"></div>
+					</a>
+						<div id="isSelect-dts" name="isSelect"
+							class="marginSign hasDateYuan">
+							<span class="glyphicon glyphicon-ok" aria-hidden="true"
+								style="margin-top: 5px; margin-right: 6px; font-size: 18px;"></span>
+						</div></li>
+					<li tabname="tab-tmss"><a href="#" class="logoBack logotmss">
+							<div class="selectNum" style="display: none;"></div>
+					</a>
+						<div id="isSelect-tmss" name="isSelect"
+							class="marginSign hasDateYuan">
+							<span class="glyphicon glyphicon-ok" aria-hidden="true"
+								style="margin-top: 5px; margin-right: 6px; font-size: 18px;"></span>
+						</div></li>
+					<li tabname="tab-icp-ci"><a href="#" class="logoBack logoicp">
+							<div class="selectNum" style="display: none;"></div>
+					</a>
+						<div id="isSelect-icp-ci" name="isSelect"
+							class="marginSign hasDateYuan">
+							<span class="glyphicon glyphicon-ok" aria-hidden="true"
+								style="margin-top: 5px; margin-right: 6px; font-size: 18px;"></span>
+						</div></li>
+					<li tabname="tab-smartIDE"><a href="#"
+						class="logoBack logosmartIDE">
+							<div class="selectNum" style="display: none;"></div>
+					</a>
+						<div id="isSelect-smartIDE" name="isSelect"
+							class="marginSign hasDateYuan">
+							<span class="glyphicon glyphicon-ok" aria-hidden="true"
+								style="margin-top: 5px; margin-right: 6px; font-size: 18px;"></span>
+						</div></li>
+					<li tabname="tab-yunlong"><a href="#"
+						class="logoBack logoyunlong">
+							<div class="selectNum" style="display: none;"></div>
+					</a>
+						<div id="isSelect-yunlong" name="isSelect"
+							class="marginSign hasDateYuan">
+							<span class="glyphicon glyphicon-ok" aria-hidden="true"
+								style="margin-top: 5px; margin-right: 6px; font-size: 18px;"></span>
+						</div></li>
+				</ul>
+			</div>
+		</div>
+		<div id="tab-svn" tabid="svn">
+			<div style="margin: 0px 20px; font-weight: 700; height: 40px;">
+				<label class="col-lg-3 control-label" style="padding-left: 0px;"><span
+					style="color: red; margin-right: 3px; height: 30px; line-height: 30px;">*</span>采集配置:</label>
+				<button type="button" id="addData"
+					style="float: right; margin-right: 10px; border: 1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 20px; width: 100px; height: 30px; outline: none;">添加</button>
+			</div>
+
+			<div id="table" class="config1">
+				<div class="modal-body change-chart"
+					style="width: 100%; padding: 0px;">
+					<table id=svnTable style="width: 100%" border="0" cellspacing="0"
+						cellpadding="0" class="data-table">
+						<thead>
+							<tr bgcolor="#e8e8e8">
+								<td style="width: 30%;">SVN路径</td>
+								<td style="width: 10%;">基线版本号</td>
+								<td style="width: 10%;">版本过滤</td>
+								<td style="width: 20%;">路径过滤</td>
+								<td style="width: 20%;">是否使用其他用户密码</td>
+								<td style="width: 20%;">操作</td>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- tab -->
+
+		<div id="tab-git" tabid="git" style="display: none;">
+			<div style="margin: 0px 20px; font-weight: 700; height: 40px;">
+				<label class="col-lg-3 control-label" style="padding-left: 0px;"><span
+					style="color: red; margin-right: 3px; height: 30px; line-height: 30px;">*</span>采集配置:</label>
+				<button type="button" id="addData"
+					style="float: right; margin-right: 10px; border: 1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 20px; width: 100px; height: 30px; outline: none;">添加</button>
+			</div>
+
+			<div id="table" class="config1">
+				<div class="modal-body change-chart"
+					style="width: 100%; padding: 0px;">
+					<table id="gitTable" style="width: 100%" border="0" cellspacing="0"
+						cellpadding="0" class="data-table">
+						<thead>
+							<tr bgcolor="#e8e8e8">
+								<td style="width: 20%;">GIT路径</td>
+								<td style="width: 10%;">GIT分支</td>
+								<td style="width: 10%;">基线版本号</td>
+								<td style="width: 10%;">版本过滤</td>
+								<td style="width: 20%;">路径过滤</td>
+								<td style="width: 20%;">是否使用其他用户密码</td>
+								<td style="width: 20%;">操作</td>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- tab -->
+
+		<div id="tab-dts" tabid="dts" style="display: none;">
+			<div style="margin: 0px 20px; font-weight: 700; height: 40px;">
+				<label class="col-lg-3 control-label" style="padding-left: 0px;"><span
+					style="color: red; margin-right: 3px; height: 30px; line-height: 30px;">*</span>采集配置:</label>
+				<button type="button" id="addData"
+					style="float: right; margin-right: 10px; border: 1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 20px; width: 100px; height: 30px; outline: none;">添加</button>
+			</div>
+
+			<div id="table" class="config1">
+				<div class="modal-body change-chart"
+					style="width: 100%; padding: 0px;">
+					<table id="dtsTable" style="width: 100%" border="0" cellspacing="0"
+						cellpadding="0" class="data-table">
+						<thead>
+							<tr bgcolor="#e8e8e8">
+								<td style="width: 60%;">DTS版本</td>
+								<!-- <td style="width: 20%;">DTS版本</td> -->
+								<td style="width: 20%;">是否使用其他用户密码</td>
+								<td style="width: 20%;">操作</td>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- tab -->
+
+		<div id="tab-tmss" tabid="tmss" style="display: none;">
+			<div style="margin: 0px 20px; font-weight: 700; height: 40px;">
+				<label class="col-lg-3 control-label" style="padding-left: 0px;"><span
+					style="color: red; margin-right: 3px; height: 30px; line-height: 30px;">*</span>采集配置:</label>
+				<button type="button" id="addData"
+					style="float: right; margin-right: 10px; border: 1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 20px; width: 100px; height: 30px; outline: none;">添加</button>
+			</div>
+
+			<div id="table" class="config1">
+				<div class="modal-body change-chart"
+					style="width: 100%; padding: 0px;">
+					<table id="tmssTable" style="width: 100%" border="0"
+						cellspacing="0" cellpadding="0" class="data-table">
+						<thead>
+							<tr bgcolor="#e8e8e8">
+								<td style="width: 30%;">TMSS路径</td>
+								<td style="width: 30%;">TMSS版本</td>
+								<td style="width: 20%;">是否使用其他用户密码</td>
+								<td style="width: 20%;">操作</td>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- tab -->
+
+		<div id="tab-icp-ci" tabid="icp-ci" style="display: none;">
+			<div style="margin: 0px 20px; font-weight: 700; height: 40px;">
+				<label class="col-lg-3 control-label" style="padding-left: 0px;"><span
+					style="color: red; margin-right: 3px; height: 30px; line-height: 30px;">*</span>采集配置:</label>
+				<button type="button" id="addData"
+					style="float: right; margin-right: 10px; border: 1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 20px; width: 100px; height: 30px; outline: none;">添加</button>
+			</div>
+
+			<div id="table" class="config1">
+				<div class="modal-body change-chart"
+					style="width: 100%; padding: 0px;">
+					<table id="icp-ciTable" style="width: 100%" border="0"
+						cellspacing="0" cellpadding="0" class="data-table">
+						<thead>
+							<tr bgcolor="#e8e8e8">
+								<td style="width: 30%;">ICP-CI路径</td>
+								<td style="width: 20%;">版本构建</td>
+								<td style="width: 20%;">工程能力</td>
+								<td style="width: 20%;">操作</td>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- tab -->
+
+		<div id="tab-smartIDE" tabid="smartIDE" style="display: none;">
+			<div style="margin: 0px 20px; font-weight: 700; height: 40px;">
+				<label class="col-lg-3 control-label" style="padding-left: 0px;"><span
+					style="color: red; margin-right: 3px; height: 30px; line-height: 30px;">*</span>采集配置:</label>
+				<button type="button" id="addData"
+					style="float: right; margin-right: 10px; border: 1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 20px; width: 100px; height: 30px; outline: none;">添加</button>
+			</div>
+
+			<div id="table" class="config1">
+				<div class="modal-body change-chart"
+					style="width: 100%; padding: 0px;">
+					<table id="smartIDETable" style="width: 100%" border="0"
+						cellspacing="0" cellpadding="0" class="data-table">
+						<thead>
+							<tr bgcolor="#e8e8e8">
+								<td style="width: 40%;">项目pbi_id</td>
+								<td style="width: 40%;">项目pbi_name</td>
+								<td style="width: 20%;">操作</td>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- tab -->
+
+		<div id="tab-yunlong" tabid="yunlong" style="display: none;">
+			<div style="margin: 0px 20px; font-weight: 700; height: 40px;">
+				<label class="col-lg-3 control-label" style="padding-left: 0px;"><span
+					style="color: red; margin-right: 3px; height: 30px; line-height: 30px;">*</span>采集配置:</label>
+				<button type="button" id="addData"
+					style="float: right; margin-right: 10px; border: 1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 20px; width: 100px; height: 30px; outline: none;">添加</button>
+			</div>
+
+			<div id="table" class="config1">
+				<div class="modal-body change-chart"
+					style="width: 100%; padding: 0px;">
+					<table id="yunlongTable" style="width: 100%" border="0"
+						cellspacing="0" cellpadding="0" class="data-table">
+						<thead>
+							<tr bgcolor="#e8e8e8">
+								<td style="width: 40%;">微服务名称</td>
+								<td style="width: 40%;">微服务版本号</td>
+								<td style="width: 20%;">操作</td>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<!-- tab -->
+
+		<div style="text-align: center;">
+			<button type="button" id="saveCollectionUrl"
+				class="startCollect floatNoButton Button">保存</button>
+			<button type="button" id="retButton"
+				class="startCollect cancelButton floatNoButton Button">取消</button>
+		</div>
+	</div>
+
+	<!-- step-3,采集页面 -->
+	<div id="step-3" style="display: none;">
+		<ol class="breadcrumb" id="itemPath">
+			<li>项目</li>
+			<li>采集</li>
+			<li class="active">采集任务执行</li>
+		</ol>
+		<div
+			style="height: 47px; border-bottom: 2px #e2e3e4 solid; padding-left: 20px; margin-top: 20px; font-size: 20px;">
+			<span id="collectionName1">采集任务名称</span>
+			<button type="button" id="returnStep1"
+				class="startCollect cancelButton floatNoButton Button">返回</button>
+		</div>
+		<div style="margin-top: 20px; margin-left: 20px;">
+			<div style="height: 40px; line-height: 40px;">
+				<div id="collectionType1" style="float: left; margin-right: 20px;">采集项：svn/git</div>
+				<div id="collectionDate1" style="float: left; margin-right: 20px;">最近启动时间：2018-07-24</div>+
+				<div id="collectionTime1" style="float: left; margin-right: 20px;">采集耗时：00:00:00</div>
+				<div id="collectionNum1" style="float: left; margin-right: 20px;">总采集次数：1</div>
+				<!-- <button type="button" id="configDefault" class="startCollect Button" style="margin-right: 5%">设为默认</button> -->
+				<button type="button" id="collectionStart"
+					class="startCollect Button" style="margin-right: 10%;">采集开始</button>
+			</div>
+			<div id="collectionJg" style="height: 40px; line-height: 40px;">
+				<div style="float: left;">结果：</div>
+				<div id="collectionResult"
+					style="float: left; margin-top: 8px; margin-left: 5px; background-color: #cecece; border-radius: 15px; width: 70px; height: 24px; line-height: 24px; text-align: center;">未开始</div>
+			</div>
+			<div id="collectionJdt"
+				style="display: none; height: 40px; line-height: 40px;">
+				<div style="float: left;">进度：</div>
+				<div
+					style="display: inline-flex; width: 20%; height: 10px; margin-top: 15px; margin-bottom: 0px; border-radius: 10px;"
+					class="progress progress-striped active">
+					<div id="prog" class="progress-bar" role="progressbar"
+						aria-valuenow="" aria-valuemin="0" aria-valuemax="100"
+						style="width: 0%;"></div>
+				</div>
+				<span id="prog1">0%</span>
+			</div>
+		</div>
+		<div style="margin-left: 20px; line-height: 40px;">
+			<h>日志</h>
+			<div id="logMessage"
+				style="background-color: #000; color: #fff; height: 370px; width: 90%; line-height: 20px; padding-left: 10px; padding-top: 5px; overflow-y: scroll;">
+				<!-- <div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">1</div>
+					<div style="margin-left: 25px;">svn采集开始</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">2</div>
+					<div style="margin-left: 25px;">git采集开始</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">3</div>
+					<div style="margin-left: 25px;">dts采集开始</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">4</div>
+					<div style="margin-left: 25px;">tmss采集开始</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">5</div>
+					<div style="color: #f10000;margin-left: 25px;">svn采集异常信息：用户名或密码错误</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">6</div>
+					<div style="color: #f10000;margin-left: 25px;">git采集异常信息：url路径错误</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">7</div>
+					<div style="color: #f10000;margin-left: 25px;">svn采集异常，耗时00:05:01</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">8</div>
+					<div style="color: #f10000;margin-left: 25px;">git采集异常，耗时00:08:38</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">9</div>
+					<div style="color: #2aff03;margin-left: 25px;">dts采集成功，耗时00:15:26</div>
+				</div>
+				<div>
+					<div style="width: 20px;float:  left;border-right: 2px #ffffff solid;">10</div>
+					<div style="color: #2aff03;margin-left: 25px;">tmss采集成功，耗时00:04:51</div>
+				</div> -->
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="configuroute" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog" style="width: 85%;">
+			<div class="modal-content" style="top: 100px;">
+				<div class="modal-header"
+					style="border-bottom-width: 5px; padding-top: 10px; padding-bottom: 10px;">
+					<h4 class="modal-title" id="uploadModalLabel"
+						style="display: inline; margin-right: 350px;">配置路径</h4>
+				</div>
+				<div class="modal-body"
+					style="line-height: 45px; display: block; overflow-y: scroll;">
+					<div style="width: 100%; padding-left: 5%;">
+						<div id="svnModal" class="input-group" style="display: flex;">
+							<div class="config2">
+								<div>
+									<span>SVN路径</span> <input type="text" id="svnurlNew"
+										class="configInput" />
+								</div>
+								<div>
+									<span>基线版本号</span> <input type="text" id="svnBase"
+										class="configInput" />
+								</div>
+								<div>
+									<span>版本过滤</span> <input type="text" id="svnVersion"
+										class="configInput" />
+								</div>
+								<div>
+									<span>路径过滤</span> <input type="text" id="svnPath"
+										class="configInput" />
+								</div>
+								<div
+									style="text-align: left; line-height: 20px; float: left; margin-left: 110px;">
+									<input type="checkbox" id="svnOtherAcc" value="0" style="" />
+									<span>是否使用其他用户密码</span>
+								</div>
+							</div>
+						</div>
+						<div id="gitModal" class="input-group" style="display: flex;">
+							<div class="config2">
+								<div>
+									<span>GIT路径</span> <input type="text" id="giturlNew"
+										class="configInput" />
+								</div>
+								<div>
+									<span>GIT分支</span> <input type="text" id="gitVersion"
+										class="configInput" />
+								</div>
+								<div>
+									<span>基线版本号</span> <input type="text" id="gitBase"
+										class="configInput" />
+								</div>
+								<div>
+									<span>版本过滤</span> <input type="text" id="gitCommit"
+										class="configInput" />
+								</div>
+								<div>
+									<span>路径过滤</span> <input type="text" id="gitPath"
+										class="configInput" />
+								</div>
+								<div
+									style="text-align: left; line-height: 20px; float: left; margin-left: 110px;">
+									<input type="checkbox" id="gitOtherAcc" value="0" style="" />
+									<span>是否使用其他用户密码</span>
+								</div>
+							</div>
+						</div>
+						<div id="dtsModal" class="input-group" style="display: flex;">
+							<div class="config2">
+								<div>
+									<span>DTS版本</span> <input type="text" id="dtsurlNew"
+										class="configInput" />
+								</div>
+								<!-- <div>
+			            			<span>DTS版本</span>
+			            			<input type="text" id="dtsVersion" class="configInput" />
+			            		</div> -->
+								<div
+									style="text-align: left; line-height: 20px; float: left; margin-left: 110px;">
+									<input type="checkbox" id="dtsOtherAcc" value="0" style="" />
+									<span>是否使用其他用户密码</span>
+								</div>
+							</div>
+						</div>
+						<div id="tmssModal" class="input-group" style="display: flex;">
+							<div class="config2">
+								<div>
+									<span>TMSS路径</span> <input type="text" id="tmssurlNew"
+										class="configInput" />
+								</div>
+								<div>
+									<span>TMSS版本</span> <input type="text" id="tmssVersion"
+										class="configInput" />
+								</div>
+								<div
+									style="text-align: left; line-height: 20px; float: left; margin-left: 110px;">
+									<input type="checkbox" id="tmssOtherAcc" value="0" style="" />
+									<span>是否使用其他用户密码</span>
+								</div>
+							</div>
+						</div>
+						<div id="icp-ciModal" class="input-group" style="display: flex;">
+							<div class="config2">
+								<div>
+									<span>ICP-CI路径</span> <input type="text" id="icp-ciurlNew"
+										class="configInput" />
+								</div>
+								<div>
+									<span>版本构建</span> <input type="text" id="icpVersion"
+										class="configInput" />
+								</div>
+								<div>
+									<span>工程能力</span> <input type="text" id="icpPath"
+										class="configInput" />
+								</div>
+							</div>
+						</div>
+						<div id="smartIDEModal" class="input-group" style="display: flex;">
+							<div class="config2">
+								<div>
+									<span>项目pbi_id</span> <input type="text" id="smartIDEurlNew"
+										class="configInput" />
+								</div>
+								<div>
+									<span>项目pbi_name</span> <input type="text" id="pbiName"
+										class="configInput" />
+								</div>
+							</div>
+						</div>
+
+						<div id="yunlongModal" class="input-group" style="display: flex;">
+							<div class="config2">
+								<div>
+									<span class="configInput" >微服务名称</span> 
+									<input list="browsers" class="configInput" oninput="microNameInput(this)" id="microServiceName"/>
+									<datalist id="browsers" onclick="searchMicroVersion()">
+									</datalist>
+									<input type="hidden" id="microServiceIdInput" />
+								</div>
+								<div>
+									<span class="configInput">微服务版本号</span> 
+									<select class="configInput" id="microServiceVersion">
+									</select>
+								</div>
+								
+								
+							</div>
+
+						</div>
+
+
+						<div style="text-align: center;">
+							<button type="button" id="saveUrl"
+								class="startCollect floatNoButton Button">保存</button>
+							<button type="button" id="retsaveUrl"
+								class="startCollect cancelButton floatNoButton Button">取消</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="userandpass" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content"
+				style="top: 100px; width: 470px; margin-left: -50px;">
+				<div class="modal-header"
+					style="border-bottom-width: 5px; padding-top: 10px; padding-bottom: 10px; line-height: 100%;">
+					<h4 class="modal-title" id="uploadModalLabel"
+						style="display: inline; margin-right: 183px;">帐户信息配置</h4>
+					<button type="button" data-dismiss="modal"
+						style="border: 1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px; outline: none;">取消</button>
+					<button type="button" id="saveuserandpass" data-dismiss="modal"
+						style="border: 1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px; outline: none;">确认</button>
+				</div>
+				<div class="modal-body"
+					style="width: 96%; height: 350px; line-height: 30px; display: block; overflow-y: scroll;">
+					<table border="0" cellpadding="0" cellspacing="0"
+						style="margin-left: 25px">
+						<tbody id="userandpassTable">
+							<tr align="center" valign="middle">
+								<th width="100"
+									style="text-align: right; font-size: 12px; padding-right: 8px">SVN帐户：</th>
+								<th><input type="text" name="svnurl" id="svnuser"
+									style="height: 28px; width: 259px;" /></th>
+							</tr>
+							<tr>
+								<th width="100"
+									style="text-align: right; font-size: 12px; padding-right: 8px">SVN密码：</th>
+								<th><input type="password" name="svnurl" id="svnpass"
+									style="height: 28px; width: 259px;" /></th>
+							</tr>
+							<tr>
+								<th width="100"
+									style="text-align: right; font-size: 12px; padding-right: 8px">DTS帐户：</th>
+								<th><input type="text" name="svnurl" id="dtsuser"
+									style="height: 28px; width: 259px;" /></th>
+							</tr>
+							<tr>
+								<th width="100"
+									style="text-align: right; font-size: 12px; padding-right: 8px">DTS密码：</th>
+								<th><input type="password" name="svnurl" id="dtspass"
+									style="height: 28px; width: 259px;" /></th>
+							</tr>
+							<tr>
+								<th width="100"
+									style="text-align: right; font-size: 12px; padding-right: 8px">GIT帐户：</th>
+								<th><input type="text" name="svnurl" id="gituser"
+									style="height: 28px; width: 259px;" /></th>
+							</tr>
+							<tr>
+								<th width="100"
+									style="text-align: right; font-size: 12px; padding-right: 8px">GIT密码：</th>
+								<th><input type="password" name="svnurl" id="gitpass"
+									style="height: 28px; width: 259px;" /></th>
+							</tr>
+							<tr>
+								<th width="100"
+									style="text-align: right; font-size: 12px; padding-right: 8px">TMSS帐户：</th>
+								<th><input type="text" name="svnurl" id="tmssuser"
+									style="height: 28px; width: 259px;" /></th>
+							</tr>
+							<tr>
+								<th width="100"
+									style="text-align: right; font-size: 12px; padding-right: 8px">TMSS密码：</th>
+								<th><input type="password" name="svnurl" id="tmsspass"
+									style="height: 28px; width: 259px;" /></th>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<!-- /.modal-content -->
+		</div>
+		<!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
+
+</body>
+</html>

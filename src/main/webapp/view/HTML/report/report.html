@@ -1,0 +1,48 @@
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>报表呈现</title>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-table.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-select.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/style.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../css/DefaultSkin.css" type="text/css"/>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../../resources/js/comm/comm.js"></script>
+
+    <link rel="stylesheet" href="../css/toastr.min.css" type="text/css"/>
+    <script type="text/javascript" src="../js/toastr.min.js"></script>
+
+    <script src="../../../resources/echarts/echarts.min.js"></script>
+    <script src="../../../resources/echarts/theme/vintage.js"></script>
+    <script src="../../../resources/echarts/theme/shine.js"></script>
+    <script src="../../../resources/echarts/theme/roma.js"></script>
+    <script src="../../../resources/echarts/theme/macarons.js"></script>
+    <script src="../../../resources/echarts/theme/infographic.js"></script>
+    <script src="../../../resources/echarts/theme/dark.js"></script>
+    <script src="../../../resources/echarts/ecStat.min.js"></script>
+
+    <script type="text/javascript" src="report.js"></script>
+    <script type="text/javascript" src="report-chart.js"></script>
+    <style>
+        .fixed-table-container tbody .selected td {
+            background-color: #EEE8AA
+        }
+    </style>
+</head>
+
+<body class="mvp-body">
+<div style="margin-top: 20px;">
+    <div id="table_name" style="padding-left: 20px;font-weight: bold;font-size: 18px;"></div>
+    <table id="dataItemManagement" class="table text-nowrap" style="background-color: #fff;"></table>
+    <div class="row" id="charts-box" style="margin:10px;background-color: #FEFEFE;"></div>
+</div>
+</body>
+</html>

@@ -1,0 +1,543 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <style>
+	#nav { 
+			width:30px; height: 65px;  position:fixed;right:2px;top:50%;z-index: 9999;
+		}
+	.retop{
+			width:30px;height:30px;float:right;margin-top: 2px;
+		}
+	.retop2{
+			float:right;margin-top: 2px;
+	}
+	.retop span{
+		color:white;
+	}
+	.trans {
+		display: none;
+		width: 54px;
+		height: 37px;
+		opacity: 0;
+		position: relative;
+		margin-top: -37px;
+		cursor: pointer;
+	}
+	.datagrid-view{
+		height: 840px!important;
+	}
+	.panel{
+		background-color: #fafafa!important;
+	}
+	a{
+    	text-decoration: none;
+    	color: rgba(255,255,255,.5);
+    }
+    a:hover{
+    	text-decoration: none;
+    	color: rgba(255,255,255,1);
+    	cursor: pointer;
+    }
+    </style>
+    
+    <script type="text/javascript"> 
+        function changeTab(obj) {
+            obj.className = 'tabs-a-current';
+            if (obj.id == "tab1") {
+                document.getElementById('tab2').className = '';
+                document.getElementById('tab1Page').style.display = 'block';
+                document.getElementById('tab2Page').style.display = 'none';
+            }
+            else {
+                document.getElementById('tab1').className = '';
+                document.getElementById('tab1Page').style.display = 'none';
+                document.getElementById('tab2Page').style.display = 'block';
+            }
+        }
+        $(document).ready(function(){
+      		$("#datepicker").datepicker({
+      	      changeMonth: true,
+      	      changeYear: true,
+      	      dateFormat: 'yy-mm-dd',
+      	      todayButton: true,           
+      	      prevButton: true,            
+      	      nextButton: true,
+      	    });
+		})
+    </script>
+</head>
+<body style="line-height: 24px;">
+    <div class="main" style="padding:0;">
+        <div class="main-topmenu-text">
+            <span style="display:none; color: #666; font-size: 14px; font-weight: bold;">事业部：</span>
+            361成熟度
+        </div>
+        <div class="main-topmenu-line">
+        </div>
+        <div class="main-topmenu-line2">
+        </div>
+        <div class="main-content" style="height: 500px;">
+        	<div>
+	        	<div id="imagechange" style="position: absolute; left: 11%; top: 5%;">
+					<div style=" z-index:1; position: absolute; top: 4%; float: left;">
+						<!-- <span style="font-size: 14px; color: white;position: absolute;top: 50px;left: 60px;">红灯项目数</span>
+						<span style="font-size: 72px; color: white;position: absolute;top: 100px;left: 100px;">0</span> -->
+						<div style="font-size: 14px; color: white;margin-top: -24px;position: relative;left: -17%;top: 70px;text-align: center;">红灯项目数</div>
+						<div style="font-size: 72px; color: white;margin-top: -24px;position: relative;left: -17%;top: 120px;text-align: center;"><a id="redPros" onclick="exportEvent('red')"></a></div>
+						<img src="images/redbg.png" />
+		<!-- 				<div style="display: none; z-index:1; margin-top:-204px;">
+							<span style="font-size: 14px; color: white;position: absolute;top: 50px;left: 60px;">红灯项目数</span>
+							<span style="font-size: 720px; color: white;position: absolute;top: 100px;left: 100px;">0</span>
+							<div style="font-size: 14px; color: white;margin-top: -24px;position: relative;left: 50px;top: 70px;width: 100px;text-align: center;">红灯项目数</div>
+							<div style="font-size: 72px; color: white;margin-top: -24px;position: relative;left: 50px;top: 120px;width: 100px;text-align: center;">1</div>
+							<img src="images/red0bg.png" width="300" />
+						</div>
+		 -->		</div>
+					<div style=" z-index:1; position: absolute; top: 3%; left: 116%; float: right;">
+						<!-- <span style="font-size: 15px; color: white;position: absolute;top: 50px;left: 60px;">绿灯项目数</span>
+						<span style="font-size: 40px; color: white;position: absolute;top: 100px;left: 100px;">10</span> -->
+						<div style="font-size: 14px; color: white;margin-top: -24px;position: relative;left: -17%;top: 70px;text-align: center;">绿灯项目数</div>
+						<div style="font-size: 72px; color: white;margin-top: -24px;position: relative;left: -17%;top: 120px;text-align: center;"><a id="greenPros" onclick="exportEvent('green')"></a></div>
+						<img src="images/greenbg.png" />
+		<!-- 				<div style="display: none; z-index:1; margin-top:-207px;">
+							<span style="font-size: 15px; color: white;position: absolute;top: 50px;left: 60px;">绿灯项目数</span>
+							<span style="font-size: 40px; color: white;position: absolute;top: 100px;left: 100px;">10</span>
+							<div style="font-size: 14px; color: white;margin-top: -24px;position: relative;left: 50px;top: 70px;width: 100px;text-align: center;">绿灯项目数</div>
+							<div style="font-size: 72px; color: white;margin-top: -24px;position: relative;left: 50px;top: 120px;width: 100px;text-align: center;">10</div>
+							<img src="images/green0bg.png" width="300" />
+						</div>
+		 -->		</div>
+					<div style="z-index:0; position: relative; top: 50%; left: 45%; ">
+						<!-- <span style="font-size: 20px; color: white;position: absolute;top: 150px;left: 210px;">项目总数</span>
+						<span style="font-size: 90px; color: white;position: absolute;top: 220px;left: 195px;">36</span> -->
+						<div style="font-size: 20px; color: white;position: relative;top: 180px;left: -10%;text-align: center;">项目总数</div>
+						<div style="font-size: 80px; color: white;position: relative;top: 220px;left: -10%;text-align: center;"><a id="sumPros" onclick="exportEvent('sum')"></a></div>
+						<img src="images/allbg.png" style="width: 80%;" />
+					</div>
+					<div style=" z-index:1; position: absolute; top: 65%; float: left;">
+						<!-- <span style="font-size: 15px; color: white;position: absolute;top: 50px;left: 60px;">黄灯项目数</span>
+						<span style="font-size: 40px; color: white;position: absolute;top: 100px;left: 100px;">3</span> -->
+						<div style="font-size: 14px; color: white;margin-top: -24px;position: relative;left: -17%;top: 70px;text-align: center;">黄灯项目数</div>
+						<div style="font-size: 72px; color: white;margin-top: -24px;position: relative;left: -17%;top: 120px;text-align: center;"><a id="yellowPros" onclick="exportEvent('yellow')"></a></div>
+						<img src="images/yellowbg.png" />
+		<!-- 				<div style="display: none; z-index:1; margin-top:-207px;">
+							<span style="font-size: 15px; color: white;position: absolute;top: 50px;left: 60px;">黄灯项目数</span>
+							<span style="font-size: 40px; color: white;position: absolute;top: 100px;left: 100px;">3</span>
+							<div style="font-size: 14px; color: white;margin-top: -24px;position: relative;left: 50px;top: 70px;width: 100px;text-align: center;">黄灯项目数</div>
+							<div style="font-size: 72px; color: white;margin-top: -24px;position: relative;left: 50px;top: 120px;width: 100px;text-align: center;">3</div>
+							<img src="images/yellow0bg.png" width="300" />
+						</div>
+		 -->		</div>
+					<div style=" z-index:1; position: absolute; top: 66%; left: 116%; float: right;">
+						<!-- <span style="font-size: 15px; color: white;position: absolute;top: 50px;left: 60px;">蓝灯项目数</span>
+						<span style="font-size: 40px; color: white;position: absolute;top: 100px;left: 100px;">13</span> -->
+						<div style="font-size: 14px; color: white;margin-top: -24px;position: relative;left: -17%;top: 70px;text-align: center;">未评估项目数</div>
+						<div style="font-size: 72px; color: white;margin-top: -24px;position: relative;left: -17%;top: 120px;text-align: center;"><a id="noPros" onclick="exportEvent('no')"></a></div>
+						<img src="images/bluebg.png" />
+		<!-- 				<div style="display: none; z-index:1; margin-top:-207px;">
+							<span style="font-size: 15px; color: white;position: absolute;top: 50px;left: 60px;">蓝灯项目数</span>
+							<span style="font-size: 40px; color: white;position: absolute;top: 100px;left: 100px;">13</span>
+							<div style="font-size: 14px; color: white;margin-top: -24px;position: relative;left: 50px;top: 70px;width: 100px;text-align: center;">蓝灯项目数</div>
+							<div style="font-size: 72px; color: white;margin-top: -24px;position: relative;left: 50px;top: 120px;width: 100px;text-align: center;">13</div>
+							<img src="images/blue0bg.png" width="300" />
+						</div>
+		 -->		</div>
+		 		</div>
+        	</div>
+        </div>
+        <div class="main-content">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                    <td style="padding-right: 10px;">
+                        <div class="main-topmenu-text">
+                        	项目(版本)列表
+        				</div>
+                        <div class="main-topmenu-line line3">
+				        </div>
+				        <div class="main-topmenu-line2 line3">
+				        </div>
+                        <div id="divChart" style="display: none;">
+                            <div class="chart-left">
+                            </div>
+                            <div class="chart-right">
+                            </div>
+                        </div>
+                    </td>
+                    <td align="right" style="padding-right: 30px;">
+                    	<input name="" type="button" value="导入" class="but1" id="importBtn" data-toggle="modal" data-target="#import" style="width:20%; height:38px; background-color:#367FA9; color:#ffffff; cursor:pointer; border:none; border-radius:4px; font-size:15px;margin-left: 15px; line-height: 38px;"/>
+                    	<input name="" type="button" value="导出" class="but1" id="exportBtn" style="width:20%; height:38px; background-color:#367FA9; color:#ffffff; cursor:pointer; border:none; border-radius:4px; font-size:15px;margin-left: 15px; line-height: 38px;"/>
+                    </td>
+                </tr>
+                <tr>
+                	<td colspan="2">
+                        <div id="divTable" style="text-align:center;border: 0px #666 solid;margin-top:20px;">
+                            <div class="" id="search" style="height: 65%;">
+                            	<fieldset id="fieldset" style="position:relative; top: 1px; width:94%; height:70%; margin:0 auto; background-color: #ffffff; border: 2px #dddddd solid; ">
+	                                <table width="100%" class="zTable" style="margin-top: 12px;">
+	                                    <tr style="height: 50px;">
+	                                        <td class="td1" width="8%" align="center">
+	                                         	   项目名称
+	                                        </td>
+	                                        <td width="25%" align="left" style="padding-left: 11px;padding-right: 15px;">
+	                                            <input name="projName" type="text" class="s3" placeholder="请输入项目名称" id="projName" style="width: 230px;"/>
+	                                        </td>
+	                                        <td class="td1" width="8%" align="center">
+	                                       		  项目经理
+	                                        </td>
+	                                        <td width="25%" align="left" style="padding-left: 11px;padding-right: 15px;">
+	                                        	<input name="projMgmr" type="text" class="s3" placeholder="请输入项目经理" id="projMgmr" style="width: 230px;"/>   
+	                                        </td>
+	                                        <td class="td1" width="8%" align="center">
+	                                          	  地域
+	                                        </td>
+	                                        <td width="25%" align="left">
+			                                    <div class="col-sm-12" style="width:235px;padding-left: 10px;z-index:999;">
+			                                   		<select id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									        		</select>
+									       		</div>
+	                                        </td>
+	                                    </tr>
+	                                    <tr id="more1" style="display: none;height: 50px;">
+	                                        <td class="td1" align="center">
+	                                         	   华为产品线
+	                                        </td>
+	                                        <td align="left">
+	                                            <div class="col-sm-12" style="width:235px;padding-left: 10px;">
+			                                   		<select id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									        		</select>
+									       		</div>
+	                                        </td>
+	                                        <td class="td1" align="center">
+	                                          	  子产品线
+	                                        </td>
+	                                        <td align="left">
+	                                           <div class="col-sm-12" style="width:235px;padding-left: 10px;">
+			                                   		<select id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									        		</select>
+									       		</div>
+	                                        </td>
+	                                        <td class="td1" align="center">
+	                                       		 PDU/SPDT
+	                                        </td>
+	                                        <td align="left">
+	                                        	<div class="col-sm-12" style="width:235px;padding-left: 10px;">
+			                                   		<select id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									        		</select>
+									       		</div>
+	                                        </td>
+	                                    </tr>
+	                                    <tr id="more2" style="display: none;height: 50px;">
+	                                        <td class="td1" align="center">
+	                                         	   业务线
+	                                        </td>
+	                                        <td align="left">
+	                                            <div class="col-sm-12" style="width:235px;padding-left: 10px;">
+			                                   		<select id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									        		</select>
+									       		</div>
+	                                        </td>
+	                                        <td class="td1" align="center">
+	                                          	  事业部
+	                                        </td>
+	                                        <td align="left">
+	                                            <div class="col-sm-12" style="width:235px;padding-left: 10px;">
+			                                   		<select id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									        		</select>
+									       		</div>
+	                                        </td>
+	                                        <td class="td1" align="center">
+	                                       		  交付部
+	                                        </td>
+	                                        <td align="left">
+	                                        	<div class="col-sm-12" style="width:235px;padding-left: 10px;">
+			                                   		<select id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+									        		</select>
+									       		</div>
+	                                        </td>
+	                                    </tr>
+	                                    <tr id="more3" style="display: none;height: 50px;">
+	                                        <td class="td1" align="center">
+	                                        	项目状态<!-- 项目日期 -->
+	                                        </td>
+	                                        <td align="left" colspan="3">
+	                                        	<div class="col-sm-12" style="width:235px;padding-left: 10px;">
+			                                   		<select id="usertype2" name="usertype" title="请选择状态" class="selectpicker show-tick form-control" multiple data-live-search="false">
+										                <option value="在行">在行</option>
+										                <option value="关闭">关闭</option>
+									        		</select>
+									       		</div>
+	                                   			<!-- <input name="" type="date" class="s1" id="month-sel" style="background-image: url(images/dateicon.png); /*引入图片图片*/background-repeat: no-repeat; /*设置图片不重复*/background-position: 5px 6px; /*图片显示的位置*/padding-left: 50px;width: 130px;"/>&nbsp;&nbsp;至&nbsp;
+	                                   			<input name="" type="date" class="s1" id="month-sel" style="background-image: url(images/dateicon.png); /*引入图片图片*/background-repeat: no-repeat; /*设置图片不重复*/background-position: 5px 6px; /*图片显示的位置*/padding-left: 50px;width: 130px;"/> -->
+	                                        </td>
+	                                        <td colspan="4" align="center" colspan="2" style="text-align: left;">
+	                                        </td>
+	                                    </tr>
+	                                    <tr id="more4" style="height: 60px;">
+	                                        <td colspan="6" align="right" style="padding-right: 2%;">
+	                                            <input name="" type="button" value="查询" class="but1" id="queryBtn" style="width:8%; height:38px; background-color:#367FA9; color:#ffffff; cursor:pointer; border:none; border-radius:4px; font-size:15px;margin-left: 0px; line-height: 38px;"/>
+  	                                            <input name="" type="button" value="重置" class="but1" id="clearBtn" style="width:8%; height:38px; background-color:#367FA9; color:#ffffff; cursor:pointer; border:none; border-radius:4px; font-size:15px;margin-left: 15px; line-height: 38px;"/>
+	                                            <input name="" type="button" value="详细筛选" class="but2" id="moreBtn" onclick="moreBtn()" style="width:8%; height:38px; background-color:#ffffff; color:#367FA9; cursor:pointer; border:none; border-radius:4px; font-size:15px; outline: none;text-align: right;line-height: 38px;"/>
+	                                            <div id="jiantou" onclick="moreBtn()" style=" cursor:pointer;width:0; height:0; border-top:8px #367FA9 solid; border-bottom:0px #ffffff solid; border-left:3px #ffffff solid; border-right:3px #ffffff solid; display: inline-block;"><input id="check" type="hidden" value="0"/></div>
+	                                        </td>
+	                                    </tr>
+	                                </table>
+	                        	</fieldset>
+                            </div>
+                            <div>
+	                            <div style="width:50%;text-align: left;float: left;margin: 20px auto 10px auto;"><span style="color: #367FA9;font-size: 15px;padding-left: 30px;">全部项目</span></div>
+	                            <div style="width:50%;float: left;margin: 20px auto 10px auto;"><span style="color: #999999;font-size: 10px;padding-left: 250px;">数据更新时间：</span><span id="localTime" style="color: #999999;font-size: 10px;padding-left: 10px;"></span></div>
+                            </div>
+                            <div style="width:100%; margin:10px auto 0 auto; background-color: #fafafa; ">
+                             	<div id="projSummaryTable" style="display:block;width:100%;"></div> 
+                            </div>
+                        </div>
+                	</td>
+            	</tr>
+            </table>
+        </div>
+    </div>
+                  	<div class="modal fade" id="import" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						导入信息配置
+					</h4>
+					<button type="button" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+					<button type="button" id="submitImport" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">确定</button>
+				</div>
+				<div style="padding-left: 20px;padding-top: 20px;font-size: 13px;color: #ababab;">导入顺序:项目信息-->361成熟度-->(关键角色-->RDPM)-->(项目成员-->档案信息)-->工时</div>
+				<div class="modal-body" style="height: 150px;width: 620px">
+					<div style="height: 25px;">
+						<div style="width:95%">
+			                <div class="input-group" style="display: flex;align-items: center;">
+	                    		<table style="width: 570px; height: 22px; margin-left: -10px;">
+	                    			<tr align="center" valign="middle" id ="select">
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="project" th_value="项目导入" templateName="project-info" value="/project/import" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">项目信息</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="361"  th_value="361导入" templateName="361Maturity" value="/project/importMaturityAssessment" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="59" style="text-align: left; font-size: 8px;">361成熟度</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="role" th_value="角色导入" templateName="Key-roles" value="/project/importKeyRoles" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">关键角色</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="rdpm" th_value="RDPM导入" templateName="RDPM-test" value="/project/importRDPM" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="40" style="text-align: left; font-size: 8px;">RDPM</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="people" th_value="成员导入" templateName="OMP-data" value="/project/importpromember"style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">项目成员</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="peopleadd" th_value="档案信息" templateName="Archives-information" value="/project/importpromemberOMBadd"style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">档案信息</th>
+	                    			    <th style="text-align: right;"><input type="radio" name="radio1" id="work" th_value="工时导入" templateName="Clock-data" value="/project/importclock" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="30" style="text-align: center; font-size: 10px;">工时</th>
+	                    			</tr>
+	                    		</table>
+			                </div><!-- /input-group -->
+			            </div><!-- /.col-lg-6 -->
+					</div>
+					 <div style="height: 80px;">
+						<div style="width:65%">
+			                <div class="input-group" style="display: flex;">
+			                   	 <div style="display:table-cell;width: 27%;margin-top: 27px;width: 89px">文件路径：</div><input type="text" readonly="readonly" id="filePathInfo" class="form-control" style="height: 20px;margin-top: 27px">
+			                    <span class="input-group-btn">
+			                    	<form method="post" id="importForm"  enctype="multipart/form-data">
+				                        <button class="btn btn-default" type="button" id="importBtn" style="margin-top: 27px;border-radius:0px;width: 51px">浏览</button>
+				                        <a class="btn btn-default"  id="templateDownload" style="margin-top: 27px;border-radius:0px;width: 84px">下载模板</a>
+				                        <input type="file" class="trans" id="importInput" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></input>
+				                        <span id="worktime" style="display: none;float: right; margin-right: 192px;margin-top: 20px;">工时日期: 
+				                        <input type="text" id="datepicker" name="time" placeholder="请选择时间"
+											style="border: 1px solid #367FA9; background-color: transparent;margin-left: 15px;width: 110px; height: 25px; color: #367FA9; padding-left: 30px; background-image: url(images/dateicon.png); /*引入图片图片*/ background-repeat: no-repeat; /*设置图片不重复*/ background-position: 5px 3px;" />
+										</span>
+				                    </form>
+			                    </span>
+			                </div><!-- /input-group -->
+			            </div><!-- /.col-lg-6 -->
+					</div>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	<div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content" style="top: 300px;">
+					<div class="modal-body" style="padding: 15px;">
+						<div style="text-align: center;">
+							<span id="dataAcquisition" style="font-size: 14px;">查询中。。。</span>
+						</div>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+    <script type="text/javascript">
+    	function moreBtn(){
+    		var n=document.getElementById("check");
+    		var ss=document.getElementById("search");
+    		var mb=document.getElementById("moreBtn");
+    		var jt=document.getElementById("jiantou");
+    		var fieldset=document.getElementById("fieldset");
+    		var more1=document.getElementById("more1");
+    		var more2=document.getElementById("more2");
+    		var more3=document.getElementById("more3");
+    		if(n.value==0){
+    			n.value=1;
+	    		ss.style.height="95%";
+	    		fieldset.style.height="93%";
+	    		mb.value="收起筛选";
+	    		more1.style.display="";
+	    		more2.style.display="none";
+	    		more3.style.display="";
+	    		jt.style.borderTop="0px #ffffff solid";
+	    		jt.style.borderBottom="8px #367FA9 solid";
+	    		jt.style.borderLeft="3px #ffffff solid";
+	    		jt.style.borderRight="3px #ffffff solid";
+    		}else if(n.value==1){
+    			n.value=0;
+    			ss.style.height="65%";
+    			fieldset.style.height="70%";
+    			mb.value="详细筛选";
+	    		more1.style.display="none";
+	    		more2.style.display="none";
+	    		more3.style.display="none";
+	    		jt.style.borderTop="8px #367FA9 solid";
+	    		jt.style.borderBottom="0px #ffffff solid";
+	    		jt.style.borderLeft="3px #ffffff solid";
+	    		jt.style.borderRight="3px #ffffff solid";
+    		}
+    	}
+    	
+		function showDateTime(){   
+    	  var today=new Date();
+    	  var year=today.getYear()+1900;
+    	  var month=today.getMonth()+1;
+    	  var day=today.getDate();
+    	  var hour=today.getHours()>=0&&today.getHours()<10?"0"+today.getHours():today.getHours();
+    	  var minute=today.getMinutes()>=0&&today.getMinutes()<10?"0"+today.getMinutes():today.getMinutes();
+    	  var second=today.getSeconds()>=0&&today.getSeconds()<10?"0"+today.getSeconds():today.getSeconds();
+		  var date=year+"/"+month+"/"+day+"  "+hour+":"+minute+":"+second;   
+    	  $("#localTime").html(date);
+		} 
+	
+		$("#clearBtn").click(function(){
+			$("#projName").val("");
+			$("#projMgmr").val("");
+			$('#usertype1').selectpicker("val",[]);
+			$('#usertype2').selectpicker("val",["在行"]);
+			$('#usertype3').selectpicker("val",[]);
+			$('#usertype4').selectpicker("val",[]);
+			$("#usertype4").empty();
+			$('#usertype4').prev('div.dropdown-menu').find('ul').empty();
+			$('#usertype5').selectpicker("val",[]);
+			$("#usertype5").empty();
+			$('#usertype5').prev('div.dropdown-menu').find('ul').empty();
+			$('#usertype6').selectpicker("val",[]);
+			$('#usertype7').selectpicker("val",[]);
+			$("#usertype7").empty();
+			$('#usertype7').prev('div.dropdown-menu').find('ul').empty();
+			$('#usertype8').selectpicker("val",[]);
+			$("#usertype8").empty();
+			$('#usertype8').prev('div.dropdown-menu').find('ul').empty();
+		})
+		
+		//回到顶部
+		function callback(){
+			$("html,body").animate({scrollTop:0}, 200);
+		};
+		
+		function exportEvent(color){
+ 			var $eleForm = $("<form method='POST'></form>");
+	        $eleForm.attr("action",getRootPath() + "/project/export361");
+	        $eleForm.append($('<input type="hidden" name="color" value="'+ color +'">'));
+	        $eleForm.append($('<input type="hidden" name="area" value="'+ ($("#usertype1").selectpicker("val")==null?"":$("#usertype1").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="hwpdu" value="'+ ($("#usertype3").selectpicker("val")==null?"":$("#usertype3").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="hwzpdu" value="'+ ($("#usertype4").selectpicker("val")==null?"":$("#usertype4").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="pduSpdt" value="'+ ($("#usertype5").selectpicker("val")==null?"":$("#usertype5").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="bu" value="'+ ($("#usertype6").selectpicker("val")==null?"":$("#usertype6").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="pdu" value="'+ ($("#usertype7").selectpicker("val")==null?"":$("#usertype7").selectpicker("val").join()) +'">'));
+	        $eleForm.append($('<input type="hidden" name="du" value="'+ ($("#usertype8").selectpicker("val")==null?"":$("#usertype8").selectpicker("val").join()) +'">'));
+	        $(document.body).append($eleForm);
+	        //提交表单，实现下载
+	        $eleForm.submit();
+		};
+		
+		$(document).ready(function(){
+			
+			//鼠标移入移出悬浮框事件
+		    $("#retop").mouseover(function() {
+		    	document.getElementById("retop").style.display="none";
+		    	document.getElementById("retop2").style.display="inline";
+		    });
+		    $("#retop2").mouseout(function() {
+		    	document.getElementById("retop").style.display="inline";
+		    	document.getElementById("retop2").style.display="none";
+		    });
+		    
+		    $("#feedback").mouseover(function() {
+		    	document.getElementById("back").style.color="#367FA9";
+		    });
+		    $("#feedback").mouseout(function() {
+		    	document.getElementById("back").style.color="white";
+		    });
+    
+			
+			
+/* 			$('#usertype1').selectpicker("selectAll");//页面加载时默认全选
+			$('#usertype3').selectpicker("selectAll");
+			$('#usertype4').selectpicker("selectAll");
+			$('#usertype5').selectpicker("selectAll");
+			$('#usertype6').selectpicker("selectAll");
+			$('#usertype7').selectpicker("selectAll");
+			$('#usertype8').selectpicker("selectAll"); */			
+			/* var areaName=$(".list .active .areaActive",parent.document).text();
+			if(''!=areaName&&undefined!=areaName){			
+				$('#usertype1').selectpicker('val',areaName); 
+				$('#usertype1').selectpicker('refresh');
+				$('#queryBtn').click();
+			}
+			var depId=$(".crumbs .active",parent.document).attr("data-id");
+			
+			if(''!=depId&&undefined!=depId){		
+				moreBtn();
+				if(1==depId){
+								
+				}else if(2==depId){
+					var yijiId=$(".list .yiji>.active",parent.document).attr("data-id");
+					var erjiId=$(".list .erji>.active",parent.document).attr("data-id");
+					var sanjiId=$(".list .sanji>.active",parent.document).attr("data-id");
+					if(''!=yijiId&&undefined!=yijiId){
+						$('#usertype3').selectpicker('val',yijiId);
+						$('#usertype3').selectpicker('refresh');
+						queryZCPX();
+						debugger
+						if(''!=erjiId&&undefined!=erjiId){
+							$('#usertype4').selectpicker('val',erjiId);	
+							$('#usertype4').selectpicker('refresh');
+							queryPDUorSPDT();
+							if(''!=sanjiId&&undefined!=sanjiId){
+								$('#usertype5').selectpicker('val',sanjiId);	
+								$('#usertype5').selectpicker('refresh');
+							}
+						}
+					}		
+				}
+			}
+			
+			showDateTime(); */
+		})
+    </script>
+</body>
+</html>

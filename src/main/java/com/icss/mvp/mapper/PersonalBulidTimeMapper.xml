@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IPersonalBulidTimeDao">
+
+ 	<insert id="insertBulid" parameterType="java.util.List">
+ 		insert into personal_bulid_time(pro_id,pbi_id,pbi_name,start_time,end_time,bulid_type,bulid_result) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+				#{item.proId},#{item.pbiId},#{item.pbiName},#{item.startTime},#{item.endTime},#{item.bulidType},#{item.bulidResult}
+			)
+		</foreach>
+ 	</insert>
+
+ 	<insert id="deleteNowBulid" parameterType="java.lang.String">
+ 		delete from personal_bulid_time where subString(start_time,1,7)=#{month} and pro_id=#{projNo}
+ 	</insert>
+
+	<select id="queryNowBulid" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from personal_bulid_time where pro_id=#{projNo} and subString(start_time,1,7)=#{month}
+	</select>
+
+	<select id="buildPerMonth" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select * from personal_bulid_time where subString(start_time,1,7)=#{month} and pro_id=#{projNo}
+	</select>
+	
+	<insert id="savePbiId" parameterType="java.lang.String">
+		insert into smartide values(#{projNo},#{pbiId},#{pbiName},'','')
+	</insert>
+	
+	<delete id="deletePbiId" parameterType="java.lang.String">
+		delete from smartide where no=#{projNo}
+	</delete>
+
+	<select id="queryPbiId" parameterType="java.lang.String" resultType="java.lang.String">
+		select pbiId from smartide where no=#{projNo}
+	</select>
+	
+	<select id="queryPbiName" parameterType="java.lang.String" resultType="java.lang.String">
+		select pbiName from smartide where no=#{projNo}
+	</select>
+	
+	<select id="queryAllBuilds" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from personal_bulid_time where pro_id=#{projNo}
+	</select>
+	
+	<select id="personBuildTime"  parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT 
+		  IFNULL(A.minutes, 0) AS minutes 
+		FROM
+		  (SELECT 
+		    SUM(
+		      ROUND(
+		        (
+		         UNIX_TIMESTAMP(t.`end_time`) - UNIX_TIMESTAMP(t.`start_time`)
+		        ) / 60
+		      )
+		    ) AS minutes 
+		  FROM
+		    `personal_bulid_time` t 
+		  WHERE DATE_FORMAT(t.`start_time`, '%Y%m') = #{yearMonth} AND t.`pro_id` in ${sqlStr}
+		  ) A 
+	</select>
+	
+	<select id="personBuildTimeCounts" parameterType="java.lang.String" resultType="java.lang.Double">
+		SELECT 
+		  COUNT(*) 
+		FROM
+		  `personal_bulid_time` t 
+		WHERE DATE_FORMAT(t.`start_time`, '%Y%m') = #{yearMonth} AND t.`pro_id` in ${sqlStr}
+	</select>
+	
+	<select id="isHaveConfigIde" parameterType="java.lang.String" resultType="java.lang.Integer">
+		 SELECT COUNT(*) FROM `smartide` WHERE NO = #{proNo}
+	</select>
+	
+</mapper>

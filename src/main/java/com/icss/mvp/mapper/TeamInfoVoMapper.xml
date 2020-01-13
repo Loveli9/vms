@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.TemaInfoVoDao" >
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.TeamInfoVo">
+        <result column="No" property="no" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="hwDeptNo" property="hwdeptno" jdbcType="BIGINT"/>
+        <result column="HWPDU" property="hwpdu" jdbcType="VARCHAR"/>
+        <result column="HWPDUID" property="hwpduid" jdbcType="VARCHAR"/>
+        <result column="HWZPDU" property="hwzpdu" jdbcType="VARCHAR"/>
+        <result column="HWZPDUID" property="hwzpduid" jdbcType="VARCHAR"/>
+        <result column="PDU_SPDT" property="pduSpdt" jdbcType="VARCHAR"/>
+        <result column="PDU_SPDTID" property="pduSpdtid" jdbcType="VARCHAR"/>
+        <result column="optdeptno" property="optdeptno" jdbcType="BIGINT"/>
+        <result column="BU" property="bu" jdbcType="VARCHAR"/>
+        <result column="BUID" property="buid" jdbcType="VARCHAR"/>
+        <result column="DU" property="du" jdbcType="VARCHAR"/>
+        <result column="DUID" property="duid" jdbcType="VARCHAR"/>
+        <result column="PDU" property="pdu" jdbcType="VARCHAR"/>
+        <result column="PDUID" property="pduid" jdbcType="VARCHAR"/>
+        <result column="AREA" property="area" jdbcType="VARCHAR"/>
+        <result column="AREAID" property="areaid" jdbcType="VARCHAR"/>
+        <result column="COOPTYPE" property="cooptype" jdbcType="VARCHAR"/>
+        <result column="TM" property="tm" jdbcType="VARCHAR"/>
+        <result column="TMID" property="tmid" jdbcType="VARCHAR"/>
+        <result column="IMPORT_DATE" property="importdate" jdbcType="TIMESTAMP"/>
+        <result column="IMPORT_USER" property="importuser" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="projectTeamVo" type="com.icss.mvp.entity.ProjectTeamVo">
+        <result column="TEAMID" property="teamId" jdbcType="VARCHAR"/>
+        <result column="TEAMNAME" property="teamName" jdbcType="VARCHAR"/>
+        <result column="TM" property="tm" jdbcType="VARCHAR"/>
+        <result column="TMID" property="tmId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="projectInfo" type="com.icss.mvp.entity.ProjectInfo">
+        <result column="TEAMNAME" property="teamName" jdbcType="VARCHAR"/>
+        <result column="PM" property="pm" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="teamMembers" type="com.icss.mvp.entity.TeamMembers">
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="ZR_ACCOUNT" property="zrAccount" jdbcType="VARCHAR"/>
+        <result column="HW_ACCOUNT" property="hwAccount" jdbcType="VARCHAR"/>
+        <result column="svn_git_no" property="svnGitNo" jdbcType="VARCHAR"/>
+        <result column="ROLE" property="role" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="teamInfoCount" parameterType="Map" resultType="java.lang.Integer">
+        <!-- select
+        count(1)
+        from team_info t1
+        where 1 = 1 -->
+        SELECT COUNT(*) FROM project_team WHERE 1 = 1
+        <include refid="sql_where"/>
+    </select>
+	<select id="teamCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM
+          (SELECT MAX(NO) AS NO,TEAMID FROM project_info WHERE TEAMID IS NOT NULL GROUP BY TEAMID)a
+            LEFT JOIN project_info p ON a.NO = P.NO LEFT JOIN project_team pt ON pt.id = p.TEAMID
+          WHERE 1=1 AND pt.id = p.TEAMID
+        <include refid="sqlTeam_where"/>
+    </select>
+    <select id="teamInfos" parameterType="Map" resultMap="projectTeamVo">
+        <!-- select
+        t1.NO as NO,
+        t1.NAME as NAME,
+        t1.TM as TM,
+        t1.TMID as TMID,
+        t1.HWPDU as HWPDU,
+        t1.HWZPDU as HWZPDU,
+        t1.PDU_SPDT as PDUSPDT,
+        t1.BU as BU,
+        t1.PDU as PDU,
+        t1.DU as DU,
+        t1.AREA as AREA,
+        t1.COOP_TYPE as COOP_TYPE
+        from team_info t1
+        where 1 = 1 -->
+        <![CDATA[
+        SELECT pt.id AS TEAMID,pt.team_name AS TEAMNAME,p.PM AS TM,p.PMID AS TMID
+        FROM project_team pt
+		LEFT JOIN project_info p ON pt.id = p.TEAMID
+		where 1 = 1
+		]]>
+        <include refid="sql_where"/>
+        GROUP BY TEAMID
+		ORDER BY TEAMID
+        <if test="fromIndex != null and pageSize != null">
+            limit #{fromIndex}, #{pageSize}
+        </if>
+    </select>
+	<select id="getTeamInfos" parameterType="Map" resultMap="projectTeamVo">
+        SELECT
+          pt.id AS TEAMID,
+          p.PM AS TM,
+          P.PMID AS TMID,
+          pt.team_name AS TEAMNAME
+        FROM (SELECT MAX(NO) AS NO,TEAMID FROM project_info WHERE TEAMID IS NOT NULL GROUP BY TEAMID)a
+          LEFT JOIN project_info p ON a.NO = P.NO LEFT JOIN project_team pt ON pt.id = p.TEAMID
+        WHERE 1=1 AND pt.id = p.TEAMID
+        <include refid="sqlTeam_where"/>
+        ORDER BY pt.id
+        <if test="fromIndex != null and pageSize != null">
+            limit #{fromIndex}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="teamNos" parameterType="Map" resultType="java.lang.String">
+        select
+        t1.No as no
+        from team_info t1
+        where 1 = 1
+        <include refid="sql_where"/>
+    </select>
+    
+    <insert id="replaceInfo" parameterType="com.icss.mvp.entity.TeamInfoVo">
+		REPLACE into
+		team_info
+		(NAME,NO,TM,TMID,BU,PDU,DU,AREA,IMPORT_DATE,IMPORT_USER,HWPDU,HWZPDU,PDU_SPDT,COOP_TYPE,BUID,PDUID,DUID,AREAID,HWPDUID,HWZPDUID,PDU_SPDTID)
+		values
+		(#{team.name},#{team.no},#{team.tm},#{team.tmid},#{team.bu},#{team.pdu},#{team.du},#{team.area},
+		#{team.importdate},#{team.importuser},#{team.hwpdu},#{team.hwzpdu},#{team.pduSpdt},#{team.cooptype},
+		#{team.buid},#{team.pduid},#{team.duid},#{team.areaid},#{team.hwpduid},#{team.hwzpduid},#{team.pduSpdtid})
+	</insert>
+	
+	<select id="getTeamInfoVo" resultMap="BaseResultMap">
+		SELECT *
+		FROM
+		team_info t1
+		WHERE t1.NO = #{no}
+	</select>
+
+
+    <sql id="sql_where">
+        <if test="teamName!=null and teamName!=''">
+            AND p.TEAMNAME like concat('%', #{teamName} ,'%')
+        </if>
+        <if test="tm!=null and tm!=''">
+            AND p.PM like concat('%', #{tm} , '%')
+        </if>
+        <if test="areas != null and areas.size() != 0">
+            AND `t1`.AREAID in
+            <foreach collection="areas" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="status != null and status.size() != 0">
+            AND `t1`.PROJECT_STATE IN
+            <foreach collection="status" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwpduId != null and hwpduId.size() != 0">
+            AND `t1`.`HWPDUID` IN
+            <foreach collection="hwpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwzpduId != null and hwzpduId.size() != 0">
+            AND `t1`.`HWZPDUID` IN
+            <foreach collection="hwzpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduSpdtId != null and pduSpdtId.size() != 0">
+            AND `t1`.`PDU_SPDTID` IN
+            <foreach collection="pduSpdtId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="buId != null and buId.size() != 0">
+            AND `t1`.`BUID` IN
+            <foreach collection="buId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduId != null and pduId.size() != 0">
+            AND `t1`.`PDUID` IN
+            <foreach collection="pduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="duId != null and duId.size() != 0">
+            AND `t1`.`DUID` IN
+            <foreach collection="duId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    
+    <sql id="sqlTeam_where">
+        <if test="teamName!=null and teamName!=''">
+            AND p.TEAMNAME like concat('%', #{teamName} ,'%')
+        </if>
+        <if test="tm!=null and tm!=''">
+            AND p.PM like concat('%', #{tm} , '%')
+        </if>
+    </sql>
+    <select id="getTeamSize" parameterType="String" resultType="java.lang.Integer">
+    	<!-- SELECT COUNT(*) FROM team_members WHERE TEAM_ID = #{teamId} -->
+    	SELECT COUNT(ZR_ACCOUNT) FROM team_staff WHERE TEAM_ID = #{teamId} AND IS_DELETED = 0
+    </select>
+    
+    <select id="getTeamInfo" resultMap="projectInfo">
+		SELECT PM,TEAMNAME
+		FROM project_info
+		WHERE TEAMID=#{teamId} LIMIT 1
+	</select>
+	
+	<!-- 团队成员导入查重 -->
+	<select id="getMemberBaseCount" resultType="int">
+		SELECT COUNT(*) FROM member_base WHERE ZR_ACCOUNT = #{chinasoftAccount} AND IS_DELETED = 0
+	</select>
+	
+	<select id="getTeamStaffCount" resultType="int">
+		SELECT COUNT(*) FROM team_staff WHERE TEAM_ID = #{teamId} AND ZR_ACCOUNT = #{chinasoftAccount}
+	</select>
+	
+	<select id="getRankList" resultType="java.lang.String">
+		SELECT rank_name FROM rank GROUP BY rank_name
+	</select>
+</mapper>

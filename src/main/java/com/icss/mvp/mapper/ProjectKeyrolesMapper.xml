@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectKeyrolesDao">
+    <resultMap type="com.icss.mvp.entity.ProjectKeyroles" id="projectKeyroles">
+        <result property="no" column="NO"/>
+        <result property="name" column="NAME"/>
+        <result property="zrAccount" column="ZR_ACCOUNT"/>
+        <result property="hwAccount" column="HR_ACCOUNT"/>
+        <result property="position" column="POSITION"/>
+        <result property="rdpmExam" column="RDPM_EXAM"/>
+        <result property="replyResults" column="REPLY_RESULTS"/>
+        <result property="proCompetence" column="PRO_COMPETENCE"/>
+        <result property="status" column="STATUS"/>
+        <result property="author" column="AUTHOR"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+    </resultMap>
+    <select id="queryProjectKeyrolesNo" parameterType="java.lang.String"
+            resultMap="projectKeyroles">
+        SELECT a.*, b.AUTHOR
+        FROM (
+        SELECT mb.NAME, mb.ZR_ACCOUNT, mb.HW_ACCOUNT AS HR_ACCOUNT, ps.ROLE AS POSITION
+        , mb.RDPM_EXAM, mb.REPLY_RESULTS, mb.PRO_COMPETENCE, ps.STATUS, ps.SUPERIOR
+        , ps.START_DATE, ps.END_DATE, ps.IS_KEY_STAFFS
+        FROM project_staff ps
+        LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT AND ps.IS_DELETED = 0
+        ) a
+        LEFT JOIN project_members b ON a.ZR_ACCOUNT = b.AUTHOR
+        WHERE a.ZR_ACCOUNT = #{pmid}
+        AND a.IS_KEY_STAFFS = 0
+    </select>
+
+    <select id="queryProjectKeyrolesZrAccount" parameterType="java.lang.String"
+            resultMap="projectKeyroles">
+        <!-- SELECT * from
+        project_keyroles where ZR_ACCOUNT=#{zrAccount} -->
+        SELECT
+        ps.NO,
+        mb.NAME,
+        mb.ZR_ACCOUNT,
+        mb.HW_ACCOUNT AS HR_ACCOUNT,
+        ps.ROLE AS POSITION,
+        mb.RDPM_EXAM,
+        mb.REPLY_RESULTS,
+        mb.PRO_COMPETENCE,
+        ps.STATUS,
+        ps.SUPERIOR,
+        ps.CREATE_TIME,
+        ps.END_DATE
+        FROM project_staff ps
+        LEFT JOIN member_base mb
+        ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+        WHERE ps.ZR_ACCOUNT = #{zrAccount} AND ps.IS_DELETED = 0 AND ps.IS_KEY_STAFFS = 0
+    </select>
+
+    <insert id="insertInfos" useGeneratedKeys="true" parameterType="java.util.List">
+        REPLACE INTO project_keyroles
+        (NO,NAME,ZR_ACCOUNT,HR_ACCOUNT,POSITION,RDPM_EXAM,REPLY_RESULTS,PRO_COMPETENCE,STATUS)
+        VALUES
+        <foreach collection="proj" item="item" index="index"
+                 separator=",">
+            (
+            #{item.no},#{item.name},#{item.zrAccount},#{item.hwAccount},#{item.position},#{item.rdpmExam},
+            #{item.replyResults},#{item.proCompetence},#{item.status}
+            )
+        </foreach>
+    </insert>
+
+    <update id="updateMemberBase" parameterType="com.icss.mvp.entity.ProjectKeyroles">
+		UPDATE
+		member_base SET
+		MODIFY_TIME = NOW(), NAME=#{proj.name}, HW_ACCOUNT=#{proj.hwAccount},
+		RDPM_EXAM=#{proj.rdpmExam},REPLY_RESULTS=#{proj.replyResults},
+		PRO_COMPETENCE=#{proj.proCompetence}
+		WHERE ZR_ACCOUNT=#{proj.zrAccount}
+	</update>
+
+    <update id="updateProjectStaff" parameterType="com.icss.mvp.entity.ProjectKeyroles">
+		UPDATE
+		project_staff SET
+		MODIFY_TIME = NOW(), IS_DELETED = 0, ROLE = #{proj.position}, STATUS=#{proj.status},
+		IS_KEY_STAFFS = 0, SUPERIOR = #{proj.superior}
+		WHERE NO=#{proj.no} and ZR_ACCOUNT=#{proj.zrAccount}
+	</update>
+
+    <delete id="batchDeleteByNo" parameterType="java.lang.String">
+        <!--  delete from project_keyroles where no=#{no}  -->
+        UPDATE project_staff set
+        IS_DELETED = 1
+        where NO=#{no}
+    </delete>
+    <delete id="batchDelete">
+        <!-- delete from project_keyroles -->
+        UPDATE project_staff set
+        IS_DELETED = 1
+    </delete>
+
+    <update id="updateScore">
+        <!-- UPDATE project_keyroles
+        SET RDPM_EXAM = #{score}
+        WHERE ZR_ACCOUNT = #{account} -->
+        UPDATE member_base
+        SET RDPM_EXAM = #{score}
+        WHERE ZR_ACCOUNT = #{account}
+    </update>
+
+    <select id="queryProjectKeyrolesByNo" parameterType="java.lang.String"
+            resultMap="projectKeyroles">
+		SELECT a.*, b.AUTHOR
+		FROM (
+		SELECT ps.NO, mb.NAME, mb.ZR_ACCOUNT, mb.HW_ACCOUNT AS HR_ACCOUNT, ps.ROLE AS POSITION
+		, mb.RDPM_EXAM, mb.REPLY_RESULTS, mb.PRO_COMPETENCE, ps.STATUS, ps.SUPERIOR
+		, ps.START_DATE, ps.END_DATE, ps.IS_KEY_STAFFS
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT AND ps.IS_DELETED = 0
+		) a
+		LEFT JOIN project_members b ON a.ZR_ACCOUNT = b.AUTHOR
+		WHERE a.no = #{no}
+		AND a.IS_KEY_STAFFS = 0
+	</select>
+</mapper>

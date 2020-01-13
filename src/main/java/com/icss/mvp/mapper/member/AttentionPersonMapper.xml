@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.member.AttentionPersonDao">
+    <select id="getAttentionInfoByPage" resultType="com.icss.mvp.entity.UserInfo">
+        SELECT ap.`concerned_person` AS USERID,su.`USERNAME`,su.`permission_ids` AS permissionids FROM `attention_personnel` ap
+            LEFT JOIN `sys_user` su
+                ON ap.`concerned_person` = su.`USERID`
+        WHERE ap.`concern_person` = #{page.queryMap.account} AND ap.`ignore` = 0
+        LIMIT ${page.page},${page.rows}
+    </select>
+
+    <insert id="saveAttentionPersonnel">
+        REPLACE INTO `attention_personnel` (`concern_person`,`concerned_person`,`concerned_time`)VALUES(#{person.concernPerson},
+        #{person.concernedPerson},
+        #{person.concernedTime})
+    </insert>
+
+    <update id="removeConcerns">
+            update attention_personnel SET `ignore` = 1 where `concern_person` = #{concern} and concerned_person = #{concerned}
+    </update>
+
+    <select id="getRoles" resultType="java.lang.String">
+        SELECT `permission_name` FROM `sys_permission` WHERE `permission_id` IN ${ids}
+    </select>
+</mapper>

@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/comm/tableComm.js"></script>
+<script type="text/javascript" src="js/qualityMonthly.js"></script>
+<style>
+
+		.breadcrumb {
+			background-color: #fff;
+			margin-left: 20px;
+			margin-right: 20px;
+			margin-bottom: 0px;
+			padding: 8px 0px;
+		}
+		.table {table-layout:fixed;}
+		.tableCenter>thead>tr>td,.tableCenter>thead>tr>th,.tableCenter>tbody>tr>td,.tableCenter>tbody>tr>th{
+			text-align: center;
+			vertical-align:middle;
+		}
+		.editable-container.editable-inline input{
+			width: 85px;
+		}
+		.editable-container.editable-inline select{
+			width: 85px;
+		}
+		.editable-click, a.editable-click, a.editable-click:hover {
+			text-decoration: none;
+			border-bottom: dashed 0px #0088cc;
+		}
+		.editableform .form-control {
+			width: 350px;
+		}
+		.editable-input {
+			float: left;
+		}
+		.editable-buttons {
+			float: left;
+			margin-top: 5px;
+		}
+		.text-nowrap {
+			white-space: unset;
+		}
+		.myTab{
+			padding-left: 3px;
+			padding-right: 20px;
+		}
+		.table>thead:first-child>tr:first-child>th{
+			border-right: 1px solid transparent !important;
+		}
+		.bootstrap-table .table:not(.table-condensed) > tbody > tr > td{
+			border-right: 1px solid transparent !important;
+		}
+		.fixed-table-container {
+			border-width: 0px;
+			background-color: #fff;
+		}
+</style>
+</head>
+<body class="mvp-body">
+	<div class="mvp-main">
+		<div class="myTab">
+			<div style="height: 40px;">
+				<select id="monthlySection" style="float: left; font-size: 16px; width: 135px; height: 30px; padding-left: 15px; padding-right: 10px; margin-left: 0px; border-radius: 4px; outline: none;"></select>
+				<button type="button" id="refreshData" style="float: left; width: 82px; height: 30px; background-color: #e41f2b; color: #ffffff; cursor: pointer; border: none; border-radius: 4px; font-size: 15px; margin-left: 15px; line-height: 30px; outline: none;">刷新数据</button>
+			</div>
+			<div>
+				<table id="mytable" class="table text-nowrap"></table>
+			</div>
+		</div>
+	</div>
+	<!-- 编辑页面 -->
+		<div class="modal fade" id="iteEditPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
+			data-backdrop="static">
+			<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:600px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						需求变更率信息
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="editForm" method="post" class="form-horizontal">
+						<input  type="text" class="form-control" name="no" id="no" style="display: none"	/>
+						<div class="form-group">
+	                        <label class="col-sm-2 control-label">需求变更率</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="scopeLamp" id="scopeLamp" readonly="readonly"/>
+	                        </div>               
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="col-sm-2 control-label">需求变更</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="demandChangeNumber" id="demandChangeNumber" oninput="change()" placeholder="请输入需求变更"/>
+	                        </div>
+	                        <label for="startDate" class="col-sm-2 control-label">总需求数</label>
+                            <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="demandTotal" id="demandTotal" oninput="change()" placeholder="请输入总需求数"/>
+	                        </div>
+	                    </div>	
+	                    <div class="form-group" style="padding-left: 80px">
+							<div class="col-sm-2 col-sm-offset-2">
+								<button type="button" class="btn btn-primary btn-block"
+									id="edit_saveBtn">保存</button>
+							</div>
+							<div class="col-sm-2 col-sm-offset-1">
+								<button type="button" class="btn btn-default btn-block"
+									id="edit_backBtn">返回</button>
+							</div>
+						</div>	                    
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--需求完成率编辑  -->
+	<div class="modal fade" id="editDemandProgress" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
+			data-backdrop="static">
+			<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:600px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						需求完成率信息
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="editDpForm" method="post" class="form-horizontal">
+						<input  type="text" class="form-control" name="no" id="no" style="display: none"	/>
+						<div class="form-group">
+	                        <label class="col-sm-2 control-label">进度偏差率</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="planLamp" id="planLamp" readonly="readonly"/>
+	                        </div>               
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="col-sm-2 control-label">需求完成率</label>
+	                        <div class="col-sm-4">
+	                            <!-- <input type="text" class="form-control" name="demandProgress" id="demandProgress" oninput="changePlanLamp()" placeholder="请输入需求变更"/> -->
+	                            <input type="text" class="form-control" name="demandProgress" id="demandProgress" onkeyup="myFunction()" oninput="changePlanLamp()" placeholder="请输入需求变更"/>
+	                        </div>
+	                        <label for="startDate" class="col-sm-2 control-label">进度完成率</label>
+                            <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="developmentProgress" id="developmentProgress" readonly="readonly"/>
+	                        </div>             
+	                    </div>
+	                    <div class="form-group">
+	                        <div class="col-sm-12">
+	                             <span id="err1" style="display: none;"></span>
+	                        </div>               
+	                    </div>
+	                    <div class="form-group" style="padding-left: 80px">
+							<div class="col-sm-2 col-sm-offset-2">
+								<button type="button" class="btn btn-primary btn-block"
+									id="editSaveBtn">保存</button>
+							</div>
+							<div class="col-sm-2 col-sm-offset-1">
+								<button type="button" class="btn btn-default btn-block"
+									id="editBackBtn">返回</button>
+							</div>
+						</div>	                    
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

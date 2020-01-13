@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/measureCalcu.js"></script>
+<style>
+	#qualityTarget th,#qualityTarget td{
+		text-align: center; font-size: 14px;
+	}
+	#qualityTarget tr{
+		height: 40px; line-height: 40px;
+	}
+	.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+		color: #3399ff;
+	    background-color: #fff;
+	    border-bottom: 5px #3399ff solid;
+	}
+	.nav>li>a:hover{
+		color: #3399ff;
+	    background-color: #fff;
+	}
+	.nav>li>a {
+	    color: #000000;
+	    background-color: #fff;
+	    text-decoration: none;
+	}
+	.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+			padding-bottom: 10px;
+	}
+</style>
+<script type="text/javascript">
+        $(document).on("click", "ul.navbar-nav li", function () {
+        	$("ul.navbar-nav li").removeClass("active");
+        	_.each($("ul.navbar-nav li"), function(tab, index){
+        		$("#"+$(tab).attr("tabname")).css('display','none');
+        	});
+        	$(this).addClass("active");
+        	var id = $(this).attr("tabname");
+        	$("#"+id).css('display','block');
+        });
+    </script>
+</head>
+<body>
+	<!-- <div style="height: 47px;border-bottom: 2px #e2e3e4 solid;padding-left: 30px;margin-top: 20px;font-size: 20px;">
+		<span>需求度量</span>
+	</div> -->
+	<div style="height: 50px;border-bottom: 2px #e2e3e4 solid;margin: 10px;">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li tabname="qualityTargetTable" class="active"><a href="#">度量指标</a></li>
+		</ul>
+	</div>
+    <table width="99.5%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+              <div id="qualityTargetTable" style="margin: 0px 10px 10px 10px;">
+					<!-- <div class="chart-title" style="line-height: 40px;">
+					      <div style="float: left;"><span style="font-size: 16px;line-height: 35px;">度量指标</span></div>
+					      <div style="border-right: 1px #367FA9 solid;height: 33px;width: 15px;float: left;"></div>
+					      <div style="border-right: 2px #367FA9 solid;height: 33px;width: 2px;float: left;margin-left: 2px;"></div>
+					</div>
+					<div class="change-chart">  -->
+			            <table id="qualityTarget" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table">
+			                 <thead>
+			                     <tr bgcolor="#e8e8e8">
+			                         <td style="width:15%;">指标名称</td>
+			                         <td style="width:10%;">单位Unit</td>
+			                         <td style="width:10%;">上限值USL</td>
+			                         <td style="width:10%;">下限值LSL</td>
+			                         <td style="width:10%;">目标值Goal</td>
+			                         <td style="width:10%;">实际值</td>
+			                         <td style="width:10%;">采集方式</td>
+			                         <td>计算公式</td>
+			                     </tr>
+			                 </thead>
+			            </table>
+					<!-- </div> -->
+        		</div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

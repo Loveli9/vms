@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IQualityModelDao">
+	<select id="queryProject" resultType="com.icss.mvp.entity.ProjectInfo">
+		<!-- select p.no as no,p.name as name,p.pdu_spdt as pduSpdt,p.area as area,p.hwzpdu as hwzpdu,p.hwpdu as hwpdu, p.bu as bu, p.du as du,
+		CONCAT_WS(' ',(SELECT
+		m.NAME FROM project_keyroles m WHERE  m.NO =
+		p.NO
+		AND m.POSITION = 'PM' LIMIT 1),(SELECT
+		m.zr_account FROM project_keyroles m WHERE  m.NO =
+		p.NO
+		AND m.POSITION = 'PM' LIMIT 1)) AS pm,
+		CONCAT_WS(' ',(SELECT m.NAME  FROM project_keyroles m WHERE
+		m.NO = p.NO
+		AND m.POSITION = 'QA' LIMIT 1),(SELECT
+		m.zr_account FROM project_keyroles m WHERE  m.NO =
+		p.NO
+		AND m.POSITION = 'QA' LIMIT 1))
+		 AS qa,
+		p.pdu as pdu
+		 from project_info p
+		where 1=1 -->
+		SELECT
+		  p.no       AS NO,
+		  p.name     AS NAME,
+		  p.pdu_spdt AS pduSpdt,
+		  p.area     AS AREA,
+		  p.hwzpdu   AS hwzpdu,
+		  p.hwpdu    AS hwpdu,
+		  p.bu       AS bu,
+		  p.du       AS du,
+		  CONCAT_WS(' ',(SELECT mb.NAME FROM project_staff m LEFT JOIN member_base mb ON m.ZR_ACCOUNT = mb.ZR_ACCOUNT 
+		  AND m.IS_KEY_STAFFS = 0 AND m.IS_DELETED = 0
+		  WHERE m.NO = p.NO AND m.ROLE = 'PM' LIMIT 1), (SELECT m.ZR_ACCOUNT FROM project_staff m WHERE m.NO = p.NO 
+		  AND m.ROLE = 'PM' LIMIT 1)) AS pm,
+		  CONCAT_WS(' ',(SELECT mb.NAME FROM project_staff m LEFT JOIN member_base mb ON m.ZR_ACCOUNT = mb.ZR_ACCOUNT 
+		  AND m.IS_KEY_STAFFS = 0 AND m.IS_DELETED = 0
+		  WHERE m.NO = p.NO AND m.ROLE = 'QA' LIMIT 1), (SELECT m.ZR_ACCOUNT FROM project_staff m WHERE m.NO = p.NO 
+		  AND m.ROLE = 'QA' LIMIT 1)) AS qa,
+		  p.pdu      AS pdu
+		FROM project_info p
+		WHERE 1 = 1
+		<include refid="queryProjectSql"></include>
+		<if test="pageRequest.pageNumber != null and pageRequest.pageNumber != '' and pageRequest.pageSize != null and pageRequest.pageSize != ''">
+			limit #{pageRequest.pageNumber},#{pageRequest.pageSize} 
+		</if>
+	</select>
+	
+	<select id="searchTotalRecord" resultType="int">
+		select count(*) from project_info p where 1=1
+		<include refid="queryProjectSql"></include>
+	</select>
+	
+	<sql id="queryProjectSql">
+		<if test="projectInfo.hwpdu!= null and projectInfo.hwpdu != '' ">
+			 AND p.HWPDU = (SELECT o.DEPT_NAME FROM SYS_HWDEPT o WHERE o.DEPT_LEVEL=1 AND o.DEPT_ID =#{projectInfo.hwpdu})
+		</if>	
+		<if test="projectInfo.hwzpdu!= null and projectInfo.hwzpdu!='' ">
+			 AND p.HWZPDU = (SELECT o.DEPT_NAME FROM SYS_HWDEPT o WHERE o.DEPT_LEVEL=2 AND o.DEPT_ID =#{projectInfo.hwzpdu})
+		</if>	
+		<if test="projectInfo.pduSpdt != null and projectInfo.pduSpdt != '' ">
+			 AND p.PDU_SPDT = (SELECT o.DEPT_NAME FROM SYS_HWDEPT o WHERE o.DEPT_LEVEL=3 AND o.DEPT_ID =#{projectInfo.pduSpdt} )
+		</if>	
+		<if test="projectInfo.bu != null and projectInfo.bu != '' ">
+			 AND p.BU = (SELECT o.DEPT_NAME FROM OP_DEPARTMENT o WHERE o.DEPT_LEVEL=2 AND o.DEPT_ID =#{projectInfo.bu})
+		</if>	
+		<if test="projectInfo.pdu != null and projectInfo.pdu!=''">
+			 AND p.PDU = (SELECT o.DEPT_NAME FROM OP_DEPARTMENT o WHERE o.DEPT_LEVEL=3 AND o.DEPT_ID = #{projectInfo.pdu})
+		</if>
+		<if test="projectInfo.du !=null and projectInfo.du!=''">
+			AND p.DU = (SELECT o.DEPT_NAME FROM OP_DEPARTMENT o WHERE o.DEPT_LEVEL=4 AND o.DEPT_ID = #{projectInfo.du})
+		</if>
+		<if test="projectInfo.projectState != null and projectInfo.projectState!=''">
+			 AND p.project_state =#{projectInfo.projectState}
+		</if>
+     </sql>
+	
+	<select id="queryMeasure" resultType="java.util.HashMap">
+		select lmc.measure_id as measureId,lmc.actual_val as actualVal
+		from label_measure_config lmc 
+		where  lmc.project_lable_id in
+		(select plc.id from project_label_config plc where plc.project_id=#{no}) 
+	</select>
+	
+	<select id="queryNowHuman" resultType="int">
+		<!-- select count(*) from project_members_local where no=#{no} -->
+		select count(*) from project_staff where no=#{no} and IS_DELETED = 0
+	</select>
+	
+	<select id="searchParameter" resultType="com.icss.mvp.entity.ParameterValueNew">
+		select no as no,month as month,parameter_id as parameterId,value as value from project_parameter_value_new where no =#{no} 
+		and year(month) =year(sysdate())
+		and parameter_id in (144,145,146,147,148,149)
+	</select>
+	
+	<select id="searchStatistical" resultType="com.icss.mvp.entity.ParameterValueNew">
+		select no as no,month as month,parameter_id as parameterId,value as value from project_parameter_value_new where no =#{no} 
+		and year(month) =year(sysdate())
+		and  month(month) = month(sysdate())
+		and parameter_id in (150,151,152,153,154,155,156,157,158,159)
+	</select>
+	
+	<select id="searchStatisticalXml" resultType="com.icss.mvp.entity.ParameterValueNew">
+		select b.no as no,b.month as month ,a.parameter_id as parameterId,b.value as value from 
+			(select distinct parameter_id from project_parameter_value_new where no =#{no}
+				and parameter_id in (2,163,3,165,1) order by month desc) as a 
+			left join 
+			(select distinct no,month,parameter_id,value from project_parameter_value_new where no =#{no}
+				and parameter_id in (2,163,3,165,1) order by month desc) as b 
+			on a.parameter_id=b.parameter_id group by a.parameter_id
+	</select>
+	
+	<select id="queryAutomaticMeasure" resultType="java.util.HashMap">
+		SELECT t.measure_id,t.measure_value FROM
+		(SELECT
+		measure_id AS measure_id,
+		measure_value AS measure_value,
+		create_time AS ctime
+		FROM  measure_history_detail 
+		WHERE `no` = #{no}
+        AND date_format(create_time, '%Y-%m')=date_format(now(), '%Y-%m')
+        AND measure_id in ('178','179','183','184','185','189','190','191')
+		ORDER BY create_time DESC) t
+        GROUP BY t.measure_id
+	</select>
+</mapper>

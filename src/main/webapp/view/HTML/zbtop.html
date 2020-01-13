@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="js/zbtop.js"></script>
+    <style>
+
+	.homeSelect{
+    	float:right;
+    	width:153px;
+    	height:32px;
+		margin-left: 10px;
+		    	
+    }
+    .mains{
+		width:auto; height:auto; position:absolute; top:0px; left:0px; right:0px; bottom:0px; background:#f7f8f8;
+	}
+    </style>
+    
+   
+</head>
+<body style="line-height: 24px;background: #f7f8f8;">
+ 	<div class="mains" style="padding:0;">
+   		<div style="margin-top: 20px;margin-left: 30px;width:95%;height:40px;">
+			<span style="float:left;width:150px;font-size: 20px;font-weight: bold;line-height: 32px;color: #666;">指标TOP5</span>
+			<!-- 中软 -->
+			<div class="homeSelect" id="select8" style="display: none;">
+				<select onchange="selectOnchange()" id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+			</div>
+			<div class="homeSelect" id="select7">
+	   			<select onchange="selectOnchange()" id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+			<div class="homeSelect" id="select6">
+	    		<select onchange="selectOnchange()" id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+	   		<!-- 华为 -->
+	   		<div class="homeSelect" style="display: none;" id="select5">
+				<select onchange="selectOnchange()" id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+			</div>
+			<div class="homeSelect" style="display: none;" id="select4">
+	   			<select onchange="selectOnchange()" id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+			<div class="homeSelect" style="display: none;" id="select3">
+	    		<select onchange="selectOnchange()" id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+	   		<!-- 地域 -->
+	   		<div class="homeSelect" style="display: none;" id="select1">
+	    		<select onchange="selectOnchange()" id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+	   		<div class="homeSelect" style="display: none;">
+	            <select id="usertype2" name="usertype" title="请选择状态" class="selectpicker show-tick form-control" multiple data-live-search="false">
+	                <option value="在行">在行</option>
+	                <option value="关闭">关闭</option>
+	       		</select>
+			</div>
+			<div class="homeSelect" id="select">
+				<select onchange="selectChange()" id="selectBig" name="select" title="中软&华为" class="selectpicker show-tick form-control"  data-live-search="false">
+					<option value='1' selected="selected">中软</option>
+					<option value='2'>华为</option>
+					<option value='3'>地域</option>
+				</select>
+			</div>
+		</div>
+	    <div style="color: #333333;margin: 20px 30px;background-color: white;">
+			<div id="tab-zl" style="margin: 10px 0px;">
+				<div style="height:480px;width: 100%;">
+			        <div class="home-content">
+			        	<div id="ZBtopchart" style="width: 100%; height: 500px;"></div>
+			        </div>
+				</div>
+				<div id="message" style="display:none;text-align:center">
+			 		 <span style="width:150px;font-size: 20px;font-weight: bold;line-height: 32px;color: red;">无在行项目</span>
+				</div>
+				<div id="errorMsg" style="display:none;text-align:center">
+			 		 <span style="width:150px;font-size: 20px;font-weight: bold;line-height: 32px;color: red;">查询出错</span>
+				</div>
+	
+			</div>
+	
+		</div>
+		</div>
+	
+	  <script type="text/javascript">
+		//回到顶部
+		function callback(){
+			$("html,body").animate({scrollTop:0}, 200);
+		};
+		function changeFrameHeight() {
+			var ifm = window.parent.document.getElementById("myiframe1");
+			//ifm.height = 600;
+			ifm.width = document.documentElement.scrollWidth;
+	    };
+		window.onresize=function(){ 
+			changeFrameHeight();
+		}
+		
+	
+		
+	  </script>
+</body>
+</html>

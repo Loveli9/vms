@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/js/sui.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/js/handsontable/handsontable.full.min.css" />
+<link rel="stylesheet" href="../HTML/css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../HTML/js/toastr.min.js"></script>
+<script src="../../resources/js/handsontable/handsontable.full.min.js"></script>
+<script src="../../resources/js/handsontable/languages/all.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/qmsMaturity.js"></script>
+<style>
+	#myiframe{
+		margin:0px 0px 0px -7px;
+	}
+	.sui-steps .todo {
+        background-color: rgb(151, 222, 255);
+    }
+    .sui-steps .finished {
+        background-color: rgb(40, 163, 239) !important;
+    }
+</style>
+</head>
+
+
+<body class="mvp-body">
+
+<div class="mvp-main" style="margin:-10px 0px 0px 10px;width:98%;">
+	<div style="float: right;font-size: 14px;margin-top: 10px;margin-bottom: 5px;margin-right: 20px;">总符合度<span id="score" style="font-size: 20px;color: #e41f2b;font-weight: bolder;margin-left: 5px;"></span></div>
+	<div class="sui-steps steps-large steps-auto">
+	
+	</div>
+	<iframe width="100%" id="myiframe" frameborder="0"></iframe>
+	
+</div>
+
+</body>
+</html>

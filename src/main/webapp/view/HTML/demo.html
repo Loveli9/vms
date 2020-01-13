@@ -1,0 +1,473 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/jquery-ui.css" type="text/css" />
+	<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+	<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+	<script src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+	<script type="text/javascript" src="js/toastr.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+	<script type="text/javascript" src="js/echarts.common.min.js"></script>
+	<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>    
+    <script type="text/javascript" src="js/jquery.circliful.min.js"></script> 
+    <script type="text/javascript" src="js/html2canvas.min.js"></script>
+    <script type="text/javascript" src="js/comm/echartcomm.js"></script>
+    <script type="text/javascript" src="js/demo.js"></script>
+    <script type="text/javascript" src="js/tuozhuai.js"></script>
+<style>
+ 	.breadcrumb > .active {
+    	color: #333333;
+	}
+	.breadcrumb {
+	    background-color: #fff;
+	    margin-left: 20px;
+	    margin-right: 20px;
+	    margin-bottom: 0px;
+	    padding: 8px 0px;
+	}
+	.bordercss{
+		margin: 10px 20px;
+		border: 2px solid #dcdcdc;
+		padding: 10px;
+	}
+	.bordercss > li{
+		margin: 5px;
+		font-size: 16px;
+	}
+	.notification{
+		background-color: #fff5ca;
+		border: 2px solid #ffbd95;
+		color: #ff0000;
+		padding: 0px;
+	}
+	.diedai_white{
+		height: 90px;
+		background-image: URL(images/diedai_white.png);
+		background-repeat: repeat-x;
+		background-position: left;
+		background-size: auto 90px;
+	}
+	.diedai_green{
+		height: 90px;
+		background-image: URL(images/diedai_green.png);
+		background-repeat: repeat-x;
+		background-position: left;
+		background-size: auto 90px;
+	}
+	.diedai_message{
+		float: left;
+		width: 33%;
+		text-align: center;
+		line-height: 15px;
+		padding-top: 5px;
+	}
+	.carousel-next-btn {
+		float: right;
+		background: url(images/next.png) no-repeat;
+	}
+	.carousel-prev-btn {
+		float: left;
+		left: 10px;
+	    background: url(images/prev.png) no-repeat;
+	}
+	.carousel-btn {
+		position: relative;
+		top: -80px;
+	    width: 20px;
+	    height: 20px;
+	    cursor: pointer;
+	}
+	/*环形图样式start*/
+	.circliful {
+	    position: relative; 
+	}
+	.circle-text, .circle-info, .circle-text-half, .circle-info-half {
+	    width: 100%;
+	    position: absolute;
+	    text-align: center;
+	    display: inline-block;
+	    color:#000000;
+	}
+	.circle-info, .circle-info-half {
+	    font-size: 14px;
+	    color: #cacaca;
+	}
+	.circliful .fa {
+	    margin: -10px 3px 0 3px;
+	    position: relative;
+	    bottom: 4px;
+	}
+	/*环形图样式end*/
+	.fixed-table-toolbar .bs-bars, .fixed-table-toolbar .columns, .fixed-table-toolbar .search{
+		margin-top: -25px;
+	}
+	.btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle){
+		display: none;
+	}
+	.fixed-table-container{
+		border: 0;
+	}
+	.table thead>tr>th,.table tbody>tr>td{
+		border-left-width: 0; border-right-width: 0;
+	}
+	.fixed-table-container thead th .sortable{
+    	cursor:pointer;background-position:right;background-repeat:no-repeat;padding-right:-1px !important;
+    }
+    .fixed-table-container thead th .asc{
+    	cursor:pointer;background-position:right;background-repeat:no-repeat;padding-right:-1px !important;
+    }
+    .fixed-table-container thead th .desc{
+    	cursor:pointer;background-position:right;background-repeat:no-repeat;padding-right:-1px !important;
+    }
+	
+	/*拖拽*/
+	.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight{
+		border: 0; color: black;
+	}
+	#sortable1,#sortable2{ 
+		list-style-type:none; margin:0; background-color:#eee; padding: 0px 5px 5px 5px;
+	}
+	#sortable1{
+		float:left; min-height: 50px; min-width: 100%;
+	} 
+	#sortable2{
+		width:100%; float:right; background-color: rgba(14,14,14,0.15);
+		min-height: 200px;
+	} 
+  	#sortable1>li,#sortable2>li{
+		margin:5px; padding:5px; font-size:1.2em; margin:0; padding:0; float:left; margin-top:5px;
+	}	
+	#sortable1 li{
+		background-color:white;
+	}
+	#sortable2 li{
+		background-color:rgba(14,14,14,0.5) ; width:100% !important; height: 40px; line-height: 40px; color: white;
+	}
+	#sortable1>li>.sortable1div{
+		display: none;
+	}
+	#sortable1>li>.sortable2div{
+		display: block;
+	}
+	#sortable2>li>.sortable1div{
+		display: block;
+	}
+	#sortable2>li>.sortable2div,#sortable2>li>.del{
+		display: none;
+	}
+	.del{
+		display: none; cursor: pointer;float: right;
+		bottom: 32px;
+		right: 25px;
+		position: relative;
+	}
+	.del_block{
+		display: block;
+	}
+	.yibiaopan{
+		width: 100%;
+		height: 180px;
+		top: 20px;
+	}
+	.yibiaopanValue{
+		position: relative;
+		text-align: center;
+		font-size: 16px;
+	}
+	.startCollect:hover {
+		background-color: #ff0000;
+		color: #ffffff;
+	}
+	.startCollect {
+		border: 1px #e41f2b solid;
+		background-color: #e41f2b;
+		color: white;
+		border-radius: 5px;
+		width: 80px;
+		height: 25px;
+		line-height: 23px;
+		margin-top: 15px;
+		font-size: 12px;
+		outline: none;
+	}
+	.configInput{
+		height: 38px; 
+	    width: 80%;
+    	margin-left: 20px;
+	}
+	.fixed-table-container{
+		height: 216px!important;
+		padding-bottom: 40px!important;
+	}
+</style>
+
+</head>
+<body>
+	<ol class="breadcrumb">
+		<li>项目</li>
+	    <li class="active">仪表盘</li>
+	</ol>
+	<div id="all_div">
+		<div class="bordercss" style="border: 0px solid #dcdcdc;padding: 0px;padding-top: 5px;">
+			<button id="exportPMpaper" style="width: 100px;height: 26px;line-height: 24px;border: 0;background-color: #e41f2b;color: #ffffff;border-radius: 5px;margin-top: -32px;margin-left: 90%;outline: none;">生成项目周报</button>
+			<div class="" style="border: 0px solid #dcdcdc;padding: 0px;">
+				<img src="images/paperTitle.png" style="width: 100%;" />
+				<div id="projName" class="" style="height: 0px;position: relative;color: #fff;
+						bottom: 55px;border: 0px solid #dcdcdc;padding: 0px;font-size: 18px;
+						text-decoration: underline;text-align: center;width: 600px;margin-left: 230px;height: 2px;"></div>
+			</div>
+			<div style="background-color: #161743;width: 100%;height: 130px;display: inline-block;color: #fff;margin-left: 0px;">
+				<div id="milestone" style="width: calc(100% - 60px);margin-right: 30px;margin-left: 30px;height: 100%;position: relative;overflow: hidden;">
+					<!-- js计算长度,获取div长度,left为偏移，每次偏移一个div长度，li长度为div长度，有几个li，ul长度为li个数*div长度 -->
+					<ul style="width: 2000px;position: absolute;overflow: hidden;left: 0px;">
+						<li style="float: left;width: 100%;">
+							<div class="diedai_white">
+								<div name="diedai" class="diedai_green diedai" style="float: left;width: 33%;"></div>
+							</div>
+							<div style="display: none;margin-top: 20px;background-color: #d0d0d0;height: 6px;">
+								<div name="diedai" style="float: left;width: 33%;background-color: #c2fa85;border-radius: 3px;height: 6px;"></div>
+							</div>
+							<div id="diedai_mes"" style="height: 40px;"></div>
+						</li>
+					</ul>
+				</div>
+				<span id="prev" class="carousel-btn carousel-prev-btn" style="display: none;"></span>
+				<span id="next" class="carousel-btn carousel-next-btn"></span>
+			</div>
+		</div>
+		<div id="notificationMsg" class="bordercss notification" style="display: flow-root;">
+			<div style="margin-left: 10px;float: left;">温馨提示:
+				<span id="notification" style="margin-left: 10px;color: #ff711c;">该项目距离验收时间还有2周，请尽快完成相关工作！</span>
+			</div>
+			<div style="float: right;">
+				<span id="notificationClose" class="glyphicon glyphicon-remove" aria-hidden="true" style="font-size: 11px;color: #000;line-height: 20px;font-weight: normal;margin-right: 5px;"></span>
+			</div>
+		</div>
+		
+		<div style="margin: 10px 20px;display: flow-root;">
+		    <ul id="sortable1">
+		        <li id="fired" class="ui-state-highlight" style="width:100%;">
+		        	<div class="sortable1div">燃尽图</div>
+		        	<div class="bordercss sortable2div" style="height: 300px;">
+						<div style="height: 30px;line-height: 20px;">
+							<span style="float: left;margin: 5px;font-size: 16px;">燃尽图</span>
+							<select id="diedai_ranjin_sel" name="diedai_selName" class="form-control" style="width: 180px;float: right;height: 30px;padding: 4px 12px;"></select>
+						</div>
+						<div style="height:270px;width: 100%;">
+				        	<div id="burnDownCharts" style="width: 100%; height: 250px;"></div>
+						</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+		        </li>
+		        <li id="locs" class="ui-state-highlight" style="width:25%;">
+		        	<div class="sortable1div">累计总代码量</div>
+		            <div class="bordercss sortable2div" style="height: 300px;">
+		           		<div style="height: 20px;line-height: 20px;text-align: center;">
+							<span style="margin: 5px;font-size: 16px;">累计总代码量</span>
+						</div>
+						<div style="height:250px;">
+				        	<div id="gaugeCharts1" class="yibiaopan"></div>
+				        	<div class="yibiaopanValue">标准值:<span id="standardValue1">80</span></div>
+				        	<div style="text-align: center;">
+				        		<button type="button" onclick="standardVlaue('1')" class="startCollect" data-toggle="dropdown" aria-expanded="false">设置标准值</button>
+							</div>
+						</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+				</li>
+		        <li id="eTe" class="ui-state-highlight" style="width:25%;">
+		        	<div class="sortable1div">E2E生产率</div>
+		            <div class="bordercss sortable2div" style="height: 300px;">
+		           		<div style="height: 20px;line-height: 20px;text-align: center;">
+							<span style="margin: 5px;font-size: 16px;">E2E生产率</span>
+						</div>
+						<div style="height:250px;">
+				        	<div id="gaugeCharts2" class="yibiaopan"></div>
+				        	<div class="yibiaopanValue">标准值:<span id="standardValue2">80</span></div>
+				        	<div style="text-align: center;">
+				        		<button type="button" onclick="standardVlaue('2')" class="startCollect" data-toggle="dropdown" aria-expanded="false">设置标准值</button>
+							</div>
+						</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+				</li>
+		        <li id="months" class="ui-state-highlight" style="width:25%;">
+		        	<div class="sortable1div">累计投入人月</div>
+		            <div class="bordercss sortable2div" style="height: 300px;">
+		           		<div style="height: 20px;line-height: 20px;text-align: center;">
+							<span style="margin: 5px;font-size: 16px;">累计投入人月</span>
+						</div>
+						<div style="height:250px;">
+				        	<div id="gaugeCharts3" class="yibiaopan"></div>
+				        	<div class="yibiaopanValue">标准值:<span id="standardValue3">80</span></div>
+				        	<div style="text-align: center;">
+				        		<button type="button" onclick="standardVlaue('3')" class="startCollect" data-toggle="dropdown" aria-expanded="false">设置标准值</button>
+							</div>
+						</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+				</li>
+		        <li id="pays" class="ui-state-highlight" style="width:25%;">
+		        	<div class="sortable1div">项目总需求交付率</div>
+		            <div class="bordercss sortable2div" style="height: 300px;">
+		           		<div style="height: 20px;line-height: 20px;text-align: center;">
+							<span style="margin: 5px;font-size: 16px;">项目总需求交付率</span>
+						</div>
+						<div style="height:250px;">
+				        	<div id="gaugeCharts4" class="yibiaopan"></div>
+				        	<div class="yibiaopanValue">标准值:<span id="standardValue4">80</span></div>
+				        	<div style="text-align: center;">
+				        		<button type="button" onclick="standardVlaue('4')" class="startCollect" data-toggle="dropdown" aria-expanded="false">设置标准值</button>
+							</div>
+						</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+		        </li>
+		        <li id="storys" class="ui-state-highlight" style="width:66.7%;">
+		        	<div class="sortable1div">项目Story统计</div>
+		            <div class="bordercss sortable2div" style="height: 300px;">
+						<div style="height: 30px;line-height: 20px;">
+							<span style="float: left;margin: 5px;font-size: 16px;">项目Story统计</span>
+						</div>
+						<div style="width: 100%;">
+				        	<table id="mytab2" class="table text-nowrap"></table>
+						</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+		        </li>
+		        <li id="story" class="ui-state-highlight" style="width:33.3%;">
+		       	 	<div class="sortable1div">Story</div>
+		            <div class="bordercss sortable2div" style="height: 300px;">
+						<div style="height: 30px;line-height: 20px;">
+							<span style="float: left;margin: 5px;font-size: 16px;">Story</span>
+							<select id="diedai_story_sel" name="diedai_selName" class="form-control" style="width: 180px;float: right;height: 30px;padding: 4px 12px;"></select>
+						</div>
+						<div style="height:250px;width: 100%;font-size: 14px;" class="">
+							<div style="display: flex;">
+					       		<div id="storyCharts" style="float: left;width: 150px; height: 150px;margin-left: 5%;margin-top: 30px;"></div>
+					       		<div style="float: left;margin-top: 75px;margin-left: 50px;">
+					       			<div >已完成数量</div>
+					       			<div id="storyOk"><span  style="font-size: 20px;">0/</span>0个</div>
+					       		</div>
+				       		</div>
+				       		<div id="storyData" style="margin-left: 20%;margin-top: 20px;">
+					       		<div style="float: left;margin-right: 10px;padding-right: 10px;border-right: 2px solid #dcdcdc;">
+					       			平均周期时间<span style="font-size: 20px;">0</span>天
+					       		</div>
+					       		<div>超期<span style="font-size: 20px;">0</span>个</div>
+				       		</div>
+				       	</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+		        </li>
+		        <li id="bugs" class="ui-state-highlight" style="width:66.7%;">
+		        	<div class="sortable1div">项目Bug统计</div>
+		            <div class="bordercss sortable2div" style="height: 300px;">
+						<div style="height: 30px;line-height: 20px;">
+							<span style="float: left;margin: 5px;font-size: 16px;">项目Bug统计</span>
+						</div>
+						<div style="width: 100%;">
+				        	<table id="mytab1" class="table text-nowrap"></table>
+						</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+		        </li>
+		        <li id="bug" class="ui-state-highlight" style="width:33.3%;">
+		        	<div class="sortable1div">Bug</div>
+		            <div class="bordercss sortable2div" style="height: 300px;">
+						<div style="height: 30px;line-height: 20px;">
+							<span style="float: left;margin: 5px;font-size: 16px;">Bug</span>
+							<select id="diedai_bug_sel" name="diedai_selName" class="form-control" style="width: 180px;float: right;height: 30px;padding: 4px 12px;"></select>
+						</div>
+						<div style="height:250px;width: 100%;font-size: 14px;">
+							<div style="display: flex;">
+					       		<div id="bugCharts" style="float: left;width: 150px; height: 150px;margin-left: 5%;margin-top: 30px;"></div>
+					       		<div style="float: left;margin-top: 75px;margin-left: 50px;">
+					       			<div >已完成数量</div>
+					       			<div id="bugOk"><span style="font-size: 20px;">0/</span>0个</div>
+					       		</div>
+				       		</div>
+				       		<div id="bugData" style="margin-left: 20%;margin-top: 20px;">
+					       		<div style="float: left;margin-right: 10px;padding-right: 10px;border-right: 2px solid #dcdcdc;">
+					       			平均周期时间<span style="font-size: 20px;">0</span>天
+					       		</div>
+					       		<div>超期<span style="font-size: 20px;">0</span>个</div>
+				       		</div>
+				       	</div>
+					</div>
+					<img class="del" src="images/deleteicon.png" />
+		        </li>
+		    </ul>
+		    <div style="width: 150px;margin:0;position: fixed;right: 0;top: 45%;">
+		        <img id="control" src="images/editicon.png" style="float:left;margin-top: -20px;margin-right: 12px;float: right;cursor: pointer;" />
+		    	<ul id="sortable2" style="display: none;">
+		            
+		    	</ul>
+		    </div>
+		</div>
+	</div>
+	<!-- 弹出框预览 -->
+	<div class="modal fade" id="codeType" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+		<div class="modal-dialog" style="width: 850px;">
+			<div class="modal-content">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline;">预览</h4>
+					<button type="button" id="sendImage"  style="float: right;border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">发送</button>
+					<button type="button" data-dismiss="modal" style="float: right;border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+				</div>
+				<div style="text-align: center;">
+					<img id="preview" src="" alt="周报" style="width: 800px;"/>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 弹出设置 -->
+	<div class="modal fade" id="saveStandardValue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+		<div class="modal-dialog" style="width: 450px;padding-top: 120px;">
+			<div class="modal-content">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline;">设置标准值</h4>
+					<button type="button" id="saveValue"  style="float: right;border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">保存</button>
+					<button type="button" data-dismiss="modal" style="float: right;border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+				</div>
+				<div style="text-align: center;padding: 20px;">
+					<div style="width:100%;padding-left: 5%;">
+		            	<div class="input-group" style="display: flex;">
+	            			<span style="line-height: 38px;">标准值：</span>
+	            			<input type="text" id="StandardValueMax" class="configInput" />
+		            	</div>
+	            	</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

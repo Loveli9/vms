@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ILabelDAO">
+	<resultMap type="com.icss.mvp.entity.Label" id="label">
+		<result property="id" column="ID"/>
+		<result property="createTime" column="CREATE_TIME"/>
+		<result property="modifyTime" column="MODIFY_TIME"/>
+		<result property="isDeleted" column="IS_DELETED"/>
+		<result property="title" column="TITLE"/>
+		<result property="category" column="CATEGORY"/>
+	</resultMap>
+	
+	<select id="queryLabel" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT * FROM LABEL WHERE CATEGORY = #{selCategory} AND IS_DELETED = 0 ORDER BY `order` 
+	</select>
+	
+	<insert id="insertLabel" parameterType="com.icss.mvp.entity.Label">
+		INSERT INTO LABEL(CREATE_TIME,MODIFY_TIME,IS_DELETED,TITLE,CATEGORY) VALUES(NOW(),NOW(),0,#{title},#{category})
+	</insert>
+	
+	<update id="updateLabel" parameterType="com.icss.mvp.entity.Label">
+		UPDATE LABEL SET MODIFY_TIME=NOW(),IS_DELETED=#{isDeleted},TITLE=#{title},CATEGORY=#{category} WHERE ID=#{id}
+	</update>
+	
+	<update id="updateDeleteLabel" parameterType="java.lang.Integer">
+		UPDATE LABEL SET IS_DELETED=0 WHERE ID=#{id}
+	</update>
+	
+</mapper>

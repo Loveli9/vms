@@ -1,0 +1,341 @@
+.homeSelect {
+    float: right; width: 153px; height: 32px; margin-left: 10px; margin-right: -5px;
+}
+.mains {
+    top: 0px; left: 0px; right: 0px; bottom: 0px; background: #f7f8f8;
+}
+.tableCenter>thead>tr>td, .tableCenter>thead>tr>th, .tableCenter>tbody>tr>td, .tableCenter>tbody>tr>th {
+    text-align: center; vertical-align: middle;
+}
+.mytable {
+    table-layout: fixed;
+}
+.fixed-table-body{
+    background-color: white;
+}
+
+.editable-container.editable-inline input {
+    width: 50px;
+}
+.editable-click, a.editable-click, a.editable-click:hover {
+    text-decoration: none; border-bottom: dashed 0px #0088cc;
+}
+.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+    color: #3399ff; background-color: #f7f8f8; border-bottom: 5px #3399ff solid;
+}
+.nav>li>a:hover{
+    color: #3399ff; background-color: #f7f8f8;
+}
+.nav>li>a {
+    color: #000000; background-color: #f7f8f8; text-decoration: none;
+}
+.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+    padding-bottom: 12px;
+}
+.editableform .form-control {
+    width: 350px;
+}
+.editable-input {
+    float: left;
+}
+.editable-buttons {
+    float: left;
+    margin-top: 5px;
+}
+.text-nowrap {
+    white-space: unset;
+}
+a:hover, a:focus {
+    text-decoration: none;
+}
+.table>thead:first-child>tr:first-child>th {
+    border-right: 1px solid transparent !important;
+}
+.bootstrap-table .table:not (.table-condensed ) >tbody>tr>td {
+    border-right: 1px solid transparent !important;
+}
+.fixed-table-container {
+    border-width: 0px;
+}
+.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+    color: #3399ff; background-color: #f7f8f8; border-bottom: 5px #3399ff solid;
+}
+.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+    padding-bottom: 12px;
+}
+html, body {
+    overflow: auto; margin: 0;
+}
+html {
+    overflow-y: scroll;
+}
+.sidai{
+    display: inline-block; text-align: center; width: 200px; height: 20px; position: absolute; top: 200px; left: 60px;
+    transform: rotate(315deg); -ms-transform: rotate(315deg); -moz-transform: rotate(315deg); -webkit-transform: rotate(315deg);
+    -o-transform: rotate(315deg); border: 1px dashed; background: #57DD43;
+}
+.visit{
+    width:30%; float:left; height: 204px; background:url(/metric/view/HTML/images/visit.png) no-repeat; background-size: 100% 100%;
+}
+.totalView{
+    padding-left: 60%; color: white; padding-top: 54px;
+}
+.currentView{
+    color: white; font-size: 14px; padding-left: 6%; padding-right: 6%; padding-top: 42px;
+}
+.lastView{
+    padding-right: 12px; float: right;
+}
+.projects{
+    width:30%; float:left; height: 204px; background:url(/metric/view/HTML/images/projects.png) no-repeat; margin-left:5%; background-size: 100% 100%;
+}
+.ProjectView{
+    color: white; padding-top: 54px; padding-left: 60%;
+}
+.lineView{
+    color: white; font-size: 14px; padding-left: 6%; padding-right: 6%; padding-top: 42px;
+}
+.totalViewPro{
+    padding-right: 12px; float: right;
+}
+.collectPros{
+    width:30%; float:left; height: 204px; background:url(/metric/view/HTML/images/collectpro.png) no-repeat; margin-left: 5%; background-size: 100% 100%;
+}
+.doneView{
+    color: white; padding-top: 54px; padding-left: 54%;
+}
+.outView{
+    color: white; font-size: 14px; padding-left: 6%; padding-right: 6%; padding-top: 42px;
+}
+.addView{
+    padding-right: 12px; float: right;
+}
+.homeSelect {
+    float: right; width: 153px; height: 32px; margin-left: 10px;
+}
+.top1{
+    float: left; width:25%  !important; border: 1px solid #D1DFEC; cursor:pointer; height: 85%; margin-right:0px !important;
+}
+.tor1{
+    float: left; width: 25%; border: 1px solid #D1DFEC; cursor:pointer; height:85%;
+}
+.top2{
+    float: left; border: 1px solid #D1DFEC; cursor:pointer; height: 85%; padding: 5px 0; padding-left: 20px;
+}
+.state{
+    float: left; height: 120px; width: 98%; margin-left: 1%; position: relative;
+}
+.top-child{
+    margin-left: 20px;
+}
+.nav1{
+    font-size: 0; padding-bottom: 20px;
+}
+.nav1 li{
+    font-size: 16px; font-weight: 600; display: inline-block; padding: 0 9px; margin: 0 15px; text-align: center;
+}
+.inner1{
+    height: 600px; width: 100%; border-radius: 16px;
+}
+.wrapper{
+    margin-top: 2.9%; padding: 2.8% 1.65% 2.8% 3%; background:#eaebeb;
+}
+.wrapper .item{
+    display:none;
+}
+.inner-left{
+    width: 64.3%; background: #fff; float: left; border-radius: 16px;
+}
+.inner-right{
+    float: right; background-color: white; width: 29.4%; margin-right: 1.5%; overflow: hidden;
+}
+.nav li.active{
+    color:#0000ff
+}
+.hide{
+    display: none;
+}
+.show{
+    display: block;
+}
+.echars{
+    height:300px; width:100%; float: left; margin-top: 45px; margin-left: -8px;
+}
+.curent{
+    border:1px solid #289AF0;
+}
+.top1{
+    position: relative; padding: 5px 0;
+}
+.tor1{
+    position: relative; padding: 5px 0;
+}
+.curent:after {
+    display: block;content: ""; width:100%; height: 5px; background: #289AF0; position: absolute; top:0; left:0;
+}
+.ztstate{
+    height: 50px; font-size: 16px; font-weight: 600; border-bottom: 1px solid #D1DFEC;overflow: hidden;border-radius: 16px 0 0 0;
+}
+.ztstate1{
+    font-size: 16px; padding: 8px 0; margin-top: 155px; position: absolute; margin-left: 2%;
+}
+.stateIcon{
+    width: 2%; margin-bottom:6px; vertical-align:center;
+}
+#zongLanTable>tbody>tr>td{
+    border-left: 0; border-top: 1px solid #D1DFEC; border-bottom: 1px solid #D1DFEC;
+}
+#zhiLiangTable>tbody>tr>td{
+    border-left: 0;
+}
+.bootstrap-table .table>thead>tr>th{
+    border-bottom: 1px solid #D1DFEC;
+}
+#zongLanTable tbody td{
+    height: 84px; padding-left: 12px;
+}
+.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+    background-color: #FFFFFF;
+}
+.th-inner {
+    background-color:#F3F8FE;
+}
+.table {
+    table-layout: fixed;
+}
+table>thead>tr>th {
+    width: 100%;
+    background-color: #F3F8FE;
+}
+#select{
+    margin-left:10px;
+}
+.release{
+    color:white; cursor: pointer;
+}
+a:hover {
+    color: #3399ff;
+}
+.fixed-table-pagination .page-list {
+    display: none;
+}
+a:-webkit-any-link {
+    cursor: default;
+}
+.dropdown-menu{
+    width:175px;
+}
+.xiebian{
+    text-align: center; line-height: 50px; width: 100px; height: 50px; float: left; -webkit-transform:skew(30deg); border-right: 1px solid #ddd; cursor:pointer;
+}
+.navigation{
+    background-color:#289AF0; color:#fff;
+}
+.stateIcon{
+    width: 2%; vertical-align:center;
+}
+.state .state-inner, .state .switch{
+    float: left;
+}
+.state .content{
+    position: absolute; width:100%; top: 0; left:0;
+}
+.state .state-inner{
+    width: 100%; height:120px; overflow: hidden; position: relative;
+}
+.state .switch{
+    width: 20px; height: 108px; background: #ccc; margin-top: 10px; position: relative; z-index: 200; cursor: pointer;
+}
+.clearfix::after {
+    content: "."; clear: both; display: block; overflow: hidden; font-size: 0; height: 0;
+}
+.clearfix {
+    zoom: 1;
+    height: 50px;
+}
+.triangle_border_right{
+    width: 0; height: 0; border-width: 10px 0 10px 10px; border-style: solid; border-color: transparent transparent transparent #333; margin: 44px auto; position: relative;
+}
+.triangle_border_left{
+    width:0; height:0; border-width:10px 10px 10px 0; border-style:solid; border-color:transparent #333 transparent transparent;/*透明 灰 透明 透明 */ margin:44px auto; position:relative;
+}
+.swiper-button-prev{
+    position: absolute; height: 30px; background-image: url(/mvp/view/HTML/images/leftIcon.png); background-size: 50%;
+    background-position: 20% 40%; outline:0 none !important; blr:expression(this.onFocus=this.blur());
+}
+.swiper-button-next{
+    position: absolute; height: 30px; margin-right:-4%; background-image: url(/mvp/view/HTML/images/rightIcon.png);
+    background-size: 50%; background-position: 80%; outline:0 none !important; blr:expression(this.onFocus=this.blur());
+}
+.fixed-table-pagination .pagination-info {
+    margin-left: 12px;
+}
+.div-shu {
+    border-left: 3px solid #0091FE;
+    padding-left: -2px;
+    width: 1px;
+    height: 15px;
+    border-radius: 80px;
+    display: inline;
+}
+.model-title{
+    background-color: #f7f8f8;
+    border: 1px solid;
+    margin-left: 3%;
+    margin-right: 3%;
+    border-radius:3px 3px 0 0;
+    line-height: 24px;
+    height: 40px;
+}
+
+
+
+
+/*项目评估情况*/
+
+.btn-default {
+    height: 35px; line-height: 16px; border-radius: 4px;
+}
+ul {
+    list-style: none; line-height: 40px; margin-left: 50px;
+}
+li {
+    display: block; float: left;
+}
+.bordercss {
+    margin: 10px -10px 3px -10px; border: 0px solid #dcdcdc; padding: 10px;
+}
+.status {
+    padding-top: 45px; padding-bottom: 50px; margin-right: 70px; margin-left: 70px; margin-bottom: 80px;
+    margin-top: 70px; color: white; font-size: 28px; border-radius: 25px; text-align: center;
+}
+.li-square{
+    background-color: #fff;
+}
+.wordWrap{
+    word-break: normal; width: auto; display: block; white-space: pre-wrap; word-wrap: break-word; overflow: hidden;
+}
+.viewMessage {
+    border: 0px solid #E5E5E5; padding: 10px 0px 0px 450px; color: red; font-size: 12px;
+}
+#publishReview{
+    font-size: 16px;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+}
+#editReview{
+    font-size: 16px;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+}
+#closeReview{
+    font-size: 16px;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+}
+#saveReview{
+    font-size: 16px;display:none;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+}
+#cancelReview{
+    font-size: 16px;display:none;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+}
+.col-md-3>ul>li{
+    float: none;
+}
+.tabHead-style>div{
+    background-color: #ffffff;
+}

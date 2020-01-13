@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectOperationDao">
+
+	<insert id="saveProjectOperation">
+		INSERT INTO scrip
+			(MESSAGE, MES_TYPE, EXECUTOR, NO, IS_DELETED, CREATE_TIME, MODIFY_TIME)
+		VALUES
+			(#{message},'logs', #{userName}, #{proNo}, 0, now(), now())
+	</insert>
+
+	<select id="queryProjectOperationCount" resultType="Integer">
+		select count(1)
+		from scrip 
+		where NO = #{proNo} and IS_DELETED = 0 and MES_TYPE = 'logs'
+	</select>
+	
+	<select id="queryProjectOperationList" resultType="java.util.Map">
+		SELECT t.MESSAGE as message, u.USERNAME as userName, DATE_FORMAT(t.create_time, '%Y-%m-%d %H:%i:%S') as time
+		FROM scrip t, sys_user u
+		WHERE t.EXECUTOR = u.USERID and t.IS_DELETED = 0
+		and t.MES_TYPE = 'logs' AND t.NO = #{proNo}
+		order by t.create_time desc
+		<if test="null != page.pageSize and  null != page.offset">
+			limit ${page.offset}, ${page.pageSize}
+		</if>
+	</select>
+
+	<select id="queryProjectOperationCountClone" resultType="Integer">
+		select count(1)
+		from scrip
+		where IS_DELETED = 0 and MES_TYPE = 'logs'
+	</select>
+
+	<select id="queryProjectOperationListClone" resultType="java.util.Map">
+		SELECT p.NAME AS name, s.MESSAGE AS message, s.USERNAME AS userName, s.time AS time
+		FROM (
+		SELECT t.`NO`, t.MESSAGE, u.USERNAME, DATE_FORMAT(t.create_time, '%Y-%m-%d %H:%i:%S') as time
+		FROM scrip t, sys_user u
+		WHERE t.EXECUTOR = u.USERID AND t.IS_DELETED = 0 AND t.MES_TYPE = 'logs'
+		ORDER BY t.create_time DESC
+		<if test="null != page.pageSize and null != page.offset">
+			limit ${page.offset}, ${page.pageSize}
+		</if>) s
+		LEFT JOIN project_info p ON p.`NO` = s.`NO`;
+	</select>
+</mapper>

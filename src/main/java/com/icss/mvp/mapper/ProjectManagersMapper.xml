@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectManagersDao">
+	<resultMap type="com.icss.mvp.entity.ProjectInfo" id="projectInfo">
+		<id property="no" column="NO"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+	</resultMap>
+	<resultMap type="com.icss.mvp.entity.ProjectMembersLocal" id="projectMembersLocal">
+		<id property="no" column="NO"/>
+		<result property="name" column="NAME"/>
+		<result property="zrAccount" column="ZR_ACCOUNT"/>
+		<result property="hwAccount" column="HW_ACCOUNT"/>
+		<result property="svnGitNo" column="svn_git_no"/>
+		<result property="role" column="ROLE"/>
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE"/>
+	</resultMap>
+	<resultMap type="com.icss.mvp.entity.TeamMembers" id="teamMembers">
+		<id property="id" column="ID"/>
+		<result property="name" column="NAME"/>
+		<result property="zrAccount" column="ZR_ACCOUNT"/>
+		<result property="hwAccount" column="HW_ACCOUNT"/>
+		<result property="svnGitNo" column="svn_git_no"/>
+		<result property="role" column="ROLE"/>
+		<result property="teamId" column="TEAM_ID"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<select id="queryOMPUser" resultType="java.util.HashMap">
+		select * from project_members where PO=#{po} and (STATUS IS NULL OR STATUS != '离职')
+	</select>
+	<select id="queryOMPUserByAuthor" resultType="java.util.HashMap">
+		select * from project_members where PO=#{po} and AUTHOR=#{author}
+	</select>
+	<select id="queryOMPUserSelected" resultType="java.util.HashMap">
+		SELECT mb.NAME, mb.HW_ACCOUNT, mb.ZR_ACCOUNT, ps.SVN_GIT_NO, ps.ROLE, ps.START_DATE, ps.END_DATE,
+		ps.STATUS, ps.RANK
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.NO = #{projNo}
+		AND ps.IS_DELETED = 0
+		ORDER BY ROLE, ZR_ACCOUNT
+	</select>
+	<select id="queryOMPUserSelecteds" resultMap="projectMembersLocal">
+		SELECT t.* FROM (SELECT mb.NAME AS NAME , mb.HW_ACCOUNT AS HW_ACCOUNT, mb.ZR_ACCOUNT AS ZR_ACCOUNT , ps.`NO`AS NO,ps.SVN_GIT_NO AS SVN_GIT_NO , ps.ROLE AS ROLE, ps.START_DATE AS START_DATE, ps.END_DATE AS END_DATE,
+		ps.STATUS, ps.RANK
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.IS_DELETED = 0) t LEFT JOIN project_info p ON t.NO =p.`NO`
+		WHERE p.PMID = #{pmid}
+		AND p.PROJECT_STATE = '在行'
+		GROUP BY t.ZR_ACCOUNT
+		ORDER BY t.ROLE, t.ZR_ACCOUNT
+		<if test="null != page.page and  null != page.rows">
+			LIMIT ${page.page},${page.rows};
+		</if>
+	</select>
+	<select id="getProjectMembersByNo" resultMap="projectMembersLocal">
+		SELECT t.* FROM (SELECT mb.NAME AS NAME , mb.HW_ACCOUNT AS HW_ACCOUNT, mb.ZR_ACCOUNT AS ZR_ACCOUNT , ps.`NO`AS NO,ps.SVN_GIT_NO AS SVN_GIT_NO , ps.ROLE AS ROLE, ps.START_DATE AS START_DATE, ps.END_DATE AS END_DATE,
+		ps.STATUS, ps.RANK
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.IS_DELETED = 0 AND ps.NO= #{proNo}) t
+		GROUP BY t.ZR_ACCOUNT
+		ORDER BY t.ROLE, t.ZR_ACCOUNT
+		<if test="null != page.page and  null != page.rows">
+			LIMIT ${page.page},${page.rows};
+		</if>
+	</select>
+
+	<select id="queryProjectDate" resultMap="projectInfo">
+		SELECT START_DATE,END_DATE FROM project_info WHERE NO=#{projNo}
+	</select>
+	
+	<select id="queryOMPUserSelectedCount" resultType="java.util.HashMap">
+		<!-- select count(*)
+		from project_members_local
+		where no=#{no} -->
+		SELECT SUM(CASE WHEN (STATUS = '在岗' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS on_duty,
+		SUM(CASE WHEN (STATUS = '后备' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS reserve
+		FROM project_staff
+		WHERE NO=#{no} AND IS_DELETED = 0
+	</select>
+	
+	<select id="queryOMPUserSelectedTest" resultType="java.util.HashMap">
+		select * from project_members_local where no=#{no} and ROLE="测试工程师"
+	</select>
+	
+	<select id="queryOMPUserSelectedDevelop" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<!-- SELECT m.* FROM project_members_local m 
+		LEFT JOIN project_info p ON m.NO=p.NO 
+		WHERE (p.PM=(SELECT PM FROM project_info WHERE NO=#{no}) 
+		OR p.TEAMNAME=(SELECT TEAMNAME FROM project_info WHERE NO=#{no}) 
+		OR m.NO=#{no}) -->
+		<!-- SELECT * FROM project_members_local WHERE NO=#{no} -->
+		SELECT
+		ps.NO,
+		mb.NAME,
+		mb.ZR_ACCOUNT,
+		mb.HW_ACCOUNT,
+		ps.SVN_GIT_NO AS svn_git_no,
+		ps.ROLE,
+		ps.START_DATE,
+		ps.END_DATE,
+		ps.STATUS
+		FROM project_staff ps
+		LEFT JOIN member_base mb
+		ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.NO = #{no}
+		AND ps.IS_DELETED = 0
+		<if test="role.size() != 0">
+			and ps.ROLE in 
+		 <foreach collection="role" item="item" separator="," open="(" close=")">
+               #{item}
+         </foreach>
+		</if>
+	</select>
+	
+	<insert id="insertSelectedUser" parameterType="java.util.List">
+		insert into
+		project_members_local
+		(NO,NAME,ZR_ACCOUNT,HW_ACCOUNT,svn_git_no,ROLE,START_DATE,END_DATE,STATUS)
+		values
+		<foreach collection="sel" item="item" index="index"
+			separator=",">
+		(
+		#{item.no},#{item.name},#{item.zrAccount},#{item.hwAccount},#{item.svnGitNo},#{item.role},
+		#{item.startDate},#{item.endDate},#{item.status}
+		)
+		</foreach>
+	</insert>
+	
+	<delete id="deleteSelectedUser">
+<!--         delete from project_members_local where no=#{no} and HW_ACCOUNT=#{hwAccount} -->
+		UPDATE project_staff SET
+		IS_DELETED = 1
+		WHERE NO = #{no} AND ZR_ACCOUNT = (SELECT ZR_ACCOUNT FROM
+		member_base WHERE HW_ACCOUNT = #{hwAccount})
+    </delete>
+
+    <select id="summarizeCommitMonthly" resultType="java.util.HashMap">
+        SELECT `NO`,
+        Year(`COMMITTIME`)  AS `year`,
+        Month(`COMMITTIME`) AS `month`,
+        Count(*)            AS `times`
+        FROM   `svn_log`
+        WHERE  `NO` = #{projectId}
+        AND Year(`COMMITTIME`) = 2018
+        GROUP  BY `NO`,
+        Year(`COMMITTIME`),
+        Month(`COMMITTIME`)
+        ORDER  BY month
+    </select>
+    <!-- 导入历史项目的团队成员 -->
+	<insert id="addOldProjectTeamMembers" parameterType="java.lang.String">
+		REPLACE INTO project_members_local(NO,NAME,ZR_ACCOUNT,HW_ACCOUNT,svn_git_no,ROLE,IS_KEY_STAFFS,START_DATE,END_DATE)
+		SELECT #{newNo},a.NAME,a.ZR_ACCOUNT,a.HW_ACCOUNT,a.svn_git_no,a.ROLE,a.IS_KEY_STAFFS,a.START_DATE,a.END_DATE 
+		FROM project_members_local a
+		WHERE a.no=#{oldNo} ORDER BY ROLE
+	</insert>
+	
+	<select id="queryProjectMembers" resultType="java.util.HashMap">
+		SELECT * FROM project_members_local 
+		WHERE NO=#{projNo}
+		ORDER BY ROLE
+	</select>
+	
+	<select id="getProjectTeamMember" resultType="java.util.HashMap">
+		<!-- SELECT * FROM project_members_local 
+		WHERE NO=#{projNo} -->
+		SELECT
+		ps.NO,
+		mb.NAME,
+		mb.ZR_ACCOUNT,
+		mb.HW_ACCOUNT,
+		ps.SVN_GIT_NO AS svn_git_no,
+		ps.ROLE,
+		ps.START_DATE,
+		ps.END_DATE,
+		ps.STATUS
+		FROM project_staff ps
+		LEFT JOIN member_base mb
+		ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.NO = #{projNo} AND ps.IS_DELETED = 0
+	</select>
+	
+	<select id="getTeamMembers" resultMap="projectMembersLocal">
+		<!-- SELECT * FROM project_members_local 
+		WHERE NO=#{projNo} -->
+		SELECT
+		ps.NO,
+		mb.NAME,
+		mb.ZR_ACCOUNT,
+		mb.HW_ACCOUNT,
+		ps.SVN_GIT_NO AS svn_git_no,
+		ps.ROLE,
+		ps.START_DATE,
+		ps.END_DATE,
+		ps.STATUS
+		FROM project_staff ps
+		LEFT JOIN member_base mb
+		ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ps.NO = #{projNo} AND ps.IS_DELETED = 0
+	</select>
+	<select id="getTeamId" resultType="java.lang.String">
+		SELECT p.TEAMID FROM project_info p WHERE NO=#{proNo}
+	</select>
+	<select id="getProjectNo" resultType="java.lang.String">
+		SELECT p.NO FROM project_info p
+		WHERE p.TEAMNAME=(SELECT TEAMNAME FROM project_info WHERE NO=#{projNo})
+		OR p.PM=(SELECT PM FROM project_info WHERE NO=#{projNo})
+		ORDER BY p.START_DATE ASC
+		LIMIT 1
+	</select>
+	<!-- 编辑回显查询信息 -->
+	<select id="openEditPage" parameterType="java.lang.String" resultMap="projectMembersLocal">
+		SELECT m.NO,m.NAME,m.ZR_ACCOUNT,m.HW_ACCOUNT,m.svn_git_no,m.ROLE,m.START_DATE,m.END_DATE
+		FROM project_members_local m 
+		LEFT JOIN project_info p ON m.NO=p.NO 
+		WHERE p.TEAMNAME=(SELECT TEAMNAME FROM project_info WHERE NO=#{projNo} LIMIT 1) 
+		AND m.HW_ACCOUNT=#{hwAccount}
+	</select>
+	<!-- 项目成员查重 -->
+	<select id="selectRepeat" parameterType="com.icss.mvp.entity.ProjectMembersLocal" resultType="java.lang.Integer">
+	    SELECT COUNT(*) FROM
+		(SELECT pm.* FROM project_members_local pm 
+		LEFT JOIN project_info p ON pm.NO=p.NO 
+		WHERE p.TEAMNAME=(SELECT TEAMNAME FROM project_info WHERE NO=#{projNo} LIMIT 1)
+		AND pm.HW_ACCOUNT=#{proj.hwAccount}) team_member
+	</select> 
+	<!-- 新增项目成员 -->
+	<insert id="addProjectMember" parameterType = "com.icss.mvp.entity.ProjectMembersLocal">
+		INSERT INTO 
+		project_members_local 
+		(NO,NAME,ZR_ACCOUNT,HW_ACCOUNT,svn_git_no,ROLE,START_DATE,END_DATE)
+		VALUES
+		(#{proj.no},#{proj.name}, #{proj.zrAccount},
+		#{proj.hwAccount},#{proj.svnGitNo},#{proj.role},
+		#{proj.startDate},#{proj.endDate})
+	</insert>
+	<!-- 修改项目成员信息 -->
+	<update id="editProjectMember" parameterType="com.icss.mvp.entity.ProjectMembersLocal">
+		UPDATE
+		project_members_local SET
+		NO=#{proj.no},NAME=#{proj.name},ZR_ACCOUNT=#{proj.zrAccount},HW_ACCOUNT=#{proj.hwAccount},
+		svn_git_no=#{proj.svnGitNo},ROLE=#{proj.role},START_DATE=#{proj.startDate},END_DATE=#{proj.endDate}
+		WHERE NO=#{proj.no} AND HW_ACCOUNT=#{proj.hwAccount}
+	</update>
+	<!-- 删除项目成员信息 -->
+	<delete id="deleteProjectMems" parameterType="java.lang.String">
+		DELETE FROM  `project_members_local` WHERE NO=#{projNo} AND HW_ACCOUNT=#{hwAccount}
+	</delete>
+	
+	<!-- 新增团队成员 -->
+	<insert id="addTeamMemberToMemberBase" parameterType = "com.icss.mvp.entity.TeamMembers">
+		INSERT INTO 
+		member_base
+		(CREATE_TIME, MODIFY_TIME, ZR_ACCOUNT, NAME, HW_ACCOUNT)
+		VALUES
+		(NOW(), NOW(), #{team.zrAccount}, #{team.name}, #{team.hwAccount})
+	</insert>
+	
+	<insert id="addTeamMemberToTeamStaff" parameterType = "com.icss.mvp.entity.TeamMembers">
+		INSERT INTO 
+		team_staff 
+		(CREATE_TIME, MODIFY_TIME, TEAM_ID, ZR_ACCOUNT, ROLE, STATUS, SVN_GIT_NO, RANK)
+		VALUES
+		(NOW(), NOW(), #{team.teamId}, #{team.zrAccount}, #{team.role}, #{team.status}, #{team.svnGitNo}, #{team.rank})
+	</insert>
+	
+	<!-- 更新团队成员 -->
+	<update id="updateTeamMemberToMemberBase" parameterType="com.icss.mvp.entity.TeamMembers">
+		UPDATE
+		member_base SET
+		MODIFY_TIME = NOW(), NAME = #{team.name}, HW_ACCOUNT = #{team.hwAccount}
+		WHERE ZR_ACCOUNT=#{team.zrAccount}
+	</update>
+	
+	<update id="updateTeamMemberToTeamStaff" parameterType="com.icss.mvp.entity.TeamMembers">
+		UPDATE
+		team_staff SET
+		MODIFY_TIME = NOW(), IS_DELETED = 0, ROLE = #{team.role}, STATUS = #{team.status},
+		SVN_GIT_NO = #{team.svnGitNo}, RANK = #{team.rank}
+		WHERE TEAM_ID = #{team.teamId} AND ZR_ACCOUNT = #{team.zrAccount}
+	</update>
+	
+	<!-- 团队成员查重 -->
+	<select id="selectRepeatMemberBase" parameterType="com.icss.mvp.entity.TeamMembers" resultType = "java.lang.Integer">
+		SELECT COUNT(*) FROM member_base WHERE ZR_ACCOUNT = #{teamMem.zrAccount} AND IS_DELETED = 0
+	</select>
+	
+	<select id="selectRepeatTeamStaff" parameterType="com.icss.mvp.entity.TeamMembers" resultType = "java.lang.Integer">
+		SELECT COUNT(*) FROM team_staff WHERE TEAM_ID = #{teamMem.teamId} AND ZR_ACCOUNT = #{teamMem.zrAccount}
+	</select>
+	
+	<!-- 团队成员信息回显 -->
+	<select id="queryMemberEchoDisplay" parameterType="java.lang.String" resultMap="teamMembers">
+		SELECT ts.TEAM_ID, ts.ZR_ACCOUNT, ts.ROLE, ts.SVN_GIT_NO, ts.STATUS,
+		mb.HW_ACCOUNT, mb.NAME, ts.RANK
+		FROM team_staff ts
+		LEFT JOIN member_base mb ON ts.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		WHERE ts.TEAM_ID = #{teamId}
+		AND ts.ZR_ACCOUNT = #{zrAccount} AND ts.IS_DELETED = 0
+	</select>
+	
+	<!-- 删除团队成员 -->
+	<delete id="deleteTeamMembers" parameterType="java.lang.String">
+		UPDATE team_staff SET IS_DELETED = 1 WHERE TEAM_ID = #{teamId} AND ZR_ACCOUNT = #{zrAccount}
+	</delete>
+	
+	<!-- 项目配置成员查重 -->
+	<select id="selectMemberBase" resultType = "java.lang.Integer">
+		SELECT COUNT(*) FROM member_base WHERE ZR_ACCOUNT = #{zrAcc} AND IS_DELETED = 0
+	</select>
+	
+	<select id="selectProjectStaff" resultType = "java.lang.Integer">
+		SELECT COUNT(*) FROM project_staff WHERE ZR_ACCOUNT = #{zrAcc} and NO = #{no}
+	</select>
+	
+	<!-- 新增配置成员 -->
+	<insert id="addProjectStaffToMemberBase" parameterType = "com.icss.mvp.entity.ProjectMembersLocal">
+		INSERT INTO 
+		member_base
+		(CREATE_TIME, MODIFY_TIME, ZR_ACCOUNT, NAME, HW_ACCOUNT)
+		VALUES
+		(NOW(), NOW(), #{projectML.zrAccount}, #{projectML.name}, #{projectML.hwAccount})
+	</insert>
+	
+	<insert id="addProjectStaffToProjectStaff" parameterType = "com.icss.mvp.entity.ProjectMembersLocal">
+		INSERT INTO 
+		project_staff 
+		(CREATE_TIME, MODIFY_TIME, ZR_ACCOUNT, ROLE, STATUS, SVN_GIT_NO, START_DATE, END_DATE, RANK,PMID)
+		VALUES
+		(NOW(), NOW(), #{projectML.zrAccount}, #{projectML.role}, #{projectML.status},
+		 #{projectML.svnGitNo}, #{projectML.startDate}, #{projectML.endDate},#{projectML.rank},#{projectML.pmid})
+	</insert>
+	<insert id="addProjectStaffToProjectStaffs" parameterType = "com.icss.mvp.entity.ProjectMembersLocal">
+		INSERT INTO
+		project_staff
+		(CREATE_TIME, MODIFY_TIME, ZR_ACCOUNT, ROLE, STATUS, SVN_GIT_NO, START_DATE, END_DATE, RANK,NO)
+		VALUES
+		(NOW(), NOW(), #{projectML.zrAccount}, #{projectML.role}, #{projectML.status},
+		 #{projectML.svnGitNo}, #{projectML.startDate}, #{projectML.endDate},#{projectML.rank},#{projectML.no})
+	</insert>
+	
+	<!-- 更新配置成员 -->
+	<update id="updateProjectStaffToMemberBase" parameterType="com.icss.mvp.entity.ProjectMembersLocal">
+		UPDATE
+		member_base SET
+		MODIFY_TIME = NOW(), NAME = #{projectML.name}, HW_ACCOUNT = #{projectML.hwAccount}
+		WHERE ZR_ACCOUNT=#{projectML.zrAccount}
+	</update>
+	
+	<update id="updateProjectStaffToProjectStaff" parameterType="com.icss.mvp.entity.ProjectMembersLocal">
+		UPDATE
+		project_staff SET
+		MODIFY_TIME = NOW(), IS_DELETED = 0, ROLE = #{projectML.role}, STATUS = #{projectML.status}, RANK = #{projectML.rank},
+		SVN_GIT_NO = #{projectML.svnGitNo}, START_DATE = #{projectML.startDate}, END_DATE = #{projectML.endDate}
+		WHERE PMID = #{projectML.pmid} AND ZR_ACCOUNT = #{projectML.zrAccount}
+	</update>
+	<update id="updateProjectStaffToProjectStaffs" parameterType="com.icss.mvp.entity.ProjectMembersLocal">
+		UPDATE
+		project_staff SET
+		MODIFY_TIME = NOW(), IS_DELETED = 0, ROLE = #{projectML.role}, STATUS = #{projectML.status}, RANK = #{projectML.rank},
+		SVN_GIT_NO = #{projectML.svnGitNo}, START_DATE = #{projectML.startDate}, END_DATE = #{projectML.endDate}
+		WHERE NO = #{projectML.no} AND ZR_ACCOUNT = #{projectML.zrAccount}
+	</update>
+	
+	<!-- 删除配置成员 -->
+	<update id="deleteProjectStaff" parameterType="java.lang.String">
+		UPDATE
+		project_staff SET
+		IS_DELETED = 1
+		WHERE PMID = #{pmid}
+	</update>
+	
+	<select id="getProjectPmId" resultType="java.lang.String">
+		SELECT PMID FROM project_info WHERE NO = #{projNo}
+	</select>
+	
+	<select id="getMemberRankCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(ZR_ACCOUNT) FROM ARCHIVE WHERE ZR_ACCOUNT = #{chinasoftAccount}
+	</select>
+	
+	<insert id="addRankToArchive" parameterType="com.icss.mvp.entity.TeamMembers">
+		INSERT INTO 
+		archive 
+		(CREATE_TIME, MODIFY_TIME, ZR_ACCOUNT, STATUS, RANK, ID_CARD, BUSINESS_GROUP, BUSINESS_LINE, 
+		CAUSE_UNIT, DELIVERY_UNIT)
+		VALUES
+		(NOW(), NOW(), #{teamMembers.zrAccount}, #{teamMembers.status}, #{teamMembers.rank}, #{teamMembers.idCard}, 
+		#{teamMembers.businessGroup}, #{teamMembers.businessLine}, #{teamMembers.causeUnit}, #{teamMembers.deliveryUnit})
+	</insert>
+	
+	<update id="updateRankToArchive" parameterType="com.icss.mvp.entity.TeamMembers">
+		UPDATE
+		archive SET
+		CREATE_TIME = NOW(), MODIFY_TIME = NOW(), STATUS = #{teamMembers.status},RANK = #{teamMembers.rank}, 
+		ID_CARD = #{teamMembers.idCard}, BUSINESS_GROUP = #{teamMembers.businessGroup}, 
+		BUSINESS_LINE = #{teamMembers.businessLine}, CAUSE_UNIT = #{teamMembers.causeUnit}, 
+		DELIVERY_UNIT = #{teamMembers.deliveryUnit}
+		WHERE ZR_ACCOUNT = #{teamMembers.zrAccount}
+	</update>
+	
+</mapper>

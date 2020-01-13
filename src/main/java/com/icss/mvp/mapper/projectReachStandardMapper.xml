@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IprojectReachStandardDAO">
+
+	<select id="measured" parameterType="java.lang.String" resultType="java.lang.Integer">
+		<!-- select count(*) from measure m where m.ID in(select l.MEASURE_ID from label_measure_config l where l.IS_DELETED=0 
+		and l.PROJECT_LABLE_ID in(select p.id from project_label_config p where p.project_id=#{no} and p.is_deleted=0 )) -->
+		SELECT COUNT(*)
+		FROM in_tmpl_index m
+		WHERE m.ID IN (
+			SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(a.measure_ids, ',', b.help_topic_id + 1), ',', -1) AS measure_id
+			FROM (
+				SELECT measure_ids
+				FROM `measure_configuration_record`
+				WHERE NO = #{no}
+				ORDER BY `update_time` DESC
+				LIMIT 1
+			) a
+			LEFT JOIN mysql.help_topic b ON b.help_topic_id &lt; LENGTH(a.measure_ids) - LENGTH(REPLACE(a.measure_ids, ',', '')) + 1
+		)
+	</select>
+
+	<select id="measureValuePerIterator" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select ic.pro_no,imi.iteration_id,ic.plan_start_date,ic.plan_end_date,ic.start_date,ic.end_date,imi.measure_id,imi.value,a.unit,a.up,a.low,imi.create_time from iteration_cycle ic left join iteration_measure_index imi on ic.id=imi.iteration_id 
+			left join (select m.ID as maid,m.UPPER as up,m.UNIT as unit,m.LOWER as low from measure m where m.ID in(select l.MEASURE_ID from label_measure_config l where l.IS_DELETED=0 
+			and l.PROJECT_LABLE_ID in(select p.id from project_label_config p where p.project_id=#{no} and p.is_deleted=0 ))) a on imi.measure_id=a.maid left join project_info pi on pi.`NO`=ic.pro_no where ic.pro_no=#{no} and ic.start_date<=#{day} and ic.end_date>=#{day} and ic.is_deleted=0 order by imi.measure_id,ic.start_date
+	]]>
+	</select>
+
+	<delete id="deleteValue" parameterType="java.lang.String">
+		delete from project_parameter_value_new where NO=#{no} and PARAMETER_ID=0
+	</delete>
+
+	<insert id="insertReached" parameterType="com.icss.mvp.entity.ParameterValueNew">
+		insert into project_parameter_value_new values(#{no},#{month},#{parameterId},#{value});
+	</insert>
+
+	<select id="queryReach" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select pp.`NO`,pp.MONTH,pp.VALUE,pi.HWPDU,pi.HWZPDU,pi.PDU_SPDT,pi.BU,pi.PDU,pi.DU,ta.area_name from project_parameter_value_new pp left join project_info pi on pp.`NO`=pi.`NO` left join tbl_area ta on ta.area_name=pi.AREA 
+			left join sys_hwdept hw1 on hw1.dept_level=1 and hw1.dept_name=pi.HWPDU left join sys_hwdept hw2 on hw2.dept_level=2 and hw2.dept_name=pi.HWZPDU and hw2.parent_id=hw1.dept_id left join sys_hwdept hw3 on hw3.dept_level=3 and hw3.dept_name=pi.PDU_SPDT and hw3.parent_id=hw2.dept_id
+			left join op_department op1 on op1.DEPT_LEVEL=2 and op1.DEPT_NAME=pi.BU left join op_department op2 on op2.DEPT_LEVEL=3 and op2.DEPT_NAME=pi.PDU and op2.PARENT_DEPT_ID=op1.DEPT_ID left join op_department op3 on op3.DEPT_LEVEL=4 and op3.DEPT_NAME=pi.DU and op3.PARENT_DEPT_ID=op2.DEPT_ID 
+		where pp.PARAMETER_ID=0
+	]]>
+	<if test="area != null and area.size() != 0">
+		and ta.area_code in 
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		and hw1.dept_id in 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		and hw2.dept_id in 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		and hw3.dept_id in 
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" bu != null and bu.size() != 0">
+		and op1.DEPT_ID in 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		and op2.DEPT_ID in 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		and op3.DEPT_ID in 
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<![CDATA[
+		) 
+	]]>
+	<if test=" month != null">
+		and subStr(month,1,7)=#{month} 
+	</if>	
+	</select>
+ 
+ 	<select id="getAllPDU" parameterType="java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select DEPT_ID as deptId,DEPT_NAME as deptName from op_department where DEPT_LEVEL=3 and ENABLE='1' and PARENT_DEPT_ID in
+	]]>
+	<if test=" bu != null and bu.size() != 0">
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+ 
+ 	<select id="getAllDU" parameterType="java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select DEPT_ID as deptId,DEPT_NAME as deptName from op_department where DEPT_LEVEL=4 and ENABLE='1' and PARENT_DEPT_ID in
+	]]>
+	<if test=" pdu != null and pdu.size() != 0">
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+	
+	<select id="getAllHWZPDU" parameterType="java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select dept_id as deptId,dept_name as deptName from sys_hwdept where dept_level=2 and parent_id in
+	]]>
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+	
+	<select id="getAllPDUSPDT" parameterType="java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select dept_id as deptId,dept_name as deptName from sys_hwdept where dept_level=3 and parent_id in
+	]]>
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+	
+	<select id="getAllAreas" parameterType="java.util.HashMap" resultType="com.icss.mvp.entity.Dept">
+	<![CDATA[
+		select area_code as deptId,area_name as deptName from tbl_area where area_code in
+	]]>
+	<if test="area != null and area.size() != 0">
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+ 
+ 	<select id="reachedAllProjNoByPDU" parameterType="java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select VALUE from v_reach where PDUID=#{id}
+	]]>
+	</select>
+ 
+ 	<select id="reachedAllProjNoByDU" parameterType="java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select VALUE from v_reach where DUID=#{id}
+	]]>
+	</select>
+ 
+ 	<select id="reachedAllProjNoByHWZPDU" parameterType="java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select VALUE from v_reach where HWZPDUID=#{id}
+	]]>
+	</select>
+ 
+ 	<select id="reachedAllProjNoByPDUSPDT" parameterType="java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select VALUE from v_reach where PDUSPDTID=#{id}
+	]]>
+	</select>
+ 
+ 	<select id="reachedAllProjNoByArea" parameterType="java.lang.String" resultType="java.lang.String">
+	<![CDATA[
+		select VALUE from v_reach where AREAID=#{id}
+	]]>
+	</select>
+	
+ 	<select id="queryProjNoAndValueByHWPDU" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select NO,VALUE from v_reach where HWZPDUID=#{projectType} 
+	]]>
+	</select>
+	
+	<select id="queryProjNoAndValueByHWZPDU" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select NO,VALUE from v_reach where PDUSPDTID=#{projectType} 
+	]]>
+ 	</select>
+ 	
+	<select id="queryProjNoAndValueByBU" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select NO,VALUE from v_reach where PDUID=#{projectType} 
+	]]>
+ 	</select>
+ 	
+	<select id="queryProjNoAndValueByPDU" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select NO,VALUE from v_reach where DUID=#{projectType} 
+	]]>
+ 	</select>
+ 	
+	<select id="queryProjNoAndValueByAREA" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select NO,VALUE from v_reach where AREAID=#{projectType} 
+	]]>
+ 	</select>
+ 
+ 	<select id="getMeasureName" parameterType="java.lang.String" resultType="java.lang.String">
+<!--  		select m.name from measure m where m.ID=#{id} -->
+		SELECT m.name FROM in_tmpl_index m WHERE m.ID = #{id}
+ 	</select>
+ 
+ 	<select id="getProjName" parameterType="java.lang.String" resultType="com.icss.mvp.entity.ProjectInfoVo">
+ 		select pi.NO,pi.NAME from project_info pi where pi.`NO`=#{no}
+ 	</select>
+ 
+</mapper>

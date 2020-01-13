@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.MeasureAchievementStatusDao">
+	<resultMap id="measureComment"
+		type="com.icss.mvp.entity.MeasureComment">
+		<result column="measure_id" property="measureId" />
+		<result column="name" property="measureName" />
+		<result column="NO" property="proNo" />
+		<result column="mon" property="month" />
+		<result column="measure_value" property="measureValue" />
+		<result column="UPPER" property="upper" />
+		<result column="LOWER" property="lower" />
+		<result column="TARGET" property="target" />
+		<result column="CHALLENGE" property="challenge" />
+		<result column="COMPUTE_RULE" property="computeRule" />
+		<result column="change_value" property="changeValue" />
+		<result column="COLLECT_TYPE" property="collectType" />
+	</resultMap>
+	
+	<insert id="saveProjectParameterRecord">
+	REPLACE INTO `project_parameter_record` 
+		  (pro_no, parameter_id, parameter_value, create_time)
+	SELECT pro_no, parameter_id, parameter_value, #{date1}
+	FROM(
+		SELECT *
+		FROM project_parameter_record
+		where create_time &lt;= #{date2}
+		ORDER BY pro_no,parameter_id,create_time DESC) t
+	GROUP BY pro_no,parameter_id
+	</insert>
+	
+	<insert id="insertMeasureQualify" parameterType="java.lang.String">
+	  REPLACE INTO quality_trend
+	  (measure_id,create_time,update_time,no,qualify,
+	   measure_color,measure_value,upper,lower,measure_mark, challenge, target, collect_type, 
+	   compute_rule)
+	  VALUES
+	  (#{measureId},#{nowDate},now(),#{no},#{measureQualify},
+	   #{measureColor},#{measureValue},#{upper},#{lower},#{measureMark}, #{challenge}, #{target},
+	    #{collectType}, #{computeRule})
+	</insert>
+
+	<select id="queryGaoSiNo" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT pro_no FROM project_parameter_record
+		WHERE parameter_id IN
+		<foreach collection="measureMark" item="mark" separator="," open="(" close=")">
+       		#{mark}
+   		</foreach>
+		AND create_time = #{endDate} AND parameter_value =0
+	</select>
+
+	<!-- <select id="queryKeXinNo" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT pro_no FROM project_parameter_record
+        WHERE parameter_id IN
+        <foreach collection="measureMark" item="mark" separator="," open="(" close=")">
+            #{mark}
+        </foreach>
+        AND create_time = #{endDate} AND parameter_value = 0
+        GROUP BY pro_no HAVING COUNT(1) > 1
+	</select> -->
+	
+	<select id="queryMeasureStatus" resultMap="measureComment">
+		SELECT mmr.NAME, mmr.UPPER, mmr.LOWER, mmr.TARGET, mmr.CHALLENGE
+			, mmr.COMPUTE_RULE, mhd.measure_id, mhd.create_time, mhd.measure_value, mhd.NO
+			, cpc.change_value, DATE_FORMAT(mhd.`CREATE_TIME`, '%Y-%m-%d') AS mon, mmr.COLLECT_TYPE
+		FROM (
+			SELECT IFNULL(measure_id_mr, measure_id_m) AS measure_id
+				, IFNULL(upper_mr, upper_m) AS UPPER
+				, IFNULL(target_mr, target_m) AS TARGET
+				, IFNULL(lower_mr, lower_m) AS LOWER
+				, IFNULL(challenge_mr, challenge_m) AS CHALLENGE
+				, IFNULL(compute_rule_mr, compute_rule_m) AS COMPUTE_RULE
+				, IFNULL(collect_type_mr, collect_type_m) AS COLLECT_TYPE
+				, name_m AS NAME
+			FROM (
+				SELECT * FROM (
+					SELECT m.ID AS measure_id_m, m.name AS name_m, m.UPPER AS upper_m,
+						 m.CHALLENGE AS challenge_m, m.TARGET AS target_m, 
+						 m.LOWER AS lower_m, m.COMPUTE_RULE AS compute_rule_m, m.COLLECT_TYPE AS collect_type_m 
+<!-- 					FROM measure m -->
+					FROM in_tmpl_index m
+					WHERE ID IN 
+					<foreach collection="measureIds" item="measureId" separator="," open="(" close=")"> 
+		        		#{measureId}
+		    		</foreach>
+				) mea
+				LEFT JOIN (
+					SELECT r.measure_id AS measure_id_mr, r.UPPER AS upper_mr, r.target AS target_mr, 
+						   r.LOWER AS lower_mr, r.CHALLENGE AS challenge_mr, r.compute_rule AS compute_rule_mr, 
+						   r.collect_type AS collect_type_mr
+					FROM (
+						SELECT *
+						FROM measure_range
+						WHERE DATE_FORMAT(update_time, '%Y-%m-%d') &lt;= #{endDate}
+						AND NO = #{no}
+						AND measure_id IN
+						<foreach collection="measureIds" item="measureId" separator="," open="(" close=")"> 
+			        		#{measureId}
+			    		</foreach>
+						ORDER BY measure_id, update_time DESC
+					) r
+					GROUP BY r.measure_id
+				) mr
+				ON mea.measure_id_m = mr.measure_id_mr
+			) mer
+		) mmr
+		LEFT JOIN (
+			SELECT * FROM (
+				SELECT m.no, m.measure_id, m.create_time, m.measure_value
+				FROM measure_history_detail m
+				WHERE DATE_FORMAT(m.create_time, '%Y-%m-%d')  &lt;= #{endDate}
+					AND DATE_FORMAT(m.create_time, '%Y-%m-%d') &gt; #{startDate}
+					AND NO = #{no}
+					AND m.measure_id IN
+					<foreach collection="measureIds" item="measureId" separator="," open="(" close=")"> 
+		        		#{measureId}
+		    		</foreach>
+				ORDER BY m.create_time DESC
+			) mm
+			GROUP BY mm.no, mm.measure_id
+		) mhd
+		ON mmr.measure_id = mhd.measure_id
+		LEFT JOIN
+		(SELECT * FROM comment_picture_change WHERE pro_no = #{no} AND change_date = #{endDate}) cpc
+		ON mmr.measure_id = cpc.measure_id
+	</select>
+	
+	<select id="queryCredibleIndex" parameterType="java.lang.String" resultType="java.lang.String">
+<!-- 		SELECT ID FROM measure WHERE LABLE_ID IN ${processMark} -->
+		SELECT index_id FROM in_tmpl_label_index WHERE label_id = #{processMark}
+	</select>
+	
+	<select id="queryZongLanNos" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT pro_no FROM project_parameter_record
+		WHERE create_time = #{nextCycleDate}
+		AND parameter_id = #{measureMark} AND parameter_value =0
+	</select>
+	
+	<select id="getProjectLimit" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT pro_no,statistical_time,is_close FROM project_review WHERE
+		pro_no = #{no} AND is_close = #{limitMark}
+	</select>
+	
+	<select id="getCodeGainTypeNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM code_gain_type WHERE NO = #{no} AND PARAMETER_ID = #{offlineMark} 
+	</select>
+	
+	<select id="getProjectParameterRecordNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM project_parameter_record WHERE pro_no = #{no} AND parameter_id = #{offlineMark}
+		AND create_time = #{offlineDate}
+	</select>
+	
+	<update id="updateCodeGainType" parameterType="java.util.HashMap">
+		UPDATE code_gain_type SET TYPE = #{offline}, MODIFY_TIME = #{modifyTime}
+		WHERE NO = #{no} AND PARAMETER_ID = #{offlineMark}
+	</update>
+	
+	<insert id="addCodeGainType" parameterType="java.util.HashMap">
+		INSERT INTO code_gain_type (TYPE, NO, PARAMETER_ID, CREATE_TIME, MODIFY_TIME) 
+		VALUES (#{offline}, #{no}, #{offlineMark}, #{createTime}, #{modifyTime})
+	</insert>
+	
+	<update id="updateProjectParameterRecord" parameterType="java.util.HashMap">
+		UPDATE project_parameter_record SET parameter_value = #{offline}
+		WHERE pro_no = #{no} AND parameter_id = #{offlineMark} AND create_time = #{offlineDate}
+	</update>
+	
+	<insert id="addProjectParameterRecord" parameterType="java.util.HashMap">
+		INSERT INTO project_parameter_record (pro_no, parameter_id, parameter_value, create_time) 
+		VALUES (#{no}, #{offlineMark}, #{offline}, #{offlineDate})
+	</insert>
+	
+	<insert id="initNetworkSecurity" >
+	REPLACE INTO `network_security` 
+		(`pro_no`, `survey_date`, `deliver_status`, `uk_status`, `security_status`, 
+	 	 `security_liable`, `sow_status`, `error_cleared`, `warning_cleared`, 
+	 	 `satisfy_rate`, `case_status`, `case_rate`, `danger_status`, `danger_report`)
+	 select `pro_no`, #{now}, `deliver_status`, `uk_status`, `security_status`, 
+	 	 `security_liable`, `sow_status`, `error_cleared`, `warning_cleared`, 
+	 	 `satisfy_rate`, `case_status`, `case_rate`, `danger_status`, `danger_report` 
+	 from network_security	 
+	 where survey_date = #{old}	  
+	</insert>
+	
+	<select id="queryKexinMeasure" resultMap="measureComment">
+<!-- 		SELECT q.create_time AS mon, q.measure_value FROM `measure` m, quality_trend q -->
+		SELECT q.create_time AS mon, q.measure_value FROM in_tmpl_index m, quality_trend q
+	    WHERE m.VERSION = #{measureId} AND q.measure_id = m.ID AND q.NO = #{no}
+	    AND q.create_time = #{date}
+	</select>
+</mapper>

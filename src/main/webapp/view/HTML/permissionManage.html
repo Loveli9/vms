@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/ztree/zTreeStyle.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../../resources/ztree/jquery.ztree.all.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<script type="text/javascript" src="js/permissionManage.js"></script>
+<style>
+
+	#nav {
+		width: 30px; height: 65px; position: fixed; right: 2px; top: 50%; z-index: 9999;
+	}
+	.retop {
+		width: 30px; height: 30px; float: right; margin-top: 2px;
+	}
+	.retop2 {
+		float: right; margin-top: 2px;
+	}
+	.retop span {
+		color: white;
+	}
+	.tablenew {
+		font-size: 14px; text-align: center; float: left; border-spacing: 0px;
+	}
+	.myTab {
+		padding-left: 20px; padding-right: 20px;
+	}
+	.table {
+		table-layout: fixed;
+	}
+	.table tr td {
+		overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+	}
+	.tablenew tr:nth-child(odd) {
+		background: #f7f8f8;
+	}
+	.tableBody {
+		padding-top: 50px;
+	}
+	.s3{
+	    outline:none; border: 1;
+	}
+/**	.s3:focus{
+		border:1px solid #1ab394;
+	}*/
+	.table>thead{
+		background-color: #f3f7fe;
+		color: black;
+	}
+	.btn-default{
+		background-color: #1d90fd;
+		color: black;
+		border-color: #1d90fd;
+	}
+
+	.btn-primary {
+		background-color: #1d90fd;
+		color: black;
+		border-color: #1d90fd;
+	}
+</style>
+
+<script type="text/javascript">
+	//回到顶部
+	function focus1() {
+	$('#search_btn').css("background-color","#1d90fd");
+    $('#search_btn').css("border-color","#1d90fd");
+    $('#search_btn').css("color","black");
+    $('#clear_btn').css("background-color","#1d90fd");
+    $('#clear_btn').css("border-color","#1d90fd");
+    $('#clear_btn').css("color","black");
+    $('#btn_add').css("background-color","#1d90fd");
+    $('#btn_add').css("border-color","#1d90fd");
+    $('#btn_add').css("color","black");
+    $('#btnEntryReturn').css("background-color","#1d90fd");
+    $('#btnEntryReturn').css("border-color","#1d90fd");
+    $('#btnEntryReturn').css("color","black");
+    $('#saveLabelMeasure').css("background-color","#1d90fd");
+    $('#saveLabelMeasure').css("border-color","#1d90fd");
+    $('#saveLabelMeasure').css("color","black");
+
+	};
+	function outs() {
+		$('#search_btn').css("background-color","#1d90fd");
+		$('#search_btn').css("border-color","#1d90fd");
+		$('#search_btn').css("color","black");
+		$('#clear_btn').css("background-color","#1d90fd");
+		$('#clear_btn').css("border-color","#1d90fd");
+		$('#clear_btn').css("color","black");
+		$('#btn_add').css("background-color","#1d90fd");
+		$('#btn_add').css("border-color","#1d90fd");
+		$('#btn_add').css("color","black");
+		$('#btnEntryReturn').css("background-color","#1d90fd");
+		$('#btnEntryReturn').css("border-color","#1d90fd");
+		$('#btnEntryReturn').css("color","black");
+		$('#saveLabelMeasure').css("background-color","#1d90fd");
+		$('#saveLabelMeasure').css("border-color","#1d90fd");
+		$('#saveLabelMeasure').css("color","black");
+	};
+	function callback() {
+		$("html,body").animate({
+			scrollTop : 0
+		}, 200);
+	};
+
+</script>
+
+</head>
+
+<body>
+<div style="background-color: rgb(234, 235, 235);padding-top: 30px;padding-left: 17px; padding-right: 18px;">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #fff">
+		<tr>
+			<td style="padding-right: 10px;">
+				<div style="width: 100%; color: #333333;">
+					<div style="margin: 10px;">
+						<div style="display: flex;; margin-top: 5px; width: 100%;">
+							<div id="tab-gjjs" class="myTab">
+								<div>
+									<div style="margin-right: 20px;">
+										<div id="query-form" class=" pull-left" style="position: relative; top: 10px; width: 600px;">
+											<div class="col-sm-5" style="padding-left: 0px; padding-right: 2px">
+												<input type="text" class="form-control" name="importRoleName" id="importRoleName" placeholder="请输入角色名称" />
+											</div>
+											<div class="btn-group">
+												<button id="search_btn" onmouseover="focus1()" onmouseout="outs()" type="button" class="btn btn-default" style="margin-right: 3px">
+													<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+												</button>
+												<button id="clear_btn" onmouseover="focus1()" onmouseout="outs()" type="button" class="btn btn-default">
+													<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+												</button>
+											</div>
+											<div class="btn-group" id="toolbar">
+												<button id="btn_add" onmouseover="focus1()" onmouseout="outs()" type="button" class="btn btn-default">
+													<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+												</button>
+											</div>
+										</div>
+									</div>
+									<table id="mytab" class="table text-nowrap"></table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+	<div class="modal fade" id="labelMeasure" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px; width: 600px; margin-left: -50px;">
+				<div class="modal-content">
+                    <div class="modal-header"
+                         style="border-bottom-width: 5px;line-height: 100%;padding: 16px;">
+                        <h4 id="authHeader" class="modal-title" style="display: inline; margin-right: 310px;">角色权限</h4>
+                    </div>
+                   	<fieldset id="fieldset" style="position: relative; top: 30px; width: 100%; height: 75%; margin: 0 auto; background-color: #ffffff;">
+	                  <div class="form-group form-group-width" style="float:left;margin-left:30px;">
+	                       <label class="td1">名称</label>
+	                       <span style="color: red">*</span>
+	                       <input name="roleName" type="text" class="s3" placeholder="请输入角色名称" id="roleName" style="width: 180px;margin-left:5px;padding:3px 0px 3px 10px;" />
+	                   </div>
+	                   <div class="form-group form-group-width" style="float:right;margin-right:30px;top:-20px;">
+							<label class="td1" style="margin-top: 5px;">描述</label>
+							<input name="roleDet" type="text" class="s3" placeholder="请输入角色描述" id="roleDet" style="width: 180px;margin-left:10px;padding:3px 0px 3px 10px;" />
+	                   </div>
+					   <input name="roleId" type="hidden" id="roleId" />
+					</fieldset>
+					<fieldset id="fieldset1" style="position: relative; top: 20px; width: 92%; height: 75%; margin: 10px -30px 30px 30px; background-color: #ffffff;">
+						<div class="form-group form-group-width" style="float:left;">
+							<label class="td1" style="float: left;">权限</label>
+							<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+	                     </div>
+						 <div class="form-group form-group-width" style="width: 84.5%; height: 240px; border: 1px solid #617775; overflow: auto; background-color: #F0F0F0;margin-left:5px;">
+							<ul id="permissionTree" class="ztree"></ul>
+	                     </div>
+	                </fieldset>
+                 </div>
+                <div class="modal-footer">
+                    <div class="form-group" style="float: right;margin: 0;">
+                        <input type="reset" style="display:none;"/>
+                        <div class="col-sm-2" style="width:100px">
+                            <button type="button" class="btn btn-primary btn-block" id="saveLabelMeasure">保存</button>
+                        </div>
+                        <div class="col-sm-2" style="width:100px">
+                            <button type="button" onmouseover="focus1()" onmouseout="outs()" class="btn btn-default btn-block" id="btnEntryReturn" data-dismiss="modal"
+                                    onclick="$('input[type=reset]').trigger('click');">返回</button>
+                        </div>
+                    </div>
+                </div>
+                 <!-- -->
+                 <!--<div class="modal-footer" style="text-align:center">-->
+                     <!--<button href="javascript:void(0)" data-dismiss="modal" class="btn btn-default" data-dismiss="modal" onclick="$('input[type=reset]').trigger('click');">返回</button>-->
+                     <!--<button id="saveLabelMeasure" data-dismiss="modal" href="javascript:void(0)" type="button" class="btn btn-primary">保存</button>-->
+                 <!--</div>-->
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	<div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 300px;">
+				<div class="modal-body" style="padding: 15px;">
+					<div style="text-align: center;">
+						<span id="dataAcquisition" style="font-size: 14px;">保存成功</span>
+					</div>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+</body>
+</html>

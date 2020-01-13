@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ILoginDao">
+	<resultMap id="UserMap" type="com.icss.mvp.entity.UserInfo">
+		<result property="USERID" column="USERID" />
+		<result property="USERNAME" column="USERNAME" />
+		<result property="PASSWORD" column="PASSWORD" />
+		<result property="ISONLINE" column="ISONLINE" />
+		<result property="CREATER" column="CREATER" />
+		<result property="permissionids" column="permission_ids" />
+		<result property="roleId" column="role_id" />
+		<result property="CREATERTIME" column="CREATETIME" />
+		<result property="UPDATER" column="UPDATER" />
+		<result property="UPDATERTIME" column="UPDATETIME" />
+		<result property="IDENTITY" column="IDENTITY" />
+	</resultMap>
+	<resultMap id="VisitMap" type="com.icss.mvp.entity.VisitRecord">
+		<result property="ip" column="ip" />
+		<result property="uName" column="u_name" />
+		<result property="uId" column="u_id" />
+		<result property="loginTime" column="login_time" />
+		<result property="uRole" column="u_role" />
+	</resultMap>
+	<!--  <select id="getUserInfo" parameterType="com.icss.mvp.entity.UserInfo" resultType="com.icss.mvp.entity.UserInfo">
+		SELECT *
+		FROM
+		sys_user where USERNAME=#{USERNAME} and PASSWORD=#{PASSWORD}
+	</select>-->
+	<select id="getUserInfo" parameterType="com.icss.mvp.entity.UserInfo" resultMap="UserMap">
+	SELECT
+		t1.USERID as USERID,
+		t1.USERNAME as USERNAME,
+		t1.role_id as role_id,
+		t1.permission_ids as permission_ids,
+		t1.CREATETIME as CREATERTIME
+		FROM
+		sys_user t1 
+		where USERNAME=#{USERNAME}
+	</select>
+
+	<select id="getUserCountByRoleId" resultType="java.lang.Integer">
+		select count(1) from sys_user where role_id = #{roleId}
+	</select>
+	<select id="getUserOfPer" resultType="java.lang.String">
+		select group_concat(DISTINCT(s.permission_ids)) from sys_user s 
+	</select>
+	<select id="querypAuthById" parameterType="java.lang.Integer" resultType="java.lang.String">
+		select permission_auth from sys_user where permission_id = #{permissionid}
+	</select>
+	<insert id="addUserInfo" parameterType="com.icss.mvp.entity.UserInfo">
+		INSERT INTO sys_user
+		(USERID, USERNAME, PASSWORD,permission_ids, role_id,bu,du,dept,hwpdu, CREATER, CREATETIME,UPDATETIME,usertype) VALUES
+		(#{USERID}
+		,#{USERNAME},#{PASSWORD},#{permissionids}, #{roleId},#{bu},#{du},#{dept},#{hwpdu}, #{CREATER}, #{CREATERTIME},#{UPDATERTIME},#{usertype});
+	</insert>
+	<select id="queryAllAuth"  resultType="java.lang.String">
+		select permission_scope_id from permisssion_scope 
+	</select>
+	<insert id="saveLoginRecord">
+		INSERT INTO `visit_record` (`ip`,`u_name`,`u_id`,`login_time`,`u_role`) VALUES(
+		#{record.ip},#{record.uName},#{record.uId},#{record.loginTime},#{record.uRole})
+	</insert>
+	<select id="getRecords" resultType="com.icss.mvp.entity.VisitRecord">
+	<![CDATA[
+		SELECT 
+		COUNT(CASE WHEN YEAR(login_time)=YEAR(NOW())THEN 1 ELSE NULL END) AS totalNum,
+		COUNT(CASE WHEN DATE_FORMAT(`login_time`, '%Y%M') = DATE_FORMAT(NOW(), '%Y%M') THEN 1 ELSE NULL END ) AS currentNum,
+		COUNT(CASE WHEN PERIOD_DIFF( DATE_FORMAT( NOW( ) , '%Y%m' ) , DATE_FORMAT( `login_time`, '%Y%m' ) ) =1 
+		AND `login_time` <= DATE_SUB(NOW(), INTERVAL 1 MONTH)  THEN 1 ELSE NULL END ) AS lastNum,
+		COUNT(CASE WHEN PERIOD_DIFF( DATE_FORMAT( NOW( ) , '%Y%m' ) , DATE_FORMAT( `login_time`, '%Y%m' ) ) =1 THEN 1 ELSE NULL END ) AS lastTotalNum
+		FROM `visit_record`
+	]]>
+	</select>
+</mapper>

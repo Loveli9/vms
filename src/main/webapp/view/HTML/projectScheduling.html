@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<style>
+		.search-btn {
+			color: white;
+			background-color: #0091FE;
+			margin-right: 15px !important;
+			font-size: 13px;
+		}
+	</style>
+</head>
+<body class="mvp-body">
+	<div style="display: block;height: 30px;padding: 17px 20px;">
+		<div style="float: left">
+			<span style="color: #ff0000;">红色</span>
+			<span style="margin-right: 5px;">：延迟</span>
+			<span style="color: #00b050;">绿色</span>
+			<span style="margin-right: 5px;">：正常通过</span>
+			<span style="">白色</span>
+			<span style="margin-right: 5px;">：尚未启动</span>
+		</div>
+	</div>
+	<div id="containers" style="width: 100%;margin-top: -35px">
+
+	</div>
+
+	<!-- 新建里程碑 -->
+	<div class="modal fade" id="addMilestonePage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:650px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="addModalLabel" style="display: inline; margin-right: 310px;">
+						新建里程碑
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="projectSchedulingAddForm" method="post" class="form-horizontal">
+						<input  type="text" class="form-control" name="projectScheduleId" id="addProjectScheduleId" style="display: none"	/>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" name="name" id="addName"  placeholder="请输入节点名称"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">描述</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" name="description" id="addDescription" placeholder="请输入节点描述" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">类型</label>
+							<div class="col-sm-4">
+								<select id="addSelScheduleType" autocomplete="off" class="form-control" title="请输入类型">
+								</select>
+								<input id="addScheduleType" type="hidden" name="scheduleType" />
+							</div>
+							<label class="col-sm-2 control-label">图标</label>
+							<div class="col-sm-4">
+								<select id="addSelScheduleIcon" autocomplete="off" class="form-control" title="请输入类型">
+								</select>
+								<input id="addScheduleIcon" type="hidden" name="scheduleIcon" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="addplannedFinishDate" class="col-sm-2 control-label">计划完成时间</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter yearpicker" type="text" id="addPlannedFinishDate" name="plannedFinishDate"
+									   style="background-color: white;cursor: pointer;" readonly="readonly"/>
+							</div>
+						</div>
+						<div class="form-group" style="padding-left: 80px">
+							<div class="col-sm-2 col-sm-offset-3">
+								<button type="button" class="btn btn-primary btn-block"
+										id="projectScheduling_add_saveBtn">保存</button>
+							</div>
+							<div class="col-sm-2 col-sm-offset-1">
+								<button type="button" class="btn btn-default btn-block"
+										id="projectScheduling_add_backBtn">返回</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 编辑里程碑 -->
+	<div class="modal fade" id="editMilestonePage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:650px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						编辑里程碑
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="projectSchedulingEditForm" method="post" class="form-horizontal">
+						<input  type="text" class="form-control" name="id" id="editId" style="display: none"	/>
+						<input  type="text" class="form-control" name="projectScheduleId" id="editProjectScheduleId" style="display: none"	/>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" name="name" id="editName"  placeholder="请输入节点名称"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">描述</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" name="description" id="editDescription" placeholder="请输入节点描述" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">类型</label>
+							<div class="col-sm-4">
+								<select id="editSelScheduleType" autocomplete="off" class="form-control" title="请输入类型">
+								</select>
+								<input id="editScheduleType"  type="hidden" name="scheduleType" />
+							</div>
+							<label class="col-sm-2 control-label">图标</label>
+							<div class="col-sm-4">
+								<select id="editSelScheduleIcon" autocomplete="off" class="form-control" title="请输入图标">
+								</select>
+								<input id="editScheduleIcon" type="hidden" name="scheduleIcon" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="editPlannedFinishDate" class="col-sm-2 control-label">计划完成时间</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter yearpicker" type="text" id="editPlannedFinishDate" name="plannedFinishDate"
+									   style="background-color: white;cursor: pointer;" readonly="readonly"/>
+							</div>
+							<label for="editActualFinishDate" class="col-sm-2 control-label">实际完成时间</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter yearpicker" type="text" id="editActualFinishDate" name="actualFinishDate"
+									   style="background-color: white;cursor: pointer;" readonly="readonly"/>
+							</div>
+						</div>
+						<div class="form-group" style="padding-left: 80px">
+							<div class="col-sm-2 col-sm-offset-3">
+								<button type="button" class="btn btn-primary btn-block"
+										id="projectScheduling_edit_saveBtn">保存</button>
+							</div>
+							<div class="col-sm-2 col-sm-offset-1">
+								<button type="button" class="btn btn-default btn-block"
+										id="projectScheduling_edit_backBtn">返回</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 新建里程碑计划 -->
+	<div class="modal fade" id="addMilestonePlan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		 data-backdrop="static">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:650px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" style="display: inline; margin-right: 310px;">
+						新建里程碑计划
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="addPlanForm" method="post" class="form-horizontal">
+						<input  type="text" class="form-control" name="no" id="addNo" style="display: none"	/>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" name="planName" id="addPlanName"  placeholder="请输入名称"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">类型</label>
+							<div class="col-sm-4">
+								<select id="addSelPlanType" autocomplete="off" class="form-control" title="请输入类型">
+									<option value="3" selected>版本</option>
+									<option value="2">迭代</option>
+								</select>
+								<input id="addPlanType" type="hidden" name="planType" />
+							</div>
+						</div>
+						<div class="form-group" style="padding-left: 80px">
+							<div class="col-sm-2 col-sm-offset-3">
+								<button type="button" class="btn btn-primary btn-block"
+										id="add_PlanSaveBtn">保存</button>
+							</div>
+							<div class="col-sm-2 col-sm-offset-1">
+								<button type="button" class="btn btn-default btn-block"
+										id="add_PlanBackBtn">返回</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

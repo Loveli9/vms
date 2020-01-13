@@ -1,0 +1,434 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/fishBone.css"/>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/css/style.css" />
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <script type="text/javascript" src="js/projectReview.js"></script>
+
+    <style>
+        .myTab {
+            padding-left: 0px; padding-right: 0px;
+        }
+        .btn-default {
+            height: 35px; line-height: 16px; border-radius: 4px;
+        }
+        ul {
+            list-style: none; line-height: 40px; margin-left: 50px;
+        }
+        li {
+            display: block; float: left;
+        }
+        .bordercss {
+            margin: 10px -10px 3px -10px; border: 0px solid #dcdcdc; padding: 10px;
+        }
+        .status {
+            padding-top: 45px; padding-bottom: 50px; margin-right: 70px; margin-left: 70px; margin-bottom: 80px;
+            margin-top: 70px; color: white; font-size: 28px; border-radius: 25px; text-align: center;
+        }
+        .li-square{
+            background-color: #fff;
+        }
+        .wordWrap{
+            word-break: normal; width: auto; display: block; white-space: pre-wrap; word-wrap: break-word; overflow: hidden;
+        }
+        .viewMessage {
+        	border: 0px solid #E5E5E5; padding: 10px 0px 0px 450px; color: red; font-size: 12px;
+        }
+        #publishReview{
+        	font-size: 16px;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+        }
+        #editReview{
+        	font-size: 16px;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+        }
+        #closeReview{
+        	font-size: 16px;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+        }
+        #saveReview{
+        	font-size: 16px;display:none;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+        }
+        #cancelReview{
+        	font-size: 16px;display:none;margin-top: 8px;background-color: #fcfcfc;border-radius: 5px; color: #121111;float: right;margin-right: 10px;border:0px; height: 25px;line-height: 25px;
+        }
+    </style>
+</head>
+<body class="mvp-body">
+
+<div class="mvp-main">
+	<div id="detail" class="myTab" style="margin:-5px 10px 0px 5px;padding:5px;">
+    	<div style="margin: 3px 10px 10px -55px;display: flow-root; width: 104.6%;">
+        	<ul>
+            	<li class="li-square" style="width:24%;margin-right: 1%;">
+                	<div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                    	<div style="width: 100%;">
+                            <span style="font-size: 16px;">过程交付质量（红/黄/绿）</span>
+							<div id="qualityLamp" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                            <span style="float: right; padding-right: 0px;">
+						 		<button id="quality" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;" name="lampEdit" onclick="lampEdit(this.id)">
+                                	<img style="height:16px;width:16px" src="images/greenPencil.png" />
+                            	</button>
+						 	</span>
+                        </div>
+                        <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                            <span id="qualityMark"></span>(                                                   
+                            <span style="color: #ff0000;" id="redLight">0</span>/
+                            <span style="color: #ffc000;" id="yellowLight">0</span>/
+                            <span style="color: #00b050;" id="greenLight">0</span>)
+                        </div>
+                    </div>
+                    <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                        <div id="measures" style="font-size: 14px;height:90%"></div>
+                        <div style="height:10%">
+                            <div style="float: right;padding-right: 25px;height:26px;"><a id="measureCommentTree" href="measureCommentTree.html">全部指标</a></div>
+                        </div>
+                    </div>
+                </li>
+                <li class="li-square" style="width:24%;margin-right: 1%;">
+                    <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                    	<div style="width: 100%;">
+                            <span style="font-size: 16px;">交付及时性</span>
+							<div id="progressLamp" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                            <span style="float: right; padding-right: 0px; ;">
+						 		<button id="progress" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;" name="lampEdit" onclick="lampEdit(this.id)">
+                                	<img style="height:16px;width:16px" src="images/greenPencil.png" />
+                            	</button>
+						 	</span>
+                        </div>
+                        <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                            <span id="progressMark"></span>(<span id="progressDeviation">0</span><span style="font-size: 14px;">%</span>)
+                        </div>
+                    </div>
+                    <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                        <div style="font-size: 14px;height:90%">
+                            <div><span>需求完成率：</span><span id="demandCompletion">0</span><span style="font-size: 10px"> %</span></div>
+                            <div><span>进度完成率：</span><span id="progressCompletion">0</span><span style="font-size: 10px"> %</span></div>
+                        </div>
+                        <div style="height:10%">
+                            <div style="float: right;padding-right: 25px;visibility:hidden;" id="progressEdit1"><a id="progressEdit" name="edit" href="javascript:void(0);">修改</a></div>
+                        </div>
+                    </div>
+                </li>
+                <li class="li-square" style="width:24%;margin-right: 1%;">
+                    <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                        <div style="width: 100%;">
+                            <span style="font-size: 16px;">人员稳定度</span>
+							<div id="resourcesLamp" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>
+                          	<span style="float: right; padding-right: 0px;">
+						 		<button id="resources" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;" name="lampEdit" onclick="lampEdit(this.id)">
+                                	<img style="height:16px;width:16px" src="images/greenPencil.png" />
+                            	</button>
+						 	</span>
+                        </div>
+                        <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                            <span id="resourcesMark"></span>(<span id="resourcesText">0</span><span style="font-size: 14px;">%</span>)
+                        </div>
+                    </div>
+                    <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                        <div style="font-size: 14px;height:90%">
+                            <div><span>总人力缺口：</span><span id="memberDiffer">0</span></div>
+                            <div><span>总人力到位率：</span><span id="memberArrival">0</span><span style="font-size: 10px"> %</span></div>
+                            <div><span>关键角色缺口：</span><span id="keyRolesDiffer">0</span></div>
+                            <div><span>关键角色到位率：</span><span id="keyRolesArrival">0</span><span style="font-size: 10px"> %</span></div>
+                            <div><span>待答辩人数：</span><span id="keyRolesfail">0</span></div>
+                        </div>
+                        <div style="height:10%">
+                            <div style="float: right;padding-right: 25px;"><a href="gaikuang.html?taleId='tab-gjjs'">具体详情</a></div>
+                        </div>
+                    </div>
+                </li>
+                <li class="li-square" style="width:25%;">
+                    <div style="width: 100%;height: 70px;text-align: left;border-bottom: 5px solid #e0ecff;">
+                        <div style="width: 100%;">
+                            <span style="font-size: 16px;">变更（变更率）</span>
+							<div id="changesLamp" style="float:left;font-size: 20px;padding-top: 50px;padding-bottom: 15px;border-left: 10px solid; border-left-color: #C0C0C0;margin-right: 10px;"></div>					
+                            <span style="float: right; padding-right: 0px;">
+						 		<button id="changes" style="display:none;font-size: 24px;margin-top: 0px;float: right;margin-right: 10px;background-color: white;border:0px; height: 30px;" name="lampEdit" onclick="lampEdit(this.id)">
+                                	<img style="height:16px;width:16px" src="images/greenPencil.png" />
+                            	</button>
+						 	</span>
+                        </div>
+                        <div style="width: 100%;font-size: 20px;padding-top: 10px;padding-bottom: 5px;">
+                            <span id="changesMark"></span>(<span id="changesText">0</span><span style="font-size: 14px;">%</span>)
+                        </div>
+                    </div>
+                    <div style="width:100%;height: 200px;padding-top: 5px;padding-left: 10px;background-color: #fff;">
+                        <div style="font-size: 14px;height:90%">
+                            <div><span>需求变更工作量：</span><span id="changeNumber">0</span></div>
+                            <div><span>需求总工作量：</span><span id="demandNumber">0</span></div>
+                        </div>
+                        <div style="height:10%">
+                            <div style="float: right;padding-right: 25px;visibility:hidden" id="changeEdit1"><a id="changeEdit" name="edit" href="javascript:void(0);">修改</a></div>
+                        </div>
+                    </div>
+                </li>
+                <li style="width:99.9%;">
+                    <div class="bordercss sortable2div" style="height: 300px;">
+                        <div style="height: 40px;line-height: 40px;background-color: #26aa8d;">
+                            <span style="float: left;margin-left: 5px;font-size: 16px;color: #fff;font-weight: 600;">预评估得分&项目点评</span>
+                            <button id="publishReview">发布</button>
+                            <button id="editReview">编辑</button>
+                            <button id="closeReview">结项</button>
+                            <button id="saveReview">保存</button>
+                            <button id="cancelReview">返回</button>
+                        </div>
+                        <div style="height:270px;width: 100%;border-top: 1px solid #DEDDDD;">
+                            <div style="float: left;width:24%;margin-right: 1%;background-color: #fff;">
+                                <div>
+                                    <div id="statusColor" class="status" style="background-color: #C0C0C0;">
+                                    	<span id="statusText">未评估</span>
+                                        <div style="margin-top: 15px;font-size: 15px;">
+                                        	<span id="status"></span>
+                                        </div>
+                                     </div>
+                                </div>  
+                            </div>
+                            <div style="float: left;width:75%;background-color: #fff;height: 310px; overflow-y:scroll">                
+            					<div style="border: 1px  #000000; width: 95%; margin: 0 auto;">
+                					<span id="review" class="wordWrap" style="font-size: 18px;"></span>
+           						 </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="changeEditPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:600px;margin-left: -50px;">
+            <div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" style="display: inline; margin-right: 310px;">变更（变更率）信息</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <form id="changeEditForm" method="post" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">需求变更率</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="changesEdit" id="changesEdit" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">需求变更工作量</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="changeNumberEdit" id="changeNumberEdit" readonly="readonly" oninput="changeDemand()" placeholder="请输入需求变更"/>
+                        </div>
+                        <label for="startDate" class="col-sm-2 control-label">需求总工作量</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="demandNumberEdit" id="demandNumberEdit" readonly="readonly" oninput="changeDemand()" placeholder="请输入总需求数"/>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-left: 80px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block" id="changeEdit_saveBtn">保存</button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block" id="changeEdit_backBtn">返回</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!--需求完成率编辑  -->
+<div class="modal fade" id="progressEditPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:600px;margin-left: -50px;">
+            <div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" style="display: inline; margin-right: 310px;">交付及时性信息</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;font-size: 16px;">
+                <form id="progressEditForm" method="post" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">进度偏差率</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="progressDeviationEdit" id="progressDeviationEdit" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">需求完成率</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="demandCompletionEdit" id="demandCompletionEdit" readonly="readonly" onblur="checkDemandCompletion(this.value)" onkeyup="this.value=this.value.replace(/[^\d]/g,'')" oninput="changeDemandCompletion()" placeholder="请输入需求变更" />
+                        </div>
+                        <label for="startDate" class="col-sm-2 control-label">进度完成率</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="progressCompletionEdit" id="progressCompletionEdit" readonly="readonly"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <span id="err1" style="display: none;"></span>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-left: 80px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block" id="progressEdit_saveBtn">保存</button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block" id="progressEdit_backBtn">返回</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 项目点评编辑页面 -->
+<div class="modal fade" id="publishReviewPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:650px;margin-left: -50px;">
+            <div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" id="addModalLabel" style="display: inline; margin-right: 310px;">项目点评</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <div style="margin-bottom: 10px;font-size: larger;">预评估得分</div>
+                <div><input type="text" class="form-control" id="projectStatus" readonly="readonly"></input></div>
+                <div style="margin-bottom: 10px;font-size: larger;margin-top: 10px;">
+                	<span>点评&趋势预测</span>
+                	<select onchange="selectChangeReview()" id="selectReview" style="width: 300px;float: right;"></select>
+                </div>
+                <div>
+                	<textarea class="form-control input-large" rows="6" placeholder="请输入项目点评&趋势预测（5000字以内）"
+                    	id="projectReview" maxlength="5000" onchange="this.value=this.value.substring(0, 5000)" 
+                    	onkeydown="this.value=this.value.substring(0, 5000)" onkeyup="this.value=this.value.substring(0, 5000)"></textarea>
+                </div>
+                <div class="form-group" style="margin-top: 10px;margin-bottom: 40px;padding-right: 10px;">
+                    <div class="col-sm-2 col-sm-offset-3">
+                        <button type="button" class="btn btn-primary btn-block" id="publishReview_saveBtn">确认</button>
+                    </div>
+                    <div class="col-sm-2 col-sm-offset-1">
+                        <button type="button" class="btn btn-default btn-block" id="publishReview_backBtn">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 结项弹出页面 -->
+<div class="modal fade" id="closeReviewPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width:650px;margin-left: -50px;">
+            <div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" id="addModalLabel" style="display: inline; margin-right: 310px;">项目结项</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <div style="margin-bottom: 10px;font-size: larger;">结项得分</div>
+                <div><input type="text" class="form-control" id="projectStatus1" readonly="readonly"></input></div>
+                <div style="margin-bottom: 10px;font-size: larger;margin-top: 10px;">
+                	<span>点评&趋势预测</span>
+                	<select onchange="selectChange()" id="selectProjectReview" style="width: 300px;float: right;"></select>
+                </div>
+                <div>
+                	<textarea class="form-control input-large" rows="6" placeholder="请输入项目点评&趋势预测（5000字以内）"
+                    	id="projectReview1" maxlength="5000" onchange="this.value=this.value.substring(0, 5000)" 
+                    	onkeydown="this.value=this.value.substring(0, 5000)" onkeyup="this.value=this.value.substring(0, 5000)"></textarea>
+                </div>
+                <div class ="viewMessage" >结项后项目将变更为关闭状态！</div>
+                <div class="form-group" style="margin-top: 10px;margin-bottom: 40px;padding-right: 10px;">
+                    <div class="col-sm-2 col-sm-offset-3">
+                        <button type="button" class="btn btn-primary btn-block" id="closeReview_saveBtn">确认</button>
+                    </div>
+                    <div class="col-sm-2 col-sm-offset-1">
+                        <button type="button" class="btn btn-default btn-block" id="closeReview_backBtn">返回</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="lampEditPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+     <div class="modal-dialog">
+     	<div class="modal-content" style="top: 50px;width:800px;margin-left: -100px;">
+     		<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" style="display: inline; margin-right: 310px;">
+                   	 <span id="lampText"></span>点灯状态修改
+                </h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+				<form id="lampEditForm" method="post" class="form-horizontal">
+				<input id="field" style="display: none"/>
+					<div class="form-group" style="width: 96%; padding: 3% 5%;">
+						<label for="lampMode" class="demo--label"><span style="padding-left: 5px;"></span>模式：</label>
+							<label class="demo--label" style="margin-left:15px;"> 
+								<input class="demo--radio" type="radio" value="0" name="lampMode" id="mode0" autocomplete="off"/>
+								<span class="demo--radioInput"> 自动</span>
+							</label> 
+							<label class="demo--label" style="margin-left:10px;"> 
+								<input class="demo--radio" type="radio" value="1" name="lampMode" id="mode1" autocomplete="off"/>
+								<span class="demo--radioInput"> 手动</span>
+							</label>
+							<label class="demo--label" style="margin-left:10px;" id="labelMode2" style="display: none"> 
+								<input class="demo--radio" type="radio" value="2" name="lampMode" id="mode2" autocomplete="off"/>
+								<span class="demo--radioInput"> 导入</span>
+							</label>
+					</div>
+					<div class="form-group">
+						<label for="lampText" style="padding-left: 42px;float:left" class="demo--label"><span style="padding-left: 5px;float:left"></span>得分：</label>
+						<div class="col-sm-4">
+                            <input type="text" class="form-control" style="width: 100px;display: none;" name="lampText" id="autoValue" readonly="readonly" />
+                        	<input type="text" class="form-control" name="lampText" style="width: 100px;"
+								   id="manualValue" onblur="checkManualValue(this.value)" onkeyup="this.value=this.value.replace(/[^\d+(\.\d{1,2})]/g,'')"/>
+                            <input type="text" class="form-control" style="width: 100px;display: none;" name="lampText" id="importValue" readonly="readonly" />
+                        </div>			
+					</div>
+					<div class="form-group">
+                        <div class="col-sm-12">
+                            <span id="err2" style="display: none;"></span>
+                        </div>
+                    </div>
+				</form>
+			</div>
+     		<div class="modal-footer">
+	     		<div class="form-group" style="padding-left: 80px">
+		     		<div class="col-sm-2" style="float:right;">
+						<button type="button" class="btn btn-default btn-block" style="margin-right: 65px; padding-right: 15px;height: 35px;margin-left: 10px;"
+							id="lampEdit_backBtn">返回</button>
+					</div>
+					<div class="col-sm-2" style="float:right;">
+						<button type="button" class="btn btn-primary btn-block" style="margin-right: 65px; padding-right: 15px;height: 35px;"
+							id="lampEdit_saveBtn">保存</button>
+					</div>
+				</div>
+     		</div>
+     	</div>
+     </div>
+</div>
+
+</body>
+</html>

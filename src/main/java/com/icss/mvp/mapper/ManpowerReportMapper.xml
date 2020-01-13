@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icss.mvp.dao.ManpowerReportDao" >
+    <resultMap id="ManpowerReportMap" type="com.icss.mvp.entity.ManpowerReport">
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="workingNum" property="workingNum" jdbcType="INTEGER"/>
+        <result column="competenceNum" property="competenceNum" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="pro_dept_param">
+        <if test="areas != null and areas.size() != 0">
+            AND `p`.AREAID in
+            <foreach collection="areas" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="status != null and status.size() != 0">
+            AND `p`.PROJECT_STATE IN
+            <foreach collection="status" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwpduId != null and hwpduId.size() != 0">
+            AND `p`.`HWPDUID` IN
+            <foreach collection="hwpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwzpduId != null and hwzpduId.size() != 0">
+            AND `p`.`HWZPDUID` IN
+            <foreach collection="hwzpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduSpdtId != null and pduSpdtId.size() != 0">
+            AND `p`.`PDU_SPDTID` IN
+            <foreach collection="pduSpdtId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="buId != null and buId.size() != 0">
+            AND `p`.`BUID` IN
+            <foreach collection="buId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduId != null and pduId.size() != 0">
+            AND `p`.`PDUID` IN
+            <foreach collection="pduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="duId != null and duId.size() != 0">
+            AND `p`.`DUID` IN
+            <foreach collection="duId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+    <select id="keyRole" parameterType="java.util.Map" resultMap="ManpowerReportMap">
+      SELECT
+        a.PDU as name, sum(a.competenceNum) as competenceNum, sum(a.workingNum) as workingNum
+      FROM
+        (
+        select `t1`.PDU,ifnull(`t2`.`keyRoleCount`,0) AS `workingNum`,ifnull(`t3`.`competenceNum`,0) AS `competenceNum`
+        from  (((
+            select p.* from project_info p WHERE 1 = 1
+            <include refid="pro_dept_param"/>
+            ) `t1`
+            left join `v_pro_keyrole` `t2` on((`t1`.`No` = `t2`.`no`)))
+            left join `v_pro_competence` `t3` on((`t1`.`No` = `t3`.`no`))) where (`t1`.`PROJECT_STATE` = '在行')
+        ) a
+        group by a.PDU
+    </select>
+
+    <select id="positionRate" parameterType="java.util.Map" resultType="java.util.Map">
+      SELECT
+        a.no, a.name, a.keyRoleRate, a.memberRate
+      FROM
+        (
+            select `t1`.NO as no,`t1`.NAME as name ,ifnull(concat(round(((`t2`.`keyRoleCount` / `t4`.`keyRoleCount`) * 100),0),'%'),0)
+            AS `keyRoleRate`,ifnull(concat(round(((`t3`.`memberCount` / `t4`.`headcount`) * 100),0),'%'),0) AS `memberRate`
+            from ((((
+            select p.* from project_info p WHERE 1 = 1
+            <include refid="pro_dept_param"/>
+            ) `t1` left join `v_pro_keyrole` `t2` on((`t1`.`No` = `t2`.`no`)))
+            left join `v_pro_member` `t3` on((`t1`.`No` = `t3`.`no`)))
+            left join `manpower_budget` `t4` on((`t1`.`No` = convert(`t4`.`pro_no` using utf8)))) where (`t1`.`PROJECT_STATE` = '在行')
+        ) a
+        order by a.name
+    </select>
+</mapper>

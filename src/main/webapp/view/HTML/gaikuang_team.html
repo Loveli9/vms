@@ -1,0 +1,696 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" type="text/css" href="../../resources/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/bootstrap/bootstrap-switch.min.css"/>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css"/>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css"/>
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css"/>
+    <link rel="stylesheet" href="css/Icp-ci-Input.css" type="text/css"/>
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <!-- 消息提示插件 -->
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-switch.min.js"></script>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css"/>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script src="js/extendPagination.js"></script>
+    <script type="text/javascript" src="js/comm/tableComm.js"></script>
+    <script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="js/gaikuang_team.js"></script>
+    <style>
+        .tablenew tr:nth-child(odd) {
+            background: #f7f8f8;
+        }
+
+        .mousetable tr:hover {
+            background: #e8e8e8;
+        }
+
+        .namespan {
+            display: inline-block;
+            width: 260px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .milestonetime {
+            margin-top: 98px;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .newicon {
+            position: absolute;
+            height: 220px;
+            width: 65px;
+            z-index: 20;
+            background-image: URL(images/newicon.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .iterationicon {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/iterationicon.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .timespot {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/timespot.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .start {
+            position: absolute;
+            height: 180px;
+            width: 65px;
+            z-index: 20;
+            background-image: URL(images/start.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .CPbg {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/CPbg.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #367FA9;
+            text-align: center;
+        }
+
+        .iterationiconH {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/iterationiconH.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .timespotH {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/timespotH.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .startH {
+            position: absolute;
+            height: 180px;
+            width: 65px;
+            z-index: 20;
+            background-image: URL(images/startH.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            text-align: center;
+        }
+
+        .CPbgH {
+            position: absolute;
+            height: 200px;
+            width: 65px;
+            z-index: 10;
+            background-image: URL(images/CPbgH.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #367FA9;
+            text-align: center;
+        }
+
+        .procolor ul li span {
+            color: #999999;
+        }
+
+        .procolor ul li span span {
+            color: black;
+        }
+
+        .nav > li.active > a, .nav > li.active > a:focus, .nav > li.active > a:hover {
+            color: #3399ff;
+            background-color: #fff;
+            border-bottom: 5px #3399ff solid;
+        }
+
+        .nav > li > a:hover {
+            color: #3399ff;
+            background-color: #fff;
+        }
+
+        .nav > li > a {
+            color: #000000;
+            background-color: #fff;
+            text-decoration: none;
+        }
+
+        .navbar-nav > li > a, .navbar-nav > li.active > a, .navbar-nav > li.active > a:focus, .navbar-nav > li.active > a:hover {
+            padding-bottom: 10px;
+        }
+
+        .breadcrumb {
+            background-color: #fff;
+            margin-left: 20px;
+            margin-right: 20px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        .btn-default {
+            height: 34px;
+            line-height: 16px;
+            border-radius: 0px;
+        }
+
+        .but1 {
+            float: right;
+            width: 82px;
+            height: 34px;
+            /* 	    background-color: #e41f2b; */
+            /* 	    color: #ffffff; */
+            cursor: pointer;
+            border: 1px solid #1AB394;
+            /* 	    border-radius: 4px; */
+            font-size: 15px;
+            margin-right: 15px;
+            line-height: 30px;
+        }
+
+        .navbar-nav a {
+            color: black !important;
+            font-size: 16px !important;
+            font-family: Microsoft Yahei !important;
+            font-weight: lighter !important;
+        }
+
+        body {
+            line-height: 18px !important;
+        }
+
+        .trans {
+            display: none;
+            width: 54px;
+            height: 37px;
+            opacity: 0;
+            position: relative;
+            margin-top: -37px;
+            cursor: pointer;
+        }
+
+        .bootstrap-table {
+            width: 100%;
+        }
+
+        .table {
+            table-layout: fixed;
+        }
+
+        .table tr td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tablenew tr:nth-child(odd) {
+            background: #f7f8f8;
+        }
+
+        .tableBody {
+            padding-top: 50px;
+        }
+
+        .myTab {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .form-control {
+            padding-top: 3px;
+        }
+    </style>
+    <script type="text/javascript">
+        $(document).on("click", "ul.navbar-nav li", function () {
+            $("ul.navbar-nav li").removeClass("active");
+            _.each($("ul.navbar-nav li"), function (tab, index) {
+                $("#" + $(tab).attr("tabname")).css('display', 'none');
+            });
+            $(this).addClass("active");
+            var id = $(this).attr("tabname");
+            $("#" + id).css('display', 'block');
+        });
+        $(function () {
+            //新增
+            $("#startDate").datetimepicker({
+                minView: "month", //选择日期后，不会再跳转去选择时分秒
+                language: 'zh-CN',
+                format: 'yyyy-mm-dd',
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: true
+            }).on("click", function () {
+                $("#startDate").datetimepicker("setEndDate", $("#endDate").val());
+            }).on('hide', function (e) {
+                $('#addForm')
+                    .bootstrapValidator('updateStatus', $('#startDate'), 'NOT_VALIDATED')
+                    .bootstrapValidator('validateField', $('#startDate'));
+            });
+
+            $("#endDate").datetimepicker({
+                minView: "month", //选择日期后，不会再跳转去选择时分秒
+                language: 'zh-CN',
+                format: 'yyyy-mm-dd',
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: true
+            }).on("click", function () {
+                $("#endDate").val('');
+                $("#endDate").datetimepicker("setStartDate", $("#startDate").val());
+            }).on('hide', function (e) {
+                $('#addForm')
+                    .bootstrapValidator('updateStatus', $('#endDate'), 'NOT_VALIDATED')
+                    .bootstrapValidator('validateField', $('#endDate'));
+            });
+
+            //编辑
+            $("#startDateEdit").datetimepicker({
+                minView: "month", //选择日期后，不会再跳转去选择时分秒
+                language: 'zh-CN',
+                format: 'yyyy-mm-dd',
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: true
+            }).on("click", function () {
+                $("#startDateEdit").datetimepicker("setEndDateEdit", $("#endDateEdit").val());
+            }).on('hide', function (e) {
+                $('#editForm')
+                    .bootstrapValidator('updateStatus', $('#startDateEdit'), 'NOT_VALIDATED')
+                    .bootstrapValidator('validateField', $('#startDateEdit'));
+            });
+
+            $("#endDateEdit").datetimepicker({
+                minView: "month", //选择日期后，不会再跳转去选择时分秒
+                language: 'zh-CN',
+                format: 'yyyy-mm-dd',
+                todayBtn: 1,
+                autoclose: 1,
+                todayHighlight: true
+            }).on("click", function () {
+                $("#endDateEdit").datetimepicker("setStartDate", $("#startDateEdit").val());
+            }).on('hide', function (e) {
+                $('#editForm')
+                    .bootstrapValidator('updateStatus', $('#endDateEdit'), 'NOT_VALIDATED')
+                    .bootstrapValidator('validateField', $('#endDateEdit'));
+            });
+        });
+    </script>
+</head>
+<body>
+<ol class="breadcrumb" id="itemPath" style="margin-left:3%;">
+    <li><a href="#" style="color: #3399ff;" onclick="toTeamHome()">团队</a></li>
+    <li class="active">概况</li>
+</ol>
+<div style="width: 100%;color: #333333;">
+    <div style="width: 100%;border-bottom: 2px;font-size: 14px;" class="procolor">
+        <ul>
+            <li style="height: 30px;margin: 10px 0px 0px 0px;">
+					<span class="namespan" style="position:absolute;left:3%;width:600px;">团队名称：
+					<span id="name">xxxxx</span></span>
+                <span style="position:absolute;left:35%">团队经理：<span id="tm">xxxxx</span></span>
+                <!-- <span style="position:absolute;left:50%">地域：<span id="area">xxxxx</span></span>
+                <span style="position:absolute;left:75%">合作类型(委托开发/总...)：<span id="coopType">委托开发</span></span> -->
+            </li>
+
+            <!-- <li style="height: 30px;">
+                <span style="position:absolute;left:2%">华为产品线：<span id="hwpdu">xxxxx</span></span>
+                <span style="position:absolute;left:25%">华为子产品线：<span id="hwzpdu">xxxxx</span></span>
+                <span style="position:absolute;left:50%">PDU/SPDT：<span id="pduSpdt">xxxxx</span></span>
+            <span style="position:absolute;left:75%">项目类型(开发测试)：<span id="projectType">开发</span></span>
+
+            </li>
+            <li style="height: 30px;">
+                <span style="position:absolute;left:2%">业务线：<span id="bu">xxxxx</span></span>
+                <span style="position:absolute;left:25%">事业部：<span id="pdu">xxxxx</span></span>
+                <span style="position:absolute;left:50%">交付部：<span id="du">xxxxx</span></span>
+            </li>
+
+            <li style="padding-left: 2%;padding-right: 2%;">
+                <span>团队简介：<span id="projectSynopsis">2017年。。。</span></span>
+            </li> -->
+        </ul>
+    </div>
+</div>
+<div style="height: 37px;border-bottom: 2px #e2e3e4 solid;margin: 10px;">
+    <ul class="nav navbar-nav" style="font-size: 16px;">
+        <li tabname="tab-tdxm" class="active" style="border: 0px;"><a href="#">团队项目</a></li>
+        <li tabname="tab-tdcy" style="border: 0px;"><a href="#">团队成员</a></li>
+        <li tabname="tab-lczb" style="border: 0px;"><a onclick="loadConfigPage()">团队流程指标</a></li>
+    </ul>
+</div>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>
+            <div style="width: 100%; color: #333333;">
+                <div id="tab-tdxm" style="text-align:center;margin-top:20px;margin-left:-94px;">
+                    <div style="height: 30px;margin: -10px 0px 20px 15px;">
+                        <span style="font-size: 20px;float: left;margin:2px 10px 0px 110px;">项目列表</span>
+                        <a id="queryBtn" class="but1 btn-default" style="margin-right: 21px;float: right;">查询</a>
+                        <div class="col-sm-12" style="width:85px;float: right;padding-right: 10px;padding-left: 0px;">
+                            <select id="usertype2" name="usertype" title="请选择状态"
+                                    class="selectpicker show-tick form-control" multiple data-live-search="false">
+                                <option value="在行">在行</option>
+                                <option value="关闭">关闭</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="width:99%; margin:0 -32px 0 60px;">
+                        <div id="projSummaryTable" style="display:block;width:99%;"></div>
+                    </div>
+                </div>
+                <!-- <div style="width:100%; margin:0 auto 0 auto;">
+                   <div id="projSummaryTable" style="display:block;width:100%;"></div>
+                </div> -->
+            </div>
+        </td>
+    </tr>
+</table>
+<div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 300px;">
+            <div class="modal-body" style="padding: 15px;">
+                <div style="text-align: center;">
+                    <span id="dataAcquisition" style="font-size: 14px;">查询中。。。</span>
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div id="tab-tdcy" class="myTab"
+     style="margin:-10px 10px 0px 5px;background-color: #fff;padding:5px 5px 5px 5px;display:none;">
+    <div style="margin-right: 20px;">
+        <div class="btn-group" id="toolbar">
+            <!-- <button id="btn_refresh" type="button" class="btn btn-default">
+              <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>刷新
+            </button> -->
+            <button id="btn_import" type="button" class="btn btn-default" data-toggle="modal" data-target="#import">
+                <span class="glyphicon glyphicon-import" aria-hidden="true"></span>导入
+            </button>
+            <button id="btn_add" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+            </button>
+            <!-- <button id="btn_edit" type="button" class="btn btn-default"
+              style="border-radius: 0">
+              <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+            </button> -->
+            <button id="btn_delete" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+            </button>
+            <!-- <button id="btn_save" type="button" class="btn btn-default">
+              <span class="glyphicon glyphicon-saved" aria-hidden="true"></span>保存
+            </button> -->
+        </div>
+    </div>
+    <table id="mytab" class="table text-nowrap"></table>
+</div>
+
+<!-- 流程指标配置 -->
+<!--<div id="tab-lczb" style="margin:-10px 10px 10px 10px;background-color: #fff;padding: 10px 0px 10px 0px;display:none;">-->
+<!--<div>-->
+<!--<select id="labelSel" style="float: left;font-size: 16px;width: 150px;height:30px;padding-left: 5px;margin-left: 15px; border-radius: 5px;" onchange="cateGoryChange()">-->
+<!--</select>-->
+<!--<button type="button" id="saveLabelMeasure"  style="margin-left: 10px;float: left;border:1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 4px; width: 60px; height: 30px;outline: none;">保存</button>-->
+<!--&lt;!&ndash; 			<button type="button" id="exportBtn"  style="margin-left: 10px;float: left;border:1px #e41f2b solid; background-color: #e41f2b; color: white; border-radius: 4px; width: 60px; height: 30px;outline: none;">导出</button> &ndash;&gt;-->
+<!--</div>-->
+<!--<div id="lable-measure" class="input-group" style="margin-top: 10px; margin-left: 15px;width: 100%; height: 95%;padding-right: 2.7%;">-->
+<!--</div>-->
+<!--</div>-->
+<div id="tab-lczb" style="margin:-10px 10px 10px 10px;background-color: #fff;padding: 10px 0px 10px 0px;display:none;">
+    <div id="modelPage">
+        <div id="lable-measure" class="input-group" style="width: 100%;height: 500px;">
+        </div>
+    </div>
+</div>
+
+<!-- 新增页面 -->
+<div class="modal fade" id="iteAddPage" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content"
+             style="top: 60px; width: 800px; margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px; padding-top: 10px; padding-bottom: 10px; line-height: 100%; padding: 16px;">
+                <h4 class="modal-title" id="uploadModalLabel"
+                    style="display: inline; margin-right: 310px;">新增团队成员</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <form id="addForm" method="post" class="form-horizontal">
+                    <input style="" type="hidden" class="form-control"
+                           name="teamId" id="teamId"/>
+                    <div class="form-group">
+                        <label for="zr_account" class="col-sm-2 control-label"><span
+                                style="color: red; padding-right: 5px;">*</span>中软工号</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入中软工号" class="form-control" type="text"
+                                   id="zrAccountAdd" name="zrAccount"/>
+                        </div>
+                        <label for="name" class="col-sm-2 control-label">姓名</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入姓名" class="form-control" type="text"
+                                   id="nameAdd" name="name"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="col-sm-2 control-label">岗位</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="roleAdd" name="role">
+                            </select>
+                        </div>
+                        <label for="hw_account" class="col-sm-2 control-label">华为工号</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入华为工号" class="form-control" type="text"
+                                   id="hwAccountAdd" name="hwAccount"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="svn_git_no" class="col-sm-2 control-label"></span>SVN/GIT帐号</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入SVN/GIT帐号" class="form-control" type="text"
+                                   id="svnGitNoAdd" name="svnGitNo"/>
+                        </div>
+                        <label for="status" class="col-sm-2 control-label">状态</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="statusAdd" name="status">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="rank" class="col-sm-2 control-label">职级</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="rankAdd" name="rank">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-left: 150px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block"
+                                    id="add_saveBtn">保存
+                            </button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block"
+                                    id="add_backBtn">返回
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑页面 -->
+<div class="modal fade" id="editPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 60px;width:800px;margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+                    团队成员编辑
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <form id="editForm" method="post" class="form-horizontal">
+                    <!-- <input style="display: none" type="text" class="form-control"
+                        name="id" id="editId" /> -->
+                    <input style="" type="hidden" class="form-control"
+                           name="teamId" id="teamIdEdit"/>
+                    <div class="form-group">
+                        <label for="zr_account" class="col-sm-2 control-label"><span
+                                style="color: red; padding-right: 5px;">*</span>中软工号</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入中软工号" class="form-control" type="text"
+                                   id="zrAccountEdit" name="zrAccount"/>
+                        </div>
+                        <label for="name" class="col-sm-2 control-label">姓名</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入姓名" class="form-control" type="text"
+                                   id="nameEdit" name="name"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="col-sm-2 control-label">岗位</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="roleEdit" name="role">
+                            </select>
+                        </div>
+                        <label for="hw_account" class="col-sm-2 control-label">华为工号</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入华为工号" class="form-control" type="text"
+                                   id="hwAccountEdit" name="hwAccount"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="svn_git_no" class="col-sm-2 control-label">SVN/GIT帐号</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入SVN/GIT帐号" class="form-control" type="text"
+                                   id="svnGitNoEdit" name="svnGitNo"/>
+                        </div>
+                        <label for="status" class="col-sm-2 control-label">状态</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="statusEdit" name="status">
+                            </select>
+                        </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="rank" class="col-sm-2 control-label">职级</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="rankEdit" name="rank">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-left: 150px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block"
+                                    id="edit_saveBtn">保存
+                            </button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block"
+                                    id="edit_backBtn">返回
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 导入团队成员 -->
+<div class="modal fade" id="teamMembersImport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;">
+            <div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px;">
+                <h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+                    导入团队成员
+                </h4>
+                <button type="button" data-dismiss="modal"
+                        style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">
+                    取消
+                </button>
+                <button type="button" id="submitImport" data-dismiss="modal"
+                        style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">
+                    确定
+                </button>
+            </div>
+            <div class="modal-body" style="height: 150px;width: 620px">
+                <div style="height: 80px;">
+                    <div style="width:65%">
+                        <div class="input-group" style="display: flex;">
+                            <div style="display:table-cell;width: 27%;margin-top: 27px;width: 89px">文件路径：</div>
+                            <input type="text" readonly="readonly" id="filePathInfo" class="form-control"
+                                   style="height: 30px;margin-top: 27px"/>
+                            <span class="input-group-btn">
+			                    	<form method="post" id="importForm" enctype="multipart/form-data">
+				                        <button class="btn btn-default" type="button" id="importBtn"
+                                                style="margin-top: 27px;border-radius:0px;width: 51px;margin-left: 10px;">浏览</button>
+				                        <a class="btn btn-default" id="templateDownload"
+                                           style="margin-top: 27px;border-radius:0px;width: 84px;margin-left: 10px;padding-top: 8px;">下载模板</a>
+				                        <input style="display: none" type="file" class="trans" id="openLocalFile"
+                                               name="file"
+                                               accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></input>
+				                    </form>
+			                    </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function showDateTime() {
+        var today = new Date();
+        var year = today.getYear() + 1900;
+        var month = today.getMonth() + 1;
+        var day = today.getDate();
+        var hour = today.getHours() >= 0 && today.getHours() < 10 ? "0" + today.getHours() : today.getHours();
+        var minute = today.getMinutes() >= 0 && today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes();
+        var second = today.getSeconds() >= 0 && today.getSeconds() < 10 ? "0" + today.getSeconds() : today.getSeconds();
+        var date = year + "/" + month + "/" + day + "  " + hour + ":" + minute + ":" + second;
+        $("#localTime").html(date);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.system.IAuthorityDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.system.AuthorityEntity">
+        <result column="permission_id" property="id" javaType="int"/>
+        <result column="permission_name" property="name"/>
+        <result column="manage_permission" property="description"/>
+        <result column="permission_auth" property="authorized"/>
+        <result column="creator" property="creator"/>
+        <result column="updator" property="operator"/>
+        <result column="creat_time" property="createTime"/>
+        <result column="update_time" property="modifyTime"/>
+        <result column="ignoe" property="isDeleted"/>
+    </resultMap>
+    
+    <resultMap id="PermissionMap" type="com.icss.mvp.entity.PermissionDetail" >
+		<id column="ID" property="id"/>
+		<result column="permission_scope_id" property="permissionid"/>
+		<result column="permission_scope_name" property="permissionName"/>
+		<result column="permission_level" property="perLevel"/>
+		<result column="permiss_scope_parent_id" property="parentperid"/>
+		<result column="seq" property="seq"/>
+		<result column="remark" property="remark"/>
+		<result column="enable" property="enable"/>
+		<result column="create_time" property="creattime"/>
+		<result column="creator" property="creator"/>
+		<result column="last_updater" property="updateor"/>
+		<result column="update_time" property="updatetime"/>
+		<result column="sign" property="sign"/>
+	</resultMap>
+
+    <sql id="AuthorityBaseColumn">
+        p.`permission_id`,
+        p.`permission_name`, p.`manage_permission`,
+        p.`permission_auth`,
+        p.`creator`, p.`updator`,
+        p.`creat_time`, p.`update_time`, p.`ignoe`
+    </sql>
+
+    <select id="getAuthorities" parameterType="Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="AuthorityBaseColumn"/>
+        FROM `sys_permission` p
+        WHERE p.`ignoe` = 0
+        <if test="id != null and id != ''">
+            AND p.`permission_id` = #{id}
+        </if>
+        <if test="name != null and name != ''">
+            AND p.`permission_name` like concat('%', #{name} ,'%')
+        </if>
+        <if test="sort!=null and sort!='' and order!=null and order!=''">
+            ORDER BY ${order} ${sort}
+        </if>
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
+    
+	<!--新增一条Permission记录-->
+	<insert id="insertAuthority">
+		insert into sys_permission
+		(permission_name,manage_permission,permission_auth,creator,updator,creat_time,update_time,ignoe)
+		values(#{name},#{description},#{authorized},#{creator},#{operator},#{createTime},#{modifyTime},#{isDeleted})
+	</insert>
+	
+	<!--修改指定Permission记录-->
+	<update id="updateAuthority" parameterType="Map">
+        UPDATE `sys_permission`
+        SET `update_time` = #{modifyTime}
+		<if test="operator != null and operator != ''">
+            , `updator` = #{operator}
+        </if>
+        <if test="name != null and name != ''">
+            , `permission_name` = #{name}
+        </if>
+        <if test="description != null">
+            , `manage_permission` = #{description}
+        </if>
+        <if test="authorized != null and authorized != ''">
+            , `permission_auth` = #{authorized}
+        </if>
+        <if test="isDeleted != null">
+            , `ignoe` = #{isDeleted}
+        </if>
+        WHERE `permission_id` = #{id}
+    </update>
+	
+	<select id="getPermissionTree" resultMap="PermissionMap">
+		select * from permisssion_scope where ENABLE = '1' order by permission_level, seq ;
+	</select>
+
+</mapper>

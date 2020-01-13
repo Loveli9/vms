@@ -1,0 +1,626 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+<script src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+ <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<script type="text/javascript" src="js/demandwork.js"></script>
+<style>
+   	.back:hover{
+   		cursor: pointer;
+   	}
+   	.fixed-table-toolbar .btn-group>.btn-group:last-child>.btn {
+	    border-top-right-radius: 0px; border-bottom-right-radius: 0px;
+	}
+	label{
+		width:100px;
+	}
+	.popup_de{
+		background-color:rgba(0,0,0,0.3); width:100%; height: 100%; position:fixed; z-index:999; top:0; left:0; display:none;
+	}
+	.bbox{
+		display: -webkit-box;   /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+	    display: -moz-box;      /* 老版本语法: Firefox (buggy) */
+	    display: -ms-flexbox;   /* 混合版本语法: IE 10 */   
+		display: -webkit-flex;  /* 新版本语法: Chrome 21+ */
+		display: -moz-flex;
+	    display: flex;          /* 新版本语法: Opera 12.1, Firefox 22+ */
+	}
+	.bbox.xycenter{
+		-moz-box-pack: center; /*Firefox*/ -webkit-box-pack: center; /*Safari,Opera,Chrome*/ box-pack: center;
+	    -moz-justify-content: center; -webkit-justify-content: center; justify-content: center;
+		-moz-box-align: center; /*Firefox*/ -webkit-box-align:center; /*Safari,Opera,Chrome*/
+	    box-align: center; -moz-align-items: center; -webkit-align-items: center; align-items:center;
+	}
+	.popup_de .popup_box{
+		width:300px; height:150px; font-family: '微软雅黑'; background-color: #fff; border-radius:5px; color:#333;
+	}
+	.popup_de .popup_btn{
+		display: inline-block; width:100px; height:30px; border-radius: 3px; border:1px solid #1ab394;
+		font-size:15px; text-align: center; line-height: 30px; margin-right:15px; cursor: pointer;
+	}
+	.popup_de .show_msg{
+		display: block; width:100%; text-align: center; font-size:18px; margin-top:40px; margin-bottom: 20px; padding:10px;
+	}
+	.popup_de .popup_close{
+		width:30px; height:30px; font-size:25px; text-align: center; display: inline-block; cursor:pointer; float: right;
+        border-top-right-radius: 5px; line-height:30px;
+	}
+	.popup_de .popup_close:hover{
+		background-color: #1ab394; color:#fff;
+	}
+	.popup_de .btn_submit{
+		background-color: #1ab394; color:#fff;
+	}
+	.popup_de .btn_box{
+		text-align: center;
+	}
+	.tableBody{
+		padding-top: 50px;
+	}
+	.breadcrumb {
+	    background-color: #fff; margin-left: 20px; margin-right: 20px; margin-bottom: 0px; padding: 8px 0px;
+	}
+	.radio{
+	    display: inline-block; position: relative; line-height: 18px; margin-right: 10px; cursor: pointer;
+	}
+	.radio input{
+	    display: none;
+	}
+	.radio .radio-bg{
+	    display: inline-block; height: 18px; width: 18px; margin-right: 5px; padding: 0; background-color: #45bcb8;
+	    border-radius: 100%; vertical-align: top; box-shadow: 0 1px 15px rgba(0, 0, 0, 0.1) inset, 0 1px 4px rgba(0, 0, 0, 0.1) inset, 1px -1px 2px rgba(0, 0, 0, 0.1);
+	    cursor: pointer; transition: all 0.2s ease;
+	}
+	.radio .radio-on{
+	    display: none; margin-top: 7px;
+	}
+	.radio input:checked + span.radio-on{
+	    width: 10px; height: 10px; position: absolute; border-radius: 100%; background: #FFFFFF; top: 4px; left: 4px;
+	    box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.4) inset;
+	    background-image: linear-gradient(#ffffff 0, #e7e7e7 100%); transform: scale(0, 0); transition: all 0.2s ease;
+	    transform: scale(1, 1); display: inline-block;
+	}
+	.table {
+		table-layout:fixed;
+	}   
+	.table tr td{ 		
+		 overflow: hidden; text-overflow:ellipsis; white-space: nowrap; 
+	}
+	.fixed-table-toolbar .columns label{
+		padding: 1px 0px 0px 11px;
+	}
+	.myTab{
+		padding-left: 3px; padding-right: 15px;
+	}
+	.hover{
+		background-color: red;
+	}
+	.popover-content{
+	    min-height: 54px; max-height: 240px; overflow: scroll;
+	}
+	.col-sm-3 input{
+		width:80px;
+	}
+	#query-form div input{
+		width:120px;
+	}
+	#query-form div select{
+		width:120px;
+	}
+	.table>tbody>tr>td{
+		border-right-style:none; border-left-style:none;
+	}
+	.table>thead>tr>th{
+		border-right-style:none; border-left-style:none;
+	}
+	.fixed-table-container {
+		background-color: #fff; padding-bottom: 0px;
+	}
+</style>
+<script type="text/javascript">
+ $(function(){
+	//新增
+	$("#planStartTime").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#planStartTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#planStartTime'));
+    });
+	
+    $("#planEndTime").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#planEndTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#planEndTime'));
+    });
+    
+    $("#startTime").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+    	$("#startTime").val('');
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#startTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#startTime'));
+    });
+	
+    $("#endTime").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+    	$("#endTime").val('');
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#endTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#endTime'));
+    });
+    
+    //编辑
+    $("#editPlanStartTime").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#editPlanStartTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#editPlanStartTime'));
+    });
+	
+    $("#editPlanEndTime").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#editPlanEndTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#editPlanEndTime'));
+    });
+    
+    $("#editStartTime").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+    	$("#editStartTime").val('');
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#editStartTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#editStartTime'));
+    });
+	
+    $("#editEndTime").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+    	$("#editEndTime").val('');
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#editEndTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#editEndTime'));
+    });
+    
+}); 
+</script>
+</head>
+<body class="mvp-body">
+
+<div class="mvp-main">
+	<div class="myTab">
+		<div>
+			<div style="margin: -10px 20px 0px 0px;">
+				<div id="query-form" class=" pull-left" style="position: relative;top: 10px;width:540px;">
+					<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;">
+						<input type="text" class="form-control" name="topic" id="topic" placeholder="请输入需求名" />
+					</div>
+					<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;margin-left:-20px;">
+						<select class="form-control" id="iteId" name="iteId" placeholder="请选择迭代"></select>
+					</div>
+					<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;margin-left:-20px;">
+						<select class="form-control" id="status" name="status" placeholder="请选择状态"></select> 
+					</div>
+					<div class="btn-group" style="margin-left:-20px;">
+						<button id="search_btn" type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+						</button>
+						<button id="clear_btn" type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+						</button>
+					</div>
+				</div>
+				<div class="btn-group" id="toolbar">
+					<button id="btn_refresh" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>刷新
+					</button>
+					<button id="btn_ready" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>我的待办
+					</button>
+					<button id="btn_add" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					</button>
+					<button id="btn_edit" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>编辑
+					</button>
+					<button id="btn_look" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>查看
+					</button>
+					<button id="btn_delete" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					</button>
+					<button id="btn_import" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-import" aria-hidden="true"></span>导入
+					</button>
+					<button id="btn_export" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-export" aria-hidden="true"></span>导出
+					</button>
+				</div>
+			</div>
+			<table id="mytab" class="table text-nowrap" style="background-color: #fff;"></table>
+		</div>
+	</div>
+</div>
+        <!-- 新增页面 -->
+<div class="modal fade" id="iteAddPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content" style="top: 60px;width:800px;margin-left: -50px;">
+			<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+				<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">新增需求</h4>
+			</div>
+			<div class="modal-body" style="width: 100%;">
+				<form id="addForm" method="post" class="form-horizontal">
+					<input style="display: none" type="text" class="form-control" name="proNo" id="proNo"	/>
+					<input style="display: none" type="text" class="form-control" name="status" id="status"	value="1"/>
+					<input style="display: none" type="text" class="form-control" name="change" id="change"	value="1"/>
+		            <input style="display: none" type="text" class="form-control" name="iteType" id="iteType" value="1"/>   <!-- story --> 
+	                <div class="form-group">
+	                	<label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>需求</label>
+                    	<div class="col-sm-4">
+                        	<input type="text" class="form-control" name="topic" id="topic" placeholder="请输入需求名称"/>
+                        </div>
+                        <label for="expectHours" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>预计工作量</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入预计工作量/人天"  class="form-control" type="text" id="expectHours" name="expectHours"/>
+                        </div>
+                    </div>
+	                <span id="err" style="display: none;margin:-10px 0px 10px 130px;"></span>
+	            	<div class="form-group">
+                        <label for="personLiable" class="col-sm-2 control-label">责任人</label>
+                       	<div class="col-md-4">
+                       		<select id="personLiable" name="personLiable" class="selectpicker show-tick form-control" multiple title="请选择责任人"></select>
+                       		<input id="personLiableAdd" type="hidden" name="personLiable" />
+                       	</div>
+                        <label for="iteId" class="col-sm-2 control-label">迭代</label>
+                        <div class="col-md-4">
+                        	<select class="form-control" id="addIteId" name="iteId"></select>
+                        </div>
+					</div>
+					<div class="form-group">
+                        <label for="planStartTime" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划启动日期</label>
+                        <div class="col-md-4">
+                        	<input class="form-control form-filter yearpicker" type="text" id="planStartTime" name="planStartTime" readonly="readonly" style="background-color: white"/>
+                        </div>
+                        <label for="planEndTime" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划完成日期</label>
+                    	<div class="col-md-4">
+                        	<input class="form-control form-filter yearpicker" type="text" id="planEndTime" name="planEndTime"  readonly="readonly" style="background-color: white"/>
+                    	</div>
+					</div>
+                    <div class="form-group">
+                        <label for="prior" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>优先级</label>
+                        <div class="col-md-4">
+                        	<label for="prior1" class="radio" style="width:50px;"> <span class="radio-bg"></span>
+								<input class="form-control" type="radio" name="prior" id="prior1" value="1" checked="checked" /> 低 <span class="radio-on"></span>
+							</label> 
+							<label for="prior2" class="radio" style="width:50px;"> <span class="radio-bg"></span> 
+								<input class="form-control" type="radio" name="prior" id="prior2" value="2" /> 中 <span class="radio-on"></span>
+							</label>
+							<label for="prior3" class="radio" style="width:50px;"> <span class="radio-bg"></span> 
+								<input class="form-control" type="radio" name="prior" id="prior3" value="3" /> 高<span class="radio-on"></span>
+							</label>
+                         </div>
+                         <label for="importance" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>重要程度</label>
+                         <div class="col-md-4">
+                         	<select class="form-control" id="importance" name="importance"></select> 
+                         </div>
+					</div>
+                    <div class="form-group">
+                        <label for="startTime" class="col-sm-2 control-label">实际启动日期</label>
+                        <div class="col-md-4">
+                            <input class="form-control form-filter yearpicker" type="text" id="startTime" name="startTime" readonly="readonly" style="background-color: white"/>
+                        </div>
+                        <label for="endTime" class="col-sm-2 control-label">实际完成日期</label>
+                        <div class="col-md-4">
+                            <input class="form-control form-filter yearpicker" type="text" id="endTime" name="endTime"  readonly="readonly" style="background-color: white"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="codeAmount" class="col-sm-2 control-label">预估代码量</label>
+                        <div class="col-md-4">
+                            <input placeholder="单位:【KLOC】"  class="form-control" type="text" id="codeAmount" name="codeAmount"/>
+                        </div>
+                        <label for="finalimit" class="col-sm-2 control-label">完成度</label>
+                        <div class="col-md-4">
+                            <input placeholder="单位:【%】"  class="form-control" type="text" id="finalimit" name="finalimit"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="describeInfo" class="col-sm-2 control-label">工作描述</label>
+                        <div class="col-sm-10">
+                        	<textarea class="form-control" name="describeInfo" id="describeInfo" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group" style="padding-left: 150px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block"  id="add_saveBtn">添加</button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block"  id="add_backBtn">返回</button>
+                        </div>
+                    </div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+	
+<!-- 编辑页面 -->
+<div class="modal fade" id="editPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" >
+	<div class="modal-dialog">
+		<div class="modal-content" style="top: 60px;width:800px;margin-left: -50px;">
+			<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+				<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">需求编辑</h4>
+			</div>
+			<div class="modal-body" style="width: 100%;">
+				<form id="editForm" method="post" class="form-horizontal">
+					<input style="display: none" type="text" class="form-control" name="id" id="editId"/>
+					<input style="display: none" type="text" class="form-control" name="proNo" id="editProNo"/>
+					<input style="display: none" type="text" class="form-control" name="isDeleted" id="editIsDeleted"/>
+	                <input style="display: none" type="text" class="form-control" name="iteType" id="editIteType"/>
+					<!-- <input style="display: none" type="text" class="form-control" name="status" id="editStatus"/> -->
+					<!-- <input style="display: none" type="text" class="form-control" name="change" id="editChange"/> -->
+					<input style="display: none" type="text" class="form-control" name="actualHours" id="editActualHours"/>
+					<input style="display: none" type="text" class="form-control" name="version" id="editVersion"/>
+					<input style="display: none" type="text" class="form-control" name="creator" id="editCreator"/>
+	                <input style="display: none" type="text" class="form-control" name="demandCode" id="editDemandCode"	/>
+					<input style="display: none" type="text" class="form-control" name="document" id="editDocument"/>
+	                <input style="display: none" type="text" class="form-control" name="demandType" id="editDemandType"/>
+	                <input style="display: none" type="text" class="form-control" name="alertContent" id="editAlertContent"/>
+	                <input style="display: none" type="text" class="form-control" name="design" id="editDesign"/>
+	                <input style="display: none" type="text" class="form-control" name="luNumber" id="editLuNumber"/>
+	                <input style="display: none" type="text" class="form-control" name="testNumber" id="editTestNumber"/>
+	                <input style="display: none" type="text" class="form-control" name="checkResult" id="editCheckResult"/>
+	                <input style="display: none" type="text" class="form-control" name="remarks" id="editRemarks"/>
+		                
+	                <div class="form-group">
+	                	<label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>需求</label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" name="topic" id="editTopic" placeholder="请输入需求名称"/>
+                        </div>
+                        <label for="status" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>状态</label>
+                        <div class="col-md-4">
+                        	<select class="form-control" id="editStatus" name="status"></select> 
+                        </div>
+	                </div>
+	                <div class="form-group">
+	                	<label for="importance" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>重要性</label>
+                        <div class="col-md-4">
+                        	<select class="form-control" id="editImportance" name="importance"></select> 
+                        </div>
+                        <label for="prior" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>优先级</label>
+                        <div class="col-md-4">
+                        	<label for="editPrior1" class="radio" style="width:50px;"> 
+                        		<span class="radio-bg"></span>
+								<input class="form-control" type="radio" name="prior" id="editPrior1" value="1"/> 低 <span class="radio-on"></span>
+							</label> 
+							<label for="editPrior2" class="radio" style="width:50px;"> 
+								<span class="radio-bg"></span> 
+								<input class="form-control" type="radio" name="prior" id="editPrior2" value="2" /> 中 <span class="radio-on"></span>
+							</label>
+							<label for="editPrior3" class="radio" style="width:50px;"> 
+								<span class="radio-bg"></span> 
+								<input class="form-control" type="radio" name="prior" id="editPrior3" value="3" /> 高<span class="radio-on"></span>
+							</label>
+						</div>
+	                </div>
+		            <div class="form-group">
+                        <label for="personLiable" class="col-sm-2 control-label">责任人</label>
+                        <div class="col-md-4">
+                            <input id="personLiableCopy" type="hidden" class="form-control" readonly="readonly" name="personLiable" />
+                            <div id="editPersonLiableDiv" style="display: inline-block;">
+	                        	<select class="selectpicker show-tick form-control" id="editPersonLiable" name="personLiable" multiple title="请选择责任人"></select>
+                            </div>
+                            <input id="personLiableEdit" type="hidden" class="form-control" readonly="readonly" name="personLiable" />
+						</div>
+                        <label for="iteId" class="col-sm-2 control-label">迭代</label>
+                        <div class="col-md-4">
+                            <select class="form-control" id="editIteId" name="iteId">
+ 							</select> 
+                        </div>
+                    </div>
+                    <div class="form-group">
+                    	<label for="planStartTime" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划启动日期</label>
+                        <div class="col-md-4">
+                        	<input class="form-control form-filter yearpicker" type="text" id="editPlanStartTime" name="planStartTime" readonly="readonly" style="background-color: white"/>
+                        </div>
+                        <label for="planEndTime" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划完成日期</label>
+                        <div class="col-md-4">
+                            <input class="form-control form-filter yearpicker" type="text" id="editPlanEndTime" name="planEndTime" readonly="readonly" style="background-color: white"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="expectHours" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>预计工作量</label>
+                        <div class="col-md-4">
+                            <input placeholder="请输入预计工作量/人天"  class="form-control" type="text" id="editExpectHours" name="expectHours"/>
+                        </div>
+                        <label for="change" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>工作量变更</label>
+                        <div class="col-md-4">
+                        	<select class="form-control" id="editChange" name="change"></select> 
+                        </div>
+					</div>
+                    <div class="form-group">
+                    	<label for="startTime" class="col-sm-2 control-label">实际开始日期</label>
+                        <div class="col-md-4">
+                        	<input class="form-control form-filter yearpicker" type="text" id="editStartTime" name="startTime" readonly="readonly" style="background-color: white"/>
+                        </div>
+                        <label for="endTime" class="col-sm-2 control-label">实际完成日期</label>
+                        <div class="col-md-4">
+                        	<input class="form-control form-filter yearpicker" type="text" id="editEndTime" name="endTime"  readonly="readonly" style="background-color: white"/>
+                        </div>
+					</div>
+                    <div class="form-group">
+                    	<label for="codeAmount" class="col-sm-2 control-label">预估代码量</label>
+                        <div class="col-md-4">
+                        	<input placeholder="单位:【KLOC】"  class="form-control" type="text" id="editCodeAmount" name="codeAmount"/>
+                        </div>
+                        <label for="finalimit" class="col-sm-2 control-label">完成度</label>
+                        <div class="col-md-4">
+                        	<input placeholder="单位:【%】"  class="form-control" type="text" id="editFinalimit" name="finalimit"/>
+                        </div>
+					</div>
+                    <div class="form-group" style="display: none;">
+                    	<label for="createTime" class="col-sm-2 control-label">创建时间</label>
+                        <div class="col-md-4">
+                        	<input class="form-control" type="text" readonly="readonly" id="editCreateTime" name="createTime"/>
+                        </div>
+                        <label for="updateTime" class="col-sm-2 control-label">最新修改时间</label>
+                        <div class="col-md-4">
+                        	<input class="form-control" type="text" readonly="readonly" id="editUpdateTime" name="updateTime"/>
+                        </div>
+					</div>
+					<div class="form-group">
+                        <label for="describeInfo" class="col-sm-2 control-label">工作描述</label>
+                        <div class="col-sm-10">
+                        	<textarea class="form-control" name="describeInfo" id="editDescribeInfo" rows="3"></textarea>
+                        </div>
+	                </div>
+                    <div class="form-group" style="padding-left: 150px">
+                        <div class="col-sm-2 col-sm-offset-2">
+                            <button type="button" class="btn btn-primary btn-block"  id="edit_saveBtn">保存</button>
+                        </div>
+                        <div class="col-sm-2 col-sm-offset-1">
+                            <button type="button" class="btn btn-default btn-block"  id="edit_backBtn">返回</button>
+                        </div>
+                    </div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 审核页面 -->
+<div class="modal fade" id="checkPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" >
+	<div class="modal-dialog">
+		<div class="modal-content" style="top: 60px;width:800px;margin-left: -50px;">
+			<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+				<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">需求内容变更审核</h4>
+				<span id="check_cancelBtn" class="glyphicon glyphicon-remove" style="float: right;cursor: pointer;"></span>
+			</div>
+			<div class="modal-body" style="width: 100%;">
+				<input type="hidden" id="checkId" />
+				<div id="checkForm" class="form-group">
+				
+				</div>
+                <div class="form-group" style="height: 5px;text-align: center;">
+                    <button type="button" class="btn btn-primary btn-block"  id="check_saveBtn" style=" width: 10%;display: inline-block;margin: 0;">确定</button>
+                    <button type="button" class="btn btn-default btn-block"  id="check_refuseBtn" style=" width: 10%;display: inline-block;margin: 0;margin-left: 20%;">拒绝</button>
+                </div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+<!-- 导入页面 -->
+	<div class="modal fade" id="demandImport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">导入工作内容</h4>
+					<button type="button" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+					<button type="button" id="submitImport" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">确定</button>
+				</div>
+				<div class="modal-body" style="height: 150px;width: 620px">
+					<div style="height: 80px;">
+						<div style="width:65%">
+			            	<div class="input-group" style="display: flex;">
+			                	<div style="display:table-cell;width: 27%;margin-top: 27px;width: 89px">文件路径：</div>
+			                   	<input type="text" readonly="readonly" id="filePathInfo" class="form-control" style="height: 30px;margin-top: 27px"/>
+			                    <span class="input-group-btn">
+			                    	<form method="post" id="importForm"  enctype="multipart/form-data">
+				                    	<button class="btn btn-default" type="button" id="importBtn" style="margin-top: 27px;border-radius:0px;width: 51px;margin-left: 10px;">浏览</button>
+				                        <a class="btn btn-default" id="templateDownload" style="margin-top: 27px;border-radius:0px;width: 84px;margin-left: 10px;">下载模板</a>
+				                        <input style="display: none" type="file" class="trans" id="openLocalFile" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></input>
+				                    </form>
+			                    </span>
+			                </div>
+			            </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

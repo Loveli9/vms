@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="js/pcbGongcheng.js"></script>
+    
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />	
+	<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+	<script type="text/javascript" src="js/toastr.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+   	<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+    <style>
+    .breadcrumb > .active {
+    	color: #333333;
+	}
+	.breadcrumb {
+	    background-color: #f7f8f8;
+	    margin-left: 50px;
+	    margin-right: 50px;
+	    margin-bottom: 0px;
+	    padding: 8px 0px;
+	}
+	.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+		color: #3399ff;
+	    background-color: #f7f8f8;
+	    border-bottom: 5px #3399ff solid;
+	}
+	.nav>li>a:hover{
+		color: #3399ff;
+	    background-color: #f7f8f8;
+	}
+	.nav>li>a {
+	    color: #000000;
+	    background-color: #f7f8f8;
+	    text-decoration: none;
+	}
+	.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+		padding-bottom: 10px;
+	}
+	.change-chart table.data-table tbody td{
+	    line-height: 16px;
+	}
+	.change-chart table.data-table thead td {
+		line-height: 16px;
+	}
+	.homeSelect{
+    	float:right;
+    	width:153px;
+    	height:32px;
+		margin-left: 10px;
+		    	
+    }
+    #tableGongchengNLXM{
+    	white-space:nowrap;
+		overflow:hidden;
+		table-layout: fixed;
+    }
+   .change-chart table.data-table tbody td{
+		line-height:unset!important;
+		text-align: center!important;
+		vertical-align: middle!important;
+		table-layout: fixed;
+		text-overflow:ellipsis;
+		overflow:hidden;
+		white-space:nowrap;
+    }
+   
+    </style>   
+    <script type="text/javascript"> 
+	    $(document).on("click", "ul.navbar-nav li", function () {
+	    	$("ul.navbar-nav li").removeClass("active");
+	    	_.each($("ul.navbar-nav li"), function(tab, index){
+	    		$("#"+$(tab).attr("tabname")).css('display','none');
+	    	});
+	    	$(this).addClass("active");
+	    	var id = $(this).attr("tabname");
+	    	$("#"+id).css('display','block');
+	    });
+    </script>
+</head>
+<body style="line-height: 24px;background: #f7f8f8;">
+	<ol class="breadcrumb">
+		<li>报表</li>
+	    <li>质量PCB</li>
+	    <li class="active">工程能力</li>
+	</ol>
+	<div style="height: 50px;border-bottom: 2px #e2e3e4 solid;margin: 10px 50px;">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li tabname="tab-zl" class="active"><a href="#">总览</a></li>
+			<!-- <li tabname="tab-bm"><a href="#">部门</a></li> -->
+			<li tabname="tab-xm"><a href="#">详情</a></li>
+		</ul>
+		
+		<!-- 中软 -->
+		<div class="homeSelect" id="select8" style="display: none;">
+			<select onchange="selectOnchange()" id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+		</div>
+		<div class="homeSelect" id="select7">
+   			<select onchange="selectOnchange()" id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+		<div class="homeSelect" id="select6">
+    		<select onchange="selectOnchange()" id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+   		<!-- 华为 -->
+   		<div class="homeSelect" style="display: none;" id="select5">
+			<select onchange="selectOnchange()" id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+		</div>
+		<div class="homeSelect" style="display: none;" id="select4">
+   			<select onchange="selectOnchange()" id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+		<div class="homeSelect" style="display: none;" id="select3">
+    		<select onchange="selectOnchange()" id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+   		<!-- 地域 -->
+   		<div class="homeSelect" style="display: none;" id="select1">
+    		<select onchange="selectOnchange()" id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+			</select>
+   		</div>
+   		<div class="homeSelect" style="display: none;">
+            <select id="usertype2" name="usertype" title="请选择状态" class="selectpicker show-tick form-control" multiple data-live-search="false">
+                <option value="在行">在行</option>
+                <option value="关闭">关闭</option>
+       		</select>
+		</div>
+		<div class="homeSelect" id="select">
+			<select onchange="selectChange()" id="selectBig" name="select" title="中软&华为" class="selectpicker show-tick form-control"  data-live-search="false">
+				<option value='1' selected="selected">中软</option>
+				<option value='2'>华为</option>
+				<option value='3'>地域</option>
+			</select>
+		</div>
+	</div>
+    <div style="color: #333333;margin: 10px 50px;background-color: white;">
+		<div id="tab-zl" style="margin: 10px 0px;">
+			<div style="height:342px;width: 100%;">
+		        <div class="home-content">
+		        	<div id="gongchengNL" style="width: 100%; height: 300px;"></div>
+		        </div>
+			</div>
+			
+			<div style="margin: 20px;">
+				<div class="modal-body change-chart" style="width: 100%;padding: 0px;">
+					<table style="width:100%"  border="0" cellspacing="0" cellpadding="0" class="data-table">
+		                 <thead>
+		                     <tr bgcolor="#e8e8e8">
+		                         <td style="width:20%;">指标名称</td>
+		                         <td style="width:16%;">目标</td>
+		                         <td style="width:16%;">下限</td>
+		                         <td style="width:16%;">上限</td>
+		                         <td style="width:16%;">样本点数</td>
+		                         <td style="width:16%;">实际值</td>
+		                     </tr>
+		                 </thead>
+		                 <tbody id="tableGongchengNL">
+		                 </tbody>
+			    	</table>
+				</div>
+			</div>
+		</div>
+		<!-- <div id="tab-bm" style="display:none;margin: 10px 0px;">
+		</div> -->
+		<div id="tab-xm" style="display:none;margin: 10px 0px;">
+			<div style="margin: 20px;">
+				<div class="modal-body change-chart" style="width: 100%;padding: 0px;">
+					<div class="btn-group" id="toolbar">
+					<button id="btn_add" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>配置
+					</button>
+					</div>
+					<table id="tableGongchengNLXM" style="width:100%"  border="0" cellspacing="0" cellpadding="0" class="data-table">		                 
+			    	</table>		    					
+				</div>
+			</div>
+		</div>
+		
+		<div class="modal fade" id="iteAddPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
+			data-backdrop="static">
+			<div class="modal-dialog">
+				<div class="modal-content" id="projectPage" style="top: 100px;width:800px;margin-left: -50px;">				
+				</div> 
+			</div>
+		</div>
+	</div>
+</body>
+</html>

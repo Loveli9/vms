@@ -1,0 +1,529 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+<script src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+ <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<script type="text/javascript" src="js/memberinformation.js"></script>
+<style>
+.back:hover {
+	cursor: pointer;
+}
+
+.fixed-table-toolbar .btn-group>.btn-group:last-child>.btn {
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+label {
+	width: 100px;
+}
+
+.popup_de {
+	background-color: rgba(0, 0, 0, 0.3);
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	z-index: 999;
+	top: 0;
+	left: 0;
+	display: none;
+}
+
+.bbox {
+	display: -webkit-box;
+	/* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+	display: -moz-box; /* 老版本语法: Firefox (buggy) */
+	display: -ms-flexbox; /* 混合版本语法: IE 10 */
+	display: -webkit-flex; /* 新版本语法: Chrome 21+ */
+	display: -moz-flex;
+	display: flex; /* 新版本语法: Opera 12.1, Firefox 22+ */
+}
+
+.bbox.xycenter {
+	-moz-box-pack: center; /*Firefox*/
+	-webkit-box-pack: center; /*Safari,Opera,Chrome*/
+	box-pack: center;
+	-moz-justify-content: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-moz-box-align: center; /*Firefox*/
+	-webkit-box-align: center; /*Safari,Opera,Chrome*/
+	box-align: center;
+	-moz-align-items: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+
+.popup_de .popup_box {
+	width: 300px;
+	height: 150px;
+	font-family: '微软雅黑';
+	background-color: #fff;
+	border-radius: 5px;
+	color: #333;
+}
+
+.popup_de .popup_btn {
+	display: inline-block;
+	width: 100px;
+	height: 30px;
+	border-radius: 3px;
+	border: 1px solid #1ab394;
+	font-size: 15px;
+	text-align: center;
+	line-height: 30px;
+	margin-right: 15px;
+	cursor: pointer;
+}
+
+.popup_de .show_msg {
+	display: block;
+	width: 100%;
+	text-align: center;
+	font-size: 18px;
+	margin-top: 40px;
+	margin-bottom: 20px;
+	padding: 10px;
+}
+
+.popup_de .popup_close {
+	width: 30px;
+	height: 30px;
+	font-size: 25px;
+	text-align: center;
+	display: inline-block;
+	cursor: pointer;
+	float: right;
+	border-top-right-radius: 5px;
+	line-height: 30px;
+}
+
+.popup_de .popup_close:hover {
+	background-color: #1ab394;
+	color: #fff;
+}
+
+.popup_de .btn_submit {
+	background-color: #1ab394;
+	color: #fff;
+}
+
+.popup_de .btn_box {
+	text-align: center;
+}
+
+.tableBody {
+	padding-top: 50px;
+}
+
+.breadcrumb {
+	background-color: #fff;
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-bottom: 0px;
+	padding: 8px 0px;
+}
+
+.radio {
+	display: inline-block;
+	position: relative;
+	line-height: 18px;
+	margin-right: 10px;
+	cursor: pointer;
+}
+
+.radio input {
+	display: none;
+}
+
+.radio .radio-bg {
+	display: inline-block;
+	height: 18px;
+	width: 18px;
+	margin-right: 5px;
+	padding: 0;
+	background-color: #45bcb8;
+	border-radius: 100%;
+	vertical-align: top;
+	box-shadow: 0 1px 15px rgba(0, 0, 0, 0.1) inset, 0 1px 4px
+		rgba(0, 0, 0, 0.1) inset, 1px -1px 2px rgba(0, 0, 0, 0.1);
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.radio .radio-on {
+	display: none;
+	margin-top: 7px;
+}
+
+.radio input:checked+span.radio-on {
+	width: 10px;
+	height: 10px;
+	position: absolute;
+	border-radius: 100%;
+	background: #FFFFFF;
+	top: 4px;
+	left: 4px;
+	box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.3), 0 0 1px
+		rgba(255, 255, 255, 0.4) inset;
+	background-image: linear-gradient(#ffffff 0, #e7e7e7 100%);
+	transform: scale(0, 0);
+	transition: all 0.2s ease;
+	transform: scale(1, 1);
+	display: inline-block;
+}
+
+.table {
+	table-layout: fixed;
+}
+
+.table tr td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.fixed-table-toolbar .columns label {
+	padding: 1px 0px 0px 11px;
+}
+
+.myTab {
+	padding-left: 3px;
+	padding-right: 20px;
+}
+
+.hover {
+	background-color: red;
+}
+
+.popover-content {
+	height: 240px;
+	overflow: scroll;
+}
+
+.col-sm-3 input {
+	width: 80px;
+}
+
+#query-form div input {
+	width: 120px;
+}
+
+#query-form div select {
+	width: 120px;
+}
+
+.table>tbody>tr>td {
+	border-right-style: none;
+	border-left-style: none;
+}
+
+.table>thead>tr>th {
+	border-right-style: none;
+	border-left-style: none;
+}
+
+.fixed-table-container {
+	background-color: #fff;
+	margin-left: 1%;
+}
+
+.gaikuangSapn {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 24%;
+	display: -webkit-inline-box;
+	-webkit-line-clamp: 1;
+	-webkit-box-orient: vertical;
+	word-break: break-all;
+}
+
+.procolor ul li span {
+	color: #999999;
+}
+
+.procolor ul li span span {
+	color: black;
+}
+</style>
+<script type="text/javascript">
+$(function(){
+	$("#graduation").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+        $("#graduation").datetimepicker("setEndDate",$("#entry").val());
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#graduation'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#graduation'));
+    });
+	
+    $("#entry").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+        $("#entry").datetimepicker("setStartDate",$("#graduation").val());
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#entry'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#entry'));
+    });
+    
+    $("#jobStart").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#jobStart'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#jobStart'));
+    });
+	
+    $("#lastAdjustmeny").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#lastAdjustmeny'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#lastAdjustmeny'));
+    });
+});
+</script>
+</head>
+<body class="mvp-body">
+<div id="information" style="overflow: hidden;width: 96.25%; color: #333333;padding-top:10px;background-color: #fff;padding-bottom: 20px;margin-left: 1.25%;">
+		<div style="height: 30px;width:97%;">
+			        <span style="position: absolute;padding-left: 0.5%;color:#000;margin-top: 5px;">项目基本信息区</span>
+			        <button id="btn_export" type="button" class="btn btn-default" style="float:right;">
+						<span class="glyphicon glyphicon-export" aria-hidden="true"></span>导出
+					</button>
+					<button id="btn_import" type="button" class="btn btn-default" style="float:right;margin-right:15px;">
+						<span class="glyphicon glyphicon-import" aria-hidden="true"></span>导入
+					</button>
+		</div>
+		<div style="float:left;width: 50%;border-bottom: 2px; font-size: 14px;margin-top: 12px;"
+			class="procolor">
+			<ul style="width: 100%;">
+				<li style="height: 30px;">
+					<span class="gaikuangSapn" style="position: absolute;padding-left: 0.5%;">经理姓名/工号：<span id="pmName">xxxxx</span></span> 
+					<span class="gaikuangSapn" style="position: absolute; left: 25%">项目预算毛利率：<span id="interest">xxxxx</span></span>
+				</li>
+				<li style="height: 30px;">
+					<span class="gaikuangSapn" style="position: absolute;padding-left: 0.5%;">预算电子流：<span id="electronFlow">xxxxx</span></span> 
+					<span class="gaikuangSapn" style="position: absolute; left: 25%">项目当前实际毛利率：<span id="nowInterest">xxxxx</span></span>
+				</li>
+				<li style="height: 30px;">
+					<span class="gaikuangSapn" style="position: absolute;padding-left: 0.5%;">本月运营UR：<span id="operate">xxxxx</span></span> 
+					<span class="gaikuangSapn" style="position: absolute; left: 25%">YTD运营UR：<span id="tydOperate">xxxxx</span></span>
+				</li>
+				<li style="height: 30px;">
+					<span class="gaikuangSapn" style="position: absolute;padding-left: 0.5%;">项目PO号：<span id="projectPo">xxxxx</span></span> 
+					<span class="gaikuangSapn" style="position: absolute; left: 25%">合同金额：<span id="money">xxxxx</span></span>
+				</li>
+			</ul>
+		</div>
+		<div id="member" style="margin-top:-10px;float:left;width: 47%;">
+		    <table id="memberinformation" style="border-top: 1px solid #ddd;background-color: #fff;" ></table>
+		</div>
+		
+</div>
+<div class="mvp-main">
+   <div class="myTab">
+		<!-- <div class="panel panel-default" style="margin-bottom: 0px;"> -->
+		<div>
+		    <div style="margin-top: 28px;background-color: #fff;width: 99%;margin-left: 0.5%;">
+		        <div style="padding-top: 10px;padding-bottom: 20px;width: 98%;margin-left: 1%;height:25px;line-height: 25px;">
+					<span style="font-size: 20px;">员工信息区</span>
+				</div>
+		        <div style="width:99%;">
+		            <table id="mytab" class="table text-nowrap" style="border-left: 1px solid #ddd;"></table>
+		        </div>
+		    </div>
+		    <div style="margin-top: 28px;background-color: #fff;width: 99%;margin-left: 0.5%;">
+		        <div style="padding-top: 10px;padding-bottom: 20px;width: 98%;margin-left: 1%;height:25px;line-height: 25px;">
+					<span style="font-size: 20px;">审视区(拷贝公式,自动计算)</span>
+				</div>
+		        <div style="width:99%;">
+		            <table id="mytab2" class="table text-nowrap" style="border-left: 1px solid #ddd;"></table>
+		        </div>
+		    </div>
+		</div>
+	</div>
+</div>
+<!-- 修改页面 -->
+<div class="modal fade" id="editPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+		data-backdrop="static" >
+			<div class="modal-dialog">
+			<div class="modal-content" style="top: 60px;width:800px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-left: 10px;">
+						修改页面:
+					</h4>
+					<input style="border: 0px;font-weight:bold;" type="text" name="names" id="nameMember"/>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="editForm" method="post" class="form-horizontal">
+					    <input style="display: none" type="text" class="form-control" name="id" id="id"/>
+	                    <div class="form-group">
+	                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>学历</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="education" id="education" placeholder="请输入学历"/>
+	                        </div>
+	                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;"></span>职级</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="rank" id="rank" placeholder="请输入职级"/>
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+                            <label for="graduation" class="col-sm-2 control-label">毕业日期</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="graduation" name="graduation" readonly="readonly"
+                                style="background-color: white"/>
+                            </div>
+                            <label for="entry" class="col-sm-2 control-label">入职日期</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="entry" name="entry"  readonly="readonly"
+                                style="background-color: white"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                           <label for="backbone" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;"></span>是否骨干</label>
+                            <div class="col-md-4">
+                                <label for="backbone1" class="radio" style="width:50px;"> <span class="radio-bg"></span>
+									<input class="form-control" type="radio" name="backbone" id="backbone1" value="1"/> 是 <span class="radio-on"></span>
+								</label> 
+								<label for="backbone2" class="radio" style="width:50px;"> <span class="radio-bg"></span> 
+									<input class="form-control" type="radio" name="backbone" id="backbone2" value="2" /> 否 <span class="radio-on"></span>
+								</label>
+                            </div>
+                            <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;"></span>司龄</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="siling" id="siling"/>
+	                        </div>
+                        </div>
+                        <div class="form-group">
+	                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;"></span>倒数第四次绩效</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="achievementsFour" id="achievementsFour"/>
+	                        </div>
+	                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;"></span>倒数第三次绩效</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="achievementsThree" id="achievementsThree"/>
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;"></span>倒数第二次绩效</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="achievementsTwo" id="achievementsTwo"/>
+	                        </div>
+	                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;"></span>最近一次绩效</label>
+	                        <div class="col-sm-4">
+	                            <input type="text" class="form-control" name="achievementsOne" id="achievementsOne"/>
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+                            <label for="jobStart" class="col-sm-2 control-label">从事当前岗位起始时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="jobStart" name="jobStart" readonly="readonly"
+                                style="background-color: white"/>
+                            </div>
+                            <label for="lastAdjustmeny" class="col-sm-2 control-label">上次调薪时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="lastAdjustmeny" name="lastAdjustmeny"  readonly="readonly"
+                                style="background-color: white"/>
+                            </div>
+                        </div>
+	                    <div class="form-group" style="padding-left: 150px">
+	                        <div class="col-sm-2 col-sm-offset-2">
+	                            <button type="button" class="btn btn-primary btn-block"  id="edit_saveBtn">保存</button>
+	                        </div>
+	                        <div class="col-sm-2 col-sm-offset-1">
+	                            <button type="button" class="btn btn-default btn-block"  id="edit_backBtn">返回</button>
+	                        </div>
+	                    </div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 导入成员 -->
+	<div class="modal fade" id="membersImport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content" style="top: 100px;">
+        <div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px;">
+          <h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+              	导入成员
+          </h4>
+          <button type="button" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px;margin-left: 30px;margin-right: 15px;outline: none;">取消</button>
+          <button type="button" id="submitImport" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">确定</button>
+        </div>
+        <div class="modal-body" style="height: 150px;width: 620px">
+           <div style="height: 80px;">
+              <div style="width:65%">
+                      <div class="input-group" style="display: flex;">
+                           <div style="display:table-cell;width: 27%;margin-top: 27px;width: 89px">文件路径：</div>
+                           <input type="text" readonly="readonly" id="filePathInfo" class="form-control" style="height: 30px;margin-top: 31px"/>
+                           <span class="input-group-btn">
+                            <form method="post" id="importForm"  enctype="multipart/form-data">
+                                <button class="btn btn-default" type="button" id="importBtn" style="margin-top: 27px;border-radius:0px;width: 51px;margin-left: 10px;">浏览</button>
+                                <a class="btn btn-default"  id="templateDownload" style="margin-top: 27px;border-radius:0px;width: 84px;margin-left: 10px;padding-top: 8px;">下载模板</a>
+                                <input style="display: none"  type="file" class="trans" id="openLocalFile" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></input>
+                            </form>
+                          </span>
+                      </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

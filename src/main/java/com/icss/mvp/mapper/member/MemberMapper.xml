@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.member.IMemberDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.member.MemberEntity">
+        <!--<result column="NO" property="projectId"/>-->
+        <result column="NAME" property="name"/>
+        <result column="ZR_ACCOUNT" property="account"/>
+        <result column="ROLE" property="duty"/>
+        <result column="START_DATE" property="arrivalDate" jdbcType="DATE"/>
+        <result column="END_DATE" property="departureDate" jdbcType="DATE"/>
+        <result column="HW_ACCOUNT" property="clientAccount"/>
+        <result column="svn_git_no" property="relatedAccount"/>
+    </resultMap>
+
+    <sql id="sql_column_project_members_local">
+        m.`NO`,
+        m.`NAME`,
+        m.`ZR_ACCOUNT`,
+        m.`HW_ACCOUNT`,
+        m.`svn_git_no`,
+        m.`ROLE`,
+        m.`START_DATE`,
+        m.`END_DATE`,
+        m.`IS_KEY_STAFFS`
+    </sql>
+
+    <select id="getProjectLocalMembers" resultMap="BaseResultMap">
+        SELECT
+        <include refid="sql_column_project_members_local"/>
+        FROM (SELECT ps.NO, mb.NAME, ps.ZR_ACCOUNT, mb.HW_ACCOUNT, ps.SVN_GIT_NO AS svn_git_no, 
+        ps.ROLE, ps.START_DATE, ps.END_DATE, ps.IS_KEY_STAFFS 
+        FROM member_base mb 
+        LEFT JOIN project_staff ps ON mb.ZR_ACCOUNT = ps.ZR_ACCOUNT 
+        AND ps.IS_DELETED = 0) m
+        WHERE m.`NO` = #{projectId}
+        <if test="duty.size() != 0">
+            AND m.`ROLE` IN
+            <foreach collection="duty" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

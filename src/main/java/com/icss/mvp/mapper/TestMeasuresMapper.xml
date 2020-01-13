@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ITestMeasuresDao">
+	<!-- <select id="queryWorkHoursDayByAuthor" resultType="java.util.HashMap" >
+		SELECT sum(TIMESTAMPDIFF(MINUTE,WORKTIME,OFFTIME)) as times
+		,date_format(WORKTIME, '%Y-%m-%d') as days,date_format(WORKTIME, '%m') as months,a.*
+		FROM tbl_staff_clock_data a 
+		where AUTHOR = #{author}
+		<if test="month != null and month !=''">
+			and date_format(WORKTIME, '%m') = #{month}
+		</if>
+		and year(WORKTIME) = year(curdate())
+		group by date_format(WORKTIME, '%Y-%m-%d')
+	</select> -->
+	<select id="queryWorkHoursDayByAuthorLatest" resultType="java.util.HashMap" >
+		SELECT date_format(statistical_time, '%Y-%m') as months,a.*
+		FROM tbl_time_information a 
+		where zr_account = #{author}
+		<if test="month != null and month !=''">
+			and date_format(statistical_time, '%Y-%m') = #{month}
+		</if>
+	</select>
+	<select id="queryWorkHoursDayByAuthorCurdate" resultType="java.util.HashMap" >
+		SELECT date_format(statistical_time, '%m') as months,a.*
+		FROM tbl_time_information a 
+		where zr_account = #{author}
+		<if test="month != null and month !=''">
+			and date_format(statistical_time, '%m') = #{month}
+		</if>
+		and year(statistical_time) = year(curdate())
+	</select>
+	
+	<select id="queryTestCasesByAuthor" resultType="java.util.HashMap" >
+		SELECT count(*) as sums,date_format(last_modified, '%Y-%m') as months,
+		a.* FROM tbl_tmss_info a 
+		where creator like concat('%', #{author} ,'%') 
+		AND no = #{projNo}
+		<![CDATA[
+		and date_format(last_modified, '%Y-%m') >= #{startDate}
+		and date_format(last_modified, '%Y-%m') <= #{endDate}
+		]]>
+		group by date_format(last_modified, '%Y-%m')
+	</select>
+	<select id="queryTestCasesStartByAuthor" resultType="java.util.HashMap" >
+		SELECT count(*) as sums,date_format(start_time, '%Y-%m') as months,
+		a.* FROM tbl_tmss_info a 
+		where creator like concat('%', #{author} ,'%') 
+		AND no = #{projNo}
+		<![CDATA[
+		and date_format(start_time, '%Y-%m') >= #{startDate}
+		and date_format(start_time, '%Y-%m') <= #{endDate}
+		]]>
+		group by date_format(start_time, '%Y-%m')
+	</select>
+	<select id="queryTestCasesList" resultType="java.util.HashMap" >
+		SELECT count(*) as sums
+		,date_format(last_modified, '%Y-%m') as months,a.*
+		FROM tbl_tmss_info a 
+		where creator like  concat('%', #{author} ,'%') and no=#{proNo}
+		group by date_format(last_modified, '%Y-%m')
+	</select>
+	<select id="queryTestCasesStartList" resultType="java.util.HashMap" >
+		SELECT count(*) as sums
+		,date_format(start_time, '%Y-%m') as months,a.*
+		FROM tbl_tmss_info a 
+		where creator like  concat('%', #{author} ,'%') and no=#{proNo}
+		group by date_format(start_time, '%Y-%m')
+	</select>
+	
+	<select id="queryInputTestCasesByAuthor" resultType="java.util.HashMap" >
+		SELECT date_format(DATE, '%Y-%m') as months,a.* 
+		FROM testcase_input a 
+		where HW_ACCOUNT = #{author}
+		and TESTCASE_TYPE =#{type}
+		and PRO_NO =#{proNo}
+		<![CDATA[
+		and date_format(DATE, '%Y-%m') >= #{startDate}
+		and date_format(DATE, '%Y-%m') <= #{endDate}
+		]]>
+		group by date_format(DATE, '%Y-%m')
+	</select>
+	
+	<select id="queryInputTestCasesList" resultType="java.util.HashMap" >
+		SELECT date_format(DATE, '%Y-%m') as months,a.*
+		FROM testcase_input a 
+		where HW_ACCOUNT = #{author}
+		and TESTCASE_TYPE =#{type}
+		and PRO_NO =#{proNo}
+	</select>
+	
+	<delete id="deleteTestCaseByNo">
+        delete from testcase_input where PRO_NO=#{proNo} and TESTCASE_TYPE=#{type}
+        and year(DATE) = year(curdate())
+    </delete>
+    
+    <insert id="insertTestCases" parameterType="java.util.List">
+		REPLACE into
+		testcase_input
+		(PRO_NO,HW_ACCOUNT,DATE,TESTCASE_TYPE,TESTCASE_VALUE)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+		(
+		#{item.proNO},#{item.hwAccount},#{item.date},#{item.testCaseType},#{item.testCaseValue}
+		)
+		</foreach>
+	</insert>
+    
+    <insert id="insertTestStatisticsCases" parameterType="java.util.List">
+		REPLACE into
+		testcase_statistics
+		(PRO_NO,DATE,TESTCASE_TYPE,TESTCASE_VALUE)
+		values
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+		(
+		#{item.proNO},#{item.date},#{item.testCaseType},#{item.testCaseValue}
+		)
+		</foreach>
+	</insert>
+	
+	<insert id="insert2TestCases" >
+		REPLACE into
+		testcase_input
+		(PRO_NO,HW_ACCOUNT,DATE,TESTCASE_TYPE,TESTCASE_VALUE)
+		values
+		(
+		#{input.proNO},#{input.hwAccount},#{input.date},#{input.testCaseType},#{input.testCaseValue}
+		)
+	</insert>
+</mapper>

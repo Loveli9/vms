@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icss.mvp.dao.project.IProjectTeamDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.ProjectTeam">
+    	<id column="id" property="id"/>
+		<result property="teamName" column="team_name" />
+		<result property="teamNo" column="team_id" />
+		<result property="createTime" column="create_time" />
+		<result property="modifyTime" column="modify_time" />
+		<result property="isDeleted" column="is_deleted" />
+    </resultMap>
+
+    <select id="getProjectTeams" resultMap="BaseResultMap">
+        SELECT `id`, `team_name`, `create_time`, `modify_time`, `is_deleted`, `team_id`
+        FROM project_team
+        WHERE `team_name` = #{teamName}
+    </select>
+
+	<insert id="insertProjectTeam" useGeneratedKeys="true" keyProperty="id" parameterType="com.icss.mvp.entity.ProjectTeam">
+		INSERT into
+		project_team
+		(team_name, create_time, modify_time, is_deleted)
+		values
+		(#{teamName},#{createTime},#{modifyTime},#{isDeleted})
+	</insert>
+</mapper>

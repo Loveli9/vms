@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IProjectParameter">
+	<resultMap id="projParam" type="com.icss.mvp.entity.ProjectParameter">
+		<result property="no" column="NO" />
+		<result property="parameterId" column="PARAMETER_ID" />
+		<result property="sourceValue" column="SOURCE_VALUE" />
+		<result property="parameter" column="PARAMETER" />
+		<result property="unit" column="UNIT" />
+		<result property="isDisplay" column="IS_DISPLAY" />
+		<result property="createDate" column="CREATE_DATE" />
+		<result property="creator" column="CREATOR" />
+		<result property="updateDate" column="UPDATE_DATE" />
+		<result property="updateUser" column="UPDATE_USER" />
+	</resultMap>
+
+	<select id="queryProjectParameter" resultMap="projParam">
+
+		SELECT * from
+		project_parameter
+		WHERE 1=1
+		<if test="projNo!=null and projNo!=''">
+			AND NO = #{projNo}
+		 </if>
+	</select>
+	<select id="queryInfo" resultType="java.util.Map">
+		select cmBT.name as big_type_value,
+		cmST.name as small_type_value,
+		param.name as name,
+		param.UNIT as unit,
+		cmS.name as source_value,
+		projparam.no as no,
+		projparam. parameter_id as id,
+		projparam.parameter as parameter,
+		projparam.IS_DISPLAY as isDisplay
+		from project_parameter projparam
+		inner join parameter_info param
+		on projparam.PARAMETER_ID = param.ID
+		<!-- left join code_master_info cmS on cmS.CODEKEY='Source' and
+		projparam.SOURCE_VALUE=cmS.VALUE
+		left join code_master_info cmST on cmST.CODEKEY='SmallType' and
+		param.SMALL_TYPE_VALUE=cmST.VALUE
+		left join code_master_info cmBT on cmBT.CODEKEY='BigType' and
+		param.BIG_TYPE_VALUE=cmBT.VALUE -->
+		left join v_dictionary cmS on cmS.code='Source' and 
+		projparam.SOURCE_VALUE = cmS.value
+		left join v_dictionary cmST on cmS.code='SmallType' and 
+		projparam.SOURCE_VALUE = cmST.value
+		left join v_dictionary cmBT on cmS.code='BigType' and 
+		projparam.SOURCE_VALUE = cmBT.value
+		where projparam.no = #{projNo}
+		<if test="sort!=null and sort!='' and order!=null and order!=''">
+			order by ${sort} ${order}
+		</if>
+
+	</select>
+
+
+	<insert id="insertParamInfo">
+		insert into project_parameter
+		(no,parameter_id,unit,source_value,parameter,is_display,create_date,creator,update_date,update_user)
+		values
+		<foreach collection="list" item="paramList" index="index"
+			separator=",">
+			(#{paramList.no},#{paramList.id},#{paramList.unit},#{paramList.source_value},#{paramList.parameter},#{paramList.isDisplay},#{paramList.create_date},#{paramList.creator},#{paramList.update_date},#{paramList.update_user})
+		</foreach>
+	</insert>
+
+	<select id="queryIsExits" resultMap="projParam">
+		SELECT * FROM
+		project_parameter
+		WHERE 1=1
+		<choose>
+			<when test="projNo!=null and projNo!=''">
+				AND NO = #{projNo}
+			</when>
+			<otherwise>
+				AND 0=1
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="id!=null and id!=''">
+				AND PARAMETER_ID = #{id}
+			</when>
+			<otherwise>
+				AND 0=1
+			</otherwise>
+		</choose>
+	</select>
+
+	<delete id="delProjectParameter">
+		DELETE FROM
+		project_parameter
+		WHERE 1=1
+		<choose>
+			<when test="projNo!=null and projNo!=''">
+				AND NO = #{projNo}
+			</when>
+			<otherwise>
+				AND 0=1
+			</otherwise>
+		</choose>
+		<choose>
+			<when test="id!=null and id!=''">
+				AND PARAMETER_ID = #{id}
+			</when>
+			<otherwise>
+				AND 0=1
+			</otherwise>
+		</choose>
+	</delete>
+
+	<update id="updateProjectParameter" parameterType="com.icss.mvp.entity.ProjectParameter">
+		UPDATE project_parameter
+		SET 
+		SOURCE_VALUE=#{sourceValue},
+		PARAMETER=#{parameter},
+		IS_DISPLAY=#{isDisplay}
+		WHERE NO = #{no} AND PARAMETER_ID = #{parameterId}	
+	</update>
+
+</mapper>

@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+<script src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+ <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<script type="text/javascript" src="js/networkSecurity.js"></script>
+<style>
+
+	.namespan {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		width: 72%;
+		display: inline-block;
+		white-space: nowrap;
+		color: #999999;
+	}
+	
+	.commonSapn {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		width: 24%;
+		display: -webkit-inline-box;
+	    -webkit-line-clamp: 1;
+	    -webkit-box-orient: vertical;
+	    word-break: break-all; 
+	    color: #999999;
+	}
+	.text{
+		color: black;	
+	}
+
+	.demo--label{
+		display:inline-block; 
+		width: 15%;
+	}
+	.demo--radio{
+		display:none
+	}
+	.demo--radioInput{
+		background-color:#fff;
+		border:1px solid rgba(0,0,0,0.15);
+		border-radius:100%;
+		display:inline-block;
+		height:16px;
+		margin-right:10px;
+		margin-top:-1px;
+		vertical-align:middle;
+		width:16px;
+		line-height:1
+	}
+	.demo--radio:checked + .demo--radioInput:after{
+		background-color:#57ad68;
+		border-radius:100%;
+		display:inline-block;
+		height:12px;
+		margin:1px;
+		content:"";
+		width:12px
+	}
+	.demo--checkbox.demo--radioInput,
+		.demo--radio:checked + .demo--checkbox.demo--radioInput:after{
+		border-radius:0;
+	}
+	label{
+		width:100px;
+	}
+		
+</style>
+</head>
+<body class="mvp-body">
+<div class="mvp-main">
+	<div style="width: 98%; color: #333333;padding-top:5px;background-color: #fff;padding-bottom: 5px;margin-left: 0.5%;margin-bottom: 2px;">
+		<div style="width: 100%; border-bottom: 2px; font-size: 14px;">
+			<ul style="width: 100%;">
+				<li style="height: 30px;">
+			        <span class="namespan" style="position: absolute;padding-left: 1%;">项目名称： <span id="name" class="text"></span></span>
+			    </li>
+				<li style="height: 30px;">
+					<span class="commonSapn" style="position: absolute; padding-left: 1%;">业务线：<span id="bu" class="text"></span></span>
+					<span class="commonSapn" style="position: absolute; left: 30%">事业部：<span id="pdu" class="text"></span></span> 
+					<span class="commonSapn" style="position: absolute; left: 60%">交付部：<span id="du" class="text"></span></span> 
+				</li>
+				<li style="height: 30px;">
+					<span class="commonSapn" style="position: absolute; padding-left: 1%;">华为产品线：<span id="hwpdu" class="text"></span></span>
+					<span class="commonSapn" style="position: absolute; left: 30%">华为子产品线：<span id="hwzpdu" class="text"></span></span>
+					<span class="commonSapn" style="position: absolute; left: 60%">PDU/SPDT：<span id="pduSpdt" class="text"></span></span> 					
+				</li>
+				<li style="height: 30px;">
+					<span class="commonSapn" style="position: absolute; padding-left: 1%;">商务模式：<span id="type" class="text"></span></span>
+					<span class="commonSapn" style="position: absolute; left: 30%">项目类型：<span id="projectType" class="text"></span></span>
+				</li>
+				<li style="height: 30px;">
+			        <span class="commonSapn" style="position: absolute;padding-left: 1%;">项目经理：<span id="pm" class="text"></span></span> 
+			        <span class="commonSapn" style="position: absolute;left: 30%"">QA：<span id="qa" class="text"></span></span> 
+			    </li>
+			</ul>
+		</div>
+	</div>
+	
+	<div style="display: block; margin-right: 30px; margin-top: 10px;">
+		<select id="dateSection" style="float: left; margin-left: 5px; font-size: 16px; width: 140px; height: 35px; padding-left: 10px; padding-right: 10px; border-radius: 4px; outline: none;" onchange="changeDateSection()"></select>
+	</div>
+	<div style="width: 98%;color: #333333;background-color: #fff; margin: 60px 0px 0px 5px;padding-bottom: 10px;">
+		<form id="editForm" method="post" class="form-horizontal" style="padding-top: 15px;">	
+           <div class="form-group">
+           		<label for="securityStatus" class="col-sm-3 control-label">判断是否涉及网络安全</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<label class="demo--label">
+	                	<input class="demo--radio" type="radio" value="2" name="securityStatus"><span class="demo--radioInput"></span>是
+					</label>
+					<label class="demo--label">
+						<input class="demo--radio" type="radio" value="1" name="securityStatus" checked/><span class="demo--radioInput"></span>否
+					</label>
+                </div>   
+                  
+           </div>
+           <div class="form-group">
+           		<label for="securityLiable" class="col-sm-3 control-label">网络专项责任人</label>
+                <div class="col-md-4">
+                	<select class="form-control input-sm" id="securityLiable" style="width: 130px;padding: 0px 12px;" title="请选择网络专项责任人"></select>
+                 </div>   
+           </div>
+           <div class="form-group">
+           		<label for="deliverStatus" class="col-sm-3 control-label">是否涉及一线交付</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<label class="demo--label">
+	                	<input class="demo--radio" type="radio" value="2" name="deliverStatus"><span class="demo--radioInput"></span>是
+					</label>
+					<label class="demo--label">
+						<input class="demo--radio" type="radio" value="1" name="deliverStatus" checked/><span class="demo--radioInput"></span>否
+					</label>
+                </div>          
+           </div>
+           <div class="form-group">
+           		<label for="ukStatus" class="col-sm-3 control-label">是否是UK项目</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<label class="demo--label">
+	                	<input class="demo--radio" type="radio" value="2" name="ukStatus"><span class="demo--radioInput"></span>是
+					</label>
+					<label class="demo--label">
+						<input class="demo--radio" type="radio" value="1" name="ukStatus" checked/><span class="demo--radioInput"></span>否
+					</label>
+                </div>          
+           </div>
+           <div class="form-group">
+           		<label for="sowStatus" class="col-sm-3 control-label">与客户明确SOW中网络安全要求</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<label class="demo--label">
+	                	<input class="demo--radio" type="radio" value="4" name="sowStatus"><span class="demo--radioInput"></span>已明确
+					</label>
+					<label class="demo--label">
+						<input class="demo--radio" type="radio" value="3" name="sowStatus"><span class="demo--radioInput"></span>确认中
+					</label>
+					<label class="demo--label">
+	                	<input class="demo--radio" type="radio" value="2" name="sowStatus"><span class="demo--radioInput"></span>暂未明确
+					</label>
+					<label class="demo--label">
+						<input class="demo--radio" type="radio" value="1" name="sowStatus" checked/><span class="demo--radioInput"></span>不涉及
+					</label>
+                </div>          
+           </div>
+           <div class="form-group">
+           		<label for="errorCleared" class="col-sm-3 control-label">error级当日清零</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<input placeholder="剩余未清零个数"  class="form-control" type="text" id="errorCleared" name="errorCleared"/>
+                </div>          
+           </div>
+           <div class="form-group">
+           		<label for="warningCleared" class="col-sm-3 control-label">warning级按版本清零（版本过点清零）</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<input placeholder="剩余未清零个数"  class="form-control" type="text" id="warningCleared" name="warningCleared"/>
+                </div>          
+           </div>           
+           <div class="form-group">
+           		<label for="satisfyRate" class="col-sm-3 control-label">工具测试覆盖满足度</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<input placeholder="单位:【%】"  class="form-control" type="text" id="satisfyRate" name="satisfyRate"/>
+                </div>          
+           </div>
+           <div class="form-group">
+           		<label for="caseStatus" class="col-sm-3 control-label">是否涉及用例测试满足度（自动化）</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<label class="demo--label">
+	                	<input class="demo--radio" type="radio" value="2" name="caseStatus"><span class="demo--radioInput"></span>是
+					</label>
+					<label class="demo--label">
+						<input class="demo--radio" type="radio" value="1" name="caseStatus" checked/><span class="demo--radioInput"></span>否
+					</label>
+                </div>         
+           </div>
+           <div class="form-group">
+           		<label for="caseRate" class="col-sm-3 control-label">用例测试满足度（自动化）</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<input placeholder="单位:【%】"  class="form-control" type="text" id="caseRate" name="caseRate"/>
+                </div>          
+           </div>
+           <div class="form-group">
+           		<label for="dangerStatus" class="col-sm-3 control-label">是否存在网络安全风险</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<label class="demo--label">
+	                	<input class="demo--radio" type="radio" value="2" name="dangerStatus"><span class="demo--radioInput"></span>是
+					</label>
+					<label class="demo--label">
+						<input class="demo--radio" type="radio" value="1" name="dangerStatus" checked/><span class="demo--radioInput"></span>否
+					</label>
+                </div>          
+           </div>
+           <div class="form-group">
+           		<label for="dangerReport" class="col-sm-3 control-label">网络安全风险上报</label>
+                <div class="col-md-4" style="width: 50%;margin-top: 8px;">
+                	<!-- <input placeholder="网络安全风险上报内容"  class="form-control" type="text" id="dangerReport" name="dangerReport"/> -->
+                	<textarea class="form-control input-large" rows="5" placeholder="网络安全风险上报内容（500字以内）"
+                    	id="dangerReport" name="dangerReport" maxlength="500" onchange="this.value=this.value.substring(0, 500)" 
+                    	onkeydown="this.value=this.value.substring(0, 500)" onkeyup="this.value=this.value.substring(0, 500)"></textarea>
+                </div>          
+           </div>
+           <div class="form-group" style="padding-left: 500px">
+	       		<div class="col-sm-2 col-sm-offset-2">
+	            	<button type="button" class="btn btn-primary btn-block"  id="save_btn">保存</button>
+	            </div>	                        
+	       </div>
+		</form>	
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IJenkinsBuildDetailedDao">
+		
+	<insert id="insertJenkinsDetailed" parameterType="com.icss.mvp.entity.JenkinsDetailedEntity">
+		REPLACE INTO plugins_detailed VALUES(#{id},#{no},#{platform},#{type},#{identity},#{measure},#{value},#{timeStamp},#{createTime})
+	</insert>	
+	
+	<select id="queryJenkinsDetail" parameterType="com.icss.mvp.entity.JenkinsDetailedEntity" resultType="com.icss.mvp.entity.JenkinsDetailedEntity">
+		select * from plugins_detailed pd where pd.`no`=#{no} and pd.platform=#{platform} and pd.`type`=#{type} and pd.measure=#{measure} and pd.timeStamp=#{timeStamp}
+	</select>
+	
+	<select id="calculateJenkins" parameterType="java.lang.String" resultType="com.icss.mvp.entity.JenkinsDetailedEntity">
+		select * from plugins_detailed pd where pd.`no`=#{no} and pd.`type`=#{type} and pd.measure=#{measure} order by pd.timeStamp desc limit 0,1
+	</select>
+		
+</mapper>

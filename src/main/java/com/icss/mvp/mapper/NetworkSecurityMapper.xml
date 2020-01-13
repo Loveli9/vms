@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.NetworkSecurityDao">
+<resultMap id="netSecMap" type="com.icss.mvp.entity.NetworkSecurity" 
+		extends="com.icss.mvp.dao.IProjectInfoDao.BaseResultMap">
+	<result column="QA" property="qa"/>
+	<result column="id" property="id"/>
+	<result column="pro_no" property="proNo"/>
+	<result column="survey_date" property="surveyDate"/>
+	<result column="deliver_status" property="deliverStatus"/>
+	<result column="uk_status" property="ukStatus"/>
+	<result column="security_status" property="securityStatus"/>
+	<result column="security_liable" property="securityLiable"/>
+	<result column="sow_status" property="sowStatus"/>
+	<result column="error_cleared" property="errorCleared"/>
+	<result column="warning_cleared" property="warningCleared"/>
+	<result column="satisfy_rate" property="satisfyRate"/>
+	<result column="case_status" property="caseStatus"/>
+	<result column="case_rate" property="caseRate"/>
+	<result column="danger_status" property="dangerStatus"/>
+	<result column="danger_report" property="dangerReport"/>
+	<result column="coopType" property="coopType"/>
+</resultMap>
+
+<insert id="saveNetworkSecurity" parameterType="com.icss.mvp.entity.NetworkSecurity">
+	REPLACE INTO `network_security` 
+	(`pro_no`, `survey_date`, `deliver_status`, `uk_status`, `security_status`, 
+	 `security_liable`, `sow_status`, `error_cleared`, `warning_cleared`, 
+	 `satisfy_rate`, `case_status`, `case_rate`, `danger_status`, `danger_report`) 
+	VALUES 
+	(#{proNo}, #{surveyDate}, #{deliverStatus}, #{ukStatus}, #{securityStatus}, 
+	 #{securityLiable}, #{sowStatus}, #{errorCleared}, #{warningCleared}, 
+	 #{satisfyRate}, #{caseStatus}, #{caseRate}, #{dangerStatus}, #{dangerReport})
+</insert>
+
+<select id="queryNetworkSecurityCount" resultType="java.lang.Integer">
+	select count(1) from network_security n
+	LEFT JOIN `user_report_project` ur ON n.`pro_no` = ur.`no` AND ur.userId = #{username}
+	where security_status=2
+	    <if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+		and n.pro_no in
+			<foreach collection="proNos" open="(" close=")" separator="," item="proNo">
+				#{proNo}
+			</foreach>
+		and n.survey_date = #{date}
+</select>
+
+<select id="queryNetworkSecurityList" resultMap="netSecMap">
+	select <include refid="com.icss.mvp.dao.IProjectInfoDao.sql_column_project" />
+		p.PM AS `pm`, e.NAME AS QA, n.*,ur.userId AS coopType
+	from project_info p 
+	LEFT JOIN `user_report_project` ur ON p.`NO` = ur.`no` AND ur.userId = #{username}
+		left join
+		(select * from network_security where survey_date =#{date}) n
+		on p.`NO` = n.pro_no
+		LEFT JOIN
+		(SELECT ps.NO, mb.NAME
+			FROM project_staff ps
+				 LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+			WHERE ps.ROLE = "QA" AND ps.IS_DELETED = 0 AND ps.IS_KEY_STAFFS = 0
+			GROUP BY ps.NO) e
+		ON p.`NO` = e.`NO`
+	where p.`NO` in
+			<foreach collection="proNos" open="(" close=")" separator="," item="proNo">
+				#{proNo}
+			</foreach>
+		<if test="null != type and  '' != type">
+			and n.security_status=#{type}
+		</if>
+		<if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+		order by n.security_status desc,p.`NO`
+	<if test="null != page.pageSize and  null != page.offset">
+		limit ${page.offset}, ${page.pageSize}
+	</if>
+</select>
+
+<select id="getNetworkSecurityByKey" resultMap="netSecMap">
+	select <include refid="com.icss.mvp.dao.IProjectInfoDao.sql_column_project" /> 
+		p.PM AS `pm`, e.NAME AS QA, n.*
+	from project_info p 
+		LEFT JOIN
+		(<!-- SELECT NO,NAME FROM project_keyroles WHERE POSITION = "QA" GROUP BY NO -->
+		SELECT ps.NO, mb.NAME
+		FROM project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT 
+		WHERE ps.ROLE = "QA" AND ps.IS_DELETED = 0 AND ps.IS_KEY_STAFFS = 0
+		GROUP BY ps.NO) e
+		ON p.`NO` = e.`NO`
+		LEFT JOIN 
+		(select * from network_security where pro_no = #{proNo} and survey_date = #{date}) n 
+		on p.`NO` = n.pro_no
+	where p.`NO` = #{proNo}
+</select>
+
+</mapper>

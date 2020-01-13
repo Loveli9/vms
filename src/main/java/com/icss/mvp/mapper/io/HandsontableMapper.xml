@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icss.mvp.dao.io.HandsontableDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.HandsontableInfo">
+    	<id column="id" property="id"/>
+		<result property="no" column="no" />
+		<result property="module" column="module" />
+		<result property="createTime" column="create_time" />
+		<result property="modifyTime" column="modify_time" />
+    </resultMap>
+
+    <select id="getHandsontables" resultMap="BaseResultMap">
+        SELECT * FROM excel_table
+    </select>
+
+	<select id="getHandsontable" resultMap="BaseResultMap">
+        SELECT * FROM excel_table
+        WHERE  no = #{no} and module = #{module}
+    </select>
+
+	<insert id="insertHandsontable" useGeneratedKeys="true" keyProperty="id" parameterType="com.icss.mvp.entity.HandsontableInfo">
+		REPLACE into
+		excel_table
+		(no, module, create_time, update_time)
+		values
+		(#{no},#{module},#{createTime},#{modifyTime})
+	</insert>
+</mapper>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.SysHwdeptDao" >
+	<resultMap id="sysHwdeptMap" type="com.icss.mvp.entity.SysHwdept" >
+		<id column="dept_id" property="deptId"/>
+		<result column="dept_name" property="deptName"/>
+		<result column="dept_level" property="deptLevel"/>
+		<result column="parent_id" property="parentId"/>
+		<result column="operate_time" property="operateTime"/>
+		<result column="operate_user" property="operateUser"/>
+		<result column="ignoe" property="ignoe"/>
+	</resultMap>
+	
+	<select id="getSysHwdeptByPId" resultMap="sysHwdeptMap" parameterType="String">
+		select * from sys_hwdept where parent_id = #{pId}
+	</select>
+	
+	
+	<!--新增一条SysHwdept记录-->
+	<insert id="insertSysHwdept" parameterType="sysHwdept" useGeneratedKeys="true" keyProperty="deptId" >
+		insert into sys_hwdept
+		(dept_id,dept_name,dept_level,parent_id,operate_time,operate_user,ignoe)
+		values 
+		(#{deptId},#{deptName},#{deptLevel},#{parentId},#{operateTime},#{operateUser},#{ignoe})
+	</insert>
+	
+	<!--修改指定SysHwdept记录-->
+	<update id="updateSysHwdept" parameterType="sysHwdept" >
+		update q_sys_hwdept 
+		<set>
+		    <if test="deptName != null">dept_name=#{deptName},</if>
+		    <if test="deptLevel != null">dept_level=#{deptLevel},</if>
+		    <if test="parentId != null">parent_id=#{parentId},</if>
+		    <if test="operateTime != null">operate_time=#{operateTime},</if>
+		    <if test="operateUser != null">operate_user=#{operateUser},</if>
+		    <if test="ignoe != null">ignoe=#{ignoe},</if>
+		</set>
+		where dept_id=#{deptId}
+	</update>
+	
+	<!--通过主键deptId查询指定SysHwdept记录-->
+	<select id="getSysHwdeptByDeptId" resultMap="sysHwdeptMap" parameterType="String" >
+		select * from sys_hwdept where dept_id=#{deptId}
+	</select>
+	
+	
+	<!--通过主键deptId单个删除-->
+	<delete id="deleteSysHwdeptByDeptId" parameterType="String" >
+		delete from sys_hwdept where dept_id=#{deptId}
+	</delete>
+	
+	
+	<!--批量删除-->
+	<delete id="deleteSysHwdeptByDeptIdList" parameterType="List" >
+		delete from sys_hwdept where deptId in
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		#{item} 
+		</foreach> 
+	</delete>
+	
+	
+	
+	<select id="getSysHwdeptForPage" resultMap="sysHwdeptMap" parameterType="Map">
+		select * from sys_hwdept 
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+		LIMIT #{startNo},#{pageSize}
+	</select>
+	
+	<select id="getSysHwdeptCount" resultType="Integer" parameterType="Map">
+		select count(0) from sys_hwdept
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+	</select>
+	
+	<select id="getAllSysHwdept" resultMap="sysHwdeptMap">
+		select * from sys_hwdept order by dept_level
+	</select>
+	<select id="getSysHwdeptByPIds" resultMap="sysHwdeptMap" parameterType="java.util.Set">
+		select * from sys_hwdept where 1 = 1
+		<if test=" list != null and list.size() != 0">
+			AND dept_id in
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		order by dept_level
+	</select>
+
+	<select id="getSysHwdeptBylevel" resultType="java.util.HashMap">
+		select * from v_dept_triple_hw a
+		where  a.DEPT_LEVEL = #{level}
+		<if test="list != null and list.size() != 0">
+			AND a.branch_id in
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="getHwOrganiza"  resultMap="sysHwdeptMap">
+		select * from sys_hwdept where dept_level = #{level} and dept_name = #{deptName} limit 1
+	</select>
+
+	<select id="getHwOrganizaMap" resultType="java.util.Map">
+		select t.trunk_id as lv1,t.branch_id as lv2,t.dept_id as lv3 from v_dept_tree_hw t where t.trunk_name = #{pdName} and t.branch_name = #{pduName} and t.dept_name = #{pdtName}
+	</select>
+	<!--根据华为一级结构名称获取部门编号-->
+	<select id="getHwDeptCode" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT t.`dept_id` FROM `sys_hwdept` t WHERE t.`dept_name` = #{pdName} AND dept_level = 1
+	</select>
+
+	<insert id="replaceHwDepts" parameterType="com.icss.mvp.entity.SysHwdept">
+		REPLACE INTO `sys_hwdept`(`dept_id`,`dept_name`,`dept_level`,`parent_id`,`operate_time`,`operate_user`,`ignoe`)VALUES(
+		#{dept.deptId},#{dept.deptName},#{dept.deptLevel},#{dept.parentId},#{dept.operateTime},#{dept.operateUser},#{dept.ignoe}
+		)
+	</insert>
+</mapper>

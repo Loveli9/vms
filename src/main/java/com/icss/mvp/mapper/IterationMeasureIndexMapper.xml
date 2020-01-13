@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icss.mvp.dao.IterationMeasureIndexDao" >
+  <resultMap id="BaseResultMap" type="com.icss.mvp.entity.IterationMeasureIndex" >
+    <result column="id" property="id" jdbcType="VARCHAR" />
+    <result column="iteration_id" property="iterationId" jdbcType="VARCHAR" />
+    <result column="measure_id" property="measureId" jdbcType="VARCHAR" />
+    <result column="value" property="value" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+      <result column="name" property="name" jdbcType="VARCHAR" />
+  </resultMap>
+  <insert id="insert" parameterType="com.icss.mvp.entity.IterationMeasureIndex" >
+    insert into iteration_measure_index (id, iteration_id, measure_id, 
+      value, create_time)
+    values (#{id,jdbcType=VARCHAR}, #{iterationId,jdbcType=VARCHAR}, #{measureId,jdbcType=VARCHAR}, 
+      #{value,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.icss.mvp.entity.IterationMeasureIndex" >
+    insert into iteration_measure_index
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="iterationId != null" >
+        iteration_id,
+      </if>
+      <if test="measureId != null" >
+        measure_id,
+      </if>
+      <if test="value != null" >
+        value,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="iterationId != null" >
+        #{iterationId,jdbcType=VARCHAR},
+      </if>
+      <if test="measureId != null" >
+        #{measureId,jdbcType=VARCHAR},
+      </if>
+      <if test="value != null" >
+        #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.icss.mvp.entity.IterationMeasureIndex" >
+    update iteration_measure_index
+    <set >
+      <if test="value != null" >
+        value = #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where iteration_id = #{iterationId,jdbcType=VARCHAR} and measure_id = #{measureId,jdbcType=VARCHAR}
+  </update>
+
+<!--   <select id="measureIndexValues" parameterType="Map" resultMap="BaseResultMap">
+	    select t2.id,t2.iteration_id,t2.measure_id,t2.value,t2.create_time,t3.UNIT
+	    from iteration_cycle t1 left join iteration_measure_index t2 on t1.id = t2.iteration_id left join measure t3 on t2.measure_id=t3.ID
+	    where t1.id = #{iterationId}
+	    <if test="list != null and list.size() != 0">
+	      and measure_id in
+	      <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+	        #{item}
+	      </foreach>
+	    </if>
+    select * from (
+  			select t2.* from iteration_cycle t1 
+  				left join 
+  					iteration_measure_index t2 on t1.id = t2.iteration_id
+    			where 1 = 1
+    			and t1.id = #{iterationId}
+  			<if test="list != null and list.size() != 0">
+	      			and measure_id in
+	      		<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+	        		#{item}
+	      		</foreach>
+      		</if>
+      	ORDER BY t2.`create_time` DESC
+  	) t3 group by t3.`measure_id`  
+  </select> -->
+	
+ <select id="measureIndexValues" parameterType="Map" resultMap="BaseResultMap">
+	SELECT t.measure_id, t.value, t.unit,t.name FROM
+		(SELECT
+		t1.measure_id AS measure_id,
+		t1.measure_value AS value,
+		t1.create_time AS create_time,
+		t2.UNIT AS unit,
+        t2.name AS name
+		FROM measure_history_detail t1 
+<!-- 		LEFT JOIN measure t2  -->
+		LEFT JOIN in_tmpl_index t2
+		ON t1.measure_id = t2.ID
+		<where>
+		<if test="list != null and list.size() != 0">
+			and t1.measure_id in
+			<foreach collection="list" item="item" index="index"
+				separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="null != startDate">
+			and date_format(t1.create_time, '%Y-%m-%d') &gt;= #{startDate}
+		</if>
+		<if test="null != endDate">
+		      <![CDATA[and date_format(t1.create_time, '%Y-%m-%d') <= #{endDate}]]>
+		</if>
+		AND t1.`no` = #{no}
+		</where>  
+		ORDER BY DATE_FORMAT(t1.create_time, '%Y-%m-%d') DESC, t1.update_time DESC ) t
+	GROUP BY t.measure_id
+  </select>
+	
+	<select id="getMeasureIndexValue" parameterType="com.icss.mvp.entity.IterationCycle" resultMap="BaseResultMap">
+		select
+		measure_id AS measure_id,
+		measure_value AS value
+		from measure_history_detail 
+		where measure_id = #{id}
+		<if test="null != startDate">
+			and date_format(create_time, '%Y-%m-%d') &gt;= #{startDate}
+		</if>
+		<if test="null != endDate">
+		      <![CDATA[and date_format(create_time, '%Y-%m-%d') <= #{endDate}]]>
+		</if>
+		and `no` = #{proNo}		
+		order by create_time DESC
+	</select>
+	
+  <insert id="insertByBatch" parameterType="java.util.List">
+    insert into iteration_measure_index (id, iteration_id, measure_id,
+    value, create_time)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.iterationId,jdbcType=VARCHAR}, #{item.measureId,jdbcType=VARCHAR},
+      #{item.value,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+
+  <delete id="delOldValue" parameterType="Map">
+    delete from iteration_measure_index
+    where iteration_id = #{iterationId}
+      and measure_id in (select ID from measure where CATEGORY = #{title} and COLLECT_TYPE = '自动采集')
+  </delete>
+  <delete id="delOldValueByName" parameterType="Map">
+    delete from iteration_measure_index
+    where iteration_id = #{iterationId}
+      and measure_id in (select ID from measure where name = #{title} and COLLECT_TYPE = '自动采集')
+  </delete>
+  <delete id="delOldTime" parameterType="java.lang.String">
+    delete from iteration_measure_index where measure_id=#{measure}
+  </delete>
+  <insert id="insertNewTime" parameterType="java.util.List">
+    insert into iteration_measure_index (id, iteration_id, measure_id,
+    value, create_time)
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.id,jdbcType=VARCHAR}, #{item.iterationId,jdbcType=VARCHAR}, #{item.measureId,jdbcType=VARCHAR},
+      #{item.value,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <!--查询手工录入指标各迭代周期值  -->
+  <select id="queryIterationInfo" parameterType="Map" resultMap="BaseResultMap">
+  	SELECT iteration_id, value
+		FROM iteration_measure_index 
+	    WHERE iteration_id IN
+		<foreach collection="list" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		and  measure_id	= #{measureId}
+  </select>
+  <!-- 查询手工录入指标 -->
+  <select id="queryManualEntryMeasure" parameterType="java.util.Map" resultType="com.icss.mvp.entity.Measure">
+  		   SELECT i.id AS id,IFNULL(d.name,a.name) AS NAME,IFNULL(d.unit,a.unit) AS unit ,IFNULL(d.collect,a.COLLECT_TYPE) AS collectType FROM
+          (SELECT t.id FROM 
+           measure t, label_measure_config t1, 
+          (SELECT t.id AS id
+           FROM
+           project_label_config t,
+           label t1 WHERE t.project_id =#{proNo} AND t.label_id = t1.`ID`
+           AND t.is_deleted = 0  AND t1.IS_DELETED = 0) A 
+           WHERE t1.MEASURE_ID = t.ID AND t.IS_DELETE = 0 AND t1.IS_DELETED = 0 AND t1.PROJECT_LABLE_ID = A.id ) i 
+           LEFT JOIN
+          (SELECT m.ID AS id,m.name AS NAME,m.UNIT AS unit,r.collect_type AS collect
+           FROM measure_range r 
+           INNER JOIN measure m ON r.measure_id = m.ID
+           WHERE r.no =#{proNo}) d ON d.id = i.id
+           LEFT JOIN
+          (SELECT id,NAME,UNIT,COLLECT_TYPE
+          FROM measure WHERE COLLECT_TYPE = '手工录入') a ON a.id = i.id
+          WHERE IFNULL(d.collect,a.COLLECT_TYPE) = '手工录入'
+		<if test="null != page.page and  null != page.rows">
+	    	LIMIT ${page.page},${page.rows}     
+      	</if>
+  </select>
+  
+  <!-- 查询手工录入指标 -->
+  <select id="countManualEntryMeasure" parameterType="java.lang.String" resultType="java.lang.Integer">
+  	SELECT count(i.id) FROM
+    	(SELECT t.id FROM 
+           measure t, label_measure_config t1, 
+          (SELECT t.id AS id
+           FROM
+           project_label_config t,
+           label t1 WHERE t.project_id =#{proNo} AND t.label_id = t1.`ID`
+           AND t.is_deleted = 0 AND t1.IS_DELETED = 0) A 
+           WHERE t1.MEASURE_ID = t.ID AND t.IS_DELETE = 0 AND t1.IS_DELETED = 0 AND t1.PROJECT_LABLE_ID = A.id ) i 
+        LEFT JOIN
+        (SELECT m.ID AS id,m.name AS NAME,m.UNIT AS unit,r.collect_type AS collect
+           FROM measure_range r 
+           INNER JOIN measure m ON r.measure_id = m.ID
+           WHERE r.no =#{proNo}) d ON d.id = i.id
+        LEFT JOIN
+        (SELECT id,NAME,UNIT,COLLECT_TYPE
+          FROM measure WHERE COLLECT_TYPE = '手工录入') a ON a.id = i.id
+        WHERE IFNULL(d.collect,a.COLLECT_TYPE) = '手工录入'
+  </select>
+  <!--查询迭代周期手工录入指标是否有值  -->
+  <select id="checkIterationInfo" parameterType="java.util.Map" resultType="java.lang.Integer">
+  	SELECT count(1)
+		FROM iteration_measure_index 
+	WHERE iteration_id = #{iterationId}
+		and  measure_id	= #{measureId}
+  </select>
+
+</mapper>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IIsourceIssueTaskDao">
+
+	<insert id="saveLogList" useGeneratedKeys="true" parameterType="java.util.List">
+		REPLACE  INTO isource_issue (no, create_time, issue_id, local_id,
+		project_id,title,description,severity,issue_type,state,author,created_at,updated_at)
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(#{item.no},#{item.createTime},#{item.issueId},#{item.localId},#{item.projectId},#{item.title},#{item.description},
+			#{item.severity},#{item.issueType},#{item.state},#{item.author},#{item.createdAt},#{item.updatedAt})
+		</foreach>
+	</insert>
+</mapper>

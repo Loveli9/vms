@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.MeasureTopDao">
+	<resultMap type="com.icss.mvp.entity.Measure" id="topMeasureMap">
+		<result property="id" column="measure_id" />
+		<result property="times" column="times" />
+		<result property="copyDate" column="copy_date" />
+		<result property="proNo" column="project_id" />
+	</resultMap>
+	
+    <select id="getCurrentMonthTopMeasure" resultMap="topMeasureMap"  parameterType="Map">
+		select m.`measure_id`, concat(YEAR(m.`copy_date`),'-', MONTH(m.`copy_date`),'-01 00:00:00') as copy_date, count(DISTINCT(project_id)) as times
+			from `measure_top_value_history` m 
+				where YEAR(copy_date) = YEAR(NOW()) 
+				AND MONTH(copy_date)=MONTH(NOW())
+			  	<if test=" list != null and list.size() != 0">
+		            AND m.project_id IN
+		            <foreach collection="list" item="item" separator="," open="(" close=")">
+		                #{item}
+		            </foreach>
+	        	</if>
+				group by m.`measure_id` order by times DESC, measure_id ASC		          
+    </select>
+    
+    <select id="statisticsByID" resultMap="topMeasureMap"  parameterType="Map">
+		select m.`measure_id`, concat(YEAR(m.`copy_date`),'-', MONTH(m.`copy_date`),'-01 00:00:00') as copy_date, count(DISTINCT(project_id)) as times
+			from `measure_top_value_history` m  
+				where YEAR(copy_date) = YEAR(NOW()) 
+				AND m.measure_id = #{measureID}
+				 	<if test=" list != null and list.size() != 0">
+			            AND m.project_id IN
+			            <foreach collection="list" item="item" separator="," open="(" close=")">
+			                #{item}
+			            </foreach>
+		        	</if>
+				group by YEAR(m.`copy_date`), MONTH(m.`copy_date`)		          
+    </select>
+    
+</mapper>

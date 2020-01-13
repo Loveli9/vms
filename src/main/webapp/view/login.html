@@ -1,0 +1,574 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>登录界面</title>
+    <link rel="icon" href="favicon3.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon3.png" type="image/x-icon" />
+    <link href="../resources/login/login1.css" rel="stylesheet" />
+    <link rel='stylesheet prefetch' href="../resources/login/login2.css" />
+    <link rel="stylesheet" href="../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../resources/bootstrap/bootstrap.min.css" />
+    <script src="../resources/jquery/jquery-3.2.1.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../resources/easyui/jquery.easyui.min.js"></script>
+    <script src="../resources/jquery/jquery.form.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../resources/bootstrap/bootstrap.min.js"></script>
+    <script src="../resources/js/comm/comm.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../resources/js/safety/tripledes.js"></script>
+	<script type="text/javascript" src="../resources/js/safety/mode-ecb.js"></script>
+
+<style>
+
+* {
+	margin: 0px auto; padding: 0px; text-align: center; font-family: 'Lato', sans-serif;
+}
+
+.cotn_principal {
+	position: absolute; width: 100%; height: 100%; background: #aac4bc; /* Old browsers */
+	background: -moz-linear-gradient(-45deg,  #aac4bc 0%, #eca8a8 100%, #eed5a9 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(-45deg,  #aac4bc 0%,#eca8a8 100%,#eed5a9 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(135deg, #aac4bc 0%,#eca8a8 100%,#eed5a9 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cfd8dc', endColorstr='#b0bec5',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+}
+
+.cont_centrar {
+	position: relative; float: left; width: 100%;
+}
+
+.cont_login {
+	position: relative; width: 640px; left: 50%; margin: 180px 0px 0px 180px;
+}
+
+.cont_back_info {  
+	position: relative; float: left; width: 640px; height: 280px; overflow: hidden; background-color: #fff; margin-top: 100px;
+	box-shadow: 1px 10px 30px -10px rgba(0,0,0,0.5);
+}
+
+.cont_forms {
+	position: absolute; overflow: hidden; top:100px; left: 0px; width: 362px; height: 280px; background-color: #eee;
+	-webkit-transition: all 0.5s; -moz-transition: all 0.5s; -ms-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s;
+}
+
+.cont_forms_active_login {
+	box-shadow: 1px 10px 30px -10px rgba(0,0,0,0.5); height: 380px; top:20px; left: 0px; -webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s; -ms-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s;
+}
+
+.cont_forms_active_sign_up {
+	box-shadow: 1px 10px 30px -10px rgba(0,0,0,0.5); height: 380px; top:20px; -webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s; -ms-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s;
+}
+
+.cont_img_back_grey {
+	position: absolute; width: 950px; top:-80px; left: -116px;
+}
+
+.cont_img_back_grey > img {
+	width: 100%; -webkit-filter: grayscale(100%); filter: grayscale(100%); opacity: 0.2; animation-name: animar_fondo;
+	animation-duration: 20s; animation-timing-function: linear; animation-iteration-count: infinite; animation-direction: alternate;
+}
+
+.cont_img_back_ {
+	position: absolute; width: 950px; top:-80px; left: -116px;
+}
+
+.cont_img_back_ > img {
+	width: 100%; opacity: 0.3; animation-name: animar_fondo; animation-duration: 20s; animation-timing-function: linear;
+	animation-iteration-count: infinite; animation-direction: alternate;
+}
+
+.cont_forms_active_login > .cont_img_back_ {
+	top:0px; -webkit-transition: all 0.5s; -moz-transition: all 0.5s; -ms-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s;
+}
+
+.cont_forms_active_sign_up > .cont_img_back_ {
+	top:0px; left: -435px; -webkit-transition: all 0.5s; -moz-transition: all 0.5s; -ms-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s;
+}
+ 
+.cont_info_log_sign_up {
+	position: absolute; width: 640px; height: 280px; top: 100px; z-index: 1;
+} 
+
+.col_md_login {
+	position: relative; float: left; width: 50%;
+}
+
+.col_md_login > h2 {
+	font-weight: 400; margin-top: 70px; color: #757575;
+}
+
+.col_md_login > p {
+	font-weight: 400; margin-top: 15px; width: 80%; color: #37474F;
+}
+
+.btn_login { 
+	background-color: #f44336; border: none; padding: 10px; width: 200px; border-radius:3px; box-shadow: 1px 5px 20px -5px rgba(0,0,0,0.4);
+	color: #fff; margin-top: 10px; cursor: pointer; outline: none;
+}
+
+.col_md_sign_up {
+	position: relative; float: left; width: 50%;  
+}
+
+.cont_ba_opcitiy > h2 {
+	font-weight: 400; color: #fff;
+}
+
+.cont_ba_opcitiy > p {
+	font-weight: 400; margin-top: 15px; color: #fff;
+}
+
+.cont_ba_opcitiy {
+	position: relative; background-color: rgba(187, 168, 170, 0.79); width: 80%; border-radius:3px; margin-top: 60px; padding: 15px 0px;
+}
+
+.btn_sign_up { 
+	background-color: #0051A2; border: none; padding: 10px; width: 200px; border-radius:3px; box-shadow: 1px 5px 20px -5px rgba(0,0,0,0.4);
+	color: #fff; margin-top: 10px; cursor: pointer; outline: none;
+}
+
+.cont_forms_active_sign_up {
+	z-index: 2;  
+}
+
+@-webkit-keyframes animar_fondo {
+	from { -webkit-transform: scale(1) translate(0px);
+		-moz-transform: scale(1) translate(0px);
+		-ms-transform: scale(1) translate(0px);
+		-o-transform: scale(1) translate(0px);
+		transform: scale(1) translate(0px); }
+  	to { -webkit-transform: scale(1.5) translate(50px);
+		-moz-transform: scale(1.5) translate(50px);
+		-ms-transform: scale(1.5) translate(50px);
+		-o-transform: scale(1.5) translate(50px);
+		transform: scale(1.5) translate(50px); }
+	}
+@-o-keyframes identifier {
+  	from { -webkit-transform: scale(1);
+		-moz-transform: scale(1);
+		-ms-transform: scale(1);
+		-o-transform: scale(1);
+		transform: scale(1); }
+  	to { -webkit-transform: scale(1.5);
+		-moz-transform: scale(1.5);
+		-ms-transform: scale(1.5);
+		-o-transform: scale(1.5);
+		transform: scale(1.5); }
+}
+
+@-moz-keyframes identifier {
+  	from { -webkit-transform: scale(1);
+		-moz-transform: scale(1);
+		-ms-transform: scale(1);
+		-o-transform: scale(1);
+		transform: scale(1); }
+  	to { -webkit-transform: scale(1.5);
+		-moz-transform: scale(1.5);
+		-ms-transform: scale(1.5);
+		-o-transform: scale(1.5);
+		transform: scale(1.5); }
+}
+
+@keyframes identifier {
+  	from { -webkit-transform: scale(1);
+		-moz-transform: scale(1);
+		-ms-transform: scale(1);
+		-o-transform: scale(1);
+		transform: scale(1); }
+  	to { -webkit-transform: scale(1.5);
+		-moz-transform: scale(1.5);
+		-ms-transform: scale(1.5);
+		-o-transform: scale(1.5);
+		transform: scale(1.5); }
+}
+
+.cont_form_login {
+	position: absolute; opacity: 0; margin-top:-25px; display: none; width: 320px; left:10px; -webkit-transition: all 0.5s;
+	-moz-transition: all 0.5s; -ms-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s;
+}
+
+.cont_forms_active_login {
+	z-index: 2;  
+}
+.cont_forms_active_login  >.cont_form_login {
+
+}
+
+.cont_form_sign_up {
+  	position: absolute; width: 320px; float: left; opacity: 0; margin-top:-25px; left:10px; display: none;
+  	-webkit-transition: all 0.5s; -moz-transition: all 0.5s; -ms-transition: all 0.5s; -o-transition: all 0.5s; transition: all 0.5s;
+}
+
+  
+.cont_form_sign_up > input {
+	text-align: left; padding: 15px 5px; margin-left: 10px; margin-top: 20px; width: 260px; border: none; color: #757575;
+}
+
+.cont_form_sign_up > h2 {
+	margin-top: 110px; font-weight: 400; color: #757575;
+}
+
+.cont_form_login > input {
+  	padding: 15px 5px; margin-left: 10px; margin-top: 20px; width: 260px; border: none; text-align: left; color: #757575;
+}
+
+.cont_form_login > h2 {
+	margin-top: 110px; font-weight: 400; color: #757575;
+}
+
+.cont_form_login > a,.cont_form_sign_up > a  {
+  	color: #757575; position: relative; float: left; margin: 10px; margin-left: 30px;
+}
+
+#hwLogin a{
+	text-decoration:none
+}
+
+#zrLogin a{
+	text-decoration:none
+}
+
+#hwLogin img{
+	position: relative; margin:-20px 0px 0px 270px;
+}
+
+#zrLogin img{ margin:-20px 0px 0px 270px;
+}
+
+#loginxc img{
+	width:110%; height:110%; position: relative; margin:-40px 0px 0px -1440px;
+}
+
+.login-tip {
+	position: absolute; top: 40px; right: 52px; display: block;
+}
+
+.poptip {
+	line-height: 16px; position: relative; z-index: 9999; background-color: #e6f9fc; border: 1px solid #00c1de; padding: 5px 10px;
+}
+
+.poptip .poptip-arrow {
+	position: absolute; z-index: 10; *zoom: 1; top: 8px; right: 0;
+}
+
+.poptip .poptip-content {
+	color: #00c1de; font-size: 12px; font-weight: 400;
+}
+
+.poptip .poptip-arrow em, .poptip .poptip-arrow span {
+	position: absolute; *zoom: 1; width: 0; height: 0; border-color: hsla(0,0%,100%,0); border-color: transparent \0;
+	*border-color: transparent; _border-color: tomato; _-webkit-filter: chroma(color=tomato); _: chroma(color=tomato);
+	border-style: solid; overflow: hidden; top: 0; left: 0; border-left-color: #ff9000;
+}
+.poptip .poptip-arrow em {
+	top: 0; left: 1px; border-left-color: #00c1de; border-width: 6px 0 6px 6px;
+}
+.poptip .poptip-arrow span {
+	border-left-color: #e6f9fc; border-width: 6px 0 6px 6px;
+}
+</style>
+<script language="javascript">
+    var key = "DFHSJDFADAS0987";
+	if (window != top) {
+		top.location.href = location.href;
+	}
+	$.ajaxSetup({
+		error : function(XMLHttpRequest, textStatus, errorThrown) {
+			if (XMLHttpRequest.status == 403) {
+				alert('您没有权限访问此资源或进行此操作');
+				return false;
+			}
+		},
+		complete : function(XMLHttpRequest, textStatus) {
+			var sessionstatus = XMLHttpRequest
+					.getResponseHeader("sessionstatus"); //通过XMLHttpRequest取得响应头,sessionstatus， 
+			if (sessionstatus == 'timeOut') {
+				//如果超时就处理 ，指定要跳转的页面  
+				var top = getTopWinow(); //获取当前页面的顶层窗口对象
+				alert('登录超时, 请重新登录.');
+				top.location.href = getRootPath() + "/view/login.html"; //跳转到登陆页面
+			}
+		}
+	});
+	/** 
+	 * 在页面中任何嵌套层次的窗口中获取顶层窗口 
+	 * @return 当前页面的顶层窗口对象 
+	 */
+	function getTopWinow() {
+		var p = window;
+		while (p != p.parent) {
+			p = p.parent;
+		}
+		return p;
+	}
+	$(function() {
+		$("#USERNAME").keydown(function(event) {
+			enterIncident("");
+		});
+		$("#PASSWORD").keydown(function(event) {
+			if (event.keyCode == 13) {
+				doLogin();
+			}
+		});
+		$("#USERNAME1").keydown(function(event) {
+			enterIncident("1");
+		});
+		$("#PASSWORD1").keydown(function(event) {
+			if (event.keyCode == 13) {
+				doLogin();
+			}
+		});
+	});
+	function enterIncident(a){
+		if (event.keyCode == 13) {
+			if ($("#USERNAME"+a).val().trim() == undefined || $("#USERNAME"+a).val().trim() == "") {
+				$("#loginContent").css("display", "block");
+				$("#loginContent")
+				.html(
+						'<font style="color:red;font-size:15px;">用户名不能为空！</font>');
+				setTimeout(function() {
+					$("#loginContent").css("display", "none");
+				}, '3000');
+			}else{
+				$("#PASSWORD"+a).focus();
+			}
+		}
+	}
+	function doLogin() {
+		var w3account0 = $("#W3Count0").val().trim();
+		var w3account1 = $("#W3Count1").val().trim();
+		if(w3account0!=undefined && w3account0!=""){
+			var w3account = w3account0;
+			var username = $("#USERNAME").val().trim();
+		    var password = $("#PASSWORD").val().trim();
+			
+		}else if(w3account1!=undefined && w3account1!= ""){
+			var w3account = w3account1;
+			var username = $("#USERNAME1").val().trim();
+		    var password = $("#PASSWORD1").val().trim();
+			
+		}else {
+			w3account = false;
+		}
+		if (username == undefined || username == "") {
+			var content = (w3account == 2) ? $("#loginContent") : $("#loginContent1");
+			content.css("display", "block");
+			content.html('<font style="color:red;font-size:15px;">用户名不能为空！</font>');
+				setTimeout(function() {
+					content.css("display", "none");
+				}, '3000');
+			this.focus();
+			return false;
+		}
+		if (password == undefined || password == "") {
+			/* alert("密码不能为空"); */
+			var content = (w3account == 2) ? $("#loginContent") : $("#loginContent1");
+			content.css("display", "block");
+			content.html('<font style="color:red;font-size:15px;">密码不能为空！</font>');
+				setTimeout(function() {
+					content.css("display", "none");
+				}, '3000');
+			this.focus();
+			return false;
+		}
+		$("#loginForm")
+				.ajaxSubmit(
+						{
+							url : getRootPath() + "/login/dologin",
+							type : "POST",
+							data : {
+								"USERNAME" :username ,
+								"PASSWORD" : encryptByDES(password),
+								"ISONLINE" : w3account
+							},
+							dataType : 'JSON',
+							xhrFields : {
+								// 设置XMLHttpRequest的其它属性
+								// 如果这里将'withCredentials'设置为true
+								// 则服务器也要相应设置'Access-Control-Allow-Credentials: true'.
+								withCredentials : true
+							},
+                            success: function (data) {
+                                if (data == "SUCCESS") {
+                                    window.location.href = getRootPath() + "/view/HTML/page.html";
+                                } else {
+                                    var content = (w3account == 2) ? $("#loginContent") : $("#loginContent1");
+                                    content.css("display", "block");
+                                    if (data == "FAILED") {
+                                        content.html(
+                                                '<font style="color:#eb2929;font-size:15px;">用户名或密码错误，请重新输入！</font>');
+                                    } else {
+                                        content.html(
+                                                '<font style="color:#eb2929;font-size:15px;">登录异常！' + data + '</font>');
+                                    }
+
+                                    setTimeout(function () {
+                                        content.css("display", "none");
+                                    }, '3000');
+                                }
+                            },
+                            error: function (data) {
+                                var content = (w3account == 2) ? $("#loginContent") : $("#loginContent1");
+                                content.css("display", "block");
+                                content.html(
+                                        '<font style="color:#eb2929;font-size:15px;">服务器异常，请稍后重试！</font>');
+
+                                setTimeout(function () {
+                                    content.css("display", "none");
+                                }, '3000');
+                            }
+						});
+	}
+
+	function cambiar_login() {
+		$("#W3Count1").val("");
+		$("#USERNAME1").val("");
+	    $("#PASSWORD1").val("");
+		$("#W3Count0").val("1");
+		document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_login";
+		document.querySelector('.cont_form_login').style.display = "block";
+		document.querySelector('.cont_form_sign_up').style.opacity = "0";
+		setTimeout(function() {
+			document.querySelector('.cont_form_login').style.opacity = "1";
+		}, 100);
+
+		setTimeout(
+				function() {
+					document.querySelector('.cont_form_sign_up').style.display = "none";
+				}, 100);
+	}
+
+	function cambiar_sign_up() {
+		$("#W3Count0").val("");
+		$("#USERNAME").val("");
+	    $("#PASSWORD").val("");
+		$("#W3Count1").val("2");
+		document.querySelector('.cont_forms').className = "cont_forms cont_forms_active_sign_up";
+		document.querySelector('.cont_form_sign_up').style.display = "block";
+		document.querySelector('.cont_form_login').style.opacity = "0";
+
+		setTimeout(function() {
+			document.querySelector('.cont_form_sign_up').style.opacity = "1";
+		}, 100);
+
+		setTimeout(function() {
+			document.querySelector('.cont_form_login').style.display = "none";
+		}, 100);
+
+	}
+
+//	des加密 CBC模式
+    function decryptByDESModeCBC(ciphertext2) {
+        var keyHex = CryptoJS.enc.Utf8.parse(key);
+        var ivHex = CryptoJS.enc.Utf8.parse(key);
+        var decrypted = CryptoJS.DES.decrypt({
+            ciphertext: CryptoJS.enc.Hex.parse(ciphertext2)
+        }, keyHex, {
+            iv:ivHex,
+            mode: CryptoJS.mode.CBC,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        return decrypted.toString(CryptoJS.enc.Utf8);
+    }
+// des加密 ecb
+    function encryptByDES(message) {
+        var keyHex = CryptoJS.enc.Utf8.parse(key);
+        var encrypted = CryptoJS.DES.encrypt(message, keyHex, {
+            mode: CryptoJS.mode.ECB,
+            padding: CryptoJS.pad.Pkcs7
+        });
+        return encrypted.toString();
+    }
+    
+    function login_environment(){
+    	var type="";
+    	$.ajax({
+            type: "post",
+            url: getRootPath()+"/login/loginEnvironment",
+            async: false,//是否异步，true为异步
+            success: function (data) {
+            	type = data.data;
+            }
+        });
+    	return type;
+    }
+
+	$(document).ready(function(){
+		var type=login_environment();
+		if(type=="chinasoft"){
+			cambiar_sign_up();
+		}else if(type=="huawei"){
+			cambiar_login();
+		}
+	});
+</script> 
+</head>
+<body style="background-image:url(../img/loginbg.jpg);background-repeat:no-repeat; background-position:center top; overflow:hidden;width:90%;height:90%;">
+	<!--  <form id="loginForm" name="loginForm" >  -->
+		<div class="cotn_principal" id="loginForm" style="background-image:url(../img/loginbg.jpg);">
+			<div class="cont_centrar">
+				<div class="cont_login">
+					<div id = "loginxc">
+						<!--<img src="../img/loginbg1.png" alt="登录界面宣传" /> -->
+					</div>
+					<div class="cont_forms" id="aaaaa">
+						<div class="cont_img_back_">
+							<img src="../img/po.jpg" alt="" />
+						</div>
+						<div class="cont_form_login" id="hwLogin">
+							<h4 style="float:left;position: relative;margin:60px 0px -40px 22px;">华为客户登录</h4>
+							<div style="margin-top:60px;">
+								<a href="#" style="margin:20px 0px 30px 0px;" onClick="cambiar_sign_up();">
+									<div class="login-tip">
+										<div class="poptip">
+											<div class="poptip-arrow">
+												<em></em>
+												<span></span>
+											</div>
+											<div class="poptip-content">切换登录</div>
+										</div>
+									</div>
+									<img src="../img/logozr.png" />
+								</a>
+							</div>
+							<input id="USERNAME" name="username" type="text" placeholder="华为W3账号" style="height: 40px;font-size: 15px;width: 320px;border: 1px #ffffff solid;border-radius: 4px; padding-left: 3%; outline: none;" />
+							<input id="PASSWORD" name="password" type="password" placeholder="密码" style="height: 40px;font-size: 15px;width: 320px;border: 1px #ffffff solid;border-radius: 4px; padding-left: 3%; outline: none;"/>
+							<span id="loginContent1" style="display: none;"></span>
+							<input id="W3Count0"  name="W3Count" type="hidden" value=""/>
+							<button class="btn_login" style="width: 320px;margin: 20px 10px 10px 10px;height: 40px;" onclick="javascript:doLogin()">登录</button>
+						    <p style="text-align: center;margin: 20px 10px 10px 22px;"><a>请使用华为W3账号登录</a></p>
+						</div>
+						<div class="cont_form_sign_up" id="zrLogin">
+							<h4 style="float:left;position: relative;margin:60px 0px -40px 22px;">中软国际用户登陆</h4>
+							<div style="margin-top:60px;">
+								<a href="#" style="margin:20px 0px 30px 0px;"  onClick="cambiar_login();">
+									<div class="login-tip">
+										<div class="poptip">
+											<div class="poptip-arrow">
+												<em></em>
+												<span></span>
+											</div>
+											<div class="poptip-content">切换登录</div>
+										</div>
+									</div>
+									<!--<span style="font-size:14px;margin-left:160px;border:1px solid #EE9A00;color:#EE9A00">切换登录</span>-->
+									<!--<b style="color:#EE9A00;margin-left:-4px;">></b>-->
+									<img src="../img/logohw.png" />
+								</a>
+							</div>
+							<input id="USERNAME1" name="username" type="text" placeholder="中软国际账号" style="height: 40px;font-size: 15px;width: 320px;border: 1px #ffffff solid;border-radius: 4px; padding-left: 3%; outline: none;" />
+							<input id="PASSWORD1" name="password" type="password" placeholder="密码" style="height: 40px;font-size: 15px;width: 320px;border: 1px #ffffff solid;border-radius: 4px; padding-left: 3%; outline: none;"/>
+							<span id="loginContent" style="display: none;"></span>
+							<input id="W3Count1"  name="W3Count" type="hidden" value=""/>
+							<button class="btn_sign_up" style="width: 320px;margin: 20px 10px 10px 10px;height: 40px;" onclick="javascript:doLogin()">登录</button>
+							<p style="text-align: center;margin: 20px 10px 10px 22px;"><a>请使用中软国际TPG门户系统的账号登录</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+ 	<!-- </form>  -->
+</body>
+</html>

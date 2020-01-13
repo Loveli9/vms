@@ -1,0 +1,345 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/ztree/zTreeStyle.css" type="text/css" />    
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <link rel="stylesheet" href="css/swiper.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+    <script type="text/javascript" src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>  
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../resources/ztree/jquery.ztree.all.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script> 
+    <script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <script type="text/javascript" src="js/dataManagement.js"></script>
+    <script type="text/javascript" src="../../resources/js/swiper/swiper.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/swiper/swiper.js"></script>
+    <style>
+		.form-inline .form-group {
+			width: 243px;
+		}
+		.col-sm-3 input{
+			width:80px;
+		}
+		#query-form div input{
+			width:130px;
+		}
+		#query-form div select{
+			width:160px;
+		}
+		
+		.breadcrumb {
+			font-size: 14px;
+		    margin: -50px 0px 10px 0px;
+		    padding: 8px 0px;
+		    background-color:#f5f5f5;
+		}
+		.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover {
+			color: #3399ff; background-color: #FFFFFF;
+		}
+		.nav>li.active {
+			border-left: 0px;
+		}
+		.nav>li>a:hover {
+			color: #3399ff; background-color: #FFFFFF;
+		}
+		.nav>li>a {
+			color: #000000; text-decoration: none;
+		}
+		.topNav>li>a {
+			background-color: #FFFFFF !important;
+		}
+		.but1{
+	    	float: left;
+		    width: 150px;
+		    height: 40px;
+		    background-color: #f53d3d;
+		    color: #ffffff;
+		    cursor: pointer;
+		    border: none;
+		    border-radius: 4px;
+		    font-size: 20px;
+		    margin-right: 15px;
+		    line-height: 40px;
+	    }
+	    .but1:hover{
+	    	background-color: #ff0313;
+	    }
+		.form-control{
+	    	border-radius: 0px;
+	    }
+	    .input-group-btn{
+	    	font-size: 12px;
+	    }
+	    .btn-group > .btn:first-child {
+		    margin-top: 14px;
+		}
+		.bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+		    width: 250px;
+		    margin-left: -26px;
+		} 
+		 .input_date_section .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn) {
+		    width: 122px;
+		    margin-left: -26px;
+		}
+		.btn-default {
+		    background-color: #fff;
+		    border-color: #676a6c;
+		    color: #676a6c;
+		}
+	</style>
+    <script type="text/javascript">
+	    //回到顶部
+		function callback(){
+			$("html,body").animate({scrollTop:0}, 200);
+		};
+		$(document).ready(function(){
+			initSection();
+			//加载361周期选择
+		    var today=new Date();
+		  	var year=today.getYear()+1900;
+		  	var month=today.getMonth()+1;
+		  	if(month<10){
+		  		month="0"+month;
+		  	}
+			var date=year+"-"+month;  
+			var sel = document.getElementById('datepickerCycle');
+            sel.options[0].value = date;
+            sel.options[0].text = date;//给options赋值
+            
+			for(var allinfo = last_year_month(), i = 0; i < allinfo.length; i++) {
+				$("#datepickerCycle").append("<option value='" + allinfo[i] + "'>" + allinfo[i] + "</option>");
+			}
+			datepickerCycle1();
+			$("#datepickerCycle").change(function(){
+				datepickerCycle1();
+			});
+      		$("#datepicker").datetimepicker({
+      			minView: "month", //选择日期后，不会再跳转去选择时分秒 
+      		    language:  'zh-CN',
+      		    format: 'yyyy-mm-dd',
+      		    todayBtn:  1,
+      		    autoclose: 1,
+      		    todayHighlight:true
+      	    });
+		});
+    </script>
+</head>
+<body>	
+   <div class="" id="search" style="height: 155px;margin-top:50px;">
+  		<div id="fieldset" style="width:94%; height:40%; margin:0 auto;background-color: #ffffff; border: 0px #dddddd solid;">
+	         <ol class="breadcrumb">
+				<li><b>系统</b></li>
+			    <li class="active">数据管理</li>
+			 </ol>
+			 <div>
+			 	<input name="" type="button" value="361成熟度导入" class="but1" onclick="changeQuality()"/>
+			 	<input name="" type="button" value="项目导入" class="but1" id="importBtn" data-toggle="modal" data-target="#import" />
+			 	<input name="" type="button" value="人员职级导入" class="but1" onclick="openRankModal()" />
+			 </div>
+		</div>
+    </div> 
+    <!-- 导入页面 -->
+	<div class="modal fade" id="demandImport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width: 665px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline;font-size: 18px;">
+						导入361成熟度
+					</h4>
+				</div>
+				<div class="modal-body" style="height: 150px;width: 650px">
+					<form method="post" id="importForm"  enctype="multipart/form-data">
+						<div class="input-group form-group" style="display: flex;">
+							<label class="col-sm-2 control-label">路径：</label>
+							<div class="col-sm-8">
+								<input type="text" readonly="readonly" id="filePathInfo"
+								class="form-control" style="height: 30px; margin-top: 5px;width:340px;" />
+							</div>
+							<div class="col-sm-3">
+								<button class="btn btn-default" type="button" id="importBtn"
+								onclick="choosingPath()"
+								style="margin-top: 5px; border-radius: 0px; width: 105px;height: 30px;margin-left:20px;">浏览</button>
+								<input style="display: none" type="file" class="trans"
+									id="openLocalFile" name="file"
+									accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></input>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label" style="margin-top: 10px;">周期：</label>
+							<div class="col-sm-3 input_date_section">
+								<select id="dateSection" title="当前周期" data-live-search="false">
+								</select>
+							</div>
+							<label class="col-sm-2 control-label" style="margin-top: 10px;">模板：</label>
+							<div class="col-sm-4">
+								<select onchange="selectTemplate()" id="chengshuduSelected" title="当前模板" data-live-search="false">
+								</select>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+	                <div class="form-group" style="float: right;margin: 0;">
+	                    <div class="col-sm-2" style="width:100px">
+	                        <button type="button" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+	                    </div>
+	                    <div class="col-sm-2" style="width:100px">
+	                        <button type="button" id="submitImport" onclick="submitImportFile()" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">确定</button>
+	                    </div>
+	                </div>
+	            </div>
+			</div>
+		</div>
+	</div> 
+	
+	<!-- 项目导入页面 -->
+	<div class="modal fade" id="import" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:700px;height: 330px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 400px;">
+						导入信息配置
+					</h4>
+				</div>
+				<div style="padding-left: 20px;padding-top: 20px;font-size: 13px;color: #ababab;">导入顺序:项目信息-->361成熟度-->(关键角色-->RDPM)-->(项目成员-->档案信息)-->工时-->星级评估</div>
+				<div class="modal-body" style="height: 180px;width: 680px">
+					<div style="height: 25px;">
+						<div style="width:95%">
+			                <div class="input-group" style="display: flex;align-items: center;">
+	                    		<table style="width: 600px; height: 22px; margin-left: -10px;">
+	                    			<tr align="center" valign="middle" id ="select">
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="project" th_value="项目导入" templateName="project-info" value="/import/projects" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">项目信息</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="361"  th_value="361导入" templateName="361Maturity" value="/project/importMaturityAssessment" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="59" style="text-align: left; font-size: 8px;">361成熟度</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="role" th_value="角色导入" templateName="Key-roles" value="/import/keyRoles" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">关键角色</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="rdpm" th_value="RDPM导入" templateName="RDPM-test" value="/import/RDPM" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="40" style="text-align: left; font-size: 8px;">RDPM</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="people" th_value="成员导入" templateName="OMP-data" value="/import/OMP" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">项目成员</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="peopleadd" th_value="档案信息" templateName="Archives-information" value="/import/members" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: left; font-size: 8px;">档案信息</th>
+	                    			    <th style="text-align: right;"><input type="radio" name="radio1" id="work" th_value="工时导入" templateName="Clock-data" value="/import/clock" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="30" style="text-align: center; font-size: 10px;">工时</th>
+	                    				<th style="text-align: right;"><input type="radio" name="radio1" id="star" th_value="星级评估" templateName="Star-data" value="/project/importstar" style="height: 18px; width: 18px;" /></th>
+	                    				<th width="50" style="text-align: center; font-size: 10px;">星级评估</th>
+										<th style="text-align: right;"><input type="radio" name="radio1" id="361MaturityProblem" th_value="360评估问题" templateName="361MaturityProblem" value="/import/import361MaturityProblem" style="height: 18px; width: 18px;" /></th>
+										<th width="80" style="text-align: center; font-size: 10px;">问题及风险追踪</th>
+	                    			</tr>
+	                    		</table>
+			                </div><!-- /input-group -->
+			            </div><!-- /.col-lg-6 -->
+					</div>
+					 <div style="height: 80px;">
+						<div style="width:65%">
+			                <div class="input-group" style="display: flex;">
+			                   	 <div style="display:table-cell;width: 27%;margin-top: 27px;width: 89px">文件路径：</div>
+			                   	 <input type="text" readonly="readonly" id="filePathInfo1" class="form-control" style="height: 30px;margin-top: 27px">
+			                    <span class="input-group-btn">
+			                    	<form method="post" id="importForm1"  enctype="multipart/form-data">
+				                        <button class="btn btn-default" type="button" id="importBtn1" style="margin-top: 28px;margin-left:10px;height: 30px;border-radius:0px;width: 51px;">浏览</button>
+				                        <a class="btn btn-default"  id="templateDownload1" style="margin-top: 28px;margin-left: 5px;height: 30px;border-radius:0px;width: 84px">下载模板</a>
+				                        <input style="display: none" type="file" class="trans" id="importInput" name="file" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></input>
+				                        <div id="worktime" style="display: none;float: right; margin-right: 230px;margin-top: 20px;">
+					                        <span>工时日期: 
+					                        <input type="text" id="datepicker" name="time" placeholder="请选择时间" style="height: 30px;width: 85px;margin-left: 10px;"/>
+											</span>
+				                        </div>
+										<div id="361time" style="display: none;float: right; margin-right: -65px;margin-top: 20px;">
+											<span>月份:
+											<!-- 选择月份	 -->
+											<select id="datepickerCycle" name="datepickerCycle" style="margin-left: 10px;width:120px;height: 30px; background-position: 5px 5px; border: 1px #999999 solid; padding-left: 30px; background-image: url(images/dateicon.png);background-repeat: no-repeat;">
+												<option></option>
+											</select>
+											</span>
+											<span style="margin-left: 20px;">周期:
+											  <select id="datepickerCycle1" name="datepickerCycle1" style="margin-left: 10px;width:210px;height: 30px; background-position: 5px 5px; border: 1px #999999 solid; padding-left: 30px; background-image: url(images/dateicon.png);background-repeat: no-repeat;">
+			                                  </select>
+											</span>
+										</div>
+				                    </form>
+			                    </span>
+			                </div><!-- /input-group -->
+			            </div><!-- /.col-lg-6 -->
+					</div>
+				</div>
+				<div class="modal-footer">
+	                <div class="form-group" style="float: right;margin: 0;">
+	                    <div class="col-sm-2" style="width:100px">
+	                   		<button type="button" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+	                    </div>
+	                    <div class="col-sm-2" style="width:100px">
+							<button type="button" id="submitImport1" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">确定</button>
+	                    </div>
+	                </div>
+	            </div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+	
+	<!-- 导入人员职级 -->
+	<div class="modal fade" id="MembersRankImport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	     aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content" style="top: 100px;">
+	            <div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px;">
+	                <h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+                    	导入人员职级
+	                </h4>
+	                <button type="button" data-dismiss="modal"
+	                        style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">
+	                    	取消
+	                </button>
+	                <button type="button" onclick="submitRank()" data-dismiss="modal"
+	                        style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">
+	                    	确定
+	                </button>
+	            </div>
+	            <div class="modal-body" style="height: 150px;width: 620px">
+	                <div style="height: 80px;">
+	                    <div style="width:65%">
+	                        <div class="input-group" style="display: flex;">
+	                            <div style="display:table-cell;width: 27%;margin-top: 27px;width: 89px">文件路径：</div>
+	                            <input type="text" readonly="readonly" id="filePathInfoRank" class="form-control"
+	                                   style="height: 30px;margin-top: 27px"/>
+	                            <span class="input-group-btn">
+				                    	<form method="post" id="importRankForm" enctype="multipart/form-data">
+					                        <button class="btn btn-default" type="button" onclick="rankImport()"
+	                                                style="margin-top: 27px;border-radius:0px;width: 51px;margin-left: 10px;">浏览</button>
+					                        <a class="btn btn-default" id="templateDownloadRank"
+	                                           style="margin-top: 27px;border-radius:0px;width: 84px;margin-left: 10px;padding-top: 8px;">下载模板</a>
+					                        <input style="display: none" type="file" class="trans" id="openLocalFileRank"
+	                                               name="file"
+	                                               accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"></input>
+					                    </form>
+			                    </span>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>  
+</body> 
+</html>

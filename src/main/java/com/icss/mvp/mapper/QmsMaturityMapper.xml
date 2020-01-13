@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IQmsMaturityDao">
+
+	<select id="queryQMSresults" parameterType="java.lang.String" resultType="com.icss.mvp.entity.Qmsresult">
+	select ql.id AS qmsId,ql.*,qr.*,IFNULL(b.`NAME`,qr.`dutyPerson`) AS dutyPersonName 
+	from qms_list ql 
+	left join qms_result qr on ql.id=qr.qmsId AND qr.`no`=#{no} AND qr.`type`= '3'
+	LEFT JOIN `member_base` b ON qr.`dutyPerson` = b.`HW_ACCOUNT`
+	where 1=1
+	<if test="source != null and source != ''">
+		and ql.`source`=#{source} 
+	</if>
+	<if test='better == "1" and selects == null'>
+		AND qr.involve = '否'
+	</if>
+	<if test='better == "1" and selects != null'>
+		AND qr.involve = '否'
+		and ql.`source` in
+        <foreach collection="selects" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+	</if>
+	<if test='better == "2" and selects != null'>
+		and ql.`label` in
+        <foreach collection="selects" index="index" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+	</if>
+	order by ql.id
+	</select>
+	
+	<select id="queryQMS" parameterType="java.lang.String" resultType="com.icss.mvp.entity.Qmsresult">
+		select * from qms_list ql left join qms_result qr on ql.id=qr.qmsId and qr.`no`=#{no}
+			where ql.`id`=#{id}
+	</select>
+	
+	<insert id="replaceQMSresult" parameterType="com.icss.mvp.entity.Qmsresult">
+		replace into qms_result values
+			(#{no},#{qmsId},#{involve},#{score},#{evidence},#{problemType},#{majorProblem},#{improvementMeasure},#{planClosedTime},#{actualClosedTime},#{dutyPerson},#{followPerson},#{progress},#{state},#{modifyTime})
+	</insert>
+	
+	<select id="qmsRanges" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select ql1.id from qms_list ql1 left join qms_list ql2 on ql1.source=ql2.source where ql2.id=#{qmsId} order by ql1.id
+	</select>
+	
+	<select id="sumConform" parameterType="java.lang.String" resultType="java.lang.String">
+	SELECT SUM(qr.involve = '是')/SUM(qr.involve != '免') AS involve FROM
+	qms_result qr
+	LEFT JOIN `qms_list` l ON l.id = qr.`qmsId`
+	WHERE qr.`no`=#{no} AND qr.type = 3
+	<if test="source != null and source != ''">
+		AND l.source = #{source}
+	</if>
+	</select>
+	
+	<select id="qmsTypes" resultType="java.lang.String">
+		select source from qms_list group by source order by id
+	</select>
+	
+	<select id="qmsProblemType" parameterType="java.lang.String" resultType="com.icss.mvp.entity.Qmsproblem">
+		select * from qms_list_problem where source=#{source}
+	</select>
+	
+	<select id="qmsReport" resultType="com.icss.mvp.entity.Qmsproblem">
+		SELECT DISTINCT(qlp.pid),qlp.`source`,qlp.question,qwp.mainProblems,qwp.reason,qwp.improvement,qwp.level,qwp.`creationTime` 
+		FROM `qms_list_problem` qlp
+        LEFT JOIN `qms_result` qr ON qr.`problemType` = qlp.`pid`
+        LEFT JOIN `qms_whole_project` qwp ON qlp.`pid` = qwp.pid AND qwp.`type` = #{type}
+        <if test="month != null and month != ''">
+		and DATE_FORMAT(qwp.`creationTime`, '%Y-%m-%d') = #{month} 
+	    </if>
+        WHERE qr.`involve` = '否' 
+        <if test="proNos != null and proNos != ''">
+		AND qr.`no` IN ${proNos} 
+	    </if>
+        <include refid="sql_result"/>
+        ORDER BY qlp.`source` DESC
+	</select>
+	
+	<select id="qmsSector" resultType="com.icss.mvp.entity.Qmsproblem">
+		SELECT qlp.`source`,COUNT(*) AS number FROM `qms_result` qr
+        LEFT JOIN `qms_list_problem` qlp ON qlp.`pid` = qr.`problemType`
+        WHERE qr.`involve` = '否' AND qr.`no` IN ${proNo} AND qr.`problemType` IS NOT NULL
+        <include refid="sql_result"/>
+        GROUP BY qlp.`source` DESC
+	</select>
+	
+	<select id="qmsHistogram" resultType="com.icss.mvp.entity.Qmsproblem">
+		SELECT qlp.`question`,COUNT(*) AS number FROM `qms_result` qr
+        LEFT JOIN `qms_list_problem` qlp ON qlp.`pid` = qr.`problemType`
+        WHERE qr.`involve` = '否' AND qlp.`source` = #{name} AND qr.`problemType` IS NOT NULL
+        AND qr.`no` IN ${proNo}
+        <include refid="sql_result"/>
+        GROUP BY qlp.`question` DESC
+	</select>
+	
+	<select id="qmsSource" resultType="java.lang.String">
+		SELECT qlp.`source` FROM `qms_result` qr
+        LEFT JOIN `qms_list_problem` qlp ON qlp.`pid` = qr.`problemType`
+        WHERE qr.`involve` = '否' AND qr.`no` IN ${proNo} 
+        <include refid="sql_result"/>
+        GROUP BY qlp.`source` DESC LIMIT 1
+	</select>
+	
+	<sql id="sql_result">
+	    AND qr.`type` = #{type}
+        <if test="month != null and month != ''">
+		and DATE_FORMAT(qr.`creationTime`, '%Y-%m-%d') = #{month} 
+	    </if>
+	</sql>
+	
+	<select id="qmsReportNos" resultType="java.lang.Integer">
+	    SELECT COUNT(NO) FROM `qms_result` qr WHERE qr.`involve` = '否' AND qr.problemType = #{pid} AND qr.NO IN ${proNos} AND qr.`problemType` IS NOT NULL
+	    <include refid="sql_result"/>
+	</select>
+	
+	<select id="getQmsReports" resultType="java.lang.Integer">
+	    SELECT COUNT(*) FROM `qms_result` qr WHERE qr.`involve` = '否' AND qr.NO IN ${proNo} AND qr.problemType IS NOT NULL
+	    <include refid="sql_result"/>
+	</select>
+	
+	<select id="multipleMenuSource" resultType="java.lang.String">
+	    SELECT DISTINCT(source) FROM `qms_list` WHERE source != #{source}
+	</select>
+	
+	<select id="multipleMenuLabel" resultType="java.lang.String">
+        SELECT DISTINCT(label) FROM `qms_list` WHERE source = #{source}
+	</select>
+	
+	<select id="getSelectQuestion" resultType="java.util.HashMap">
+	    SELECT pid AS `text`,question AS `value` FROM `qms_list_problem` WHERE source = #{source}
+	</select>
+	
+	<insert id="queryQMSresultsSave" parameterType="com.icss.mvp.entity.Qmsresult">
+		replace into qms_result(NO,qmsId,involve,evidence,problemType,majorProblem,improvementMeasure,planClosedTime,dutyPerson,progress,state,type,creationTime) values
+			(#{no},#{qmsId},#{involve},#{evidence},#{problemType},#{majorProblem},#{improvementMeasure},#{planClosedTime},#{dutyPerson},#{progress},#{state},#{type},#{creationTime})
+	</insert>
+	
+	<insert id="queryQMSresultsSaves" parameterType="java.util.List">
+		replace into qms_result (NO,qmsId,involve,evidence,problemType,majorProblem,improvementMeasure,planClosedTime,dutyPerson,progress,state,type,creationTime) 
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+	        (#{item.no},#{item.qmsId},#{item.involve},#{item.evidence},#{item.problemType},#{item.majorProblem},#{item.improvementMeasure},#{item.planClosedTime},
+	        #{item.dutyPerson},#{item.progress},#{item.state},#{item.type},#{item.creationTime})
+	    </foreach>
+	</insert>
+	
+	<update id="saveSelectQuestion">
+		UPDATE `qms_result` SET problemType =#{pid} WHERE NO =#{no} AND qmsId =#{qmsId}
+	</update>
+	
+	<insert id="qmsReportSave" parameterType="com.icss.mvp.entity.Qmsproblem">
+		REPLACE INTO `qms_whole_project` (pid,mainProblems,reason,improvement,creationTime,level,type) VALUES
+			(#{pid},#{mainProblems},#{reason},#{improvement},#{creationTime},#{level},#{type})
+	</insert>
+	
+	<insert id="qmsReportSaves" parameterType="com.icss.mvp.entity.Qmsproblem">
+		REPLACE INTO `qms_whole_project` (pid,mainProblems,reason,improvement,creationTime,level,type) VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.pid},#{item.mainProblems},#{item.reason},#{item.improvement},#{item.creationTime},#{item.level},#{item.type})
+		</foreach>
+	</insert>
+	
+	<select id="downloadProblemQMS" parameterType="java.lang.String" resultType="com.icss.mvp.entity.Qmsresult">
+	SELECT ql.`source`,ql.`content`,qr.`evidence`,qlp.`question` AS
+	problemType,qr.`majorProblem`,qr.`improvementMeasure`,qr.`dutyPerson`,
+	qr.`planClosedTime`,qr.`state`,qr.`progress` FROM `qms_result` qr
+	LEFT JOIN `qms_list` ql ON qr.qmsId = ql.`id`
+	LEFT JOIN `qms_list_problem` qlp ON qr.problemType = qlp.pid
+	WHERE qr.`no` = #{no} AND qr.involve = '否'
+	AND qr.`type` = '3'
+	</select>
+	
+	<select id="queryQMShistorical" resultType="com.icss.mvp.entity.Qmsresult">
+	SELECT * FROM `qms_result` WHERE `type` = '3'
+	</select>
+	
+	<insert id="saveQMShistorical" parameterType="com.icss.mvp.entity.Qmsresult">
+		replace into qms_result (NO,qmsId,involve,evidence,problemType,majorProblem,improvementMeasure,planClosedTime,dutyPerson,progress,state,type,creationTime) 
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+	        (#{item.no},#{item.qmsId},#{item.involve},#{item.evidence},#{item.problemType},#{item.majorProblem},#{item.improvementMeasure},#{item.planClosedTime},
+	        #{item.dutyPerson},#{item.progress},#{item.state},#{item.type},#{item.creationTime})
+	    </foreach>
+	</insert>
+		
+	<select id="getQmsidBy" resultType="com.icss.mvp.entity.Qmslist">
+	SELECT id,content FROM qms_list WHERE source != '问题跟踪'
+	</select>
+	
+	<select id="getQmsListProblem" resultType="com.icss.mvp.entity.Qmsproblem">
+	SELECT * FROM `qms_list_problem`
+	</select>
+	
+	<insert id="importQMS" parameterType="com.icss.mvp.entity.Qmsresult">
+		replace into qms_result (NO,qmsId,involve,evidence,majorProblem,problemType,improvementMeasure,planClosedTime,dutyPerson,progress,state) 
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+	        (#{item.no},#{item.qmsId},#{item.involve},#{item.evidence},#{item.majorProblem},#{item.problemType},#{item.improvementMeasure},#{item.planClosedTime},
+	        #{item.dutyPerson},#{item.progress},#{item.state})
+	    </foreach>
+	</insert>
+	
+	<select id="exportQMS" resultType="com.icss.mvp.entity.Qmsresult">
+	SELECT qr.no,t1.`NAME`,t1.`AREA`,t1.`PDU_SPDT` AS spdt,t1.`PM`,m.`NAME` AS qa,t1.`TYPE`,
+	ql.`source`,ql.`content`,qr.`evidence`,qlp.`question` AS problemType,qr.majorProblem,qr.`improvementMeasure`,
+	IFNULL(mb.`NAME`,qr.`dutyPerson`) AS dutyPerson,qr.`planClosedTime`,qr.`state`,qr.`progress` 
+	FROM `qms_result` qr
+	LEFT JOIN `qms_list` ql ON ql.`id` = qr.`qmsId`
+	LEFT JOIN `qms_list_problem` qlp ON qlp.`pid` = qr.`problemType`
+	LEFT JOIN `project_info` t1 ON t1.`NO` = qr.`no`
+	LEFT JOIN `project_members_local` m ON m.`NO` = qr.`no` AND m.`ROLE` = 'QA'
+	LEFT JOIN `member_base` mb ON mb.`HW_ACCOUNT` = qr.`dutyPerson`
+	WHERE qr.`involve` = '否'
+	<include refid="sql_result"/>
+	</select>
+	
+	<select id="qmsDimension" resultType="com.icss.mvp.entity.QualityMonthlyReport">
+	SELECT i.`NO`,i.`NAME`,ql.`source` AS period,i.pm,i.hwzpdu,i.PDU_SPDT AS pduSpdt,i.du,i.pdu,i.START_DATE AS startDate,
+	i.END_DATE AS endDate,i.`PROJECT_TYPE` AS projectType,
+	SUM(qr.`state` = 'Closed' AND qr.involve = '否') AS quality,
+	SUM(qr.involve = '是')/SUM(qr.involve != '免') AS peopleLamp,
+    SUM(qr.involve = '是' AND ql.`source` = '项目管理')/SUM(qr.involve != '免' AND ql.`source` = '项目管理') AS planLamp,
+    SUM(qr.involve = '是' AND ql.`source` = '项目管理') AS openAudit,SUM(qr.involve = '否' AND ql.`source` = '项目管理') AS openAAR,
+    SUM(qr.involve = '是' AND ql.`source` = '质量策划')/SUM(qr.involve != '免' AND ql.`source` = '质量策划') AS scopeLamp,
+    SUM(qr.involve = '是' AND ql.`source` = '质量策划') AS closedAudit,SUM(qr.involve = '否' AND ql.`source` = '质量策划') AS closedAAR,
+    SUM(qr.involve = '是' AND ql.`source` = '质量控制')/SUM(qr.involve != '免' AND ql.`source` = '质量控制') AS qualityLamp,
+    SUM(qr.involve = '是' AND ql.`source` = '质量控制') AS delayAudit,SUM(qr.involve = '否' AND ql.`source` = '质量控制') AS delayAAR,
+    SUM(qr.involve = '是' AND ql.`source` = '流程要求')/SUM(qr.involve != '免' AND ql.`source` = '流程要求') AS keyRoles,
+    SUM(qr.involve = '是' AND ql.`source` = '流程要求') AS addedAudit,SUM(qr.involve = '否' AND ql.`source` = '流程要求') AS addedAAR,
+    SUM(qr.involve = '是' AND ql.`source` = '知识管理')/SUM(qr.involve != '免' AND ql.`source` = '知识管理') AS keyRolesPass,
+    SUM(qr.involve = '是' AND ql.`source` = '知识管理') AS sumAudit,SUM(qr.involve = '否' AND ql.`source` = '知识管理') AS sumAAR,
+    ur.userId AS comment
+    FROM `qms_result` qr
+    LEFT JOIN `user_report_project` ur ON qr.`no` = ur.`no` AND ur.userId = #{username}
+    LEFT JOIN `qms_list` ql ON ql.`id` = qr.`qmsId`
+    LEFT JOIN `project_info` i ON qr.`no` = i.`NO`
+	WHERE 1=1
+	<if test='coopType == "1"'>
+        <![CDATA[
+			AND ur.userId IS NOT NULL
+		]]>
+    </if>
+    <if test='coopType == "2"'>
+        <![CDATA[
+		    AND ur.userId IS NULL
+	    ]]>
+    </if>
+	<include refid="sql_result"/>
+	GROUP BY i.`NO` DESC
+	</select>
+	
+	<select id="qmsWholeProject" resultType="com.icss.mvp.entity.Qmsproblem">
+	SELECT * FROM `qms_whole_project` WHERE `type` = 3
+	</select>
+	
+	<select id="qmsSelfchecking" resultType="com.icss.mvp.entity.QualityMonthlyReport">
+	SELECT i.PDU_SPDTID,i.PDU_SPDT AS pduSpdt,SUM(qr.involve = '是')/SUM(qr.involve != '免') AS peopleLamp,
+    SUM(qr.involve = '是' AND qlp.source = '项目管理')/SUM(qr.involve != '免' AND qlp.source = '项目管理') AS planLamp, 
+    SUM(qr.involve = '是' AND qlp.source = '质量策划')/SUM(qr.involve != '免' AND qlp.source = '质量策划') AS scopeLamp, 
+    SUM(qr.involve = '是' AND qlp.source = '质量控制')/SUM(qr.involve != '免' AND qlp.source = '质量控制') AS qualityLamp, 
+    SUM(qr.involve = '是' AND qlp.source = '流程要求')/SUM(qr.involve != '免' AND qlp.source = '流程要求') AS keyRoles, 
+    SUM(qr.involve = '是' AND qlp.source = '知识管理')/SUM(qr.involve != '免' AND qlp.source = '知识管理') AS keyRolesPass 
+    FROM `qms_result` qr 
+    LEFT JOIN `project_info` i ON i.no = qr.no
+    LEFT JOIN `qms_list` qlp ON qlp.`id` = qr.`qmsId`
+    WHERE qr.type = 0 AND qr.creationTime = #{month}
+    GROUP BY i.PDU_SPDTID
+	</select>
+	
+	<select id="getPersonLiable" resultType="com.icss.mvp.entity.Qmsresult">
+	SELECT m.`NAME` AS dutyPerson,m.`HW_ACCOUNT` AS followPerson FROM `project_staff` p
+    LEFT JOIN `member_base` m ON p.`ZR_ACCOUNT` = m.`ZR_ACCOUNT`
+    WHERE p.NO = #{no} AND p.`IS_DELETED` = '0'
+    ORDER BY m.`HW_ACCOUNT` DESC
+	</select>
+	
+	<update id="savePersonLiable">
+		UPDATE `qms_result` SET dutyPerson = #{account} WHERE NO =#{no} AND qmsId =#{qmsId} AND type = '3'
+	</update>
+</mapper>

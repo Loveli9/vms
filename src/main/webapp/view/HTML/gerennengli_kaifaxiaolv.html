@@ -1,0 +1,419 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<!-- <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script> -->
+<!-- <script src="../../resources/jquery/jquery-3.2.1.min.js"></script> -->
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="js/gerennengli_kaifaxiaolv.js"></script>
+<style type="text/css">
+	#ui-datepicker-div {
+		display: none;
+	}
+	
+	.tooltip-inner {
+		max-width: 220px;
+		text-align: left;
+	}
+	
+	.nav>li.active {
+		border-left: 0px;
+	}
+	/* .table {table-layout:inherit;}  */  
+	/* .table {table-layout:fixed;} */
+</style>
+</head>
+<body>
+	<!-- <div class="chart-title" style="line-height: 40px;">
+		<div style="float: left;">
+			<span style="font-size: 16px;">开发效率</span>
+		</div>
+		<div
+			style="border-right: 1px #367FA9 solid; height: 33px; width: 15px; float: left;"></div>
+		<div
+			style="border-right: 2px #367FA9 solid; height: 33px; width: 4px; float: left;"></div> 
+		
+	</div>-->
+	<!-- <div style="padding-top: 10px; padding-left: 30px;">
+		<select id="develop-sel" class="btn btn-default"
+			style="height: 35px;">
+			<option selected="selected" style="color: black">每月新增修改代码量</option>
+			<option style="color: black">每两周新增修改代码量</option>
+		</select>
+	</div> -->
+	<div class="chart" style="margin-top: 10px;">
+		<div id="Div1" style="width: 100%; height: 330px;"></div>
+	</div>
+	<div class="main-button" style="display: none;">
+		<span style="font-size: 16px; padding-left: 10px">需求代码量(KB)</span> 
+		<span style="float: right; margin-right: 20px; display: none;"> 
+			<input id="cancel" type="button" value="取消" 
+				style="border-color: #367FA9; color: #367FA9; background-color: white; padding: 2px 5px 2px 5px; font-size: 10px; border-radius: 5px;" />
+			<input id="save" type="button" value="保存" 
+				style="border-color: #367FA9; color: #fff; background-color: #367FA9; padding: 2px 5px 2px 5px; font-size: 10px; border-radius: 5px;" />
+		</span>
+	</div>
+	<table style="display: none;" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table">
+		<thead>
+			<tr bgcolor="#b4aeb5">
+				<td style="line-height: 30px;">月份</td>
+				<td style="line-height: 30px;">需求预算</td>
+				<td style="line-height: 30px;"><span title="XX">需求实际</span></td>
+				<td style="line-height: 30px;"><span title="XX">累计代码缺口</span></td>
+				<td style="line-height: 30px;"><span title="XX">完成率</span></td>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>XXXX</td>
+				<td>XXXX</td>
+				<td>XXX</td>
+				<td>XX</td>
+				<td>XXXX</td>
+			</tr>
+			<tr>
+				<td>XXXX</td>
+				<td>XXXX</td>
+				<td>XXX</td>
+				<td>XX</td>
+				<td>XXXX</td>
+			</tr>
+			<tr>
+				<td>XXXX</td>
+				<td>XXXX</td>
+				<td>XXX</td>
+				<td>XX</td>
+				<td>XXXX</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="main-button" style="height: 34px;line-height: 34px; margin: 10px 0px -10px 0px;">
+		<!-- <span style="font-size: 16px; padding-left: 10px;float: left;">员工个人代码量(LOC)</span> -->
+		<!-- 条件筛选 -->
+	<!-- 	<select id="personal-code-count" class="btn btn-default"
+			style="float: left;margin-left: 10px;">
+			<option selected="selected" style="color: black" value='0'>Commit</option>
+			<option style="color: black" value='1'>Message</option>
+		</select> -->
+		
+		<div class="col-sm-12" style="width:260px;float: right;padding-right: 0px;padding-left: 0px;">
+			<select id="userRole" name="userRole" title="请选择岗位" class="selectpicker show-tick form-control" style="height: 32px;" multiple data-live-search="false">
+				 <option value="开发工程师">开发工程师</option>
+                 <option value="PM">PM</option>
+                 <option value="产品经理">产品经理</option>
+                 <option value="SE">SE</option>
+                 <option value="MDE">MDE</option>
+                 <option value="BA">BA</option>
+                 <option value="IA">IA</option>
+	             <option value="运维工程师">运维工程师</option>
+                 <option value="测试工程师">测试工程师</option>
+	             <option value="TC">TC</option>
+	             <option value="TSE">TSE</option>
+	             <option value="TL">TL</option>
+			</select>
+		</div>
+		<select id="personal-code-type" style="float: right;margin-right: 10px;">
+			<!--<option selected="selected" style="color: black" value='all'>ALL</option>-->
+			<option selected="selected" style="color: black" value='JAVA'>JAVA</option>
+			<option style="color: black" value='JS'>JS</option>
+			<option style="color: black" value='C'>C/C++</option>
+			<option style="color: black" value='PYTHON'>PYTHON</option>
+			<option style="color: black" value='GO'>GO</option>
+		</select>
+		<button id="lowLoc" data-toggle="modal" data-target="#lowLocKuang" style="background-color: #1AB394;width: 100px;height: 32px;line-height: 32px;border-radius: 4px;border: 0;color: white;outline: none;float: left;">低产出分析</button>
+		<!--  <span style="font-size: 16px;">指定版本过滤</span><span><input type="text" id="svnsource" style="margin-left:72px; height:33px"onchange="selectsvn()"/></span>-->
+	</div>
+	<!-- <table width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table" id="gerenCode">
+		<thead>
+			<tr bgcolor="#b4aeb5">
+				<td style="line-height: 30px;">姓名</td>
+				<td style="line-height: 30px;">工号</td>
+				<td style="line-height: 30px;">岗位</td>
+				<td style="line-height: 30px;"><span title="XX">1月</span></td>
+				<td style="line-height: 30px;"><span title="XX">2月</span></td>
+				<td style="line-height: 30px;"><span title="XX">3月</span></td>
+				<td style="line-height: 30px;"><span title="XX">4月</span></td>
+				<td style="line-height: 30px;"><span title="XX">5月</span></td>
+				<td style="line-height: 30px;"><span title="XX">6月</span></td>
+				<td style="line-height: 30px;"><span title="XX">7月</span></td>
+				<td style="line-height: 30px;"><span title="XX">8月</span></td>
+				<td style="line-height: 30px;"><span title="XX">9月</span></td>
+				<td style="line-height: 30px;"><span title="XX">10月</span></td>
+				<td style="line-height: 30px;"><span title="XX">11月</span></td>
+				<td style="line-height: 30px;"><span title="XX">12月</span></td>
+				<td style="line-height: 30px;"><span title="XX">合计</span></td>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+		<tfoot>
+		</tfoot>
+	</table> -->
+	
+	<div class="myTab" style="width:100%;">
+		<div>
+			<table id="mytab" class="table text-nowrap"></table>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="lowLocKuang" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width: 800px;margin-left: -80px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding: 0;line-height: 40px;">
+					<h4 class="modal-title" id="" style="display: inline;margin-right: 50px;">
+						在行项目低产出分析
+						<span style="color: red;font-size: 14px;">（请先选择代码统计月份并输入低产出标准）</span>
+					</h4>
+					<div style="border-right: 1px #367FA9 solid;height: 40px;width: 15px;float: left;position:  relative;left: 460px;"></div>
+					<div style="border-right: 2px #367FA9 solid;height: 40px;width: 2px;float: left;position:  relative;left: 462px;"></div>
+					<button type="button" data-dismiss="modal" style="border:1px #367FA9 solid;background-color: white;color: #367FA9;border-radius: 4px;width: 60px;height: 32px;margin-right: 15px;outline: none;line-height: 30px;margin-left: 120px;">取消</button>
+					<button type="button" id="savelowLoc" data-dismiss="modal" style="border:1px #367FA9 solid;background-color: #367FA9;color: white;border-radius: 4px;width: 60px;height: 32px;outline: none;line-height: 30px;">保存</button>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<span style="margin-left: 1%;">请选择代码统计月份</span>	
+			        <input type="text" id="datepickerLoc" placeholder="请选择月份" style="border: 1px #999999 solid; background-color: transparent; width: 150px; height: 25px; padding-left: 30px; background-image: url(images/dateicon.png); /*引入图片图片*/ background-repeat: no-repeat; /*设置图片不重复*/ background-position: 5px 3px;" />
+					<span style="margin-left: 5%;">代码量低于</span>
+					<input id="lowlocStandard" type="text" style="width: 150px; height: 25px;" />行
+					<button id="queryLowLocPerson" style="border: 1px #999999 solid; margin-left: 5%; width: 55px; height: 25px; border: 0; background-color: #367FA9; color: #ffffff; border-radius: 4px;">查询</button>
+					<table id="lowlocTable" border="1" cellspacing="0" cellpadding="0" style="border: 1px #999999 solid;margin-top: 2%;">
+						<thead>
+							<tr style="height: 35px;font-size: 14px;">
+								<th style="width: 10%; text-align: center;">姓名</th>
+								<th style="width: 10%; text-align: center;">工号</th>
+								<th style="width: 10%; text-align: center;">代码量</th>
+								<th style="width: 15%; text-align: center;">是否为低产出人员</th>
+								<th style="width: 25%; text-align: center;">低产出原因</th>
+								<th style="text-align: center;">备注</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->	
+	
+	<script type="text/javascript">
+	
+		var projNo = window.parent.projNo;
+		
+		function saveStartDate(){
+			$("#datepicker").change(function(){
+				var lasttimes = $("#datepicker").val(); 
+				$.ajax({
+					url: getRootPath() + '/svnTask/saveStartDate',
+					type: 'post',
+					data:{
+						no : projNo,
+				 		lasttimes : lasttimes,
+					},
+					success: function (data) {
+						
+					}
+				});
+			})
+		}
+
+		/*function selectsvn() {
+			var svnsource = $("#svnsource").val();
+			$.ajax({
+				url: getRootPath() + '/svnTask/savesource',
+				type: 'post',
+				data:{
+					no : projNo,
+			 svnsource : svnsource,
+				},
+				success: function (data) {
+				}
+			});
+		}*/
+
+		var noSel=new Array();
+		var lowSel=new Array();
+		//查询所有低产出原因
+		function queryLowLocReasons(){
+			$.ajax({
+				url: getRootPath() + '/LowLoc/queryLowLocReasons',
+				type: 'post',
+				async: false,//是否异步，true为异步
+				success: function (data) {
+					noSel=data.noSel;
+					lowSel=data.lowSel;
+				}
+			}); 
+		}
+		
+		var all="";
+		//根据月份和标准筛选低产出人员
+		function queryLowLocPerson(){
+			$("#queryLowLocPerson").click(function(){
+				if($("#datepickerLoc").val()==null||$("#datepickerLoc").val()==""){
+					alert("请选择代码统计月份");
+					return;
+				}else if($("#lowlocStandard").val()==null||$("#lowlocStandard").val()==""){
+					alert("请输入低产出标准");
+					return;	
+				}
+				$.ajax({
+					url: getRootPath() + '/LowLoc/queryLowLocPerson',
+					type: 'post',
+					async: false,//是否异步，true为异步
+					data: {
+						proNo: projNo,
+						month: $("#datepickerLoc").val(),
+						standard: $("#lowlocStandard").val()
+					},
+					success: function (data) {
+						if(data==null){
+							return;
+						}
+						all=data;
+					    $("#lowlocTable").children("tbody").empty();
+						_.each(data, function(lowloc, index){
+							var tr="<tr style='height: 35px;font-size: 14px;'>" +
+								      "<td style='text-align: center;background-color: white;'>" + lowloc.name + "</td>" +
+								      "<td style='text-align: center;background-color: white;'>" + lowloc.account + "</td>" +
+								      "<td style='text-align: center;background-color: white;'>" + lowloc.loc + "</td>" +
+								      "<td style='text-align: center;background-color: white;'>" + 
+								         "<select id='sureLow-" + lowloc.account + "' style='width: 90%; height: 30px;'>";
+								         	if(lowloc.sureLowloc=="无产出人员"){
+								         		tr+="<option value='0' selected='selected'>无产出人员</option>" +
+									         		"<option value='1'>低产出人员</option>";
+								         	}else if(lowloc.sureLowloc=="低产出人员"){
+								         		tr+="<option value='0'>无产出人员</option>" +
+									         		"<option value='1' selected='selected'>低产出人员</option>";
+								         	}
+								         tr+="</select>" +
+								      "</td>" +
+								      "<td style='text-align: center;background-color: white;'>";
+								      if(lowloc.sureLowloc=="无产出人员"){
+									      tr+="<select id='noLoc-" + lowloc.account + "' style='width: 90%; height: 30px;'>";
+								      		_.each(noSel, function(option, index){
+								      			if(option==lowloc.lowLocReason){
+								      				tr+="<option selected='selected' value=" + option + ">" + option + "</option>";  
+								      			}else{
+									      			tr+="<option value=" + option + ">" + option + "</option>";  
+								      			}
+								      		})      
+										  tr+="</select>";
+									      tr+="<select id='lowLoc-" + lowloc.account + "' style='display: none;width: 90%; height: 30px;'>";
+								      		_.each(lowSel, function(option, index){
+								      			tr+="<option value=" + option + ">" + option + "</option>";  
+								      		})      
+										  tr+="</select>";
+								      }else if(lowloc.sureLowloc=="低产出人员"){
+									      tr+="<select id='noLoc-" + lowloc.account + "' style='display: none;width: 90%; height: 30px;'>";
+								      		_.each(noSel, function(option, index){
+								      			tr+="<option value=" + option + ">" + option + "</option>";  
+								      		})      
+										  tr+="</select>";
+									      tr+="<select id='lowLoc-" + lowloc.account + "' style='width: 90%; height: 30px;'>";
+								      		_.each(lowSel, function(option, index){
+								      			if(option==lowloc.lowLocReason){
+								      				tr+="<option selected='selected' value=" + option + ">" + option + "</option>";  
+								      			}else{
+									      			tr+="<option value=" + option + ">" + option + "</option>";  
+								      			}
+								      		})      
+										  tr+="</select>";
+								      }
+									  tr+="</td><td style='text-align: center;background-color: white;'>" + 
+									       	  "<input id='note-" + lowloc.account + "' type='text' value='" + lowloc.remark + "' style='width: 100%;height: 35px;border: 0;font-size: 14px;' />" +
+									    "</td>" +
+									  "</tr>";
+							$("#lowlocTable").children("tbody").append(tr);
+						})
+					}
+				})
+			})
+		}
+		
+		function sureLow(){
+			$(document).on("change","select[id^='sureLow']",function(){
+				var tis=$(this);
+				var val=tis.val();
+				var id=tis.attr("id");
+				var account=id.substring(id.indexOf("-")+1);
+				var noLoc="noLoc-"+account;
+				var lowLoc="lowLoc-"+account;
+				if(val==0){
+					$("select[id='"+noLoc+"']").css("display","");
+					$("select[id='"+lowLoc+"']").css("display","none");
+				}else if(val==1){
+					$("select[id='"+noLoc+"']").css("display","none");
+					$("select[id='"+lowLoc+"']").css("display","");
+				}
+			})
+		}
+		
+		function savelowLoc(){
+			$("#savelowLoc").click(function(){
+//				$("#queryLowLocPerson").click();
+				if($("#lowlocTable").children("tbody").html()==""){
+					return;
+				}
+				_.each(all, function(one, index){
+	      			var id=one.account;
+	      			one.sureLowloc=$("select[id='sureLow-"+id+"'] option:selected").html();
+	      			if($("select[id='sureLow-"+id+"']").val()=="0"){
+		      			one.lowLocReason=$("select[id='noLoc-"+id+"'] option:selected").html();
+	      			}else if($("select[id='sureLow-"+id+"']").val()=="1"){
+	      				one.lowLocReason=$("select[id='lowLoc-"+id+"'] option:selected").html();
+	      			}
+	      			if($("input[id='note-"+id+"']").val()==null){
+		      			one.remark="";
+	      			}else{
+	      				one.remark=$("input[id='note-"+id+"']").val();
+	      			}
+	      			one.month=$("#datepickerLoc").val();
+	      			one.standard=$("#lowlocStandard").val();
+	      		})
+	    		$.ajax({
+	    			url: getRootPath() + '/LowLoc/saveLowLoc',
+	    			type: 'post',
+	    			async: false,
+	    			dataType: "json",
+	    			contentType : 'application/json;charset=utf-8', //设置请求头信息
+	    			data: JSON.stringify({
+	    				allLowLoc: all
+	    			}),
+	    			success: function (data) {
+	    				if(data=="OK"){
+		    				alert("保存成功！")
+	    				}else if(data=="NO"){
+		    				alert("保存失败！")
+	    				}
+	    			}
+	    		});
+			})
+		}
+		
+	 	$(document).ready(function(){
+      		$("#datepicker").datepicker({
+      	      changeMonth: true,
+      	      changeYear: true,
+      	      dateFormat: 'yy-mm-dd',
+      	      todayButton: true,           
+      	      prevButton: true,            
+      	      nextButton: true,
+      	    });
+      		$("#datepickerLoc").datepicker({
+      	      changeMonth: true,
+      	      changeYear: true,
+      	      dateFormat: 'yy-mm',
+      	      prevButton: true,            
+      	      nextButton: true,
+      	    });
+      		saveStartDate();
+      		queryLowLocReasons();
+      		queryLowLocPerson();
+      		sureLow();
+      		savelowLoc();
+		})
+	</script>
+</body>
+</html>

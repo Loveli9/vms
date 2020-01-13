@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ProjectLableDao">
+	<!-- 项目流程 -->
+	<resultMap  type="com.icss.mvp.entity.Label" id="lable">
+		<result property="id" column="ID" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="modifyTime" column="MODIFY_TIME" />
+		<result property="isDeleted" column="IS_DELETED" />
+		<result property="title" column="TITLE" />
+		<result property="category" column="CATEGORY" />
+	</resultMap>
+	<resultMap  type="com.icss.mvp.entity.TeamLabel" id="teamLable">
+		<result property="id" column="ID" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="modifyTime" column="MODIFY_TIME" />
+		<result property="isDeleted" column="IS_DELETED" />
+		<result property="title" column="TITLE" />
+		<result property="category" column="CATEGORY" />
+	</resultMap>
+	<!-- 指标信息-->
+ 	<resultMap type="com.icss.mvp.entity.Measure" id="measureMap" >
+		<id column="ID" property="id" />
+		<result column="WD_ID" property="wdId" />
+		<result column="CREATE_TIME" property="createTime" />
+		<result column="MODIFY_TIME" property="modifyTime" />
+		<result column="IS_DELETE" property="isDelete" />
+		<result column="name" property="name" />
+		<result column="UNIT" property="unit" />
+		<result column="UPPER" property="upper" />
+		<result column="LOWER" property="lower" />
+		<result column="TARGET" property="target" />
+		<result column="CONTENT" property="content" />
+		<result column="CATEGORY" property="category" />
+		<result column="VERSION" property="version" />
+		<result column="ITERATION" property="iteration" />
+	</resultMap>
+	<!-- 指标信息-->
+	<resultMap type="com.icss.mvp.entity.ProjectLabelConfig" id="projectLabelConfig" >
+		<id column="id" property="id" />
+		<result column="create_time" property="createTime" />
+		<result column="modify_time" property="modifyTime" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="project_id" property="projectId" />
+		<result column="label_id" property="labelId" />
+		<result column="order" property="order" />
+	</resultMap>
+	<resultMap type="com.icss.mvp.entity.teamLabelConfig" id="teamLabelConfig" >
+		<id column="id" property="id" />
+		<result column="create_time" property="createTime" />
+		<result column="modify_time" property="modifyTime" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="team_id" property="teamId" />
+		<result column="label_id" property="labelId" />
+		<result column="order" property="order" />
+	</resultMap>
+	<!-- 根据流程id和项目编号查询选择指标 -->
+	<resultMap type="com.icss.mvp.entity.ProjectLabelMeasure" id="measureRang">
+	<result property="labelName" column="TITLE" />
+	    <collection property="measureCatList" javaType="java.util.ArrayList" ofType="com.icss.mvp.entity.ShowMeasureCat">
+            <result property="labelId" column="LABLE_ID" />
+         	<result property="measureCategory" column="CATEGORY" />
+         	<collection property="measureList" javaType="java.util.ArrayList" ofType="com.icss.mvp.entity.ShowMeasure">
+                   <result property="measureId" column="measure_id" />
+         	       <result property="measureCategory" column="CATEGORY" />	
+         	       <result property="upper" column="UPPER" />
+         	       <result property="target" column="TARGET" />
+         	       <result property="lower" column="LOWER" />	
+         	       <result property="unit" column="UNIT" />
+         	       <result property="measureName" column="name" />
+            </collection>
+        </collection>
+    </resultMap>
+	<select id="getMeasureRang" parameterType="java.lang.String" resultMap="measureRang">
+	SELECT t.*, m.id, m.category,m.name, l.title,
+    IFNULL(r.upper,m.upper) AS `upper`,IFNULL(r.target,m.target) AS `target`,IFNULL(r.lower,m.lower) AS `lower`
+    FROM (SELECT lm.measure_id, lm.project_lable_id, pl.label_id,pl.project_id
+    FROM label_measure_config lm 
+    LEFT JOIN project_label_config pl ON lm.project_lable_id = pl.id
+    WHERE pl.project_id = #{proNo} AND pl.is_deleted = 0 ) t 
+    LEFT JOIN measure m ON t.measure_id = m.id
+    LEFT JOIN (SELECT measure_id , IFNULL(`upper`,' ') AS `upper`,IFNULL(`target`,' ') AS `target`,IFNULL(`lower`,' ') AS `lower` 
+    	 FROM (SELECT * FROM measure_range WHERE NO = #{proNo}
+         			ORDER BY measure_id, update_time DESC) rr GROUP BY measure_id
+    )r ON r.measure_id = t.measure_id
+    LEFT JOIN label l ON l.id = t.label_id
+	</select>
+	<!-- 根据项目id查询当前项目配置的所有流程信息 -->
+	<select id="getProjectAllabs" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT 
+  			t.id AS plId,
+  			t.order,
+  			t1.* 
+		FROM
+  		project_label_config t,
+  		label t1 WHERE t.project_id = #{proNo} AND t.label_id = t1.`ID` 
+  		AND t.is_deleted = 0  AND t1.IS_DELETED = 0 ORDER BY t1.order DESC
+	</select>
+	<select id="getTeamAllabs" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT 
+  			t.id AS plId,
+  			t.order,
+  			t1.* 
+		FROM
+  		team_label_config t,
+  		label t1 WHERE t.team_id = #{teamId} AND t.label_id = t1.`ID` 
+  		AND t.is_deleted = 0 AND t1.IS_DELETED = 0 ORDER BY t1.order DESC
+	</select>
+	
+	<!-- 根据流程目录项目id查询项目配置流程信息 -->
+	<select id="getProjectLabs" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT 
+  			t.id AS plId,
+  			t.order,
+  			t1.* 
+		FROM
+  		project_label_config t,
+  		label t1 WHERE t.project_id = #{proNo} AND t.label_id = t1.`ID` AND t1.CATEGORY = #{category}
+  		AND t.is_deleted = 0  AND t1.IS_DELETED = 0
+	</select>
+	<select id="getProjectLabsByTeamId" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT 
+  			t.id AS plId,
+  			t.order,
+  			t1.* 
+		FROM
+  		team_label_config t,
+  		label t1 WHERE t.team_id = #{teamId} AND t.label_id = t1.`ID` AND t1.CATEGORY = #{category}
+  		AND t.is_deleted = 0 AND t1.IS_DELETED = 0
+	</select>
+	
+   <!-- 根据项目、版本号、迭代、流程节点加载指标内容   -->
+	<select id="getLabMeasureByProject" resultType="java.util.HashMap" parameterType="java.lang.String">
+	SELECT
+	t1.*,
+	s.ID,
+	s.name,
+	IFNULL (s.CONTENT,'') AS CONTENT,
+	IFNULL(s.UNIT,'') AS UNIT,
+	IFNULL(s.UPPER,'') AS UPPER,
+	IFNULL(s.LOWER,'') AS LOWER,
+	IFNULL(s.TARGET,'') AS TARGET,
+	s.LABLE_ID,
+	s.CATEGORY,
+	IFNULL(s.VERSION,'') AS VERSION,
+	IFNULL(s.ITERATION,'') AS ITERATION,
+	IFNULL(t1.ACTUAL_VAL,'') AS ACTUALVAL,
+	IFNULL(s.COLLECT_TYPE,'') AS COLLECTYPE,
+	IFNULL(s.COLLECT_TYPE,'') AS CONTENT
+	FROM
+	label_measure_config t1,
+	measure s
+	WHERE t1.PROJECT_LABLE_ID =
+	(SELECT
+	t.id
+	FROM
+	project_label_config t
+	WHERE t.is_deleted = 0
+	AND t.project_id =  #{proNo}
+	AND t.label_id = #{labId})
+	AND t1.MEASURE_ID = s.ID
+	AND s.IS_DELETE = 0
+	AND t1.IS_DELETED = 0 ;
+	</select>
+	<select id="getLabMeasureByTeam" resultType="java.util.HashMap" parameterType="java.lang.String">
+	SELECT
+	t1.*,
+	s.ID,
+	s.name,
+	IFNULL (s.CONTENT,'') AS CONTENT,
+	IFNULL(s.UNIT,'') AS UNIT,
+	IFNULL(s.UPPER,'') AS UPPER,
+	IFNULL(s.LOWER,'') AS LOWER,
+	IFNULL(s.TARGET,'') AS TARGET,
+	s.LABLE_ID,
+	s.CATEGORY,
+	IFNULL(s.VERSION,'') AS VERSION,
+	IFNULL(s.ITERATION,'') AS ITERATION,
+	IFNULL(t1.ACTUAL_VAL,'') AS ACTUALVAL,
+	IFNULL(s.COLLECT_TYPE,'') AS COLLECTYPE,
+	IFNULL(s.COLLECT_TYPE,'') AS CONTENT
+	FROM
+	team_measure_config t1,
+	measure s
+	WHERE t1.TEAM_LABLE_ID =
+	(SELECT
+	t.id
+	FROM
+	team_label_config t
+	WHERE t.is_deleted = 0
+	AND t.team_id =  #{teamId}
+	AND t.label_id = #{labId})
+	AND t1.MEASURE_ID = s.ID
+	AND s.IS_DELETE = 0
+	AND t1.IS_DELETED = 0 ;
+	</select>
+	
+	<!-- 查询所有指标信息 -->
+	<select id="getMeasures" resultType="java.util.HashMap">
+		SELECT * FROM measure WHERE IS_DELETE = 0
+	</select>
+	
+		<!-- AND t.VERSION = #{version}
+  		AND t.ITERATION = #{ite} -->
+  		
+	<!-- 查询项目对应流程配置指标信息 -->
+	<select id="getLabMeareListByProNo" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT 
+  			t.*,
+  			t1.ORDER 
+		FROM
+  		measure t,
+  		label_measure_config t1,
+	  		(SELECT 
+	    		s.id 
+	  		FROM
+    		project_label_config s 
+  			WHERE s.project_id = #{proNo} AND s.is_deleted = 0 AND s.label_id = #{labId}) A 
+		WHERE t1.MEASURE_ID = t.ID 
+  		AND t.IS_DELETE = 0 
+  		AND t1.IS_DELETED = 0 
+  		AND t1.PROJECT_LABLE_ID = A.id
+	</select>
+	<select id="getLabMeareListByTeamId" resultType="java.util.HashMap" parameterType="java.lang.String">
+		SELECT 
+  			t.*,
+  			t1.ORDER 
+		FROM
+  		measure t,
+  		team_measure_config t1,
+	  		(SELECT 
+	    		s.id 
+	  		FROM
+    		team_label_config s 
+  			WHERE s.team_id = #{teamId} AND s.is_deleted = 0 AND s.label_id = #{labId}) A 
+		WHERE t1.MEASURE_ID = t.ID 
+  		AND t.IS_DELETE = 0 
+  		AND t1.IS_DELETED = 0 
+  		AND t1.TEAM_LABLE_ID = A.id
+	</select>
+	<!--查询所有流程类目  -->
+	<select id="getAllLabCategory"  resultType="java.lang.String">
+		SELECT 
+			CATEGORY
+			FROM
+			  label
+			WHERE IS_DELETED = 0 
+			GROUP BY CATEGORY 
+	</select>
+	<!--根据流程id查询所有指标  -->
+	<select id="getAllCategorysByLabId" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT 
+			*
+			FROM
+			  measure 
+			WHERE IS_DELETE = 0 
+			AND LABLE_ID = #{labId} 
+	</select>
+	
+	<!-- 查询当前项目是否配置了此流程 -->
+	<select id="getProjectLabConfigByKey" parameterType="java.lang.String" resultType="com.icss.mvp.entity.ProjectLabelConfig">
+		SELECT t.* FROM project_label_config t WHERE t.project_id = #{proNo} AND t.label_id = #{labId}
+	</select>
+	<select id="getTeamLabNumByTeamId" parameterType="java.lang.String" resultType="com.icss.mvp.entity.teamLabelConfig">
+		SELECT t.* FROM team_label_config t WHERE t.team_id = #{teamId} AND t.label_id = #{labId}
+	</select>
+	<!-- 更新当前项目配置的该流程状态 -->
+	<update id = "updateProjectLabConfig" parameterType ="java.lang.String"> 
+		UPDATE project_label_config t SET t.is_deleted =#{status} WHERE t.label_id = #{labId}  AND t.project_id = #{proNo} 
+	</update>
+	<update id = "updateTeamLabConfig" parameterType ="java.lang.String"> 
+		UPDATE team_label_config t SET t.is_deleted =#{status}   WHERE t.label_id = #{labId}  AND t.team_id = #{teamId} 
+	</update>
+	
+	<!-- 判断当前流程是否配置过该指标 -->
+	<select id="getMeasureConfig" parameterType="java.lang.String" resultType = "com.icss.mvp.entity.LabelMeasureConfig">
+		SELECT t.* FROM label_measure_config t WHERE t.PROJECT_LABLE_ID = #{projectLabId}  AND t.MEASURE_ID = #{measureId} 
+	</select>
+	<select id="getMeasureConfigByTeam" parameterType="java.lang.String" resultType = "com.icss.mvp.entity.TeamMeasureConfig">
+		SELECT t.* FROM team_measure_config t WHERE t.TEAM_LABLE_ID = #{teamLabId}  AND t.MEASURE_ID = #{measureId} 
+	</select>
+	<!-- 更新当前指标状态 -->
+	<update id="updateConfigMeasure" parameterType="java.lang.String">
+		UPDATE label_measure_config t SET t.IS_DELETED = #{status} WHERE t.PROJECT_LABLE_ID = #{projectLabId}  AND t.MEASURE_ID = #{measureId} 
+	</update>
+	<update id="updateConfigMeasureByTeam" parameterType="java.lang.String">
+		UPDATE team_measure_config t SET t.IS_DELETED = #{status} WHERE t.TEAM_LABLE_ID = #{teamLabId}  AND t.MEASURE_ID = #{measureId} 
+	</update>
+	<!-- 新增一条项目配置流程记录 -->
+	<insert id="insertProjectLableConfig" parameterType="java.lang.String">
+		INSERT INTO project_label_config (create_time,modify_time,is_deleted,project_id,label_id)
+		VALUES (NOW(),NOW(),0,#{proNo},#{labId})
+	</insert>
+	<insert id="insertTeamLableConfigByTeamId" parameterType="java.lang.String">
+		INSERT INTO team_label_config (create_time,modify_time,is_deleted,team_id,label_id)
+		VALUES (NOW(),NOW(),0,#{teamId},#{labId})
+	</insert>
+	<!-- 新增一条指标配置记录 -->
+	<insert id="insertLableMeasureConfig" parameterType="java.lang.String">
+		INSERT INTO label_measure_config (CREATE_TIME,MODIFY_TIME,IS_DELETED,PROJECT_LABLE_ID,MEASURE_ID)
+		VALUES (NOW(),NOW(),0,#{projectLabId},#{measureId})
+	</insert>
+	<insert id="insertTeamMeasureConfig" parameterType="java.lang.String">
+		INSERT INTO team_measure_config (CREATE_TIME,MODIFY_TIME,IS_DELETED,TEAM_LABLE_ID,MEASURE_ID)
+		VALUES (NOW(),NOW(),0,#{teamLabId},#{measureId})
+	</insert>
+	<!-- 根据项目编号和流程id获取流程配置id  -->
+	<select id="getProjectConfigId" parameterType="java.lang.String" resultType = "java.lang.String"> 
+		SELECT t.id FROM project_label_config t WHERE t.label_id = #{labId} AND t.project_id = #{proNo} 
+	</select>
+	<select id="getTeamConfigId" parameterType="java.lang.String" resultType = "java.lang.String"> 
+		SELECT t.id FROM team_label_config t WHERE t.label_id = #{labId} AND t.team_id = #{teamId} 
+	</select>
+	<!-- 更新指标配置实际值 -->
+	<update id="saveActualValMeasureConfig" parameterType="java.lang.String">
+		UPDATE label_measure_config t SET t.ACTUAL_VAL = #{actualVal} ,t.MODIFY_TIME = now() WHERE t.ID = #{id}
+	</update>
+	<!-- 查询当前项目指标配置关系 -->
+	<select id="updateMeasureMonth" parameterType="java.lang.String" resultType="java.util.HashMap"> 
+		SELECT s.* FROM `label_measure_config` s WHERE s.`IS_DELETED` =0 AND s.`PROJECT_LABLE_ID` IN(
+		SELECT t.id FROM `project_label_config` t WHERE t.`project_id` = #{proNo} 
+		AND t.`is_deleted`=0 );
+	</select>
+	<!-- 查询指标是否已经存储了月记录  -->
+	<select id="queryMonthMeasure" parameterType="java.lang.String" resultType="java.util.HashMap">
+		<!-- SELECT * FROM `measure_value_history` t WHERE t.`label_measure_config_id` = #{lId} -->
+		SELECT * FROM `measure_value_history` t WHERE t.`label_measure_config_id` = #{lId} AND 
+ 		DATE_FORMAT( t.`copy_date`, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+	</select>
+	<!-- 按月份插入一条新的指标记录  -->
+	<insert id="insertVal" parameterType="java.lang.String">
+		INSERT INTO `measure_value_history` (label_measure_config_id,value,copy_date) VALUES(#{lId},#{acVal},NOW())
+	</insert>
+	<!-- 更新当前记录 -->
+	<update id="updateValue" parameterType="java.lang.String">
+	 UPDATE `measure_value_history` t SET t.`value` = #{acVal} where t.id=#{id}
+	</update>
+	<!-- queryMeasureConfigNum -->
+	<select id="queryMeasureConfigNum" resultMap="projectLabelConfig" parameterType="java.lang.String">
+		SELECT 
+  			t.*
+		FROM
+  		project_label_config t,
+  		label t1 WHERE t.project_id = #{proNo} AND t.label_id = t1.`ID` AND t1.CATEGORY not in ${labName}
+  		AND t.is_deleted = 0  AND t1.IS_DELETED = 0
+	</select>
+	<select id="queryMeasureConfigByTeamId" resultMap="teamLabelConfig" parameterType="java.lang.String">
+		SELECT 
+  			t.*
+		FROM
+  		team_label_config t,
+  		label t1 WHERE t.team_id = #{teamId} AND t.label_id = t1.`ID` AND t1.CATEGORY not in ${labName}
+  		AND t.is_deleted = 0 AND t1.IS_DELETED = 0
+	</select>
+	
+	<update id="updateMeasures" parameterType="java.lang.String">
+		UPDATE `label_measure_config` t SET t.`IS_DELETED` = 1 WHERE t.`PROJECT_LABLE_ID` = #{id}
+	</update>
+	<update id="updateMeasuresByTeamId" parameterType="java.lang.String">
+		UPDATE `team_measure_config` t SET t.`IS_DELETED` = 1 WHERE t.`TEAM_LABLE_ID` = #{id}
+	</update>
+	
+	<select id="queryMetricIndex"  resultType="com.icss.mvp.entity.Measure">
+			<!-- SELECT *,DATE_FORMAT(copy_date,'%Y-%m') AS copyDate FROM 
+		(SELECT 
+		  t3.*,t2.`ID` AS lmcId 
+		FROM
+		  `label` t,
+		  `project_label_config` t1,
+		  `label_measure_config` t2,
+		  `measure` t3 
+		WHERE t.`TITLE` = #{name} 
+		  AND t1.`label_id` = t.`ID` 
+		  AND t2.`PROJECT_LABLE_ID` = t1.`id` 
+		  AND t1.`project_id` = #{proNo}
+		  AND t3.`ID` = t2.`MEASURE_ID` 
+		  AND t.`IS_DELETED` = '0'
+		  AND t1.`is_deleted` = '0'
+		  AND t2.`IS_DELETED` = '0'
+		  AND t3.`IS_DELETE` = '0') A LEFT JOIN `measure_value_history` t4 ON t4.label_measure_config_id = A.lmcId
+		  WHERE YEAR(t4.`copy_date`)=YEAR(NOW()) -->
+		  SELECT *,A.`ID` AS lmcId,DATE_FORMAT(C.`copy_date`,'%Y-%m') AS copyDate FROM `label_measure_config` A LEFT JOIN `measure` B ON A.`MEASURE_ID` = B.`ID`
+			LEFT JOIN `measure_value_history` C ON C.`label_measure_config_id` = A.`ID`
+			WHERE A.`IS_DELETED` = 0
+			AND B.`IS_DELETE` = 0
+			AND A.`PROJECT_LABLE_ID` = #{plId}
+			AND B.`CATEGORY` = #{category}
+	</select>
+	
+	<select id="queryMeasureValue" resultType="com.icss.mvp.entity.MonthMeasure">
+		select * from measure_value_history where label_measure_config_id = #{str} AND DATE_FORMAT (`copy_date`,'%Y-%m') = 
+	</select>
+	
+	<!-- 获取项目流程配置的子菜单 -->
+	<select id="queryCatgoryByPlIds" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT t1.`CATEGORY` FROM `label_measure_config` t LEFT JOIN `measure` t1 ON t.`MEASURE_ID` = t1.`ID` WHERE 
+		t.`PROJECT_LABLE_ID` = #{plId} AND t.`IS_DELETED`= 0 GROUP BY t1.`CATEGORY`
+	</select>
+	<select id="queryCatgoryByTeamPlIds" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT t1.`CATEGORY` FROM `team_measure_config` t LEFT JOIN `measure` t1 ON t.`MEASURE_ID` = t1.`ID` WHERE 
+		t.`TEAM_LABLE_ID` = #{plId} AND t.`IS_DELETED`= 0 GROUP BY t1.`CATEGORY`
+	</select>
+	<!-- 获取已选中流程类目 -->
+	<select id="getIsSelectCategory" resultType="java.lang.String">
+		SELECT l.`CATEGORY` FROM `label` l,
+			  `project_label_config` t WHERE l.`ID` = t.`label_id` AND t.`project_id` = #{proNo}
+				AND l.`IS_DELETED` = 0 AND t.`is_deleted` = 0  LIMIT 1
+	</select>
+	<select id="getIsSelectCategoryByTeamId" resultType="java.lang.String">
+		SELECT l.`CATEGORY` FROM `label` l,
+			  `team_label_config` t WHERE l.`ID` = t.`label_id` AND t.`team_id` = #{teamId}
+				AND l.`IS_DELETED` = 0 AND t.`is_deleted` = 0 LIMIT 1
+	</select>
+
+	<update id="deleteMeasureConfig" parameterType="java.lang.String">
+		update project_label_config set is_deleted = 1 where id IN ${strSql}
+	</update>
+	<update id="deleteMeasureConfigByTeamId" parameterType="java.lang.String">
+		update team_label_config set is_deleted = 1 where id IN ${strSql}
+	</update>
+	
+	<update id="deleteLableMeasureConfig" parameterType="java.lang.String">
+		update label_measure_config set IS_DELETED = 1 where PROJECT_LABLE_ID IN ${strSql}
+	</update>
+	<update id="deleteLableMeasureConfigByTeamId" parameterType="java.lang.String">
+		update team_measure_config set IS_DELETED = 1 where TEAM_LABLE_ID IN ${strSql}
+	</update>
+	
+	<select id="getLabelConfig" resultType="com.icss.mvp.entity.ProjectLabelConfig" parameterType="java.lang.String">
+		SELECT  id, create_time AS createTime, modify_time AS modifyTime, 
+				is_deleted AS isDeleted, project_id AS proNo, label_id AS plId
+		FROM project_label_config t
+  		WHERE t.project_id = #{proNo} 
+	</select>
+	<!-- 查询团队下所属项目的流程配置 -->
+	<select id="queryProjectAlllabs" resultType="com.icss.mvp.entity.Label" parameterType="java.lang.String">
+		SELECT  id, create_time AS createTime, modify_time AS modifyTime, 
+				is_deleted AS isDeleted, project_id AS proNo, label_id AS plId
+		FROM project_label_config t
+  		WHERE t.project_id = #{oldNo} 
+	</select>
+	<!-- 查询团队下所属项目的已勾选的流程配置 -->
+	<select id="queryProjectChecklist" resultType="com.icss.mvp.entity.Label" parameterType="java.lang.String">
+	SELECT t.id, t.create_time AS createTime, t.modify_time AS modifyTime,
+	t.is_deleted AS isDeleted, t.project_id AS proNo, t.label_id AS plId
+	FROM project_label_config t,label t1
+	WHERE t.project_id = #{oldNo} AND t.is_deleted = '0'
+	AND t.label_id = t1.`ID` AND t1.IS_DELETED = 0
+	</select>
+	<!-- 查询团队的流程配置 -->
+	<select id="queryProjectAlllabsByTeam" resultType="com.icss.mvp.entity.TeamLabel" parameterType="java.lang.String">
+		SELECT  id, create_time AS createTime, modify_time AS modifyTime, 
+				is_deleted AS isDeleted, team_id AS teamId, label_id AS plId
+		FROM team_label_config t
+  		WHERE t.team_id = #{teamId} 
+	</select>
+	<!-- 删除项目的流程配置 -->
+	<delete id="deleteProjectAlllabs">
+		DELETE FROM
+  		project_label_config 
+  		WHERE project_id = #{proNo} 
+	</delete>
+	<!-- 继承流程配置 -->
+	<insert id="saveProjectAlllabs" useGeneratedKeys="true" keyProperty="label.id" parameterType="com.icss.mvp.entity.Label">
+		INSERT INTO project_label_config (create_time,modify_time,is_deleted,project_id,label_id)
+		VALUES (NOW(),NOW(),#{label.isDeleted},#{label.proNo},#{label.plId})
+	</insert>
+	<!-- 继承团队下所属项目的指标配置 -->
+	<insert id="saveLabelMesure">
+		INSERT INTO label_measure_config (CREATE_TIME,MODIFY_TIME,IS_DELETED,PROJECT_LABLE_ID,MEASURE_ID)
+		SELECT NOW(),NOW(),IS_DELETED, #{newId}, MEASURE_ID FROM label_measure_config  WHERE PROJECT_LABLE_ID=#{oldId}
+	</insert>
+	<!-- 继承团队的指标配置 -->
+	<insert id="saveLabelMesureByTeam">
+		INSERT INTO label_measure_config (CREATE_TIME,MODIFY_TIME,IS_DELETED,PROJECT_LABLE_ID,MEASURE_ID)
+		SELECT NOW(),NOW(),IS_DELETED, #{newId}, MEASURE_ID FROM team_measure_config  WHERE TEAM_LABLE_ID=#{oldId}
+	</insert>
+	<!-- 获取团队ID -->
+	<select id="getTeamId" parameterType="java.lang.String" resultType="String">
+		SELECT TEAMID FROM project_info WHERE NO = #{proNo} 
+	</select>
+	<!--指标配置记录存储-->
+	<insert id="replaceMeasureConfig">
+		replace into
+		measure_configuration_record (no,lable_id,measure_ids,update_time)
+		values
+		(#{no}, #{ladelIds},#{measureIds},now())
+	</insert>
+<!--团队指标记录保存-->
+	<insert id="replaceMeasureConfigTeam">
+		replace into
+		team_measure_configuration_record (team_id,lable_id,measure_ids,update_time)
+		values
+		(#{no}, #{ladelIds},#{measureIds},now())
+	</insert>
+</mapper>

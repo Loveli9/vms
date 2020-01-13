@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.icss.mvp.dao.system.IDepartmentDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.system.DepartmentEntity">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="level" property="level"/>
+        <result column="parent_code" property="parentCode"/>
+        <result column="type" property="type"/>
+        <result column="rank" property="rank"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <resultMap id="opDepartment" type="com.icss.mvp.entity.system.DepartmentEntity">
+        <result column="ID" property="id"/>
+        <result column="DEPT_NAME" property="name"/>
+        <result column="DEPT_ID" property="code"/>
+        <result column="DEPT_LEVEL" property="level"/>
+        <result column="PARENT_DEPT_ID" property="parentCode"/>
+        <result column="ENABLE" property="enable"/>
+    </resultMap>
+
+    <resultMap id="hwDepartment" type="com.icss.mvp.entity.system.DepartmentEntity">
+        <result column="dept_name" property="name"/>
+        <result column="dept_id" property="code"/>
+        <result column="dept_level" property="level"/>
+        <result column="parent_id" property="parentCode"/>
+        <result column="ignoe" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="sql_column">
+        `d`.`id`, `d`.`name`, `d`.`code`, `d`.`level`, `d`.`parent_code`, `d`.`type`, `d`.`rank`, `d`.`is_deleted`
+    </sql>
+
+    <sql id="op_department_column">
+        `d`.`ID`, `d`.`DEPT_NAME`, `d`.`DEPT_ID`, `d`.`DEPT_LEVEL`, `d`.`PARENT_DEPT_ID`, `d`.`ENABLE`
+    </sql>
+    <sql id="sys_hwdept_column">
+        `d`.`dept_id`, `d`.`dept_name`, `d`.`dept_level`, `d`.`parent_id`, `d`.`ignoe`
+    </sql>
+
+    <select id="queryDepartments" parameterType="Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="sql_column"/>
+        FROM `ultimate_department` AS `d`
+        WHERE 1 = 1
+        <if test="id > 0">
+            AND `id` = #{id}
+        </if>
+        <if test="ids != null and ids != ''">
+            AND `id` IN
+            <foreach item="item" index="index" collection="ids"
+                     open="(" separator="," close=")">#{item}
+            </foreach>
+        </if>
+        <if test="name != null and name != ''">
+            AND `name` like concat('%', #{name} ,'%')
+        </if>
+        <if test="code != null and code != ''">
+            AND `code` = #{code}
+        </if>
+        <if test="codes != null and codes != ''">
+            AND `code` IN
+            <foreach item="item" index="index" collection="codes"
+                     open="(" separator="," close=")">#{item}
+            </foreach>
+        </if>
+        <if test="level > 0">
+            AND `level` = #{level}
+        </if>
+        <if test="parentCode != null and parentCode != ''">
+            AND `parent_code` = #{parentCode}
+        </if>
+        <if test="parentCodes != null and parentCodes != ''">
+            AND `parent_code` IN
+            <foreach item="item" index="index" collection="parentCodes"
+                     open="(" separator="," close=")">#{item}
+            </foreach>
+        </if>
+        <if test="type != null and type != ''">
+            AND `type` = #{type}
+        </if>
+        <if test="rank > 0">
+            AND `rank` = #{rank}
+        </if>
+        <if test="isDelete >= 0">
+            AND `is_deleted` = #{isDelete}
+        </if>
+        ;
+    </select>
+
+    <insert id="increaseDepartments" parameterType="java.util.List">
+        INSERT INTO `ultimate_department` (`name`, `code`, `level`, `parent_code`, `type`, `rank`)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.name},#{item.code},#{item.level},#{item.parentCode},#{item.type},#{item.rank}
+            )
+        </foreach>
+        ;
+    </insert>
+
+    <update id="modifyDepartment">
+        UPDATE `ultimate_department`
+        SET `code` = #{code}, `name` = #{name}, `rank` = #{rank}, `is_deleted` = #{isDeleted}
+        WHERE `id` = #{id}
+    </update>
+
+    <select id="readOpCopy" resultMap="opDepartment">
+        SELECT
+        <include refid="op_department_column"/>
+        FROM `op_department_copy` d
+        WHERE d.`ENABLE` = 1
+    </select>
+
+    <select id="queryOpDepts" parameterType="Map" resultMap="opDepartment">
+        SELECT
+        <include refid="op_department_column"/>
+        FROM `op_department` d
+        WHERE 1 = 1
+        <if test="id != null and id != ''">
+            AND d.`ID` = #{id}
+        </if>
+        <if test="ids != null and ids.size() > 1">
+            AND d.`ID` IN
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="code != null and code != ''">
+            AND d.`DEPT_ID` = #{code}
+        </if>
+        <if test="codes != null and codes.size() > 1">
+            AND d.`DEPT_ID` IN
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="level > 0">
+            AND d.`DEPT_LEVEL` = #{level}
+        </if>
+        <if test="name != null and name != ''">
+            AND d.`DEPT_NAME` like concat('%', #{name} ,'%')
+        </if>
+        <if test="fullName != null and fullName != ''">
+            AND d.`DEPT_NAME` = #{name}
+        </if>
+        <if test="parentCode != null and parentCode != ''">
+            AND d.`PARENT_DEPT_ID` = #{parentCode}
+        </if>
+        <if test="enable != null and enable >= 0">
+            AND d.`ENABLE` = #{enable}
+        </if>
+    </select>
+
+    <insert id="increaseOpDepartments" parameterType="java.util.List">
+        INSERT INTO `op_department` (`DEPT_ID`, `DEPT_NAME`, `DEPT_LEVEL`, `PARENT_DEPT_ID`, `ENABLE`, `CREATION_DATE`, `LAST_UPDATE`)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.code},#{item.name},#{item.level},#{item.parentCode},#{item.enable},#{item.createTime},#{item.modifyTime}
+            )
+        </foreach>
+        ;
+    </insert>
+
+    <update id="switchOpDepartments">
+        UPDATE `op_department` SET `LAST_UPDATE` = #{modifyTime}, `ENABLE` = 0
+        <where>
+            `DEPT_LEVEL` = #{level} AND `ENABLE` != 0
+            AND `DEPT_ID` NOT IN
+            <foreach item="item" index="index" collection="deptIds"
+                     open="(" separator="," close=")">#{item}
+            </foreach>
+        </where>
+        ;
+
+        UPDATE `op_department` SET `LAST_UPDATE` = #{modifyTime}, `ENABLE` = 1
+        <where>
+            `DEPT_LEVEL` = #{level} AND `ENABLE` != 1
+            AND `DEPT_ID` IN
+            <foreach item="item" index="index" collection="deptIds"
+                     open="(" separator="," close=")">#{item}
+            </foreach>
+        </where>
+        ;
+    </update>
+
+    <select id="readHwCopy" resultMap="hwDepartment">
+        SELECT
+        <include refid="sys_hwdept_column"/>
+        FROM `sys_hwdept_copy` d
+        WHERE d.`ignoe` = 0
+    </select>
+
+    <select id="queryHwDepts" parameterType="Map" resultMap="hwDepartment">
+        SELECT
+        <include refid="sys_hwdept_column"/>
+        FROM `sys_hwdept` d
+        WHERE 1 = 1
+        <if test="code != null and code != ''">
+            AND d.`dept_id` = #{code}
+        </if>
+        <if test="codes != null and codes.size() > 1">
+            AND d.`dept_id` IN
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="level > 0">
+            AND d.`dept_level` = #{level}
+        </if>
+        <if test="name != null and name != ''">
+            AND d.`dept_name` like concat('%', #{name} ,'%')
+        </if>
+        <if test="fullName != null and fullName != ''">
+            AND d.`dept_name` = #{name}
+        </if>
+        <if test="parentCode != null and parentCode != ''">
+            AND d.`parent_id` = #{parentCode}
+        </if>
+        <if test="enable != null and enable >= 0">
+            AND d.`ignoe` = #{enable}
+        </if>
+    </select>
+
+    <insert id="increaseHwDepartments" parameterType="java.util.List">
+        INSERT INTO `sys_hwdept` (`dept_id`, `dept_name`, `dept_level`, `parent_id`, `ignoe`, `operate_time`)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.code},#{item.name},#{item.level},#{item.parentCode},#{item.isDeleted},#{item.createTime}
+            )
+        </foreach>
+        ;
+    </insert>
+
+    <update id="switchHwDepartments">
+        UPDATE `sys_hwdept` SET `operate_time` = #{modifyTime}, `ignoe` = 1
+        <where>
+            `dept_level` = #{level} AND `ignoe` != 1
+            AND `dept_id` NOT IN
+            <foreach item="item" index="index" collection="deptIds"
+                     open="(" separator="," close=")">#{item}
+            </foreach>
+        </where>
+        ;
+
+        UPDATE `sys_hwdept` SET `operate_time` = #{modifyTime}, `ignoe` = 0
+        <where>
+            `dept_level` = #{level} AND `ignoe` != 0
+            AND `dept_id` IN
+            <foreach item="item" index="index" collection="deptIds"
+                     open="(" separator="," close=")">#{item}
+            </foreach>
+        </where>
+        ;
+    </update>
+</mapper>

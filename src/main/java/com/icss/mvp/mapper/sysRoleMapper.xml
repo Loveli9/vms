@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.SysRoleDao" >
+
+	<resultMap id="sysRoleMap" type="com.icss.mvp.entity.SysRole" >
+		<id column="role_id" property="roleId"/>
+		<result column="role_name" property="roleName"/>
+		<result column="role_desc" property="roleDesc"/>
+		<result column="role_auth" property="roleAuth"/>
+		<result column="manage_role" property="manageRole"/>
+		<result column="operate_time" property="operateTime"/>
+		<result column="operate_user" property="operateUser"/>
+		<result column="ignoe" property="ignoe"/>
+	</resultMap>
+	
+	<resultMap id="PermissionMap" type="com.icss.mvp.entity.Permission" >
+		<id column="permission_id" property="permissionid"/>
+		<result column="permission_name" property="perName"/>
+		<result column="permission_desc" property="perDesc"/>
+		<result column="permission_auth" property="perAuth"/>
+		<result column="manage_permission" property="managePer"/>
+		<result column="creator" property="creator"/>
+		<result column="creat_time" property="creattime"/>
+		<result column="updator" property="updator"/>
+		<result column="update_time" property="upDattime"/>
+		<result column="ignoe" property="ignoe"/>
+	</resultMap>
+	
+	<!--新增一条SysRole记录-->
+	<insert id="insertSysRole" parameterType="sysRole" useGeneratedKeys="true" keyProperty="roleId" >
+		insert into sys_role
+		(role_id,role_name,role_desc,role_auth,manage_role,operate_time,operate_user,ignoe)
+		values 
+		(#{roleId},#{roleName},#{roleDesc},#{roleAuth},#{manageRole},#{operateTime},#{operateUser},#{ignoe})
+	</insert>
+	
+	<!--新增一条Permission记录-->
+	<insert id="insertPer" parameterType="com.icss.mvp.entity.Permission" useGeneratedKeys="true" keyProperty="permissionid" >
+		insert into sys_permission
+		(permission_id,permission_name,permission_desc,permission_auth,manage_permission,creator,creat_time,updator,update_time,ignoe)
+		values 
+		(#{permissionid},#{perName},#{perDesc},#{perAuth},#{managePer},#{creator},#{creattime},#{updator},#{upDattime},#{ignoe})
+	</insert>
+	
+	<!--修改指定SysRole记录-->
+	<update id="updateSysRole" parameterType="sysRole" >
+		update sys_role 
+		<set>
+		    <if test="roleName != null">role_name=#{roleName},</if>
+		    <if test="roleDesc != null">role_desc=#{roleDesc},</if>
+		    <if test="roleAuth != null">role_auth=#{roleAuth},</if>
+		    <if test="manageRole != null">manage_role=#{manageRole},</if>
+		    <if test="operateTime != null">operate_time=#{operateTime},</if>
+		    <if test="operateUser != null">operate_user=#{operateUser},</if>
+		    <if test="ignoe != null">ignoe=#{ignoe},</if>
+		</set>
+		where role_id=#{roleId}
+	</update>
+	
+	<!--修改指定Permission记录-->
+	<update id="updatePermission" parameterType="com.icss.mvp.entity.Permission" >
+		update sys_permission 
+		<set>
+		    <if test="perName != null">permission_name=#{perName},</if>
+		    <if test="perDesc != null">permission_desc=#{perDesc},</if>
+		    <if test="perAuth != null">permission_auth=#{perAuth},</if>
+		    <if test="managePer != null">manage_permission=#{managePer},</if>
+		    <if test="creator != null">creator=#{creator},</if>
+		    <if test="creattime != null">creat_time=#{creattime},</if>
+		    <if test="updator != null">updator=#{updator},</if>
+		    <if test="upDattime != null">update_time=#{upDattime},</if>
+		    <if test="ignoe != null">ignoe=#{ignoe},</if>
+		</set>
+		where permission_id=#{permissionid}
+	</update>
+	
+	<!--通过主键roleId查询指定SysRole记录-->
+	<select id="getSysRoleByRoleId" resultMap="sysRoleMap" parameterType="String" >
+		select * from sys_role where role_id=#{roleId}
+	</select>
+	
+	<!--通过主键roleId查询指定Permission记录-->
+	<select id="getPermissionByPerId" resultMap="PermissionMap" parameterType="String" >
+		select * from sys_permission where permission_id=#{permissionid}
+	</select>
+	
+	
+	<!--通过主键roleId单个删除-->
+	<delete id="deleteSysRoleByRoleId" parameterType="String" >
+		delete from sys_role where role_id=#{roleId}
+	</delete>
+	
+	<!--通过主键perId单个删除-->
+	<delete id="delperById" parameterType="Integer" >
+		delete from sys_permission where permission_id=#{perId}
+	</delete>
+	
+	<!--批量删除-->
+	<delete id="deleteSysRoleByRoleIdList" parameterType="List" >
+		delete from sys_role where roleId in
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		#{item} 
+		</foreach> 
+	</delete>
+	
+	<select id="getSysRoleForPage" resultMap="sysRoleMap" parameterType="Map">
+		select * from sys_role 
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+		LIMIT #{startNo},#{pageSize}
+	</select>
+	
+	<select id="getSysRoleCount" resultType="Integer" parameterType="Map">
+		select count(0) from sys_role
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+	</select>
+	
+	<select id="getAllSysRole" resultMap="sysRoleMap" parameterType="Map">
+		select * from sys_role where 1 = 1
+		<if test="roleName != null and roleName != ''">
+			and role_name like CONCAT('%',#{roleName},'%')
+		</if>
+		order by operate_time desc
+	</select>
+	
+	<select id="getAllPermission" resultMap="PermissionMap" parameterType="String">
+		select * from sys_permission where 1 = 1
+		<if test="perName != null and perName != ''">
+			and permission_name like CONCAT('%',#{perName},'%')
+		</if>
+		order by creat_time desc
+	</select>
+
+	<select id="roleCountByAuth" resultType="java.lang.Integer">
+		select count(1) from sys_role where role_auth like CONCAT('%$',#{authId},'%$')
+	</select>
+	
+	<select id="selectCountByRoleName" resultType="java.lang.Integer">
+		select count(1) from sys_role where 1 = 1
+		<if test="roleName != null and roleName != ''">
+			and role_name = #{roleName}
+		</if>
+		<if test="managerRole != null and managerRole != ''">
+			and manage_role = #{managerRole}
+		</if>
+	</select>
+	
+	<select id="selectCountByPerName" resultType="java.lang.Integer">
+		select count(1) from sys_permission where 1 = 1
+		<if test="perName != null and perName != ''">
+			and permission_name = #{perName}
+		</if>
+		<if test="managePer != null and managePer != ''">
+			and manage_permission = #{managePer}
+		</if>
+	</select>
+	
+	<!-- 新改  角色列表显示及按照角色名称查询列表显示 -->
+	<select id="queryPermission" resultMap="PermissionMap">
+	       select * from sys_permission where 1 = 1
+		<if test="null != page.queryMap.perName and '' !=page.queryMap.perName">
+			and permission_name like CONCAT('%',#{page.queryMap.perName},'%')
+		</if>
+		order by creat_time desc   
+      	<if test="null != page.page and  null != page.rows">
+	    	LIMIT ${page.page},${page.rows}     
+      	</if>  
+	</select> 
+	
+	<!-- 多选 删除 -->
+	<delete id="deleteSelections" parameterType="java.lang.Integer">
+		DELETE FROM  `sys_permission` WHERE permission_id=#{id} 
+	</delete>
+	
+	<!--查询总条数-->
+	<select id="queryTotalCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM `sys_permission` WHERE 1 = 1
+		<if test="null != page.queryMap.perName and '' !=page.queryMap.perName">
+			and permission_name like CONCAT('%',#{page.queryMap.perName},'%')
+		</if>     	   
+	</select>
+
+</mapper>

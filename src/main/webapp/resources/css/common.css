@@ -1,0 +1,27 @@
+.mainContent{
+	margin-top:5px;height:100%;
+}
+.searchContent{
+	margin-top:5px;
+}
+.searchTable{
+	margin:10px 0px 10px 0px;line-height:25px;
+}
+button{
+	margin-right:10px;height:30px;
+}
+input{
+	height:24px;width:80%;
+}
+select{
+	width:80%;
+}
+.footContent{
+	padding:5px;text-align:center;
+}
+.controlContent{
+	margin:5px 0px 5px 10px;width:auto;
+}
+.gridContent{
+	
+}

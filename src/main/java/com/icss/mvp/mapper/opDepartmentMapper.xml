@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.OpDepartmentDao" >
+	<resultMap id="opDepartmentMap" type="com.icss.mvp.entity.OpDepartment" >
+		<id column="ID" property="id"/>
+		<result column="DEPT_ID" property="deptId"/>
+		<result column="DEPT_NAME" property="deptName"/>
+		<result column="DEPT_LEVEL" property="deptLevel"/>
+		<result column="PARENT_DEPT_ID" property="parentDeptId"/>
+		<result column="SEQ" property="seq"/>
+		<result column="REMARK" property="remark"/>
+		<result column="ENABLE" property="enable"/>
+		<result column="CREATION_DATE" property="creationDate"/>
+		<result column="CREATE_BY" property="createBy"/>
+		<result column="LAST_UPDATE" property="lastUpdate"/>
+		<result column="LAST_UPDATE_BY" property="lastUpdateBy"/>
+		<result column="SIGN" property="sign"/>
+	</resultMap>
+	<resultMap id="permissionMap" type="com.icss.mvp.entity.PermissionDetail" >
+		<id column="ID" property="id"/>
+		<result column="permission_scope_id" property="permissionid"/>
+		<result column="permission_scope_name" property="permissionName"/>
+		<result column="permission_level" property="perLevel"/>
+		<result column="permiss_scope_parent_id" property="parentperid"/>
+		<result column="seq" property="seq"/>
+		<result column="remark" property="remark"/>
+		<result column="enable" property="enable"/>
+		<result column="create_time" property="creattime"/>
+		<result column="creator" property="creator"/>
+		<result column="last_updater" property="updateor"/>
+		<result column="update_time" property="updatetime"/>
+		<result column="sign" property="sign"/>
+	</resultMap>
+	
+	<select id="getOpDepartmentByPId" resultMap="opDepartmentMap" parameterType="String">
+		select * from op_department where PARENT_DEPT_ID = #{pId} AND ENABLE = 1
+	</select>
+
+    <select id="getOpDepartmentByDeptId" resultMap="opDepartmentMap" parameterType="String">
+        select * from op_department where DEPT_ID = #{id}
+    </select>
+
+	
+	<!--新增一条OpDepartment记录-->
+	<insert id="insertOpDepartment" parameterType="opDepartment" useGeneratedKeys="true" keyProperty="id" >
+		insert into op_department
+		(ID,DEPT_ID,DEPT_NAME,DEPT_LEVEL,PARENT_DEPT_ID,SEQ,REMARK,ENABLE,CREATION_DATE,CREATE_BY,LAST_UPDATE,LAST_UPDATE_BY,SIGN)
+		values 
+		(#{id},#{deptId},#{deptName},#{deptLevel},#{parentDeptId},#{seq},#{remark},#{enable},#{creationDate},#{createBy},#{lastUpdate},#{lastUpdateBy},#{sign})
+	</insert>
+	
+	<!--修改指定OpDepartment记录-->
+	<update id="updateOpDepartment" parameterType="opDepartment" >
+		update op_department 
+		<set>
+		    <if test="deptId != null">DEPT_ID=#{deptId},</if>
+		    <if test="deptName != null">DEPT_NAME=#{deptName},</if>
+		    <if test="deptLevel != null">DEPT_LEVEL=#{deptLevel},</if>
+		    <if test="parentDeptId != null">PARENT_DEPT_ID=#{parentDeptId},</if>
+		    <if test="seq != null">SEQ=#{seq},</if>
+		    <if test="remark != null">REMARK=#{remark},</if>
+		    <if test="enable != null">ENABLE=#{enable},</if>
+		    <if test="creationDate != null">CREATION_DATE=#{creationDate},</if>
+		    <if test="createBy != null">CREATE_BY=#{createBy},</if>
+		    <if test="lastUpdate != null">LAST_UPDATE=#{lastUpdate},</if>
+		    <if test="lastUpdateBy != null">LAST_UPDATE_BY=#{lastUpdateBy},</if>
+		    <if test="sign != null">SIGN=#{sign},</if>
+		</set>
+		where ID=#{id}
+	</update>
+
+	<!--跟新组织机构信息-->
+	<insert id="replaceOpdepartMent" parameterType="com.icss.mvp.entity.OpDepartment">
+		REPLACE INTO `op_department`(`DEPT_ID`,`DEPT_NAME`,`DEPT_LEVEL`,`PARENT_DEPT_ID`,`SEQ`,`REMARK`,
+		`ENABLE`,`CREATION_DATE`,`CREATE_BY`,`LAST_UPDATE`,`LAST_UPDATE_BY`,`SIGN`) VALUE (#{op.deptId},#{op.deptName},
+		#{op.deptLevel},#{op.parentDeptId},#{op.seq},#{op.remark},#{op.enable},#{op.creationDate},#{op.createBy},
+		#{op.lastUpdate},#{op.lastUpdateBy},#{op.sign})
+	</insert>
+	
+	<!--通过主键id查询指定OpDepartment记录-->
+	<select id="getOpDepartmentById" resultMap="opDepartmentMap" parameterType="String" >
+		select * from op_department where ID=#{id}
+	</select>
+	
+	
+	<!--通过主键id单个删除-->
+	<delete id="deleteOpDepartmentById" parameterType="String" >
+		delete from op_department where ID=#{id}
+	</delete>
+	
+	
+	<!--批量删除-->
+	<delete id="deleteOpDepartmentByIdList" parameterType="List" >
+		delete from op_department where id in
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		#{item} 
+		</foreach> 
+	</delete>
+	
+	
+	
+	<select id="getOpDepartmentForPage" resultMap="opDepartmentMap" parameterType="Map">
+		select * from op_department 
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+		LIMIT #{startNo},#{pageSize}
+	</select>
+	
+	<select id="getOpDepartmentCount" resultType="Integer" parameterType="Map">
+		select count(0) from op_department
+		<!--自己确定如何模糊查询
+		<where>
+			<if test="roleName != null">
+         		role_name like CONCAT('%',#{roleName},'%')
+    		</if> 
+		</where>
+		-->
+	</select>
+	
+	<select id="getAllOpDepartment" resultMap="opDepartmentMap">
+		select * from op_department
+	</select>
+	<select id="getEnableDepartment" resultMap="opDepartmentMap">
+		select * from op_department where ENABLE = '1' order by DEPT_LEVEL, SEQ ;
+	</select>
+	<select id="getpermissionTree" resultMap="permissionMap">
+		select * from permisssion_scope where ENABLE = '1' order by permission_level, seq ;
+	</select>
+
+	<select id="getOpDepartmentByPIds" resultMap="opDepartmentMap" parameterType="java.util.Set">
+		select * from op_department where 1 = 1
+        <if test="list != null and list.size() != 0">
+            AND DEPT_ID in
+            <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+
+		order by DEPT_LEVEL, SEQ ;
+	</select>
+	<select id="getOpDepartmentBylevel" resultType="java.util.HashMap">
+		select * from v_dept_triple_op a
+		where  a.DEPT_LEVEL = #{level}
+		<if test="list != null and list.size() != 0">
+            AND a.branch_id in
+            <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+	</select>
+	<select id="getOpDepaBylevel" resultType="java.util.HashMap">
+		select * from
+		(
+			select `depart`.*,branch.branch_id as id,branch.branch_name as name
+			from (`v_dept_triple_op` `depart` left join `v_dept_op` `branch` on
+			`depart`.trunk_id = `branch`.`dept_id`)
+			order by `depart`.`dept_level`
+		) a
+		where  1=1
+		<if test="level == 1">
+			AND a.id in
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		<if test="level == 2">
+			AND a.trunk_id in
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		<if test="level == 3">
+			AND a.branch_id in
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+		<if test="level == 4">
+			AND a.dept_id in
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+	<!-- 华为线 -->
+	<select id="getHwDepartmentBylevel" resultType="java.util.HashMap">
+		select * from v_dept_triple_hw a
+		where  a.DEPT_LEVEL = #{level}
+		<if test="list != null and list.size() != 0">
+            AND a.branch_id in
+            <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+	</select>
+	<resultMap id="SysHwdeptMap" type="com.icss.mvp.entity.SysHwdept" >
+		<id column="ID" property="id"/>
+		<result column="DEPT_ID" property="deptId"/>
+		<result column="DEPT_NAME" property="deptName"/>
+		<result column="DEPT_LEVEL" property="deptLevel"/>
+		<result column="PARENT_DEPT_ID" property="parentId"/>
+		<result column="SEQ" property="operateTime"/>
+		<result column="REMARK" property="operateUser"/>
+		<result column="ENABLE" property="ignoe"/>
+	</resultMap>
+	<select id="getHwEnableDepartment" resultMap="SysHwdeptMap">
+		select * from sys_hwdept order by DEPT_LEVEL;
+	</select>
+
+	<select id="getZrOrganiza" resultMap="opDepartmentMap">
+		select * from op_department where DEPT_LEVEL = #{level} and DEPT_NAME = #{deptName} LIMIT 1
+	</select>
+	<select id="getZrOrganizaMap" resultType="java.util.Map">
+		SELECT t.`trunk_id` AS lv1,t.`branch_id` AS lv2,t.`dept_id` AS lv3 FROM `v_dept_tree_op`  t WHERE t.`trunk_name` = #{buName}
+		AND t.`branch_name` =  #{duName} AND t.`dept_name` = #{pdtName}
+	</select>
+</mapper>

@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/jquery/jquery.treegrid.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="../../resources/jquery/jquery.min.js"></script> 
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-treegrid.js"></script>
+<script type="text/javascript" src="../../resources/jquery/jquery.treegrid.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/qmsProjectManagement.js"></script>
+<style>
+    .homeSelect {
+		float: right; width: 153px; height: 32px; margin-left: 10px; margin-right: 16px;margin-bottom: 10px;
+	}
+	.myTab{
+		width: 99%;
+    	margin-left: 0.5%;
+	}
+	.mvp-main{
+		margin: 0;
+	}
+	.table>thead:first-child>tr:first-child>th{
+		font-size: 14px;
+		text-align: center !important;
+	}
+	.bootstrap-table .table:not(.table-condensed) > tbody > tr > td{
+		max-width: 100px;
+		padding: 0;
+	}
+	.bootstrap-table .table:not(.table-condensed) > tbody > tr > td > span{
+	    display: -webkit-box;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	    word-wrap: break-word;
+	    white-space: normal !important;
+	    -webkit-line-clamp: 2;
+	    -webkit-box-orient: vertical;
+	}
+	.fixed-table-container {
+		border-width: 0px;
+		background-color: #fff;
+	}
+	#qmsProjectManagement{
+    	white-space:nowrap;
+		table-layout : automatic;
+		color: black;
+		font-size: 12px;
+    }
+    .glyphicon.glyphicon-edit{
+    	font-size: 18px;
+    }
+	select.input-sm{
+	    height: 30px !important;
+	}
+	.btn-default {
+        background-color: #EAEBED;
+        color: #000;
+        border-color: #999;
+    }
+    .open>.dropdown-toggle.btn-default:hover{
+        background-color: #EAEBED;
+        border-color: #999;
+    }
+    .btn-default.active, .btn-default:active, .btn-default:focus, .btn-default:hover, .open .dropdown-toggle.btn-default {
+        background-color: #EAEBED;
+        border-color: #999;
+        color: #000;
+    }
+    .buttonQMS{
+	    border: 1px #1AB394 solid;background-color: #1AB394;width: 60px;height: 30px;color: white;
+	    outline: none;line-height: 0px;font-size: 14px;margin-bottom: 10px;margin-right:16px;float: right;border-radius: 5px;
+	}
+	.describe{
+	    display:block;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        border: 0px !important;
+	}
+	table{
+        background: #1AB394;
+        color: #fff;
+    }
+    .old{
+        color: black !important;
+    }
+    .new{
+        color: black !important;
+    }
+    .table-hover>tbody>tr:hover{
+        background-color: #BADCF6 !important;
+    }
+</style>
+</head>
+
+<body>
+
+	<div class="mvp-main">
+		<div class="myTab" >  
+			<div style="width:100%;">
+			    <div id="conforms" style="float: right;font-size: 14px;margin-top: 3px;margin-bottom: 15px;margin-right: 20px;">符合度<span id="conform" style="font-size: 18px;color: #e41f2b;font-weight: bolder;margin-left: 5px;">0</span></div>
+			    <div id="multipleMenu" class="homeSelect" style="display: none;">
+				     <select onchange="selectMultipleMenu()" id="multiple" name="multiple" title="请选择类别" class="selectpicker show-tick form-control" multiple data-live-search="false"> </select>
+			    </div>
+			    <button id="saveQMS" type="button" class="buttonQMS">保存</button>
+			    <button id="exportQMS" type="button" class="buttonQMS">导出</button>
+				<table id="qmsProjectManagement" style="background: #fff;color: #000;" border="0" cellspacing="0" cellpadding="0" class="table text-nowrap"></table>
+			</div>	
+		</div>
+	</div>
+</body>
+</html>

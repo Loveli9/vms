@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+	<script type="text/javascript" src="js/toastr.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+	<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+	<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+    <script type="text/javascript" src="js/selectComm.js"></script>
+	<script type="text/javascript" src="js/comm/tableComm.js"></script>
+	<script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="js/consumerBLinEfficiencyIndex.js"></script>
+    <style>
+    
+	.homeSelect{
+    	float:right;
+    	width:153px;
+    	height:32px;
+		margin-left: 10px;
+		    	
+    }
+    .mains{
+		top:0px; left:0px; right:0px; bottom:0px; background:#f7f8f8;
+	}
+	.tableCenter>thead>tr>td,.tableCenter>thead>tr>th,.tableCenter>tbody>tr>td,.tableCenter>tbody>tr>th{
+		text-align: center;
+		vertical-align:middle;
+	}
+	.table {table-layout:fixed;}
+	.editable-container.editable-inline input{
+		width: 50px;
+	}
+	.editable-click, a.editable-click, a.editable-click:hover {
+		text-decoration: none;
+		border-bottom: dashed 0px #0088cc;
+	}
+	.editableform .form-control {
+		width: 350px;
+	}
+	.editable-input {
+		float: left;
+	}
+	.editable-buttons {
+		float: left;
+		margin-top: 5px;
+	}
+	.text-nowrap {
+		white-space: unset;
+	}
+	a:hover, a:focus {
+		text-decoration: none;
+	}
+	.table>thead:first-child>tr:first-child>th{
+		border-right: 1px solid transparent !important;
+	}
+	.bootstrap-table .table:not(.table-condensed) > tbody > tr > td{
+		border-right: 1px solid transparent !important;
+	}
+	.fixed-table-container {
+		border-width: 0px;
+	}
+	
+	.weekSelection {
+	background: #fff;
+	cursor: pointer;
+	outline: none;
+	float: left;
+	width: 100px;
+	height: 26px;
+	border: 1px solid #3399FF;
+	font-size: 14px;
+	text-align: center;
+    } 
+	.tab_active {
+		background: #3399FF;
+		color: #fff;
+	}
+	
+</style>
+</head>
+<body style="line-height: 24px;background: #f7f8f8;width:100%;">
+ 	<div class="mains" style="">
+ 	    <div style="width: 150px; font-size: 20px; font-weight: bold; line-height: 32px; color: #666; margin-left: 30px; margin-top: 20px;">效率指标</div>
+		    <div style="margin-top: 20px; margin-left: 30px; height: 40px; width: 82%;">
+				<button class="weekSelection tab_active"
+					style="border-radius: 25px 0px 0px 25px;" name="PDUIndex" >PDU指标总览</button>
+				<button class="weekSelection "
+					style="border-radius: 0px 25px 25px 0px;" name="projectIndex" >项目指标总览</button>
+			</div>
+   		<div style="margin-top: 20px;margin-left: 30px;width:95%;height:40px;">
+   		
+			<span style="float:left;width:150px;font-size: 20px;font-weight: bold;line-height: 32px;color: #666;"></span>
+			<!-- <div class="homeSelect" style="width: unset;">
+				<button type="button" id="exportAssess" style="float: right;width: 82px;height: 34px;background-color: #e41f2b;color: #ffffff;cursor: pointer;border: none;border-radius: 4px;font-size: 15px;margin-right: 15px;line-height: 30px;outline: none;">导出</button>
+			</div> -->
+			<!-- 中软 -->
+			<div class="homeSelect" id="select8" style="display: none;">
+				<select onchange="selectOnchange()" id="usertype8" name="usertype" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+			</div>
+			<div class="homeSelect" id="select7">
+	   			<select onchange="selectOnchange()" id="usertype7" name="usertype" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+			<div class="homeSelect" id="select6">
+	    		<select onchange="selectOnchange()" id="usertype6" name="usertype" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+	   		<!-- 华为 -->
+	   		<div class="homeSelect" style="display: none;" id="select5">
+				<select onchange="selectOnchange()" id="usertype5" name="usertype" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+			</div>
+			<div class="homeSelect" style="display: none;" id="select4">
+	   			<select onchange="selectOnchange()" id="usertype4" name="usertype" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+			<div class="homeSelect" style="display: none;" id="select3">
+	    		<select onchange="selectOnchange()" id="usertype3" name="usertype" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+	   		<!-- 地域 -->
+	   		<div class="homeSelect" style="display: none;" id="select1">
+	    		<select onchange="selectOnchange()" id="usertype1" name="usertype" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+				</select>
+	   		</div>
+			<div class="homeSelect select" id="select">
+				<select onchange="selectChange()" id="selectBig" name="select"
+					title="中软&华为" class="selectpicker show-tick form-control" data-live-search="false">
+					<option value='1' selected="selected">中软</option>
+					<option value='2'>华为</option>
+					<option value='3'>地域</option>
+				</select>
+			</div>
+		</div>
+		<div style="color: #333333;margin: 10px 30px;background-color: white;">
+		    <div style="margin: 20px;" id="PDUIndex">
+				<table id="mytable0" class="table text-nowrap"></table>
+			</div>
+			 <div style="margin: 20px;display: none;" id="projectIndex"> 
+				<table id="mytable1" class="table text-nowrap"></table>
+			</div>
+		</div>
+		<div style="color: #333333;margin: 10px 30px;background-color: white;">
+		</div>
+	</div>
+   </body>
+</html>

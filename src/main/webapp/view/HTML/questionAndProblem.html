@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+        <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/questionAndAnswer.js"></script>
+    <style>
+    	a:hover{
+    		cursor: pointer; text-decoration: underline;
+    	}
+    	.breadcrumb > .active {
+    		color: #333333;
+		}
+		.breadcrumb {
+			background-color: white;
+		    margin-left: 50px;
+		    margin-right: 50px;
+		    margin-bottom: 0px;
+		    padding: 8px 0px;
+		}
+		.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+			color: #3399ff;
+		    background-color: #ffffff;
+		    border-bottom: 5px #3399ff solid;
+		}
+		.nav>li>a:hover{
+			color: #3399ff;
+		    background-color: #ffffff;
+		}
+		.nav>li>a {
+		    color: #000000;
+		    background-color: #ffffff;
+		    text-decoration: none;
+		}
+		.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+			padding-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+	<ol class="breadcrumb">
+		<li>系统</li>
+	    <li>问题反馈</li>
+	    <li class="active">意见（问题）反馈</li>
+	</ol>		
+	<div style="height: 50px;border-bottom: 2px #e2e3e4 solid;margin: 10px 50px;">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li tabname="tab-zl" class="active"><a href="#">列表</a></li>
+		</ul>
+		<a id="queryBtn" style="float: right;"><img src="images/shuaxinicon.png" alt="刷新" style="width: 30px; height: 30px;" /></a>
+		<input type="text" class="form-control" placeholder="反馈人工号" id="userid" style="width: 120px; float: right; margin-right: 10px; padding: 0px 0px 0px 10px; height: 28px;" />
+		<input type="text" class="form-control" placeholder="反馈人姓名" id="username" style="width: 120px; float: right; margin-right: 10px; padding: 0px 0px 0px 10px; height: 28px;" />
+	</div>
+	<!-- 意见反馈与回复列表 -->
+	<!-- <button type="button" id="takeQuestion" style="border:1px #367FA9 solid;background-color: #367FA9;color: white;border-radius: 5px;width: 80px;height: 30px;outline: none;margin-bottom: 10px;margin-left: 1%;">我要反馈</button> -->
+	<!-- <table border="1" cellpadding="0" cellspacing="0" style="width: 98%;margin-left: 1%;">
+		<thead>
+			<tr style="height: 35px;">
+				<th style="text-align: center;">序号</th>
+				<th style="width: 10%; text-align: center;">问题类型</th>
+				<th style="width: 20%; text-align: center;">问题描述</th>
+				<th style="width: 10%; text-align: center;">反馈时间</th>
+				<th style="width: 20%; text-align: center;">问题回复</th>
+				<th style="width: 10%; text-align: center;">回复时间</th>
+				<th style="width: 10%; text-align: center;">问题状态</th>
+				<th style="width: 10%; text-align: center;">操作</th>
+			</tr>
+		</thead>
+		<tbody id="tbody"></tbody>
+		<tfoot>
+			<tr style="height:30px;">
+				<th colspan="8">
+					<div style="margin-left: 500px; float: left;">
+						<a id="firstPage" class="changePage">首页</a>&nbsp;&nbsp;
+						<a id="previousPage" class="changePage">上一页</a>&nbsp;&nbsp;
+						<a id="nextPage" class="changePage">下一页</a>&nbsp;&nbsp;
+						<a id="lastPage" class="changePage">尾页</a>
+					</div>
+					<div style="margin-right: 50px; float: right;">
+						第<span id="currentPage"></span>页/共<span id="countPage"></span>页&nbsp;&nbsp;
+						共<span id="questions"></span>条数据
+					</div>
+				</th>
+			</tr>
+		</tfoot>
+	</table> -->
+	<div style="width:100%; margin:10px auto 0 auto; background-color: #fafafa; ">
+     	<div id="projSummaryTable" style="display:block;width:100%;"></div> 
+    </div>
+	<!-- 意见反馈 -->
+	<!-- <div class="modal fade" id="questionAndAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width: 650px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						意见（问题）反馈
+					</h4>
+					<button type="button" id="cancel" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+					<button type="button" id="saveQuestion"  style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">提交</button>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<table border="0" cellpadding="0" cellspacing="0" style="height: 150px;width:100%">
+						<tr style="height: 30px;">
+							<td style="width: 10%; text-align: left;">姓名</td>
+							<td style="width: 40%;"><input type="text" id="memberName" placeholder="必填" style="width: 85%; height: 100%;" /></td>
+							<td style="width: 10%; text-align: left;">工号</td>
+							<td style="width: 40%;"><input type="text" id="memberId" placeholder="必填" style="width: 85%; height: 100%;" /></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 30px;">
+							<td style="width: 10%; text-align: left;">电话</td>
+							<td><input type="text" id="memberPhone"  placeholder="必填" style="width: 85%; height: 100%;" /></td>
+							<td style="text-align: left;">邮箱</td>
+							<td><input type="text" id="memberMail" placeholder="必填" style="width: 85%; height: 100%;" /></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 30px;">
+							<td style="text-align: left;">反馈类型</td>
+							<td>
+								<select id="questionType" style="width: 85%; height: 100%;">
+									<option value="系统问题" selected="selected">系统问题</option>
+									<option value="意见与建议">意见与建议</option>
+								</select>
+							</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 150px;">
+							<td style="text-align: left;">意见/问题</td>
+							<td colspan="3"><textarea id="questionContent" placeholder="必填" style="width: 93%; height: 100%;"></textarea></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div> -->
+	<!-- 意见查看 -->
+	<div class="modal fade" id="question" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width: 650px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						意见（问题）反馈
+					</h4>
+					<button type="button" class="close" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 50%; width: 20px; height: 20px; margin-right: 15px;outline: none;line-height: 18px;">×</button>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<table border="0" cellpadding="0" cellspacing="0" style="height: 150px;width:100%">
+						<tr style="height: 30px;">
+							<td style="width: 11%; text-align: left;">姓名：</td>
+							<td style="width: 40%;"><input type="text" class="memberName" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+							<td style="width: 10%; text-align: left;">工号：</td>
+							<td><input type="text" class="memberId" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 30px;">
+							<td style="width: 10%; text-align: left;">电话：</td>
+							<td><input type="text" class="memberPhone" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+							<td style="text-align: left;">邮箱：</td>
+							<td><input type="text" class="memberMail" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 30px;">
+							<td style="text-align: left;">反馈类型：</td>
+							<td><input type="text" class="questionType" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 150px;">
+							<td style="text-align: left;">意见/问题：</td>
+							<td colspan="3"><textarea class="questionContent" disabled="disabled" style="width: 93%; height: 100%;"></textarea></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 150px;" class="replyTr">
+							<td style="text-align: left;">回复：</td>
+							<td colspan="3"><textarea class="questionReply" disabled="disabled" style="width: 93%; height: 100%;"></textarea></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 意见回复 -->
+	<div class="modal fade" id="answer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" >
+		<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width: 650px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						意见（问题）反馈
+					</h4>
+					<button type="button" class="cancel" data-dismiss="modal" style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">取消</button>
+					<button type="button" class="saveQuestion"  style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">提交</button>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<table border="0" cellpadding="0" cellspacing="0" style="height: 150px;width:100%">
+						<tr style="height: 30px;">
+							<td style="width: 11%; text-align: left;">姓名：</td>
+							<td style="width: 40%;"><input type="text" class="memberName" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+							<td style="width: 10%; text-align: left;">工号：</td>
+							<td><input type="text" class="memberId" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 30px;">
+							<td style="width: 10%; text-align: left;">电话：</td>
+							<td><input type="text" class="memberPhone" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+							<td style="text-align: left;">邮箱：</td>
+							<td><input type="text" class="memberMail" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 30px;">
+							<td style="text-align: left;">反馈类型：</td>
+							<td><input type="text" class="questionType" disabled="disabled" style="width: 85%; height: 100%;" /></td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 150px;">
+							<td style="text-align: left;">意见/问题：</td>
+							<td colspan="3"><textarea class="questionContent" disabled="disabled" style="width: 93%; height: 100%;"></textarea></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 30px;">
+							<td style="text-align: left;">问题状态：</td>
+							<td>
+								<select id="solveState" style="width: 85%; height: 100%;">
+									<option value="未解决">未解决</option>
+									<option value="已解决" selected="selected">已解决</option>
+									<option value="已拒绝">已拒绝</option>
+								</select>
+							</td>
+							<td></td>
+							<td></td>
+						</tr>
+						<tr style="height: 10px;"><th colspan="4"></th></tr>
+						<tr style="height: 150px;" class="replyTr">
+							<td style="text-align: left;"><font color="red">*</font> 回复：</td>
+							<td colspan="3"><textarea id="questionReply" style="width: 93%; height: 100%;"></textarea></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

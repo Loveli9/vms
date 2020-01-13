@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ActualValCalculateDao">
+	<!-- 测试用例设计总数 -->
+	<select id="testCaseDesignEffec" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT 
+		  SUM(TESTCASE_VALUE) 
+		FROM
+		  testcase_statistics 
+		WHERE TESTCASE_TYPE = 0 
+		  AND PRO_NO = #{proNo} 
+		  AND PERIOD_DIFF(
+		    DATE_FORMAT(NOW(), '%Y%m'),
+		    DATE_FORMAT(DATE, '%Y%m')
+		  ) = 1 
+	</select>
+	<!--开发工程师月代码总量 -->
+	<select id="getCodeNum" parameterType="java.lang.String" resultType="java.lang.String">
+		     SELECT 
+		    SUM(t1.`MODIFYNUM`) AS num 
+		  FROM
+		    `svn_log` t1 
+		  WHERE t1.`AUTHOR` IN 
+		    ${authors}
+		    AND PERIOD_DIFF(
+		      DATE_FORMAT(NOW(), '%Y%m'),
+		      DATE_FORMAT(t1.COMMITTIME, '%Y%m')
+		    ) = 1  AND t1.`NO` = #{proNo}
+	</select>
+	<select id="getCodeNumWx" parameterType="java.lang.String" resultType="java.lang.String">
+		   SELECT 
+		    SUM(t1.`MODIFYNUM`) AS num 
+		  FROM
+		    `svn_log` t1 
+		  WHERE substring(t1.`AUTHOR`,2) IN 
+		    ${authors}
+		    AND PERIOD_DIFF(
+		      DATE_FORMAT(NOW(), '%Y%m'),
+		      DATE_FORMAT(t1.COMMITTIME, '%Y%m')
+		    ) = 1 AND t1.`NO` = #{proNo}
+	</select>
+	<!-- 查询投入工作量占比 -->
+	<select id="getWorkPercent" resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT 
+		  t1.`VALUE` AS val 
+		FROM
+		  `project_parameter_value_new` t1 
+		WHERE t1.`PARAMETER_ID` = 
+		  (SELECT 
+		    id 
+		  FROM
+		    `parameter_info` t 
+		  WHERE t.`NAME` = #{name} LIMIT 1) 
+		  AND t1.`NO` = #{proNo} 
+		  AND PERIOD_DIFF(
+		    DATE_FORMAT(NOW(), '%Y%m'),
+		    DATE_FORMAT(t1.month, '%Y%m')
+		  ) = 1 
+		LIMIT 1
+	</select>
+	<select id="queryHoursAll" parameterType="java.lang.String" resultType = "java.lang.String">
+		  SELECT 
+			  SUM(t.actual_labor_hour) 
+			FROM
+			  tbl_time_information t 
+			WHERE t.zr_account IN ${zrAccount} 
+			  AND PERIOD_DIFF(
+			    DATE_FORMAT(NOW(), '%Y%m'),
+			    DATE_FORMAT(t.statistical_time, '%Y%m')
+			  ) = 1 
+	</select>
+	<!-- 上个月问题但数量 -->
+	<select id="dtsCount" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(*) from dts_log 
+			where (colse_Type is null or colse_Type='' or colse_Type='Closure After Correction') 
+				and curent_Status!='Cancel' and no=#{proNo}  AND PERIOD_DIFF(
+			    DATE_FORMAT(NOW(), '%Y%m'),
+			    DATE_FORMAT(created_Time, '%Y%m')
+			  ) = 1 
+	</select>
+</mapper>

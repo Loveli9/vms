@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IterativeWorkManageDao">
+    <resultMap type="com.icss.mvp.entity.IterativeWorkManage" id="IterativeWorkManage">
+        <result property="id" column="id"/>
+        <result property="iteType" column="ite_type"/>
+        <result property="topic" column="topic"/>
+        <result property="creator" column="creator"/>
+        <result property="solvePerson" column="solve_person"/>
+        <result property="prior" column="prior"/>
+        <result property="importance" column="importance"/>
+        <result property="status" column="status"/>
+        <result property="change" column="change"/>
+        <result property="version" column="version"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="iteId" column="ite_id"/>
+        <result property="proNo" column="pro_no"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="describeInfo" column="describe_info"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="iteName" column="ite_name"/>
+        <result property="wrField" column="wr_field"/>
+        <result property="expectHours" column="expect_hours"/>
+        <result property="actualHours" column="actual_hours"/>
+        <result property="planStartTime" column="plan_start_time"/>
+        <result property="planEndTime" column="plan_end_time"/>
+        <result property="codeAmount" column="code_amount"/>
+        <result property="personLiable" column="person_liable"/>
+        <result property="finalimit" column="finalimit"/>
+
+        <result property="demandCode" column="demand_code"/>
+        <result property="document" column="document"/>
+        <result property="demandType" column="demand_type"/>
+        <result property="alertContent" column="alert_content"/>
+        <result property="design" column="design"/>
+        <result property="luNumber" column="lu_number"/>
+        <result property="testNumber" column="test_number"/>
+        <result property="checkResult" column="check_result"/>
+        <result property="remarks" column="remarks"/>
+    </resultMap>
+
+    <resultMap id="MemberResult" type="com.icss.mvp.entity.ProjectMembersLocal">
+        <result property="no" column="NO"/>
+        <result property="name" column="NAME"/>
+        <result property="zrAccount" column="ZR_ACCOUNT"/>
+        <result property="hwAccount" column="HW_ACCOUNT"/>
+        <!-- <result property="tmssAccount" column="svn_git_no"/> -->
+        <result property="svnGitNo" column="svn_git_no"/>
+        <result property="role" column="ROLE"/>
+        <result property="startDate" column="START_DATE"/>
+        <result property="endDate" column="END_DATE"/>
+    </resultMap>
+
+    <!-- 分页查询需求管理信息 -->
+    <select id="queryIteWorkManagePage" resultMap="IterativeWorkManage">
+        SELECT iwm.id,iwm.`topic`,sdi1.name as `prior`,sdi2.name as `importance`,sdi3.name as `status`,sdi4.name as
+        `change`,
+        iwm.`create_time`,iwm.`update_time`,ic.`ite_name` as `ite_id`,iwm.`pro_no`,
+        iwm.`start_time`,iwm.`end_time`,iwm.`describe_info`,
+        iwm.`is_deleted`,iwm.`expect_hours`,iwm.`actual_hours`,iwm.`plan_start_time`,iwm.`plan_end_time`,
+        iwm.`code_amount`,iwm.`person_liable`,iwm.`finalimit`,ic.`is_deleted`
+        FROM `iterative_work_manage` iwm
+        LEFT JOIN `sys_user` su ON su.`USERID` = iwm.`creator`
+        LEFT JOIN `sys_dict_item` sdi1 on sdi1.val=iwm.prior
+        LEFT JOIN `sys_dict_item` sdi2 on sdi2.val=iwm.importance
+        LEFT JOIN `sys_dict_item` sdi3 on sdi3.val=iwm.`status`
+        LEFT JOIN `sys_dict_item` sdi4 on sdi4.val=iwm.`change`
+        LEFT JOIN (
+        SELECT * FROM `iteration_cycle` WHERE `is_deleted` = 0 and `pro_no` = #{proNo}
+        ) ic ON iwm.`ite_id` = ic.`id`
+        WHERE iwm.`pro_no` = #{proNo} AND iwm.`is_deleted` = 0
+        and sdi1.sys_dict_id=(select sd.id from sys_dict sd where sd.code='work_prior' and sd.is_deleted=0)
+        and sdi2.sys_dict_id=(select sd.id from sys_dict sd where sd.code='work_importance' and sd.is_deleted=0)
+        and sdi3.sys_dict_id=(select sd.id from sys_dict sd where sd.code='work_status' and sd.is_deleted=0)
+        and sdi4.sys_dict_id=(select sd.id from sys_dict sd where sd.code='work_change' and sd.is_deleted=0)
+        <if test="null != hwAccount and '' != hwAccount"> <!-- 责任人 -->
+            and iwm.person_liable like concat('%', #{hwAccount}, '%')
+        </if>
+        <if test="null != page.queryMap.iteId and '' !=page.queryMap.iteId"> <!-- 迭代id -->
+            and iwm.ite_id = #{page.queryMap.iteId}
+        </if>
+        <!-- <if test="null != page.queryMap.prior and '' !=page.queryMap.prior">优先级
+          and iwm.prior = #{page.queryMap.prior}
+        </if> -->
+        <if test="null != page.queryMap.status and '' !=page.queryMap.status"><!-- 状态 -->
+            and iwm.status = #{page.queryMap.status}
+        </if>
+        <if test="null != page.queryMap.topic and '' !=page.queryMap.topic"><!-- 标题 -->
+            and iwm.topic like concat('%', #{page.queryMap.topic}, '%')
+        </if>
+        <!--<if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+          order by ${sort} ${sortOrder}
+        </if>-->
+        order by iwm.plan_start_time desc
+        <!-- <if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+         ${sort} ${sortOrder},
+        </if> -->
+        <!-- iwm.`create_time` desc --> <!-- 按照create_time降序排序 -->
+        <if test="null != page.page and  null != page.rows">
+            LIMIT ${page.page},${page.rows}
+        </if>
+    </select>
+
+    <!-- PM周报导出需求管理信息 -->
+    <select id="queryIteWorkManageInfo" resultMap="IterativeWorkManage">
+        SELECT
+        t1.id,t1.`ite_type`,t1.`topic`,t1.`creator`,t1.`prior`,t1.`importance`,t1.`status`,t1.`change`,t1.`version`,
+        t1.`create_time`,t1.`update_time`,t1.`ite_id`,t1.`pro_no`,t1.`start_time`,t1.`end_time`,t1.`describe_info`,
+        t1.`is_deleted`,t1.`wr_field`,t1.`expect_hours`,t1.`actual_hours`,t1.`plan_start_time`,t1.`plan_end_time`,
+        t1.`code_amount`,t1.`person_liable`,t1.`finalimit`,t1.`demand_code`,t1.`document`,t1.`demand_type`,t1.`alert_content`,
+        t1.`design`,t1.`lu_number`,t1.`test_number`,t1.`check_result`,t1.`remarks`,t2.`USERNAME`,t3.`plan_start_date`,
+        t3.`ite_name`,t3.`is_deleted` FROM `iterative_work_manage` t1 LEFT JOIN `sys_user` t2
+        ON t2.`USERID` = t1.`creator` LEFT JOIN (SELECT * FROM `iteration_cycle` WHERE `is_deleted` = 0 and `pro_no` =
+        #{proNo}) t3
+        ON t1.`ite_id` = t3.`id` WHERE t1.`pro_no` = #{proNo} AND t1.`is_deleted` = 0
+        <if test="null != page.queryMap.iteId and '' !=page.queryMap.iteId"> <!-- 迭代id -->
+            and t1.ite_id = #{page.queryMap.iteId}
+        </if>
+        <!-- <if test="null != page.queryMap.prior and '' !=page.queryMap.prior">优先级
+          and t1.prior = #{page.queryMap.prior}
+        </if> -->
+        <if test="null != page.queryMap.status and '' !=page.queryMap.status"><!-- 状态 -->
+            and t1.status = #{page.queryMap.status}
+        </if>
+        <if test="null != page.queryMap.topic and '' !=page.queryMap.topic"><!-- 标题 -->
+            and t1.topic like concat('%', #{page.queryMap.topic}, '%')
+        </if>
+        <!--<if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+          order by ${sort} ${sortOrder}
+        </if>-->
+        order by
+        <if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+            ${sort} ${sortOrder},
+        </if>
+        t1.`create_time` desc <!-- 按照create_time降序排序 -->
+        <if test="null != page.page and  null != page.rows">
+            LIMIT ${page.page},${page.rows}
+        </if>
+    </select>
+
+    <!-- 查询所有需求管理信息 -->
+    <select id="queryIteWorkManageAll" resultMap="IterativeWorkManage">
+	        SELECT t1.id,
+	        t1.`ite_type`,
+	        t1.`topic`,
+	        t1.`creator`,
+	        t1.`prior`,
+	        t1.`importance`,
+	        t1.`status`,
+	        t1.`change`,
+	        t1.`version`,
+	        t1.`create_time`,
+	        t1.`update_time`,
+	        t1.`ite_id`,
+	        t1.`pro_no`,
+	        t1.`start_time`,
+	        t1.`end_time`,
+	        t1.`describe_info`,
+	        t1.`is_deleted`,
+	        t1.`wr_field`,
+	        t1.`expect_hours`,
+	        t1.`actual_hours`,
+	        t1.`plan_start_time`,
+	        t1.`plan_end_time`,
+	        t1.`code_amount`,
+	        t1.`person_liable`,
+	        t1.`finalimit`,
+	        
+	        t1.`demand_code`,
+	        t1.`document`,
+	        t1.`demand_type`,
+	        t1.`alert_content`,
+	        t1.`design`,
+	        t1.`lu_number`,
+	        t1.`test_number`,
+	        t1.`check_result`,
+	        t1.`remarks`,
+	        
+	        t2.`USERNAME`,
+	        t3.`plan_start_date`,
+	        t3.`ite_name`,t3.`is_deleted` FROM `iterative_work_manage` t1 LEFT JOIN `sys_user` t2
+	        ON t2.`USERID` = t1.`creator`
+	        LEFT JOIN (
+				SELECT * FROM `iteration_cycle` WHERE `is_deleted` = 0 and `pro_no` = #{proNo}
+	        ) t3
+	        ON t1.`ite_id` = t3.`id` 
+	        WHERE t1.`pro_no` = #{proNo}
+	        AND t1.`is_deleted` = 0
+	</select>
+
+    <select id="queryIteWorkManageAllNew" resultType="com.icss.mvp.entity.IterativeWorkManage">
+	       SELECT a.*,pri.`NAME` AS iteName FROM (
+		SELECT iwm.id,iwm.`topic`,sdi1.name AS `prior`,sdi2.name AS `importance`,sdi3.name AS `status`,sdi4.name AS
+		`change`,
+		iwm.`create_time`,iwm.`update_time`,ic.`ite_name` AS `ite_id`,iwm.`pro_no`,
+		iwm.`start_time`,iwm.`end_time`,iwm.`describe_info`,
+		iwm.`expect_hours`,iwm.`actual_hours`,iwm.`plan_start_time`,iwm.`plan_end_time`,
+		iwm.`code_amount`,iwm.`person_liable`,iwm.`finalimit`
+		FROM `iterative_work_manage` iwm
+		LEFT JOIN `sys_user` su ON su.`USERID` = iwm.`creator`
+		LEFT JOIN `sys_dict_item` sdi1 ON sdi1.val=iwm.prior
+		LEFT JOIN `sys_dict_item` sdi2 ON sdi2.val=iwm.importance
+		LEFT JOIN `sys_dict_item` sdi3 ON sdi3.val=iwm.`status`
+		LEFT JOIN `sys_dict_item` sdi4 ON sdi4.val=iwm.`change`
+		LEFT JOIN (
+		SELECT * FROM `iteration_cycle` WHERE `is_deleted` = 0
+		) ic ON iwm.`ite_id` = ic.`id`
+		WHERE iwm.`is_deleted` = 0
+		AND sdi1.sys_dict_id=(SELECT sd.id FROM sys_dict sd WHERE sd.code='work_prior' AND sd.is_deleted=0)
+		AND sdi2.sys_dict_id=(SELECT sd.id FROM sys_dict sd WHERE sd.code='work_importance' AND sd.is_deleted=0)
+		AND sdi3.sys_dict_id=(SELECT sd.id FROM sys_dict sd WHERE sd.code='work_status' AND sd.is_deleted=0)
+		AND sdi4.sys_dict_id=(SELECT sd.id FROM sys_dict sd WHERE sd.code='work_change' AND sd.is_deleted=0)) AS a
+		LEFT JOIN `project_info` pri ON pri.no=a.pro_no
+	</select>
+
+    <!-- 新增信息 -->
+    <insert id="addIteWorkManageInfo" parameterType="com.icss.mvp.entity.IterativeWorkManage">
+		INSERT INTO 
+			`iterative_work_manage` 
+			(`id`,`ite_type`,`topic`,
+			`creator`,`prior`,`importance`, 
+			`status`,`change`,`version`,`create_time`,
+			`update_time`,`ite_id`,`pro_no`,
+			`start_time`,`end_time`, `describe_info`,
+			`is_deleted`,`expect_hours`,`actual_hours`,
+			`wr_field`,`plan_start_time`,`plan_end_time`,
+			`code_amount`,`person_liable`,`finalimit`,
+			
+			`demand_code`,`document`,`demand_type`,`alert_content`,`design`,
+			`lu_number`,`test_number`,`check_result`,`remarks`
+			
+			) VALUES(
+			#{iteInfo.id},#{iteInfo.iteType}, #{iteInfo.topic},
+			#{iteInfo.creator},#{iteInfo.prior},#{iteInfo.importance},
+			#{iteInfo.status},#{iteInfo.change},#{iteInfo.version},#{iteInfo.createTime},
+			#{iteInfo.updateTime},#{iteInfo.iteId},#{iteInfo.proNo},
+			#{iteInfo.startTime},#{iteInfo.endTime},#{iteInfo.describeInfo},
+			#{iteInfo.isDeleted},#{iteInfo.expectHours},#{iteInfo.actualHours},
+			#{iteInfo.wrField},#{iteInfo.planStartTime},#{iteInfo.planEndTime},
+			#{iteInfo.codeAmount},#{iteInfo.personLiable},#{iteInfo.finalimit},
+			
+			#{iteInfo.demandCode},#{iteInfo.document},#{iteInfo.demandType},
+			#{iteInfo.alertContent},#{iteInfo.design},#{iteInfo.luNumber},
+			#{iteInfo.testNumber},#{iteInfo.checkResult},#{iteInfo.remarks})
+	</insert>
+    <!-- 编辑信息  -->
+    <update id="editIteWorkManageInfo" parameterType="com.icss.mvp.entity.IterativeWorkManage">
+		UPDATE `iterative_work_manage` SET 
+			`ite_type` = #{itera.iteType},
+			`topic` = #{itera.topic},
+			`creator` = #{itera.creator} ,
+			`prior` = #{itera.prior},
+			`importance` = #{itera.importance},
+			`status` = #{itera.status},
+			`change` = #{itera.change},
+			`version`= #{itera.version},
+			`update_time` = NOW(),
+			`ite_id` = #{itera.iteId},
+			`pro_no` = #{itera.proNo},
+			`start_time` = #{itera.startTime},
+			`end_time` = #{itera.endTime},
+			`describe_info` = #{itera.describeInfo},
+			`is_deleted` = #{itera.isDeleted},
+			`expect_hours` = #{itera.expectHours},
+			`actual_hours` = #{itera.actualHours},
+			`wr_field`= #{itera.wrField},
+			`plan_start_time`= #{itera.planStartTime},
+			`plan_end_time`= #{itera.planEndTime},
+			`code_amount`=  #{itera.codeAmount},
+			`person_liable` = #{itera.personLiable},
+			`finalimit` = #{itera.finalimit},
+			
+			`demand_code` = #{itera.demandCode},
+			`document` = #{itera.document},
+			`demand_type` = #{itera.demandType},
+			`alert_content` = #{itera.alertContent},
+			`design` = #{itera.design},
+			`lu_number` = #{itera.luNumber},
+			`test_number`= #{itera.testNumber},
+			`check_result`= #{itera.checkResult},
+			`remarks`= #{itera.remarks}
+			
+			 WHERE id = #{itera.id}
+	</update>
+    <!-- 删除信息 -->
+    <update id="deleteIteWorkManageInfo" parameterType="java.lang.String">
+		UPDATE `iterative_work_manage` SET `is_deleted` = 1 WHERE id = #{id}
+	</update>
+    <!-- 查询总记录 -->
+    <select id="queryTotalCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `iterative_work_manage` WHERE pro_no = #{proNo} and
+        `is_deleted` = 0
+        <if test="null != hwAccount and '' != hwAccount"> <!-- 责任人 -->
+            and person_liable like concat('%', #{hwAccount}, '%')
+        </if>
+        <if test="null != page.queryMap.iteId and '' !=page.queryMap.iteId"> <!-- 迭代id -->
+            and ite_id = #{page.queryMap.iteId}
+        </if>
+        <if test="null != page.queryMap.status and '' !=page.queryMap.status"><!-- 状态 -->
+            and status = #{page.queryMap.status}
+        </if>
+        <if test="null != page.queryMap.topic and '' !=page.queryMap.topic"><!-- 标题 -->
+            and topic like concat('%', #{page.queryMap.topic}, '%')
+        </if>
+    </select>
+    <!-- 查询关闭结束的总记录 -->
+    <select id="queryTotalCountByIteId" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT IFNULL(COUNT(*),0) FROM iterative_work_manage WHERE ite_id = #{iteId} and 
+		is_deleted = 0 and status in ('3','5','6');
+	</select>
+    <!-- 查询总记录不包括拒绝的  -->
+    <select id="queryTotalCountByIteIdNot5" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT IFNULL(COUNT(*),0) as num FROM iterative_work_manage 
+		WHERE ite_id = #{iteId}
+		and is_deleted = 0 and status !='5';
+	</select>
+    <!-- 根据迭代名称和项目编号查询出迭代id -->
+    <select id="queryIteIdByProNoAndIteName" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT id FROM `iteration_cycle` WHERE `ite_name` = #{iteName} AND `pro_no` = #{proNo} 
+	</select>
+
+    <select id="openEditPage" parameterType="java.lang.String" resultMap="IterativeWorkManage">
+		select * from `iterative_work_manage` WHERE id = #{id}
+	</select>
+
+    <select id="openIteWorkManageInfo" parameterType="java.lang.String" resultMap="IterativeWorkManage">
+		select * from `iterative_work_manage` WHERE pro_no=#{proNo} and topic=#{topic} and is_deleted = 0
+	</select>
+
+    <!-- 根据结束时间统计数量 -->
+    <select id="queryIteTotalByEndTime" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select DATE_FORMAT(end_time,'%Y%m%d') day,count(*) num from iterative_work_manage
+		where ite_id = #{iteId}
+		and status in ('3','5','6')
+		group by DATE_FORMAT(end_time,'%Y%m%d');
+	</select>
+    <!-- 根据结束时间统计使用天数 -->
+    <select id="queryIteDaysByEndTime" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT IFNULL(A.days,0) AS days, IFNULL(A.num,0) AS num FROM(
+			SELECT 
+			  SUM(
+			    ROUND(
+			      (
+			        UNIX_TIMESTAMP(end_time) - UNIX_TIMESTAMP(start_time)
+			      ) / 60/60/24
+			    )
+			  ) AS days,
+			  count(*) as num
+			FROM iterative_work_manage 
+			WHERE ite_id = #{iteId}
+			and is_deleted = 0 and status in ('3','6')
+		) A;
+	</select>
+    <!-- 统计超期个数 -->
+    <select id="queryIteOverDue" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT status,COUNT(*) as num FROM iterative_work_manage 
+		WHERE ite_id = #{iteId}
+		and is_deleted = 0 
+		and (DATE_FORMAT(end_time,'%Y%m%d') > DATE_FORMAT(plan_end_time,'%Y%m%d')
+			or (end_time is null and DATE_FORMAT(curdate(),'%Y%m%d')>DATE_FORMAT(plan_end_time,'%Y%m%d')));
+	</select>
+
+    <!-- 获取项目成员下拉列表 -->
+    <select id="getProjectMebersSelect"
+            resultType="java.util.HashMap">
+        <!-- select name as text,HW_ACCOUNT as value from project_members_local
+        where `NO` =#{proNo} -->
+        SELECT mb.NAME as text,ps.ZR_ACCOUNT as value
+        FROM project_staff ps
+        LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+        WHERE 1=1
+        <if test="null != proNo and '' !=proNo">
+            AND ps.NO = #{proNo}
+        </if>
+        AND ps.IS_DELETED = 0
+        GROUP BY value
+    </select>
+
+    <!-- 获取项目成员下拉列表 -->
+    <select id="getProjectMebers" resultType="com.icss.mvp.entity.ProjectMembersLocal">
+        <!-- select * from project_members_local where `NO` =#{proNo} -->
+        select mb.NAME as name,ps.ZR_ACCOUNT as zrAccount
+        from project_staff ps
+        LEFT JOIN member_base mb ON
+        ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+        where ps.IS_DELETED = 0
+        <if test="null != proNo and '' !=proNo">
+            AND `NO` = #{proNo}
+        </if>
+        GROUP BY zrAccount
+    </select>
+
+    <!-- 查询count(topic) -->
+    <select id="getTopicCountIteWorkManage" resultType="int">
+	SELECT count(topic) from `iterative_work_manage` where topic = #{topic}
+	AND `pro_no` = #{proNo} AND `is_deleted` = 0
+	</select>
+
+    <!-- 编辑信息(新增时topic相同)  -->
+    <update id="editIteWorkManageInfoByTopic" parameterType="com.icss.mvp.entity.IterativeWorkManage">
+		UPDATE `iterative_work_manage` SET 
+			`ite_type` = #{itera.iteType},
+			`creator` = #{itera.creator} ,
+			`prior` = #{itera.prior},
+			`importance` = #{itera.importance},
+			`status` = #{itera.status},
+			`change` = #{itera.change},
+			`version`= #{itera.version},
+			`create_time` = #{itera.createTime},
+			`update_time` = NOW(),
+			`ite_id` = #{itera.iteId},
+			`pro_no` = #{itera.proNo},
+			`start_time` = #{itera.startTime},
+			`end_time` = #{itera.endTime},
+			`describe_info` = #{itera.describeInfo},
+			`is_deleted` = #{itera.isDeleted},
+			`expect_hours` = #{itera.expectHours},
+			`actual_hours` = #{itera.actualHours},
+			`wr_field`= #{itera.wrField},
+			`plan_start_time`= #{itera.planStartTime},
+			`plan_end_time`= #{itera.planEndTime},
+			`code_amount`=  #{itera.codeAmount},
+			`person_liable` = #{itera.personLiable},
+			`finalimit` = #{itera.finalimit},
+			
+			`demand_code` = #{itera.demandCode},
+			`document` = #{itera.document},
+			`demand_type` = #{itera.demandType},
+			`alert_content` = #{itera.alertContent},
+			`design` = #{itera.design},
+			`lu_number` = #{itera.luNumber},
+			`test_number`= #{itera.testNumber},
+			`check_result`= #{itera.checkResult},
+			`remarks`= #{itera.remarks}
+			
+			 WHERE topic = #{itera.topic} and `pro_no` = #{itera.proNo} and `is_deleted` = 0
+	</update>
+
+    <!-- 根据id获得ite_name(迭代名) -->
+    <select id="getIteNameById" parameterType="java.lang.String" resultType="java.lang.String">
+		select ic.ite_name from `iteration_cycle` ic where `pro_no` = #{proNo} and ic.id = #{id}
+	</select>
+
+    <!-- 根据proNo获得PM(项目经理) -->
+    <select id="getPMByProNo" parameterType="java.lang.String" resultType="java.lang.String">
+		select pi.PM from project_info as pi where `NO` = #{proNo}
+	</select>
+
+    <!-- 根据proNo,name查询该项目的ZR_ACCOUNT -->
+    <select id="getZrAccountByName" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        <!-- select HW_ACCOUNT from project_members_local where `NO` =
+        #{proNo} and `NAME` = #{personLiable} -->
+        select ps.ZR_ACCOUNT from project_staff ps
+        LEFT JOIN member_base mb
+        ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+        where ps.`NO` = #{proNo} and ps.IS_DELETED = 0
+        and mb.`NAME` = #{personLiable}
+    </select>
+
+    <!-- 根据proNo,iteName查询该项目的iteId -->
+    <select id="getIteIdByIteName" resultType="java.lang.String">
+	    select id from iteration_cycle where pro_no = #{proNo} and ite_name = #{iteName}
+	    and end_date is not null and is_deleted = 0
+	</select>
+    <!--根据id删除迭代信息-->
+    <update id="deleteIteWorkManage" parameterType="java.lang.String">
+		 UPDATE `iterative_work_manage`
+        SET `is_deleted` = 1
+        WHERE id = #{id}
+	</update>
+
+    <!--查询所有的迭代信息的数目-->
+    <select id="queryAllCount" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `iterative_work_manage` WHERE
+        `is_deleted` = 0
+        <if test="list !=null and list.size()>0">
+            and pro_no IN
+            <foreach collection="list" index="index" item="proNo" open="(" separator="," close=")">
+                #{proNo.no}
+            </foreach>
+        </if>
+    </select>
+
+    <!--根据责任人，迭代id查询需求信息-->
+    <select id="queryAllIteWorkManage" resultType="com.icss.mvp.entity.IterativeWorkManage">
+        select * from (
+        SELECT a.*,pri.`NAME` AS iteName FROM (
+        SELECT iwm.id,iwm.`topic`,sdi1.name AS `prior`,sdi2.name AS `importance`,sdi3.name AS `status`,sdi4.name AS
+        `change`,
+        iwm.`create_time`,iwm.`update_time`,ic.`ite_name` AS `ite_id`,iwm.`pro_no`,
+        iwm.`start_time`,iwm.`end_time`,iwm.`describe_info`,
+        iwm.`expect_hours`,iwm.`actual_hours`,iwm.`plan_start_time`,iwm.`plan_end_time`,
+        iwm.`code_amount`,iwm.`person_liable`,iwm.`finalimit`,iwm.`check_result`,sdi3.`val`
+        FROM `iterative_work_manage` iwm
+        LEFT JOIN `sys_user` su ON su.`USERID` = iwm.`creator`
+        LEFT JOIN `sys_dict_item` sdi1 ON sdi1.val=iwm.prior
+        LEFT JOIN `sys_dict_item` sdi2 ON sdi2.val=iwm.importance
+        LEFT JOIN `sys_dict_item` sdi3 ON sdi3.val=iwm.`status`
+        LEFT JOIN `sys_dict_item` sdi4 ON sdi4.val=iwm.`change`
+        LEFT JOIN (
+        SELECT * FROM `iteration_cycle` WHERE `is_deleted` = 0
+        ) ic ON iwm.`ite_id` = ic.`id`
+        WHERE iwm.`is_deleted` = 0
+        AND sdi1.sys_dict_id=(SELECT sd.id FROM sys_dict sd WHERE sd.code='work_prior' AND sd.is_deleted=0)
+        AND sdi2.sys_dict_id=(SELECT sd.id FROM sys_dict sd WHERE sd.code='work_importance' AND sd.is_deleted=0)
+        AND sdi3.sys_dict_id=(SELECT sd.id FROM sys_dict sd WHERE sd.code='work_status' AND sd.is_deleted=0)
+        AND sdi4.sys_dict_id=(SELECT sd.id FROM sys_dict sd WHERE sd.code='work_change' AND sd.is_deleted=0)) AS a
+        LEFT JOIN `project_info` pri ON pri.no=a.pro_no
+        ) as b where 1=1
+        <if test="list !=null and list.size>0"> <!-- 责任人 -->
+            and b.pro_no IN
+            <foreach collection="list" index="index" item="proNo" open="(" separator="," close=")">
+                #{proNo.no}
+            </foreach>
+        </if>
+        <if test="null != page.queryMap.iteId and '' !=page.queryMap.iteId"> <!-- 迭代id -->
+            and b.ite_id = #{page.queryMap.iteId}
+        </if>
+
+        <if test="null != page.queryMap.status and '' !=page.queryMap.status"><!-- 状态 -->
+            and b.val = #{page.queryMap.status}
+        </if>
+        <if test="null != page.queryMap.topic and '' !=page.queryMap.topic"><!-- 标题 -->
+            and b.topic like concat('%', #{page.queryMap.topic}, '%')
+        </if>
+        order by b.plan_start_time desc
+        <if test="null != page.page and  null != page.rows">
+            LIMIT ${page.page},${page.rows}
+        </if>
+    </select>
+
+    <select id="queryProNO" resultType="com.icss.mvp.entity.ProjectInfo">
+	 SELECT NO FROM `project_info` WHERE `PMID`=#{zrAccount}
+</select>
+
+
+    <select id="queryIteName" resultType="java.lang.String">
+		 SELECT ite_name
+        FROM `iteration_cycle`  WHERE 1=1
+        <if test="id!=null">
+           and  id=#{id}
+        </if>
+	</select>
+</mapper>

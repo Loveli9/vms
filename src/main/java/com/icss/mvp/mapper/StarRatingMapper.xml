@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IStarRatingDao">
+	<resultMap type="com.icss.mvp.entity.ProjectMaturityAssessment" id="maturity">
+		<result property="no" column="NO"/>
+		<result property="bu" column="BU"/>
+		<result property="pdu" column="PDU"/>
+		<result property="du" column="DU"/>
+		<result property="hwpdu" column="HWPDU"/>
+		<result property="hwzpdu" column="HWZPDU"/>
+		<result property="pduSpdt" column="PDU_SPDT"/>
+		<result property="proName" column="PRO_NAME"/>
+		<result property="hwVersion" column="HW_VERSION"/>
+		<result property="type" column="TYPE"/>
+		<result property="area" column="AREA"/>
+		<result property="pmName" column="PM_NAME"/>
+		<result property="pmNo" column="PM_NO"/>
+		<result property="qaName" column="QA_NAME"/>
+		<result property="qaNo" column="QA_NO"/>
+		<result property="proResource" column="PRO_RESOURCE"/>
+		<result property="needInterface" column="NEED_INTERFACE"/>
+		<result property="acceptStandard" column="ACCEPT_STANDARD"/>
+		<result property="baseVersion" column="BASE_VERSION"/>
+		<result property="workloadNeed" column="WORKLOAD_NEED"/>
+		<result property="sowReview" column="SOW_REVIEW"/>
+		<result property="plan" column="PLAN"/>
+		<result property="need" column="NEED"/>
+		<result property="scheme" column="SCHEME"/>
+		<result property="rpReview" column="RP_REVIEW"/>
+		<result property="testCase" column="TEST_CASE"/>
+		<result property="codeReview" column="CODE_REVIEW"/>
+		<result property="developerTest" column="DEVELOPER_TEST"/>
+		<result property="sdvTest" column="SDV_TEST"/>
+		<result property="iteratorTest" column="ITERATOR_TEST"/>
+		<result property="sitTest" column="SIT_TEST"/>
+		<result property="testEvaluation" column="TEST_EVALUATION"/>
+		<result property="iteraorExport" column="ITERAOR_EXPORT"/>
+		<result property="uatTest" column="UAT_TEST"/>
+		<result property="rrTest" column="RR_TEST"/>
+		<result property="proPlan" column="PRO_PLAN"/>
+		<result property="structureChart" column="STRUCTURE_CHART"/>
+		<result property="strategyPlan" column="STRATEGY_PLAN"/>
+		<result property="scenariosCase" column="SCENARIOS_CASE"/>
+		<result property="testProcedure" column="TEST_PROCEDURE"/>
+		<result property="testDeliverables" column="TEST_DELIVERABLES"/>
+		<result property="scheduleManagement" column="SCHEDULE_MANAGEMENT"/>
+		<result property="requirementsManagement" column="REQUIREMENTS_MANAGEMENT"/>
+		<result property="changeManagement" column="CHANGE_MANAGEMENT"/>
+		<result property="riskManagement" column="RISK_MANAGEMENT"/>
+		<result property="engineAbility" column="ENGINE_ABILITY"/>
+		<result property="keyRoleStability" column="KEY_ROLE_STABILITY"/>
+		<result property="pm" column="PM"/>
+		<result property="baSe" column="BA_SE"/>
+		<result property="mde" column="MDE"/>
+		<result property="tse" column="TSE"/>
+		<result property="tc" column="TC"/>
+		<result property="keyRole" column="KEY_ROLE"/>
+		<result property="phaseAccept" column="PHASE_ACCEPT"/>
+		<result property="deliveryPreparation" column="DELIVERY_PREPARATION"/>
+		<result property="processTrace" column="PROCESS_TRACE"/>
+		<result property="projectAccept" column="PROJECT_ACCEPT"/>
+		<result property="totalScore" column="TOTAL_SCORE"/>
+		<result property="difference" column="DIFFERENCE"/>
+		<result property="mark" column="MARK"/>
+		
+		<result property="level" column="LEVEL"/>
+	</resultMap>
+	
+	<resultMap id="BaseResultMap" type="com.icss.mvp.entity.ProjectInfoVo">
+        <result column="No" property="no" jdbcType="VARCHAR"/>
+        <result column="NAME" property="name" jdbcType="VARCHAR"/>
+        <result column="hwDeptNo" property="hwdeptno" jdbcType="BIGINT"/>
+        <result column="HWPDU" property="hwpdu" jdbcType="VARCHAR"/>
+        <result column="HWZPDU" property="hwzpdu" jdbcType="VARCHAR"/>
+        <result column="PDU_SPDT" property="pduSpdt" jdbcType="VARCHAR"/>
+        <result column="optDeptNo" property="optdeptno" jdbcType="VARCHAR"/>
+        <result column="areaName" property="area" jdbcType="VARCHAR"/>
+        <result column="areaCode" property="areacode" jdbcType="VARCHAR"/>
+        <result column="TYPE" property="type" jdbcType="VARCHAR"/>
+        <result column="pm" property="pm" jdbcType="VARCHAR"/>
+        <result column="pmId" property="pmid" jdbcType="VARCHAR"/>
+        <result column="START_DATE" property="startDate" jdbcType="TIMESTAMP"/>
+        <result column="END_DATE" property="endDate" jdbcType="TIMESTAMP"/>
+        <result column="IS_OFFSHORE" property="isOffshore" jdbcType="VARCHAR"/>
+    </resultMap>
+	
+ 	<select id="initStarRating" parameterType = "java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		select s.no as no,s.level as level from star_rating s,project_info p where p.no=s.no 
+	]]>
+	<if test="area != null and area.size() != 0">
+		 AND p.AREA IN (select area_name from tbl_area where 1=1 and area_code in
+		<foreach collection="area" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test="hwpdu != null and hwpdu.size() != 0">
+		 AND p.HWPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN 
+		<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" hwzpdu != null and hwzpdu.size() != 0">
+		 AND p.HWZPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pduSpdt != null and pduSpdt.size() != 0">
+		 AND p.PDU_SPDT IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" bu != null and bu.size() != 0">
+		 AND p.BU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN 
+		<foreach collection="bu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" pdu != null and pdu.size() != 0">
+		 AND p.PDU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN 
+		<foreach collection="pdu" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	<if test=" du != null and du.size() != 0">
+		 AND p.DU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=4 AND DEPT_ID IN 
+		<foreach collection="du" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		)
+	</if>	
+	</select>
+	<insert id="insertStarRating" parameterType="java.util.List">
+		REPLACE INTO star_rating VALUES
+		<foreach collection="stars" item="item" index="index" separator=",">
+			(#{item.id},#{item.name},#{item.no},#{item.level},#{item.cycle},#{item.status},#{item.peopleNum},
+			#{item.bonusDate})
+		</foreach>
+	</insert>
+	<!-- <select id="loadSatrByTypes" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT t.* FROM `project_info` t WHERE t.`NO` IN ${strSql}
+	</select> -->
+	
+	<select id="loadSatrByTypes" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        t1.no as NO,
+        t1.NAME as NAME,
+        t1.pm as PM,
+        t1.HWPDU as HWPDU,
+        t1.HWZPDU as HWZPDU,
+        t1.PDU_SPDT as PDUSPDT,
+        t1.BU as BU,
+        t1.PDU as PDU,
+        t1.DU as DU,
+        t1.AREA as AREA,
+        t1.TYPE as TYPE,
+        t1.PROJECT_STATE as PROJECTSTATE
+        from v_project_info t1
+        where t1.no IN ${strSql}
+    </select>
+	
+	
+</mapper>

@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/js/sui.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/js/handsontable/handsontable.full.min.css" />
+<link rel="stylesheet" href="../HTML/css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../HTML/js/toastr.min.js"></script>
+<script src="../../resources/js/handsontable/handsontable.full.min.js"></script>
+<script src="../../resources/js/handsontable/languages/all.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/qmsEdit.js"></script>
+<style>
+	#myiframe{
+		margin:0px 0px 0px -7px;
+	}
+	.steps-large .wrap > div{
+		height: 30px;
+    	line-height: 30px;
+	}
+	.todo{
+		background-color: rgba(255,255,255,0) !important;
+	}
+	.qmsTitle{
+		font-size: 15px;display: inline-block;margin-bottom: 5px;font-weight: bolder;
+	}
+	.qmsFixed{
+		font-size: 14px;
+	    display: inline-block;
+	    margin-bottom: 10px;
+	}
+	textarea.form-control {
+		height: 100px;
+	}
+	button{
+	    border: 1px #e41f2b solid;background-color: #e41f2b;width: 60px;height: 30px;color: white;
+	    outline: none;line-height: 0px;font-size: 14px;margin-bottom: 10px;
+	}
+</style>
+</head>
+
+
+<body class="mvp-body">
+
+	<div class="mvp-main">
+		<button id="goback" type="button" onclick="javascript:history.back(-1);">返回</button>
+		<button id="savePrve" type="button" style="width: 140px;">保存并进入上一条</button>
+		<button id="saveNext" type="button" style="width: 140px;">保存并进入下一条</button>
+		<button id="saveQMS" type="button">保存</button>
+		<div style="width: 100%;">
+			<div style="width: 65%;background-color: white;float: left;padding: 10px;">
+				<span class="qmsTitle">主要评估项及内容</span><br/><span id="content" class="qmsFixed"></span><br/>
+				<span class="qmsTitle">查证参考</span><br/><span id="reference" class="qmsFixed"></span><br/>
+				<span class="qmsTitle">访谈对象</span><br/><span id="interviewee" class="qmsFixed"></span><br/>
+				<span class="qmsTitle">是否涉及</span>
+				<select id="involve" class="form-control" style="width: 20%;outline: none;display: inline-block;margin-left: 10px;">
+					<option selected="selected" value="null">==请选择==</option><option value="是">是</option><option value="否">否</option>
+				</select><br/><br/>
+				<span class="qmsTitle">得&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分</span>
+				<select id="score" class="form-control" style="width: 40%;outline: none;display: inline-block;margin-left: 10px;">
+					<option selected="selected" value="null">==请选择==</option>
+					<option value="0">0分（完全不符合）</option><option value="1">1分</option><option value="2">2分</option>
+					<option value="3">3分（基本符合）</option><option value="4">4分</option><option value="5">5分（完全符合）</option>
+				</select><br/><br/>
+				<span class="qmsTitle">举证说明</span><textarea id="evidence" class="form-control" placeholder="暂无"></textarea><br/>
+				<span class="qmsTitle">问题类别</span>
+				<select id="problemType" class="form-control" style="width: 40%;outline: none;display: inline-block;margin-left: 10px;">
+					<option selected="selected" value="null">==请选择==</option>
+				</select><br/><br/>
+				<span class="qmsTitle">主要存在问题</span><textarea id="majorProblem" class="form-control" placeholder="暂无"></textarea>
+				<!-- <div class="sui-steps steps-large steps-auto" style="margin-bottom: -2px;">
+					<div class="wrap"><div class="finished"><span class="qmsTitle">初评</span></div></div>
+					<div class="wrap"><div class="todo"><span class="qmsTitle">终评</span></div></div>
+				</div> -->
+				<!-- <div style="width: 100%;border: 1px dashed black;margin: 0 auto;padding: 5px;padding-top: 10px;">
+					<span style="display: none;" class="qmsTitle">终评得分</span>
+					<select id="finalScore" class="form-control" style="width: 40%;outline: none;display: none;margin-left: 10px;">
+						<option selected="selected" value="null">==请选择==</option>
+						<option value="0">0分（完全不符合）</option><option value="1">1分</option><option value="2">2分</option>
+						<option value="3">3分（基本符合）</option><option value="4">4分</option><option value="5">5分（完全符合）</option>
+					</select>
+					<span style="display: none;" class="qmsTitle">举证说明</span><textarea id="finalEvidence" class="form-control" style="display: none;" placeholder="暂无"></textarea><br/>
+					<span style="display: none;" class="qmsTitle">主要存在问题</span><textarea id="finalMajorProblem" class="form-control" style="display: none;" placeholder="暂无"></textarea>
+				</div> -->
+			</div>
+			<div style="width: 34%;margin-left: 1%;background-color: white;float: left;padding: 10px;">
+				<span class="qmsTitle">改进措施</span><textarea id="improvementMeasure" class="form-control" placeholder="暂无"></textarea><br/>
+				<span class="qmsTitle">责任人</span><input id="dutyPerson" class="form-control" placeholder="暂无" autocomplete="off" /><br/>
+				<span class="qmsTitle">跟踪人</span><input id="followPerson" class="form-control" placeholder="暂无" autocomplete="off" /><br/>
+				<span class="qmsTitle">进展</span><textarea id="progress" class="form-control" placeholder="暂无" autocomplete="off"></textarea><br/>
+				<span class="qmsTitle">计划闭环时间</span>
+				<input type="text" id="planClosedTime" placeholder="请选择日期" autocomplete="off" class="form-control" style="display: inline-block;width: 40%;outline: none;padding-left: 30px;margin-left: 10px;background-image: url(images/dateicon.png); /*引入图片图片*/background-repeat: no-repeat; /*设置图片不重复*/background-position: 5px 5px;" /><br/><br/>
+				<span class="qmsTitle">实际闭环时间</span><span id="actualClosedTime" class="qmsFixed" style="margin-left: 10px;margin-bottom: 0;"></span><br/><br/>
+				<span class="qmsTitle">状态</span>
+				<select id="state" class="form-control" style="width: 40%;outline: none;display: inline-block;margin-left: 10px;">
+					<option selected="selected" value="null">==请选择==</option><option value="Open">Open</option><option value="Closed">Closed</option>
+				</select><br/>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

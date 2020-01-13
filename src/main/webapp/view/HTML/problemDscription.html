@@ -1,0 +1,589 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+	<link rel="stylesheet" href="../../resources/css/style.css" type="text/css" />
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/comm/tableComm.js"></script>
+<script type="text/javascript" src="js/problemDscription.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<style>
+
+		.btn-group bootstrap-select show-tick form-control>btn dropdown-toggle bs-placeholder btn-default{
+			border: 1px solid #e5e6e7;
+    		border-radius: 0;
+		}
+		.table {
+			table-layout:fixed;
+		}
+		.tableCenter>thead>tr>td,.tableCenter>thead>tr>th,.tableCenter>tbody>tr>td,.tableCenter>tbody>tr>th{
+			text-align: center;
+			vertical-align:middle;
+		}
+		.editableform .input-large {
+			width: 350px;
+		}
+		.text-nowrap {
+			white-space: unset;
+
+		}
+		.myTab{
+			padding-left: 17px;
+			padding-right: 17px;
+			padding-bottom: 17px;
+		}
+		.personLiablClass>div>.popover-content{
+		    height: 240px;
+		    overflow: scroll;
+		}
+		#proTop{
+			height:40px;
+			width:95%;
+			margin:0px 0px 10px 15px;
+			padding-top:10px;
+		}
+		
+		#proTop button{
+			width:92px;
+			height:30px;
+			padding:0px;
+		}
+		
+		#proTop select{
+			width:170px;
+			height:30px;
+			padding:0px 0px 0px 10px;
+			margin:0px 0px 0px -20px;
+		}
+		
+		#proLeft{
+			font-size:14px;
+			float:left;
+			width:62%;
+			height:575px;
+			margin:5px 0px 0px 0px;
+			background-color:#FFFFFF;
+			padding-top:10px;
+		}
+		
+		#proLeft div{
+			width:100%;
+			margin:0px;
+			margin-bottom:5px;
+		}
+		
+		#proLeft input{
+			border:none;
+			padding-bottom:20px;
+			margin-top:10px;
+			border:1px solid #F3F2F2;
+		}
+		#proLeft textarea{
+			border:none;
+			border:1px solid #F3F2F2;
+		}
+		
+		#proRight{
+			font-size:15px;
+			padding-left:40px;
+			float:right;
+			width:36.1%;
+			height:575px;
+			margin:5px 10px 0px -10px;
+			background-color:#FFFFFF;
+		}
+		
+		#proRight input{
+			width:174px;
+		}
+		
+		#proRight select{
+			width:174px;
+		}
+		.table>thead {
+			background-color: #f3f7fe;
+			color: #000000;
+		}
+		.search-btn {
+			color: white;
+			margin-left: 5px !important;
+			float: right;
+			font-size: 13px;
+			border-radius: 4px !important;
+		}
+		.form-control{
+			border-radius: 4px;
+		}
+        .clear {
+            color: #0091FF;
+            margin-left: 5px !important;
+            float: right;
+            background-color: white;
+            border: 1px #0091FF solid;
+            border-radius: 4px !important;
+            height: 32px;
+        }
+	</style>
+</head>
+<body class="mvp-body" style="margin-right:-15px;">
+<div id="oldPage" class="mvp-main">
+    <div class="myTab">
+		<div style="margin: 25px 0px 0px 0px;background-color: #ffffff;height: 50px;border-radius: 5px;">
+			<div id="query-form" class=" pull-left" style="position: relative;top: 10px;width:400px;">
+				<div class="col-sm-5" style="margin-right:-15px;">
+					<select class="form-control" name="is361" id="is361" >
+                		<option value="" style="display: none">请选择类型</option>
+						<option value="1">361评估问题</option>
+						<option value="2">AAR</option>
+						<option value="3">开工会审计</option>
+						<option value="4">质量回溯</option>
+					</select>
+				</div>
+				<div class="btn-group">
+					<button id="search_btn" type="button" class="btn search-btn" style="background-color: #0091FE;">
+						查询
+					</button>
+					<button id="clear_btn" type="button" class="btn clear" style="background-color: #ffffff;">
+						重置
+					</button>
+				</div>
+			</div>
+			<div class="btn-group" id="toolbar">
+				<button id="btn_refresh" type="button" class="btn search-btn" style="outline: none;background-color: #0091FE;">
+					刷新
+				</button>
+				<button id="btn_add" type="button" class="btn search-btn" style="outline: none;background-color: #7bdabe;">
+					新增
+				</button>
+				<button id="btn_edit" type="button" class="btn search-btn" style="outline: none;background-color: #e9a335;">
+					修改
+				</button>
+				<button id="btn_delete" type="button" class="btn search-btn" style="outline: none;margin-right: 15px;background-color: #fe5a3c;">
+					删除
+				</button>
+			</div>
+		</div>
+		<div style="margin-top: -50px; background-color: #ffffff;border-radius: 5px;">
+			<table id="mytable" class="table text-nowrap"></table>
+		</div>
+	</div>
+</div>
+	<!-- 新增页面 -->
+	<div id="problemDescAdd" style="display:none;padding: 10px 30px 0px 10px;">
+		<form id="addForm" method="post" class="form-horizontal" style="height:690px;">
+			<input type="hidden" class="form-control" name="no" id="proNoAdd" />
+			<div id="proTop">
+				<div class="form-group">
+	                <div class="col-md-6" style="margin: 0px 0px 0px 5px;">
+	                	<div class="form-group">
+		                	<div class="col-sm-4">
+								<select class="form-control" name="is361" id="is361Add" >
+			                		<option value="" style="display: none">请选择类型</option>
+									<option value="1">361评估问题</option>
+									<option value="2">AAR</option>
+									<option value="3">开工会审计</option>
+									<option value="4">质量回溯</option>
+								</select>
+							</div>
+						</div>
+	                 </div>
+	                 <div class="col-sm-2 col-sm-offset-1" style="margin: 0% 0% 0% -12.2%;">
+	                    <button type="button" class="btn btn-default btn-block" id="add_backBtn">返回</button>
+	                </div>
+	                <div class="col-sm-2 col-sm-offset-2" style="margin: 0% 0% 0% -8.58%;">
+	                    <button type="button" class="btn btn-primary btn-block" id="add_saveBtn">保存</button>
+	                </div>
+	                <div class="col-sm-2 col-sm-offset-2" style="margin: 0% 0% 0% -8.62%;">
+	                    <button type="button" class="btn btn-primary btn-block" id="add_saveBtn1">保存并继续</button>
+	                </div>
+	            </div>
+			</div>
+			<div id="proLeft">
+				<!-- <div class="form-group">
+					<input class="form-control form-filter" type="text" id="topicAdd" name="topic" placeholder="请输入标题" style="font-size:18px;" />
+				</div> -->
+				<div class="form-group">
+                   	<textarea class="form-control form-filter" name="question" id="questionAdd" rows="5" placeholder="请输入描述" ></textarea>
+                </div>
+                <div class="form-group">
+                   	<textarea class="form-control form-filter" name="imprMeasure" id="imprMeasureAdd" rows="4" placeholder="解决措施" ></textarea>
+                </div>
+                <div class="form-group">
+                   	<textarea class="form-control form-filter" name="progressDesc" id="progressDescAdd" rows="4" placeholder="当前进展" ></textarea>
+                </div>
+			</div>
+			<div id="proRight">
+				<div class="form-group" style="align:center;margin-top:15px;">
+	            	<label for="severityAdd" class="col-sm-4 control-label">严重级别</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="severityAdd" name="severity" /> -->
+	                	<select class="form-control" id="severityAdd" name="severity" >
+  	 					</select> 
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="priorAdd" class="col-sm-4 control-label">优先级</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="priorAdd" name="prior" /> -->
+	                	<select class="form-control" id="priorAdd" name="prior">
+  	 					</select> 
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="personLiableAdd" class="col-sm-4 control-label">责任人</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="personLiableAdd" name="personLiable" /> -->
+	                	<select class="selectpicker show-tick form-control" id="personLiableAdd" name="personLiable" multiple title="请选择责任人">
+                        </select>
+                        <input id="personLiableAdd0" type="hidden" name="personLiable" />
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	                <label for="finishTimeAdd" class="col-sm-4 control-label">计划完成时间</label>
+					<div class="col-sm-6">
+						<input class="form-control form-filter yearpicker" type="text" id="finishTimeAdd" name="finishTime" readonly="readonly" style="background-color: white"/>
+					</div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	                <label for="actualFinishTimeAdd" class="col-sm-4 control-label">实际完成时间</label>
+					<div class="col-sm-6">
+						<input class="form-control form-filter yearpicker" type="text" id="actualFinishTimeAdd" name="actualFinishTime" readonly="readonly" style="background-color: white"/>
+					</div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	                <label for="stateAdd" class="col-sm-4 control-label">状态</label>
+					<div class="col-sm-6">
+						<select class="form-control" name="state" id="stateAdd">
+							<option value="" style="display: none">请选择状态</option>
+							<option value="Open">Open</option>
+							<option value="Closed">Closed</option>
+						</select>
+					</div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="probabilityAdd" class="col-sm-4 control-label">发生概率</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="probabilityAdd" name="probability" /> -->
+	                	<select class="form-control" id="probabilityAdd" name="probability" >
+  	 					</select> 
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="speedAdd" class="col-sm-4 control-label">进度</label>
+	            	<div class="col-sm-6">
+	                	<input placeholder=" 单位:【%】" class="form-control" type="text" id="speedAdd" name="speed" />
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="iteIdAdd" class="col-sm-4 control-label">迭代</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="iteIdAdd" name="iteId"/> -->
+	                	<select class="form-control" id="iteIdAdd" name="iteId">
+   	 					</select>
+	                </div>
+				</div>
+			</div>
+		</form>
+		<!-- <div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:800px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						问题描述新增
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="addForm" method="post" class="form-horizontal">
+						<input type="hidden" class="form-control" name="no" id="proNoAdd" />
+						<div class="form-group">
+							<label for="versionAdd" class="col-sm-2 control-label">版本</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter" type="text" id="versionAdd" name="version" style="background-color: white"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="finishTimeAdd" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划完成时间</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter yearpicker" type="text" id="finishTimeAdd" name="finishTime" style="background-color: white" readonly="readonly"/>
+							</div>
+							<label for="is361Add" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>类型</label>
+							<div class="col-md-4">
+								<select class="form-control" name="is361" id="is361Add">
+									<option></option>
+									<option value="1">361评估问题</option>
+									<option value="2">AAR</option>
+									<option value="3">开工会审计</option>
+									<option value="4">质量回溯</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="actualFinishTimeAdd" class="col-sm-2 control-label">实际完成时间</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter yearpicker" type="text" id="actualFinishTimeAdd" name="actualFinishTime" style="background-color: white" readonly="readonly"/>
+							</div>
+							<label for="stateAdd" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>状态</label>
+							<div class="col-md-4">
+								<select class="form-control" name="state" id="stateAdd">
+									<option value=""></option>
+									<option value="Open">Open</option>
+									<option value="Closed">Closed</option>
+								</select>
+							</div>
+						</div>
+	                    <div class="form-group">
+	                    	<label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>问题</label>
+	                    	<div class="col-sm-10">
+	                        	<textarea class="form-control" name="question" id="questionAdd" rows="3"></textarea>
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                    	<label class="col-sm-2 control-label">改进措施</label>
+	                    	<div class="col-sm-10">
+	                        	<textarea class="form-control" name="imprMeasure" id="imprMeasureAdd" rows="3"></textarea>
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                    	<label class="col-sm-2 control-label">进展&效果描述</label>
+	                    	<div class="col-sm-10">
+	                        	<textarea class="form-control" name="progressDesc" id="progressDescAdd" rows="3"></textarea>
+	                        </div>
+	                    </div>
+	                    <div class="form-group" style="padding-left: 150px">
+	                        <div class="col-sm-2 col-sm-offset-2">
+	                            <button type="button" class="btn btn-primary btn-block" style="outline: none;" id="add_saveBtn">保存</button>
+	                        </div>
+	                        <div class="col-sm-2 col-sm-offset-1">
+	                            <button type="button" class="btn btn-default btn-block" style="outline: none;" id="add_backBtn">返回</button>
+	                        </div>
+	                    </div>
+					</form>
+				</div>
+			</div>
+		</div> -->
+	</div>
+	<!-- 编辑页面 -->
+	<div id="problemDescEdit" style="display:none;padding: 10px 30px 0px 10px;">
+		<form id="editForm" method="post" class="form-horizontal" style="height:690px;">
+			<input type="hidden" class="form-control" name="id" id="idEdit" />
+			<input type="hidden" class="form-control" name="no" id="proNoEdit" />
+			<input type="hidden" class="form-control" name="version" id="versionEdit" />
+			<div id="proTop">
+				<div class="form-group">
+	                <div class="col-md-6" style="margin: 0px 0px 0px 5px;">
+	                	<div class="form-group">
+		                	<div class="col-sm-4">
+		                		<select class="form-control" name="is361" id="is361Edit" >
+			                		<option value="" style="display: none">请选择类型</option>
+									<option value="1">361评估问题</option>
+									<option value="2">AAR</option>
+									<option value="3">开工会审计</option>
+									<option value="4">质量回溯</option>
+								</select>
+							</div>
+						</div>
+	                 </div>
+	                 <div class="col-sm-2 col-sm-offset-1" style="margin: 0% 0% 0% -4.3%;">
+	                    <button type="button" class="btn btn-default btn-block" id="edit_backBtn">返回</button>
+	                </div>
+	                <div class="col-sm-2 col-sm-offset-2" style="margin: 0% 0% 0% -8.6%;">
+	                    <button type="button" class="btn btn-primary btn-block" id="edit_saveBtn">保存</button>
+	                </div>
+	                <!-- <div class="col-sm-2 col-sm-offset-2" style="margin: 0px 0px 0px -223px;">
+	                    <button type="button" class="btn btn-primary btn-block" id="edit_saveBtn1">保存并继续</button>
+	                </div> -->
+	            </div>
+			</div>
+			<div id="proLeft">
+                <!-- <div class="form-group">
+					<input class="form-control form-filter" type="text" id="topicEdit" name="topic" placeholder="请输入标题" style="font-size:18px;" />
+				</div> -->
+				<div class="form-group">
+                   	<textarea class="form-control form-filter" name="question" id="questionEdit" rows="5" placeholder="请输入描述" ></textarea>
+                </div>
+                <div class="form-group">
+                   	<textarea class="form-control form-filter" name="imprMeasure" id="imprMeasureEdit" rows="4" placeholder="解决措施" ></textarea>
+                </div>
+                <div class="form-group">
+                   	<textarea class="form-control form-filter" name="progressDesc" id="progressDescEdit" rows="4" placeholder="当前进展" ></textarea>
+                </div>
+			</div>
+			<div id="proRight">
+				<div class="form-group" style="align:center;margin-top:15px;">
+	            	<label for="severityEdit" class="col-sm-4 control-label">严重级别</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="severityAdd" name="severity" /> -->
+	                	<select class="form-control" id="severityEdit" name="severity" >
+  	 					</select> 
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="priorEdit" class="col-sm-4 control-label">优先级</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="priorAdd" name="prior" /> -->
+	                	<select class="form-control" id="priorEdit" name="prior">
+  	 					</select> 
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="personLiableEdit" class="col-sm-4 control-label">责任人</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="personLiableAdd" name="personLiable" /> -->
+	                	<select class="selectpicker show-tick form-control" id="personLiableEdit" name="personLiable" multiple title="请选择责任人">
+                        </select>
+                        <input id="personLiableEdit0" type="hidden" name="personLiable" />
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	                <label for="finishTimeEdit" class="col-sm-4 control-label">计划完成时间</label>
+					<div class="col-sm-6">
+						<input class="form-control form-filter yearpicker" type="text" id="finishTimeEdit" name="finishTime" readonly="readonly" style="background-color: white"/>
+					</div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	                <label for="actualFinishTimeEdit" class="col-sm-4 control-label">实际完成时间</label>
+					<div class="col-sm-6">
+						<input class="form-control form-filter yearpicker" type="text" id="actualFinishTimeEdit" name="actualFinishTime" readonly="readonly" style="background-color: white"/>
+					</div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	                <label for="stateEdit" class="col-sm-4 control-label">状态</label>
+					<div class="col-sm-6">
+						<select class="form-control" name="state" id="stateEdit">
+							<option value="" style="display: none">请选择状态</option>
+							<option value="Open">Open</option>
+							<option value="Closed">Closed</option>
+						</select>
+					</div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="probabilityEdit" class="col-sm-4 control-label">发生概率</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="probabilityEdit" name="probability" /> -->
+	                	<select class="form-control" id="probabilityEdit" name="probability" >
+  	 					</select> 
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="speedEdit" class="col-sm-4 control-label">进度</label>
+	            	<div class="col-sm-6">
+	                	<input placeholder=" 单位:【%】" class="form-control" type="text" id="speedEdit" name="speed" />
+	                </div>
+	            </div>
+	            <div class="form-group" style="align:center;margin-top:5px;">
+	            	<label for="iteIdEdit" class="col-sm-4 control-label">迭代</label>
+	            	<div class="col-sm-6">
+	                	<!-- <input class="form-control" type="text" id="iteIdAdd" name="iteId"/> -->
+	                	<select class="form-control" id="iteIdEdit" name="iteId">
+   	 					</select>
+	                </div>
+				</div>
+			</div>
+		</form>	
+		<!-- <div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:800px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						问题描述编辑
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="editForm" method="post" class="form-horizontal">
+						<input type="hidden" class="form-control" name="id" id="idEdit" />
+						<input type="hidden" class="form-control" name="no" id="proNoEdit" />
+						<div class="form-group">
+							<label for="versionAdd" class="col-sm-2 control-label">版本</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter" type="text" id="versionEdit" name="version" style="background-color: white"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="finishTimeEdit" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划完成时间</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter yearpicker" type="text" id="finishTimeEdit" name="finishTime" style="background-color: white" readonly="readonly"/>
+							</div>
+							<label for="is361Edit" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>类型</label>
+							<div class="col-md-4">
+								<select class="form-control" name="is361" id="is361Edit">
+									<option></option>
+									<option value="1">361评估问题</option>
+									<option value="2">AAR</option>
+									<option value="3">开工会审计</option>
+									<option value="4">质量回溯</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="actualFinishTimeEdit" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>实际完成时间</label>
+							<div class="col-md-4">
+								<input class="form-control form-filter yearpicker" type="text" id="actualFinishTimeEdit" name="actualFinishTime" style="background-color: white" readonly="readonly"/>
+							</div>
+							<label for="stateEdit" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>状态</label>
+							<div class="col-md-4">
+								<select class="form-control" name="state" id="stateEdit">
+									<option></option>
+									<option value="Open">Open</option>
+									<option value="Closed">Closed</option>
+								</select>
+							</div>
+						</div>
+			            <div class="form-group">
+	                    	<label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>问题</label>
+	                    	<div class="col-sm-10">
+	                        	<textarea class="form-control" name="question" id="questionEdit" rows="3"></textarea>
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                    	<label class="col-sm-2 control-label">改进措施</label>
+	                    	<div class="col-sm-10">
+	                        	<textarea class="form-control" name="imprMeasure" id="imprMeasureEdit" rows="3"></textarea>
+	                        </div>
+	                    </div>
+	                    <div class="form-group">
+	                    	<label class="col-sm-2 control-label">进展&效果描述</label>
+	                    	<div class="col-sm-10">
+	                        	<textarea class="form-control" name="progressDesc" id="progressDescEdit" rows="3"></textarea>
+	                        </div>
+	                    </div>
+	                    <div class="form-group" style="padding-left: 150px">
+	                        <div class="col-sm-2 col-sm-offset-2">
+	                            <button type="button" class="btn btn-primary btn-block" style="outline: none;" id="edit_saveBtn">保存</button>
+	                        </div>
+	                        <div class="col-sm-2 col-sm-offset-1">
+	                            <button type="button" class="btn btn-default btn-block" style="outline: none;" id="edit_backBtn">返回</button>
+	                        </div>
+	                    </div>
+					</form>
+				</div>
+			</div>
+		</div> -->
+	</div>
+</body>
+</html>

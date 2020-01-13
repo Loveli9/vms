@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IterationCycleDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.IterationCycle">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="pro_no" jdbcType="VARCHAR" property="proNo"/>
+        <result column="plan_start_date" jdbcType="DATE" property="planStartDate"/>
+        <result column="plan_end_date" jdbcType="DATE" property="planEndDate"/>
+        <result column="start_date" jdbcType="DATE" property="startDate"/>
+        <result column="end_date" jdbcType="DATE" property="endDate"/>
+        <result column="ite_name" jdbcType="VARCHAR" property="iteName"/>
+        <result column="describe_info" jdbcType="VARCHAR" property="describeInfo"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="is_deleted" jdbcType="VARCHAR" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, pro_no, plan_start_date, plan_end_date, start_date, end_date, ite_name
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from iteration_cycle
+        where id = #{id,jdbcType=VARCHAR}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from iteration_cycle
+        where id = #{id,jdbcType=VARCHAR}
+    </delete>
+    <insert id="insert" parameterType="com.icss.mvp.entity.IterationCycle">
+        insert into iteration_cycle (id, pro_no, plan_start_date,
+        plan_end_date, start_date, end_date
+        )
+        values (#{id,jdbcType=VARCHAR}, #{proNo,jdbcType=VARCHAR}, #{planStartDate,jdbcType=DATE},
+        #{planEndDate,jdbcType=DATE}, #{startDate,jdbcType=DATE}, #{endDate,jdbcType=DATE}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.icss.mvp.entity.IterationCycle">
+        insert into iteration_cycle
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="proNo != null">
+                pro_no,
+            </if>
+            <if test="planStartDate != null">
+                plan_start_date,
+            </if>
+            <if test="planEndDate != null">
+                plan_end_date,
+            </if>
+            <if test="startDate != null">
+                start_date,
+            </if>
+            <if test="endDate != null">
+                end_date,
+            </if>
+            <if test="iteName != null">
+                ite_name,
+            </if>
+            <if test="describeInfo != null">
+                describe_info,
+            </if>
+            <if test="code != null">
+                code
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=VARCHAR},
+            </if>
+            <if test="proNo != null">
+                #{proNo,jdbcType=VARCHAR},
+            </if>
+            <if test="planStartDate != null">
+                #{planStartDate,jdbcType=DATE},
+            </if>
+            <if test="planEndDate != null">
+                #{planEndDate,jdbcType=DATE},
+            </if>
+            <if test="startDate != null">
+                #{startDate,jdbcType=DATE},
+            </if>
+            <if test="endDate != null">
+                #{endDate,jdbcType=DATE},
+            </if>
+            <if test="iteName != null">
+                #{iteName,jdbcType=VARCHAR},
+            </if>
+            <if test="describeInfo != null">
+                #{describeInfo,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=VARCHAR}
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.icss.mvp.entity.IterationCycle">
+        update iteration_cycle
+        <set>
+            <if test="proNo != null">
+                pro_no = #{proNo,jdbcType=VARCHAR},
+            </if>
+            <if test="planStartDate != null">
+                plan_start_date = #{planStartDate,jdbcType=DATE},
+            </if>
+            <if test="planEndDate != null">
+                plan_end_date = #{planEndDate,jdbcType=DATE},
+            </if>
+            <if test="startDate != null">
+                start_date = #{startDate,jdbcType=DATE},
+            </if>
+            <if test="endDate != null">
+                end_date = #{endDate,jdbcType=DATE},
+            </if>
+
+            <if test="iteName != null and iteName != '' ">
+                ite_name = #{iteName,jdbcType=VARCHAR},
+            </if>
+
+            describe_info = #{describeInfo,jdbcType=VARCHAR},
+
+            <if test="code != null and code != ''">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="isDeleted != null and isDeleted != ''">
+                is_deleted = #{isDeleted,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.icss.mvp.entity.IterationCycle">
+        update iteration_cycle
+        set pro_no = #{proNo,jdbcType=VARCHAR},
+        plan_start_date = #{planStartDate,jdbcType=DATE},
+        plan_end_date = #{planEndDate,jdbcType=DATE},
+        start_date = #{startDate,jdbcType=DATE},
+        end_date = #{endDate,jdbcType=DATE}
+        where id = #{id,jdbcType=VARCHAR}
+    </update>
+    <!--查询迭代信息-->
+    <select id="iterationInfo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from iteration_cycle where 1 = 1
+        and end_date is not null
+        and is_deleted = 0
+        order by start_date desc
+    </select>
+
+    <select id="iterationList" parameterType="Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from iteration_cycle where pro_no = #{proNo}
+        and end_date is not null and is_deleted = 0
+        order by start_date asc
+    </select>
+    <select id="iterationListasc" parameterType="Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from iteration_cycle where pro_no = #{proNo}
+        and end_date is not null and is_deleted = 0
+        order by start_date asc
+    </select>
+
+    <select id="iterationSchedule" parameterType="Map" resultType="java.util.Map">
+        select
+        id,
+        plan_start_date as planStartDate,
+        plan_end_date as planEndDate,
+        start_date as startDate,
+        end_date as endDate,
+        estimate_workload as estimateWorkload
+        from iteration_cycle where pro_no = #{proNo}
+        and end_date is not null
+        <if test="null != fromDate">
+            and DATE_FORMAT(DATE_ADD(start_date,INTERVAL 2 MONTH ),'%Y-%m-%d') &gt;= #{fromDate}
+        </if>
+        <if test="null != toDate">
+            <![CDATA[and DATE_FORMAT(DATE_ADD(end_date,INTERVAL 2 MONTH ),'%Y-%m-%d') <= #{toDate}]]>
+        </if>
+        order by start_date
+    </select>
+
+    <select id="workingHours" parameterType="Map"
+            resultType="java.util.Map">
+        <!-- SELECT
+        IFNULL(sum(t2.actual_participation), 0) as dayNum, IFNULL(sum(t2.actual_labor_hour), 0) as hourNum
+        FROM project_members_local t1
+        LEFT JOIN
+        tbl_time_information t2 ON t1.ZR_ACCOUNT = t2.zr_account
+        WHERE t1.no = #{proNo}
+        AND t2.actual_participation is not null -->
+        SELECT
+        IFNULL(sum(t2.actual_participation), 0) as dayNum, IFNULL(sum(t2.actual_labor_hour), 0) as hourNum
+        FROM
+        project_staff t1
+        LEFT JOIN
+        tbl_time_information t2 ON t1.ZR_ACCOUNT = t2.zr_account
+        WHERE
+        t1.no = #{proNo} AND t1.IS_DELETED = 0
+        AND t2.actual_participation is not null
+        <if test="null != startDate">
+            and date_format(t2.statistical_time, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(t2.statistical_time, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+        order by statistical_time limit 1
+    </select>
+
+
+    <select id="queryBugInfo" parameterType="Map" resultType="java.util.HashMap">
+	<![CDATA[
+
+
+
+
+
+
+
+                                                                SELECT
+                                                                    product                                               AS projectTeam,
+                                                                    critNum,
+                                                                    majNum,
+                                                                    minNum,
+                                                                    sugNum,
+                                                                    10 * critNum + 3 * majNum + 1 * minNum + 0.1 * sugNum AS dtsLeaveDINum
+                                                                FROM (
+                                                                         SELECT
+                                                                             product,
+                                                                             COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@CRITIAL}' || severity = '致命'
+                                                                                 THEN 1
+                                                                                   ELSE NULL END) AS critNum,
+                                                                             COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MAJOR}' || severity = '严重'
+                                                                                 THEN 1
+                                                                                   ELSE NULL END) AS majNum,
+                                                                             COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MINOR}' || severity = '一般'
+                                                                                 THEN 1
+                                                                                   ELSE NULL END) AS minNum,
+                                                                             COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@SUGGESTION}' || severity = '提示'
+                                                                                 THEN 1
+                                                                                   ELSE NULL END) AS sugNum
+                                                                         FROM dts_log
+                                                                         WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}'
+                                                                               AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' AND
+                                                                               (colse_Type IS NULL || colse_Type = '' ||
+                                                                                colse_Type = '${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+                                                                               AND date_format(created_Time, '%Y-%m-%d') <= #{endDate}
+                                                                               AND no = #{proNo}
+                                                                         GROUP BY no) a
+
+
+
+
+
+
+
+        ]]>
+	</select>
+
+    <!-- <select id="demandCodeNum" parameterType="Map" resultType="java.lang.Integer">
+      SELECT
+      IFNULL(SUM(t1.MODIFYNUM),0) as demandCodeNum
+      FROM
+      svn_log t1
+      LEFT JOIN
+      project_members_local t2 ON t1.AUTHOR = t2.svn_git_no
+      WHERE
+      t1.no = #{proNo}
+      <if test="null != startDate">
+        and date_format(t1.COMMITTIME, '%Y-%m-%d') &gt;= #{startDate}
+      </if>
+      <if test="null != endDate">
+        <![CDATA[and date_format(t1.COMMITTIME, '%Y-%m-%d') <= #{endDate}]]>
+      </if>
+    </select> -->
+
+    <select id="closedBugCount" parameterType="Map" resultType="java.lang.Integer">
+        SELECT count(1)
+        FROM dts_log
+        WHERE curent_Status = '${@com.icss.mvp.Constants@CLOSE}' AND
+              (colse_Type IS NULL || colse_Type = '' ||
+               colse_Type = '${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+              AND last_Updated_Time &gt;= #{startDate}
+      <![CDATA[AND last_Updated_Time <= #{endDate}]]>
+      AND no = #{proNo}
+    </select>
+    <resultMap id="measureMap" type="com.icss.mvp.entity.Measure">
+        <id column="ID" property="id"/>
+        <result column="name" property="name"/>
+        <result column="UNIT" property="unit"/>
+        <result column="UPPER" property="upper"/>
+        <result column="LOWER" property="lower"/>
+        <result column="TARGET" property="target"/>
+        <result column="compute_rule" property="computeRule"/>
+    </resultMap>
+    <!--待修正sql-->
+    <select id="selectmeasure" parameterType="Map" resultMap="measureMap">
+        SELECT
+        t4.name as name, t4.ID as ID,t4.UNIT as UNIT, t4.UPPER as UPPER, t4.lower as LOWER, t4.TARGET as
+        TARGET,t4.CONTENT as content
+        FROM
+        project_label_config t1
+        LEFT JOIN
+        label t2 ON t1.label_id = t2.id
+        LEFT JOIN
+        label_measure_config t3 ON t1.id = t3.PROJECT_LABLE_ID
+        LEFT JOIN
+        measure t4 ON t3.MEASURE_ID = t4.ID
+        WHERE t4.name IS NOT NULL
+        AND t1.is_deleted = 0
+        and t2.IS_DELETED = 0
+        and t3.IS_DELETED = 0
+        and t4.IS_DELETE = 0
+        <if test="null !=labId and '' != labId">
+            and t2.ID =#{labId}
+        </if>
+        <if test="null !=title and '' != title">
+            and t2.TITLE =#{title}
+        </if>
+        and t4.CATEGORY = #{category}
+        and t1.project_id = #{proNo}
+    </select>
+
+
+    <!-- 新增自动化脚本用例个数 -->
+    <select id="queryAddCaseINfo" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS AddCase FROM tbl_tmss_info
+        WHERE auto_execution_type = 'True' AND NO = #{proNo}
+        <if test="null != startDate">
+            and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+
+    <!-- 用例执行个数 -->
+    <select id="queryImpCaseInfo" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS impCase FROM tbl_tmss_info
+        WHERE auto_execution_type = 'True' AND NO = #{proNo}
+        AND last_result = 'Passed'
+        <if test="null != startDate">
+            and date_format(creation_date, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(creation_date, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+
+    <select id="queryDtsCount" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM dts_log
+        WHERE (
+        colse_Type IS NULL
+        OR colse_Type = ''
+        OR colse_Type = 'Closure After Correction')
+        AND curent_Status != 'Cancel'
+        AND NO = #{proNo}
+        <if test="null != startDate">
+            and date_format(created_Time, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(created_Time, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+
+    <select id="searchParameter" parameterType="Map" resultType="java.lang.Integer">
+        SELECT IFNULL(SUM(VALUE)/COUNT(*),0) AS VALUE FROM
+        project_parameter_value_new
+        WHERE `PARAMETER_ID` = #{parameterId}
+        AND NO = #{proNo}
+        <if test="null != startDate">
+            and date_format(MONTH, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(MONTH, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+
+    <!-- 迭代内发现问题单总数 -->
+    <select id="queryWtdNum" parameterType="Map" resultType="java.lang.Double">
+        SELECT COUNT(*) FROM dts_log
+        WHERE (colse_Type IS NULL OR colse_Type='' OR colse_Type='Closure After Correction')
+        AND curent_Status!='Cancel' AND NO=#{proNo}
+        <if test="null != startDate">
+            and date_format(created_Time, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(created_Time, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+
+    <!-- 分页查询迭代管理信息 -->
+    <select id="queryIteInfoByPage" parameterType="com.icss.mvp.entity.TableSplitResult"
+            resultType="com.icss.mvp.entity.IterationCycleResult">
+        select * from (
+        SELECT a.*,p.`NAME` as projectName FROM
+        (SELECT id,
+        pro_no,
+        plan_start_date,
+        plan_end_date,
+        start_date,
+        end_date,
+        ite_name,
+        describe_info,
+        CODE
+        FROM ITERATION_CYCLE WHERE 1=1 AND is_deleted = 0
+        <choose>
+            <when test="null != page.queryMap.proNo and '' !=page.queryMap.proNo">
+                and ITERATION_CYCLE.`pro_no` = #{page.queryMap.proNo}
+            </when>
+            <otherwise>
+                AND ITERATION_CYCLE.`pro_no` IN(SELECT NO FROM `project_info` WHERE PMID=#{page.queryMap.zrAccount})
+            </otherwise>
+        </choose>
+        ) a,`project_info` p WHERE a.pro_no=p.`NO`
+        <if test="null != page.queryMap.code and '' !=page.queryMap.code">
+            and code like concat('%', #{page.queryMap.code}, '%')
+        </if>
+        <if test="null != page.queryMap.iteName and '' !=page.queryMap.iteName">
+            and ite_name like concat('%', #{page.queryMap.iteName}, '%')
+        </if>
+        <if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+            order by ${sort} ${sortOrder}
+        </if>
+        <if test="null == sort or '' ==sort">
+            order by plan_start_date asc
+        </if>
+        ) as b
+        LIMIT ${page.page},${page.rows}
+    </select>
+    <!--    系统管理员查询所有迭代信息-->
+    <select id="queryAll" parameterType="com.icss.mvp.entity.TableSplitResult"
+            resultType="com.icss.mvp.entity.IterationCycleResult">
+        select * from (
+        SELECT id,
+        pro_no,
+        p.`NO`,
+        plan_start_date,
+        plan_end_date,
+        i.start_date,
+        i.end_date,
+        ite_name,
+        describe_info,
+        CODE,
+        p.`NAME` AS projectName
+        FROM ITERATION_CYCLE i,`project_info` p
+        WHERE i.`pro_no`=p.`NO` AND i.`is_deleted`=0
+        <if test="null != page.queryMap.iteName and '' !=page.queryMap.iteName">
+            and ite_name like concat('%', #{page.queryMap.iteName}, '%')
+        </if>
+        ORDER BY i.start_date DESC
+        LIMIT 0,10
+        ) as a
+        LIMIT ${page.page},${page.rows}
+
+    </select>
+    <!-- 删除迭代信息 -->
+    <select id="deleteIterationCycle" parameterType="java.lang.String">
+        UPDATE `iteration_cycle`
+        SET `is_deleted` = 1
+        WHERE id = #{id}
+    </select>
+    <!-- 查询总计录 -->
+    <select id="queryIterationTotals" resultType="java.lang.Integer"
+            parameterType="com.icss.mvp.entity.TableSplitResult">
+        SELECT COUNT(*) FROM `iteration_cycle` WHERE `is_deleted` = 0
+        <choose>
+            <when test="null != page.queryMap.proNo and '' !=page.queryMap.proNo">
+                and ITERATION_CYCLE.`pro_no` = #{page.queryMap.proNo}
+            </when>
+            <otherwise>
+                AND ITERATION_CYCLE.`pro_no` IN(SELECT NO FROM `project_info` WHERE PMID=#{page.queryMap.zrAccount})
+            </otherwise>
+        </choose>
+        <if test="null != page.queryMap.iteName and '' !=page.queryMap.iteName">
+            and ite_name like concat('%', #{page.queryMap.iteName}, '%')
+        </if>
+    </select>
+
+    <select id="queryAllTotals" resultType="java.lang.Integer"
+            parameterType="com.icss.mvp.entity.TableSplitResult">
+        SELECT COUNT(*) FROM  SELECT COUNT(*) FROM ITERATION_CYCLE i,`project_info` p
+        WHERE i.`pro_no`=p.`NO` AND i.`is_deleted`=0
+    </select>
+    <!-- 编辑回显 -->
+    <select id="queryEditPageInfo" parameterType="java.lang.String" resultType="com.icss.mvp.entity.IterationCycle">
+        SELECT
+            id              AS id,
+            pro_no          AS proNo,
+            plan_start_date AS planStartDate,
+            plan_end_date   AS planEndDate,
+            start_date      AS startDate,
+            end_date        AS endDate,
+            ite_name        AS iteName,
+            describe_info   AS describeInfo,
+            code            AS code,
+            is_deleted      AS isDeleted
+        FROM iteration_cycle
+        WHERE id = #{id}
+    </select>
+
+    <select id="bugSubmissionPeople" parameterType="java.lang.String" resultType="Integer">
+        SELECT COUNT(DISTINCT (RIGHT(REPLACE(creator, ' ', ''), 8))) AS creator
+        FROM dts_log
+        WHERE NO = #{no} AND curent_Status != 'Cancel' AND curent_Status != 'Close' AND
+              (colse_Type IS NULL || colse_Type = '' || colse_Type = 'Closure After Correction')
+    </select>
+    <select id="bugSubmission" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT
+            d.ticket_No                    AS id,
+            SUM(d.severity = 'Critical')   AS critical,
+            SUM(d.severity = 'Major')      AS major,
+            SUM(d.severity = 'Minor')      AS minor,
+            SUM(d.severity = 'Suggestion') AS suggestion,
+            COUNT(*)                       AS alls
+        FROM
+            (SELECT
+                 ticket_No,
+                 RIGHT(REPLACE(creator, ' ', ''), 8) AS ACCOUNT,
+                 current_Handler,
+                 severity
+             FROM DTS_LOG
+             WHERE NO = #{no} AND curent_Status != 'Cancel' AND curent_Status != 'Close' AND
+                   (colse_Type IS NULL || colse_Type = '' || colse_Type = 'Closure After Correction')) d
+            LEFT JOIN
+            (SELECT
+                 NAME,
+                 RIGHT(REPLACE(AUTHOR, ' ', ''), 8)     AS AUTHOR,
+                 RIGHT(REPLACE(ZR_ACCOUNT, ' ', ''), 8) AS ZR_ACCOUNT
+             FROM project_members) s ON s.AUTHOR = d.ACCOUNT OR s.ZR_ACCOUNT = d.ACCOUNT
+            LEFT JOIN
+            (SELECT
+                 NAME,
+                 RIGHT(REPLACE(ACCOUNT, ' ', ''), 8) AS ACCOUNT
+             FROM project_member) m ON m.ACCOUNT = d.ACCOUNT
+    </select>
+    <select id="bugSubmissionZR" parameterType="java.lang.String" resultType="Integer">
+        SELECT COUNT(*)
+        FROM dts_log
+        WHERE NO = #{no} AND curent_Status != 'Cancel' AND curent_Status != 'Close' AND
+              (colse_Type IS NULL || colse_Type = '' || colse_Type = 'Closure After Correction') AND
+              SUBSTRING((RIGHT(REPLACE(creator, ' ', ''), 8)), 1, 2) = 'wx'
+    </select>
+    <!-- 显示任务完成度 -->
+    <select id="queryCompletionDegree" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT
+            id,
+            topic,
+            finalimit
+        FROM iterative_work_manage
+        WHERE ite_id = #{iteId} AND is_deleted = '0' AND display = '0'
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="completion" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT
+            id,
+            topic,
+            prior,
+            importance,
+            STATUS,
+            `change`,
+            finalimit,
+            person_liable,
+            display
+        FROM iterative_work_manage
+        WHERE ite_id = #{iteId} AND is_deleted = '0'
+        ORDER BY create_time DESC
+    </select>
+    <!-- 燃尽图显示 -->
+    <insert id="editCompletion" parameterType="java.lang.String">
+        UPDATE iterative_work_manage SET display = #{display} WHERE id = #{id}
+    </insert>
+
+    <!-- <select id="queryIterativeName" parameterType="java.lang.String" resultType="java.util.HashMap">
+            SELECT HW_ACCOUNT,NAME FROM project_members_local WHERE NO =#{proNo}
+    </select> -->
+
+    <!-- 加载迭代名称下拉列表 -->
+    <select id="getIteNameSelect" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT
+            ite_name AS text,
+            id       AS value
+        FROM `iteration_cycle`
+        WHERE `is_deleted` = 0
+        <if test="null != proNo and ''!= proNo">
+            AND `pro_No` = #{proNo}
+        </if>
+        GROUP BY text
+        ORDER BY `plan_start_date`
+    </select>
+
+    <!-- 加载迭代名称下拉列表 -->
+    <select id="getIteNameSelectByProNo" resultMap="BaseResultMap">
+        SELECT *
+        FROM `iteration_cycle`
+        WHERE `pro_no` = #{proNo} AND `is_deleted` = 0
+        ORDER BY `plan_start_date`
+    </select>
+
+    <!-- 校验名称唯一性 -->
+    <select id="checkIteName" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT *
+        FROM `iteration_cycle`
+        WHERE `pro_no` = #{proNo} AND `is_deleted` = 0
+              AND ite_name = #{iteName}
+    </select>
+    <!-- 检验当前项目是否含有迭代信息 -->
+    <select id="isHaveIteration" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT *
+        FROM `iteration_cycle`
+        WHERE `pro_no` = #{proNo} AND `is_deleted` = 0
+    </select>
+    <!-- 查询上个迭代最晚时间 -->
+    <select id="checkStartTime" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT *
+        FROM `iteration_cycle`
+        WHERE `pro_no` = #{proNo}
+              AND `is_deleted` = 0
+        ORDER BY `end_date` DESC
+        LIMIT 1
+    </select>
+
+    <select id="getProjNoName" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT name
+        FROM project_info
+        WHERE no = #{proNo}
+    </select>
+    <!-- 查询代码监视发现问题数 -->
+    <select id="queryCodeProblemCount" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `codecheck` WHERE versionName in
+        (SELECT r.`branch` FROM `project_config` t LEFT JOIN `repository` r ON t.`repository_id` = r.`id` WHERE
+        t.`project_id` = #{proNo}
+        AND r.`type` = '6')
+        <if test="null != startDate">
+            and date_format(updateTime, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(updateTime, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+    <!-- 查询代码监视发现问题处理数-->
+    <select id="queryCodeProblemDealCount" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `codecheck` WHERE versionName in
+        (SELECT r.`branch` FROM `project_config` t LEFT JOIN `repository` r ON t.`repository_id` = r.`id` WHERE
+        t.`project_id` = #{proNo} AND r.`type` = '6')
+        <if test="null != startDate">
+            and date_format(updateTime, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(updateTime, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+        and (solution = '修复' or solution = '拒绝')
+    </select>
+
+    <select id="getSelectmeasure" parameterType="Map" resultType="java.lang.String">
+        <!--SELECT-->
+        <!--t1.project_id-->
+        <!--FROM-->
+        <!--project_label_config t1-->
+        <!--LEFT JOIN-->
+        <!--label t2 ON t1.label_id = t2.id-->
+        <!--LEFT JOIN-->
+        <!--label_measure_config t3 ON t1.id = t3.PROJECT_LABLE_ID-->
+        <!--LEFT JOIN-->
+        <!--measure t4 ON t3.MEASURE_ID = t4.ID-->
+        <!--WHERE 1 = 1-->
+        <!--AND t4.name IS NOT NULL-->
+        <!--AND t1.is_deleted = 0-->
+        <!--and t2.IS_DELETED = 0-->
+        <!--and t3.IS_DELETED = 0-->
+        <!--and t4.IS_DELETE = 0-->
+        <!--and t4.ID = #{indexId}-->
+        <!--and t1.project_id in-->
+
+        <!--<foreach item="item" index="index" collection="list" open="("-->
+        <!--separator="," close=")">-->
+        <!--#{item}-->
+        <!--</foreach>-->
+        SELECT NO as project_id FROM (
+        SELECT * FROM (SELECT NO,measure_ids FROM `measure_configuration_record` WHERE NO IN
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        ORDER BY `update_time` DESC) a GROUP BY a.NO) b
+        WHERE FIND_IN_SET(#{indexId},b.measure_ids)
+    </select>
+
+
+    <select id="getSelectMeasureByProjectId" parameterType="java.lang.String"
+            resultMap="measureMap">
+        /*SELECT
+        t4.ID,
+        t4.COMPUTE_RULE compute_rule
+        FROM
+        project_label_config t1
+        LEFT JOIN
+        label t2 ON t1.label_id = t2.id
+        LEFT JOIN
+        label_measure_config t3 ON t1.id = t3.PROJECT_LABLE_ID
+        LEFT JOIN
+        measure t4 ON t3.MEASURE_ID = t4.ID
+        WHERE 1 = 1
+        AND t4.name IS NOT NULL
+        AND t1.is_deleted = 0
+        and t2.IS_DELETED = 0
+        and t3.IS_DELETED = 0
+        and t4.IS_DELETE = 0
+        and t1.project_id = #{projectId}
+        and t4.COLLECT_TYPE ='自动采集'*/
+        SELECT
+            a.measure_id   AS ID,
+            b.COMPUTE_RULE AS compute_rule
+        FROM (
+                 SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(a.measure_ids, ',', b.help_topic_id + 1), ',', -1) AS measure_id
+                 FROM (SELECT measure_ids
+                       FROM `measure_configuration_record`
+                       WHERE NO = #{projectId}
+                       ORDER BY `update_time` DESC
+                       LIMIT 1) a
+                     LEFT JOIN mysql.help_topic b
+                         ON b.help_topic_id &lt; (LENGTH(a.measure_ids) - LENGTH(REPLACE(a.measure_ids, ',', ''))
+                                                  + 1)) a
+            LEFT JOIN `in_tmpl_index` b ON a.measure_id = b.id
+        WHERE b.`COLLECT_TYPE` = '自动采集'
+
+    </select>
+
+    <select id="getManInsertByProjectId" parameterType="java.lang.String"
+            resultMap="measureMap">
+        /*SELECT
+        t4.ID,
+        t4.UNIT,
+        t4.name
+        FROM
+        project_label_config t1
+        LEFT JOIN
+        label t2 ON t1.label_id = t2.id
+        LEFT JOIN
+        label_measure_config t3 ON t1.id = t3.PROJECT_LABLE_ID
+        LEFT JOIN
+        measure t4 ON t3.MEASURE_ID = t4.ID
+        WHERE 1 = 1
+        AND t4.name IS NOT NULL
+        AND t1.is_deleted = '0'
+        and t2.IS_DELETED = '0'
+        and t3.IS_DELETED = '0'
+        and t4.IS_DELETE = '0'
+        and t1.project_id = #{projectId}
+        and t4.COLLECT_TYPE ='手工录入'
+        and t2.TITLE != '过程质量'*/
+        SELECT
+            a.measure_id AS ID,
+            b.unit,
+            b.name
+        FROM
+            (SELECT SUBSTRING_INDEX(SUBSTRING_INDEX(a.measure_ids, ',', b.help_topic_id + 1), ',', -1) AS measure_id
+             FROM (SELECT measure_ids
+                   FROM `measure_configuration_record`
+                   WHERE NO = #{projectId}
+                   ORDER BY `update_time` DESC
+                   LIMIT 1) a
+                 LEFT JOIN mysql.help_topic b
+                     ON b.help_topic_id &lt; (LENGTH(a.measure_ids) - LENGTH(REPLACE(a.measure_ids, ',', '')) + 1)) a
+            LEFT JOIN (
+                          SELECT
+                              a.*,
+                              b.`label`
+                          FROM
+                              `in_tmpl_index` a,
+                              `in_tmpl_label` b,
+                              `in_tmpl_label_index` c
+                          WHERE a.`ID` = c.`index_id`
+                                AND b.`ID` = c.`label_id`
+                          GROUP BY a.`ID`) b ON a.measure_id = b.id
+        WHERE b.`COLLECT_TYPE` = '自动采集' AND b.label = '过程质量'
+    </select>
+
+    <!-- 消费者业务线问题单总数 -->
+    <select id="numberOfIssues" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM dts_log
+        WHERE
+            NO = #{proNo}
+            AND last_Updated_Time &gt;= #{startDate}
+      <![CDATA[AND last_Updated_Time <= #{endDate}]]>
+        AND creator IS NOT NULL
+    </select>
+
+    <!-- 消费者业务线无效问题数 -->
+    <select id="invalidProblem" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM dts_log
+        WHERE (curent_Status='Cancel' OR (curent_Status='Close' AND (colse_Type='Closure of Repeated Defect' OR
+        colse_Type='Closure of noneffective Defect')))
+        AND NO=#{proNo}
+        <if test="null != startDate">
+            and date_format(created_Time, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(created_Time, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+    <!-- 解决问题数 -->
+    <select id="numberOfProblemSolvers" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM dts_log
+        WHERE curent_Status='Close'
+        AND NO=#{proNo}
+        <if test="null != startDate">
+            and date_format(created_Time, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(created_Time, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+    <!-- 回归不通过问题单数 -->
+    <select id="numberReturnOrNot" parameterType="Map" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM dts_log
+        WHERE failures>0
+        AND NO=#{proNo}
+        <if test="null != startDate">
+            and date_format(created_Time, '%Y-%m-%d') &gt;= #{startDate}
+        </if>
+        <if test="null != endDate">
+            <![CDATA[and date_format(created_Time, '%Y-%m-%d') <= #{endDate}]]>
+        </if>
+    </select>
+
+    <select id="queryIteInfo" parameterType="Map" resultType="com.icss.mvp.entity.IterationCycle">
+            SELECT * FROM `iteration_cycle` i
+            WHERE i.`pro_no` = #{proNo}
+            AND  #{date} BETWEEN i.`start_date` AND i.`end_date`
+    </select>
+
+    <select id="queryIteInfoById" parameterType="Map" resultType="com.icss.mvp.entity.IterationCycle">
+            SELECT * FROM `iteration_cycle` i
+            WHERE i.`id` = #{id} and i.`is_deleted` = 0
+    </select>
+</mapper>

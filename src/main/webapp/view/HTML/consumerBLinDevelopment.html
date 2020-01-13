@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="css/jquery-ui.min.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>    
+    <script type="text/javascript" src="js/gerennengli.js"></script>
+    <!-- <script type="text/javascript" src="js/measureCalcu.js"></script> -->
+	<style>
+	.namespan{  
+	    display: inline-block; width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+	}
+	#qualityTarget th,#qualityTarget td{
+		text-align: center; font-size: 14px;
+	}
+	#qualityTarget tr{
+		height: 40px; line-height: 40px;
+	}
+	.nav>li.active>a, .nav>li.active>a:focus, .nav>li.active>a:hover{
+		color: #3399ff;
+	    background-color: #EBF3FF;
+	    border-bottom: 5px #3399ff solid;
+	}
+	.nav>li>a:hover{
+		color: #3399ff;
+	    background-color: #EBF3FF;
+	}
+	.nav>li>a {
+ 	    color: #000000; 
+ 	    background-color: #EBF3FF; 
+	    text-decoration: none;
+	}
+	.navbar-nav>li>a, .navbar-nav>li.active>a, .navbar-nav>li.active>a:focus, .navbar-nav>li.active>a:hover{
+		padding-bottom: 10px;
+	}
+	.breadcrumb>.active {
+		color: #333333;
+	}
+
+	.breadcrumb {
+		background-color: #EBF3FF!important;
+		margin-left: 20px;
+		margin-right: 20px;
+		margin-bottom: 0px!important;
+		padding: 8px 0px!important;
+	}
+	.table>thead:first-child>tr:first-child>th {
+		background-color:#F7F8F8;
+	}
+	td, th {
+	    padding: 0px;
+	    background-color:white;
+	}
+	</style>
+    <script type="text/javascript">
+        $(document).on("click", "ul.navbar-nav li", function () {
+        	$("ul.navbar-nav li").removeClass("active");
+        	_.each($("ul.navbar-nav li"), function(tab, index){
+        		$("#"+$(tab).attr("tabname")).css('display','none');
+        	});
+        	$(this).addClass("active");
+        	var id = $(this).attr("tabname");
+        	$("#"+id).css('display','block');
+        });
+    </script>
+</head>
+<body class="mvp-body">
+<div class="mvp-main">
+	<div style="line-height: 50px;height: 50px;border-bottom: 2px #e2e3e4 solid;margin: 0px 10px 10px 3px;">
+		<ul class="nav navbar-nav" style="font-size: 16px;">
+			<li tabname="tab-kfxl" class="active"><a href="#">开发效率</a></li>
+		</ul>
+		<span style="color: #367FA9; float: right;font-size: 14px;margin-right: 10px;">起始日期: 
+	        <input type="text" id="datepicker" placeholder="请选择时间"
+			style="border: 1px solid #367FA9; background-color: white; width: 110px; height: 25px; color: #367FA9; padding-left: 30px; background-image: url(images/dateicon.png); /*引入图片图片*/ background-repeat: no-repeat; /*设置图片不重复*/ background-position: 5px 3px;" />
+		</span>
+	</div>
+    <table width="98%" border="0" cellspacing="0" cellpadding="0" style="margin: -10px 1% 10px 0.3%;">
+        <tr>
+            <td>
+           <div id="tab-kfxl" style="margin: 0px 10px 10px 10px;">
+               <div class="change-chart" id="kaifaxiaolv">
+                	<!-- js引入gerennengli_kaifaxiaolv.html -->
+               	<script type="text/javascript">
+					
+			    </script>
+                  
+               </div>
+            </div>    
+ 			<div id="qualityTargetTable" style="display: none;margin: 0px 10px 10px 10px;">
+	            <table id="qualityTarget" width="100%" border="0" cellspacing="0" cellpadding="0" class="data-table">
+	                 <thead>
+	                     <tr bgcolor="#e8e8e8">
+	                         <td style="width:15%;">指标名称</td>
+	                         <td style="width:10%;">单位Unit</td>
+	                         <td style="width:10%;">上限值USL</td>
+	                         <td style="width:10%;">下限值LSL</td>
+	                         <td style="width:10%;">目标值Goal</td>
+	                         <td style="width:10%;">实际值</td>
+	                         <td style="width:10%;">采集方式</td>
+	                         <td>计算公式</td>
+	                     </tr>
+	                 </thead>
+	            </table>
+			</div>
+           </td>
+        </tr>
+    </table>
+</div>
+    
+</body>
+</html>

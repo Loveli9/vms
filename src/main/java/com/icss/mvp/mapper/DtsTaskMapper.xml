@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IDtsTaskDao">
+
+	<insert id="insert" useGeneratedKeys="true" parameterType="java.util.List">
+		REPLACE INTO dts_log
+		VALUES
+		<foreach collection="list" item="item" index="index"
+			separator=",">
+			(
+			#{item.0},#{item.1},#{item.2},#{item.3},#{item.4},#{item.5},#{item.6},#{item.7},
+			#{item.8},#{item.9},#{item.14},#{item.15},
+			#{item.16},#{item.17},#{item.18},#{item.19},#{item.20},#{item.21},#{item.22},#{item.23},
+			#{item.24},#{item.25},#{item.27},#{item.28},#{item.29},#{item.30},#{item.31},
+			#{item.32},#{item.33},#{item.34},#{item.35},#{item.36},#{item.37},#{item.38},#{item.39},
+			#{item.40},#{item.41},#{item.42},#{item.43},#{item.44},#{item.45},#{item.46},#{item.47},
+			#{item.48},#{item.49},#{item.50},#{item.51},#{item.52},#{item.53},#{item.54},#{item.55},
+			#{item.56},#{item.57},#{item.58},#{item.59},#{item.60},#{item.61},#{item.62},#{item.63},
+			#{item.64},#{item.65},#{item.66},#{item.67},#{item.68},
+			#{item.importDate}, #{item.updateDate},#{item.no}
+			)
+		</foreach>
+	</insert>
+
+	<select id="query" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT
+		a.ticket_No,a.c_Version,DATE_FORMAT(created_Time,'%Y%m01') as created_Time,a.dtsNum,a.closedNum,a.nopassNum,
+		(CASE WHEN
+		a.dtsNum = 0 THEN 0 ELSE (a.closedNum/a.dtsNum) END) AS resoRate
+		from
+		(
+		SELECT ticket_No, c_Version,created_Time,
+		COUNT(*) AS dtsNum,
+		COUNT(CASE WHEN
+		curent_Status = '${@com.icss.mvp.Constants@CLOSE}' THEN 1 ELSE NULL END) AS closedNum,
+		COUNT(CASE
+		WHEN failures >0 THEN 1 ELSE NULL END) AS nopassNum
+		FROM dts_log
+		WHERE
+		curent_Status != '${@com.icss.mvp.Constants@CANCEL}' AND (colse_Type IS NULL ||
+		colse_Type = '' ||
+		colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		and SUBSTRING(created_Time, 1,7) <= SUBSTRING(now(), 1,7)
+		and SUBSTRING(created_Time, 1,7) >= SUBSTRING(date_add(NOW(), interval -2 month), 1,7)
+		GROUP BY c_Version,DATE_FORMAT(created_Time,'%Y%m')
+		)a
+		]]>
+	</select>
+	
+	<select id="queryDI" resultType="java.util.HashMap">
+	<![CDATA[
+		select ticket_No, c_Version,DATE_FORMAT(created_Time,'%Y%m01') as created_Time,
+		10*critNum+3*majNum+1*minNum+0.1*sugNum AS dtsLeaveDINum
+		from (
+		SELECT ticket_No, c_Version,created_Time,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@CRITIAL}' THEN 1 ELSE NULL END) AS critNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MAJOR}' THEN 1 ELSE NULL END) AS majNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MINOR}' THEN 1 ELSE NULL END) AS minNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@SUGGESTION}' THEN 1 ELSE NULL END) AS sugNum
+		FROM dts_log
+		WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}' 
+		AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' AND
+		(colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		and SUBSTRING(created_Time, 1,7) <= SUBSTRING(now(), 1,7)
+		and SUBSTRING(created_Time, 1,7) >= SUBSTRING(date_add(NOW(), interval -2 month), 1,7)
+		GROUP BY c_Version,DATE_FORMAT(created_Time,'%Y%m')) a
+		]]>
+	</select>
+
+	<select id="queryTr5DI" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT ticket_No, c_Version,DATE_FORMAT(created_Time,'%Y%m01') as created_Time,
+		10*critialNum+3*majorNum+1*minorNum+0.1*suggestionNum AS TR5DI
+		from (
+		SELECT ticket_No, c_Version,created_Time,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@CRITIAL}' THEN 1 ELSE NULL END) AS critialNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MAJOR}' THEN 1 ELSE NULL END) AS majorNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MINOR}' THEN 1 ELSE NULL END) AS minorNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@SUGGESTION}' THEN 1 ELSE NULL END) AS
+		suggestionNum
+		FROM dts_log
+		WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}' 
+		AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' AND
+		(colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}') 
+		AND defect_Found_Stage = '${@com.icss.mvp.Constants@SYSTEM_VERIFICATION_TEST_SVT}'
+		and SUBSTRING(created_Time, 1,7) <= SUBSTRING(now(), 1,7)
+		and SUBSTRING(created_Time, 1,7) >= SUBSTRING(date_add(NOW(), interval -2 month), 1,7)
+		GROUP BY c_Version,DATE_FORMAT(created_Time,'%Y%m')) a
+		]]>
+	</select>
+	
+	<select id="queryTr6DI" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT ticket_No, c_Version,DATE_FORMAT(created_Time,'%Y%m01') as created_Time,
+		10*critialNum+3*majorNum+1*minorNum+0.1*suggestionNum AS TR6DI
+		from (
+		SELECT ticket_No, c_Version, created_Time,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@CRITIAL}' THEN 1 ELSE NULL END) AS critialNum, 
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MAJOR}' THEN 1 ELSE NULL END) AS majorNum, 
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MINOR}' THEN 1 ELSE NULL END) AS minorNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@SUGGESTION}' THEN 1 ELSE NULL END) AS suggestionNum
+		FROM dts_log
+		WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}' 
+		AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' 
+		AND (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}') 
+		AND defect_Found_Stage in ('${@com.icss.mvp.Constants@BETA_TEST}', '${@com.icss.mvp.Constants@GA}', 
+		'${@com.icss.mvp.Constants@LIFT_CYCLE}', '${@com.icss.mvp.Constants@NETWORK_ENTRY_TEST}', '${@com.icss.mvp.Constants@TR5_GA}')
+		and SUBSTRING(created_Time, 1,7) <= SUBSTRING(now(), 1,7)
+		and SUBSTRING(created_Time, 1,7) >= SUBSTRING(date_add(NOW(), interval -2 month), 1,7)
+		GROUP BY c_Version,DATE_FORMAT(created_Time,'%Y%m')) a
+		]]>
+	</select>
+	
+	<select id="queryDensity" resultType="java.util.HashMap">
+	<![CDATA[
+		select ticket_No, c_Version,month,betaTestNum+SITNum+SVTNum as amountNum 
+         from
+         (
+        select ticket_No,c_Version, DATE_FORMAT(created_Time,'%Y-%m-01') as Month, 
+		COUNT(CASE WHEN defect_Found_Stage = '${@com.icss.mvp.Constants@BETA_TEST}' THEN 1 ELSE NULL END) AS betaTestNum,
+		COUNT(CASE WHEN defect_Found_Stage = '${@com.icss.mvp.Constants@SYSTEM_INTEGRATION_TEST_SIT}' THEN 1 ELSE NULL END) AS SITNum,
+		COUNT(CASE WHEN defect_Found_Stage = '${@com.icss.mvp.Constants@SYSTEM_VERIFICATION_TEST_SVT}' THEN 1 ELSE NULL END) AS SVTNum
+		FROM dts_log
+		WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}' AND
+		(colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		and SUBSTRING(created_Time, 1,7) <= SUBSTRING(now(), 1,7)
+		and SUBSTRING(created_Time, 1,7) >= SUBSTRING(date_add(NOW(), interval -2 month), 1,7)
+		GROUP BY c_Version,Month) a    
+		]]>
+	</select>
+	
+	<select id="queryServerity" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select critNum,majNum,minNum,sugNum,
+		10*critNum+3*majNum+1*minNum+0.1*sugNum AS dtsLeaveDINum
+		from (
+		SELECT 
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@CRITIAL}' THEN 1 ELSE NULL END) AS critNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MAJOR}' THEN 1 ELSE NULL END) AS majNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MINOR}' THEN 1 ELSE NULL END) AS minNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@SUGGESTION}' THEN 1 ELSE NULL END) AS sugNum
+		FROM dts_log
+		WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}' 
+		AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' AND
+		(colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		and no = #{no}
+		GROUP BY no) a
+		]]>
+	</select>
+	
+	<select id="queryDts" parameterType="java.lang.String"  resultType="java.util.HashMap">
+		SELECT ticket_No,curent_Status as curentStatus,severity,DATE_FORMAT(created_Time,'%Y%m%d') as createdTime,
+		DATE_FORMAT(last_Updated_Time,'%Y%m%d') as lastUpdateTime
+		FROM dts_log
+		where no = #{no}
+		<if test="date != '00000000'">  
+	   		
+	    </if>
+	    <if test="date == '00000000'">  
+	    <![CDATA[
+			and(
+				(
+				curent_Status != '${@com.icss.mvp.Constants@CANCEL}' 
+				AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' 
+				AND (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+				and SUBSTRING(last_Updated_Time, 1,10) < SUBSTRING(date_add(NOW(), interval -30 day), 1,10)
+				)
+				or SUBSTRING(last_Updated_Time, 1,10) >= SUBSTRING(date_add(NOW(), interval -30 day), 1,10)
+			)
+			]]>
+		</if>
+	</select>
+	
+	<select id="queryServerityByVersion" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select product as projectTeam,critNum,majNum,minNum,sugNum,
+		10*critNum+3*majNum+1*minNum+0.1*sugNum AS dtsLeaveDINum
+		from (
+		SELECT product,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@CRITIAL}' THEN 1 ELSE NULL END) AS critNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MAJOR}' THEN 1 ELSE NULL END) AS majNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MINOR}' THEN 1 ELSE NULL END) AS minNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@SUGGESTION}' THEN 1 ELSE NULL END) AS sugNum
+		FROM dts_log
+		WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}' 
+		AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' AND
+		(colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		and no = #{no}
+		GROUP BY no,product) a
+		]]>
+	</select>
+	
+	<select id="queryServerityByEven" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		select projectTeam,critNum,majNum,minNum,sugNum,
+		10*critNum+3*majNum+1*minNum+0.1*sugNum AS dtsLeaveDINum
+		from (
+		SELECT ${dimensionality} as projectTeam,
+		 <![CDATA[
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@CRITIAL}' THEN 1 ELSE NULL END) AS critNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MAJOR}' THEN 1 ELSE NULL END) AS majNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MINOR}' THEN 1 ELSE NULL END) AS minNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@SUGGESTION}' THEN 1 ELSE NULL END) AS sugNum
+		FROM dts_log
+		WHERE 
+		]]>
+		no = #{projNo}
+		and (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		<if test="curentStatus.size() != 0">
+			and curent_Status in 
+			 <foreach collection="curentStatus" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+		</if>
+		<if test="bVersions.size() != 0">
+			and b_Version in
+			 <foreach collection="bVersions" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+		</if>
+		GROUP BY no, ${dimensionality}
+		) a
+	</select>
+	
+	<select id="queryDtsBVersion" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select b_Version as value,b_Version as name
+		FROM dts_log
+		WHERE no=#{no}
+		and (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		GROUP BY b_Version
+	</select>
+	
+	<select id="dtsDownload" parameterType="java.util.HashMap" resultType="com.icss.mvp.entity.DtsLogs">
+	<![CDATA[
+		SELECT * FROM DTS_LOG 
+			WHERE NO=#{no} 
+	]]>
+	and (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+	<if test="severity != NULL and severity !=''">
+		AND SEVERITY=#{severity}
+	</if>
+	<if test="selected == 'product'">
+		and product = #{selectedVal}
+	</if>
+	<if test="selected == 'feature'">
+		and feature = #{selectedVal}
+	</if>
+	<if test="selected == 'subsystem'">
+		and subsystem = #{selectedVal}
+	</if>
+	<if test="selected == 'module'">
+		and module = #{selectedVal}
+	</if>
+	<if test="selected == 'current_Handler'">
+		and current_Handler = #{selectedVal}
+	</if>
+	<if test="bVersion.size() != 0">
+		and b_Version in
+		 <foreach collection="bVersion" item="item" separator="," open="(" close=")">
+               #{item}
+         </foreach>
+	</if>
+	<if test="curentStatus.size() != 0">
+		and curent_Status in
+		 <foreach collection="curentStatus" item="item" separator="," open="(" close=")">
+               #{item}
+         </foreach>
+	</if>
+	</select>
+	<!-- 获取当天新增问题数量 -->
+	<select id="getDtsSeverityToday" parameterType="java.lang.String" resultType="java.util.HashMap">
+	<![CDATA[
+		select critNum,majNum,minNum,sugNum,
+		10*critNum+3*majNum+1*minNum+0.1*sugNum AS dtsLeaveDINum
+		from (
+		SELECT 
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@CRITIAL}' THEN 1 ELSE NULL END) AS critNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MAJOR}' THEN 1 ELSE NULL END) AS majNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@MINOR}' THEN 1 ELSE NULL END) AS minNum,
+		COUNT(CASE WHEN severity = '${@com.icss.mvp.Constants@SUGGESTION}' THEN 1 ELSE NULL END) AS sugNum
+		FROM dts_log
+		WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}' 
+		AND date(created_Time) = curdate()
+		AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' AND
+		(colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		and no = #{no}
+		GROUP BY no) a
+		]]>
+	</select>
+	<select id="dtsIterTotalNotClo"  resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT IFNULL(A.days,0) AS days, IFNULL(A.num,0) AS num FROM(
+			SELECT SUM(
+				    ROUND(
+				      (
+				        UNIX_TIMESTAMP(last_Updated_Time) - UNIX_TIMESTAMP(created_Time)
+				      ) / 60/60/24
+				    )
+				  ) AS days,
+				  COUNT(*) as num FROM DTS_LOG 
+			WHERE (curent_Status != '${@com.icss.mvp.Constants@CANCEL}'&& curent_Status !='撤消') 
+			AND (curent_Status != '${@com.icss.mvp.Constants@CLOSE}'&& curent_Status !='关闭') 
+			AND (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}'||colse_Type='问题解决关闭')
+			and no = #{no}
+			and created_Time >= #{startTime}
+			and created_Time <= #{endTime}
+		) A;
+	]]>
+	</select>
+	<select id="dtsIterTotal"  resultType="java.lang.Integer">
+	<![CDATA[
+		SELECT COUNT(*) as num FROM DTS_LOG 
+		WHERE (curent_Status != '${@com.icss.mvp.Constants@CANCEL}' && curent_Status !='撤消')
+		AND (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}'||colse_Type='问题解决关闭')
+		and no = #{no}
+		and created_Time >= #{startTime}
+		and created_Time <= #{endTime}
+	]]>
+	</select>
+	<select id="dtsIterOverDueTotal"  resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT COUNT(*) as num FROM DTS_LOG 
+		WHERE curent_Status != '${@com.icss.mvp.Constants@CANCEL}' 
+		AND curent_Status != '${@com.icss.mvp.Constants@CLOSE}' 
+		AND (colse_Type IS NULL || colse_Type = '' || colse_Type='${@com.icss.mvp.Constants@CLOSURE_AFTER_CORRECTION}')
+		and no = #{no}
+		and created_Time > #{startTime}
+		and created_Time < #{endTime}
+		and last_Updated_Time > #{endTime}
+	]]>
+	</select>
+</mapper>

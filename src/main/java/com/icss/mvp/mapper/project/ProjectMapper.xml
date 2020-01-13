@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.project.IProjectDao">
+    <resultMap id="BaseResultMap" type="com.icss.mvp.entity.project.ProjectBaseEntity">
+        <result column="NO" property="no"/>
+        <result column="NAME" property="name"/>
+        <result column="PROJECT_SYNOPSIS" property="synopsis"/>
+        <result column="START_DATE" property="beginDate"/>
+        <result column="END_DATE" property="finishDate"/>
+        <result column="PROJECT_STATE" property="state"/>
+        <result column="IMPORT_DATE" property="importDate"/>
+        <result column="IMPORT_USER" property="operator"/>
+    </resultMap>
+
+    <resultMap id="TimescaleMap" type="HashMap">
+        <!--<result column="NO" property="ProjectId"/>-->
+        <result column="START_DATE" property="StartTime" javaType="java.util.Date"/>
+        <result column="END_DATE" property="FinishTime" javaType="java.util.Date"/>
+    </resultMap>
+
+    <select id="getProjectTimescale" resultMap="TimescaleMap">
+        SELECT `START_DATE`, `END_DATE`
+        FROM   project_info
+        WHERE  no = #{projectId}
+        LIMIT  1
+    </select>
+
+    <select id="getProjectList" resultMap="BaseResultMap">
+        SELECT *
+        FROM project_info
+        <where>
+            AND `NO` IN
+            <foreach item="id" index="index" collection="projectIds"
+                     open="(" separator="," close=")">#{id}
+            </foreach>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,1852 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>可视化度量平台</title>
+    <link rel="icon" href="../favicon3.png" type="image/x-icon"/>
+    <link rel="shortcut icon" href="../favicon3.png" type="image/x-icon"/>
+    <link rel="stylesheet" type="text/css" href="../../resources/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../resources/easyui/themes/default/easyui.css"/>
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css"/>
+    <link rel="stylesheet" href="css/toastr.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../resources/ztree/zTreeStyle.css" type="text/css"/>
+    <script type="text/javascript" src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../resources/bootstrap/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../resources/ztree/jquery.ztree.all.min.js"></script>
+    <script type="text/javascript" src="../../resources/config.js"></script>
+    <script type="text/javascript" src="js/selectComm.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="../mainFrame/js/page.js"></script>
+    <script type="text/javascript" src="js/comm/projectTree.js"></script>
+
+    <style>
+        .crumbs {
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            background: #2B6B8F;
+            text-align: center;
+        }
+
+        .crumbs > ul {
+            width: 100%;
+        }
+
+        .crumbs > ul > li {
+            float: left;
+            width: 33.33%;
+        }
+
+        .crumbs > ul > li > a {
+            width: 100%;
+            height: 100%;
+            display: block;
+            font-size: 18px;
+            color: #667D9C;
+            text-decoration: none;
+            padding: 3px 10px;
+            color: #818EEA;
+        }
+
+        .crumbs > ul > li > b {
+            font-size: 18px;
+            color: #667D9C;
+            font-weight: normal;
+        }
+
+        .crumbs > ul > li > a.active {
+            color: #EBFFFF;
+            background: #2D2F56;
+        }
+
+        .list {
+            width: 100%;
+            margin: 2px auto 0 auto;
+        }
+
+        .list ul li {
+            text-align: left;
+        }
+
+        .list ul li a {
+            padding-left: 40px;
+            color: #818EEA;
+            font-size: 14px;
+            display: block;
+            height: 45px;
+            line-height: 45px;
+            position: relative;
+            border-bottom: solid 1px #1A5E9F;
+            text-decoration: none;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .list ul.yiji li a {
+            padding-left: 40px;
+        }
+
+        .list ul.erji li a {
+            padding-left: 60px;
+        }
+
+        .list ul.sanji li a {
+            padding-left: 80px;
+        }
+
+        .list ul.siji li a {
+            padding-left: 100px;
+        }
+
+        .list ul.yiji li .inactive {
+            background: url(images/off.png) no-repeat 20px center;
+        }
+
+        .list ul.yiji li .inactives {
+            background: url(images/on.png) no-repeat 20px center;
+        }
+
+        .list ul.erji li .inactive {
+            background: url(images/off.png) no-repeat 40px center;
+        }
+
+        .list ul.erji li .inactives {
+            background: url(images/on.png) no-repeat 40px center;
+        }
+
+        .list ul.sanji li .inactive {
+            background: url(images/off.png) no-repeat 60px center;
+        }
+
+        .list ul.sanji li .inactives {
+            background: url(images/on.png) no-repeat 60px center;
+        }
+
+        .list ul.siji li .inactive {
+            background: url(images/off.png) no-repeat 80px center;
+        }
+
+        .list ul.siji li .inactives {
+            background: url(images/on.png) no-repeat 80px center;
+        }
+
+        .list ul.siji li .indot {
+            background: url(images/dot.png) no-repeat 80px center;
+        }
+
+        .list ul li ul {
+            display: none;
+        }
+
+        .list ul li ul li ul {
+            display: none;
+        }
+
+        .list ul li ul li a {
+            padding-left: 20px;
+        }
+
+        .list ul li ul li ul li a {
+            padding-left: 30px;
+        }
+
+        .list ul li .inactives.inactive {
+            color: #fff;
+        }
+
+        .list ul li.active .areaActive {
+            color: #fff;
+        }
+
+        .fold {
+            position: absolute;
+            width: 15px;
+            height: 50px;
+            line-height: 50px;
+            color: #EBFFFF;
+            background: #2d2f56;
+            top: 50%;
+            left: 15%;
+            margin-top: -25px;
+            z-index: 99999;
+            font-size: 21px;
+            text-align: center;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            cursor: pointer;
+        }
+
+        .fold p {
+            margin-left: -13px;
+        }
+
+        .tab-index {
+            width: auto;
+            height: 50px;
+        }
+
+        .list ul.newerji li a:hover {
+            color: #3399ff;
+            background-color: #fff;
+        }
+
+        .list ul.newerji li a {
+            padding-left: 40px;
+            color: #666;
+            font-size: 16px;
+            border-bottom: none;
+            margin-bottom: 5px;
+        }
+
+        .list ul.newsanji li a {
+            padding-left: 60px;
+            color: #666;
+            font-size: 16px;
+            border-bottom: none;
+            margin-bottom: 5px;
+        }
+
+        .list ul.newsanji li a:hover {
+            color: #3399ff;
+            background-color: #fff;
+        }
+
+        /*.daohang-index>a,.daohang-index>span,.daohang-index>select,.tab-index>a,.tab-index>span,.tab-index>select{*/
+        /*text-decoration:none; text-align:center;*/
+        /*}*/
+        /*.daohang-index>a:hover,.daohang-index>span:hover,.daohang-index>select:hover,.tab-index>a:hover,.tab-index>span:hover,.tab-index>select:hover{*/
+        /*color:white; text-decoration:none; background:#696969;*/
+        /*}*/
+        .onsel {
+            color: #3399ff !important;
+            border-left: 5px #337ab7 solid;
+            background-color: #fff;
+        }
+
+        #nav {
+            width: 30px;
+            height: 65px;
+            position: fixed;
+            right: 25px;
+            top: 74%;
+        }
+
+        .retop {
+            width: 25px;
+            height: 30px;
+            float: right;
+            margin-top: 2px;
+        }
+
+        .retop2 {
+            float: right;
+            margin-top: 2px;
+            width: 25px;
+        }
+
+        .retop span {
+            color: white;
+        }
+
+        .sub-menus {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50px;
+            z-index: 99;
+        }
+
+        .sub-menus .sub-menu {
+            width: 100%;
+            margin: 0;
+            overflow: hidden;
+            filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+            opacity: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            position: absolute;
+            top: -500px;
+            -webkit-transition-duration: 550ms;
+            -moz-transition-duration: 550ms;
+            -o-transition-duration: 550ms;
+            transition-duration: 550ms;
+            -webkit-transition-timing-function: cubic-bezier(0.17, 0.5, 0.44, 0.36);
+            -moz-transition-timing-function: cubic-bezier(0.17, 0.5, 0.44, 0.36);
+            -o-transition-timing-function: cubic-bezier(0.17, 0.5, 0.44, 0.36);
+            transition-timing-function: cubic-bezier(0.17, 0.5, 0.44, 0.36);
+        }
+
+        .sub-menus .sub-menu.show {
+            -webkit-transition-timing-function: cubic-bezier(0.73, 0.67, 0.77, 0.92);
+            -moz-transition-timing-function: cubic-bezier(0.73, 0.67, 0.77, 0.92);
+            -o-transition-timing-function: cubic-bezier(0.73, 0.67, 0.77, 0.92);
+            transition-timing-function: cubic-bezier(0.73, 0.67, 0.77, 0.92);
+            -webkit-transition-duration: 250ms;
+            -moz-transition-duration: 250ms;
+            -o-transition-duration: 250ms;
+            transition-duration: 250ms;
+            filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+            opacity: 1;
+            top: -30px;
+        }
+
+        .sub-menus .sub-menu dl {
+            padding: 12.5px 30px 12.5px 0;
+            float: left;
+            font-size: 14px;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .sub-menus .sub-menu dl dt {
+            color: #aaaaaa;
+            margin-top: 8px;
+            margin-bottom: 6px;
+            padding-bottom: 11px;
+            border-bottom: 1px solid #666;
+        }
+
+        .sub-menus .sub-menu dl dd {
+            margin-bottom: 5px;
+            margin-left: -5px;
+            padding: 5px 0;
+        }
+
+        .sub-menus .sub-menu dl dd a {
+            padding: 0 5px;
+            color: #ddd;
+            text-decoration: none;
+        }
+
+        .sub-menus .sub-menu dl dd a:hover {
+            color: #fff;
+        }
+
+        a {
+            color: #666666;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        dl {
+            display: block;
+            -webkit-margin-before: 1em;
+            -webkit-margin-after: 1em;
+            -webkit-margin-start: 0px;
+            -webkit-margin-end: 0px;
+        }
+
+        .r_feedbackicon {
+            background-image: URL(images/r_feedbackicon.png);
+            background-repeat: no-repeat;
+            width: 50px;
+            height: 50px;
+        }
+
+        .r_feedbackicon:hover {
+            background-image: URL(images/r_feedbackiconSel.png);
+        }
+
+        .r_topicon {
+            background-image: URL(images/r_topicon.png);
+            background-repeat: no-repeat;
+            width: 50px;
+            height: 50px;
+        }
+
+        .r_topicon:hover {
+            background-image: URL(images/r_topiconSel.png);
+        }
+
+        .current {
+            color: white;
+            text-decoration: none;
+            background: #696969;
+        }
+
+        .nav > li > a {
+            /*color: #000000;*/
+            background-color: #ffffff;
+            padding-left: 20px;
+            text-decoration: none;
+            padding-top: 5px !important;
+            padding-bottom: 5px !important;
+            font-family: -webkit-body;
+            color: #92959a;
+            font-size: larger;
+            line-height: inherit;
+        }
+
+        .logo-index {
+            float: left;
+            width: 15%;
+            background: #ffffff;
+            border-bottom: 1px solid #eaebeb;
+            border-right: 1px solid #eaebeb;
+        }
+
+        .glyphicon {
+            margin-right: 10px;
+            position: relative;
+            top: 1px;
+            display: inline-block;
+            font-family: 'Glyphicons Halflings';
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glyphicon {
+            margin-right: 10px;
+            position: relative;
+            top: 4px;
+            display: inline-block;
+            font-family: 'Glyphicons Halflings';
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glyphicon1 {
+            padding-right: 15px;
+            float: right;
+            margin-top: 6px;
+            top: 1px;
+            display: inline-block;
+            font-family: 'Glyphicons Halflings';
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .click-active {
+            color: #0091FE;
+        }
+
+        .menu-style {
+            padding-left: 20px;
+            font-size: larger;
+        }
+
+        .dropdown-menu {
+            min-width: 80px;
+            background-color: #647587;
+        }
+
+        .dropdown-menu > li > div {
+            display: block;
+            padding: 3px 20px;
+            clear: both;
+            font-weight: unset;
+            line-height: 37px;
+            white-space: nowrap;
+        }
+
+        .dropdown-menu > li > div > a {
+            color: #FEFFFF;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .dropdown-menu > li > div > a:hover {
+            color: deepskyblue;
+        }
+
+        .message-news {
+            background: #ef0d0d;
+            color: white;
+            border-radius: 14px;
+            display: inline;
+            padding: 0px 15px;
+        }
+
+        .div-shu {
+            border-left: 3px solid #0091FE;
+            padding-left: -2px;
+            position: relative;
+            left: -7px;
+            top: 4px;
+            line-height: -55px;
+            float: left;
+            width: 1px;
+            height: 15px;
+            border-radius: 80px;
+        }
+
+        /*返回首页样式*/
+        .panel-group > li {
+            font-size: 14px;
+            line-height: 2.5em;
+        }
+        #sub02-list li:nth-child(2){
+            margin-top: 40px;
+        }
+
+        #permissionTree li:nth-child(2){
+            margin-top: 0px;
+        }
+
+        .home-click {
+            background-color: #0091FE;
+        }
+
+        .panel-group > li > a {
+            padding-left: 10px;
+            text-decoration: none;
+            margin-top: 10px;
+        }
+
+        .panel-group > div > li > a {
+            padding-left: 10px;
+            text-decoration: none;
+        }
+
+        .panel-group > div > div > li > a {
+            padding-left: 20px;
+            text-decoration: none
+        }
+
+        .panel-group > div > li {
+            margin-top: 5px;
+        }
+
+        .panel-group > div > div > li {
+            margin-top: 5px;
+        }
+
+        .ztree * {
+            margin: 5px;
+            font-size: 16px;
+        }
+
+        .ztree-wrap {
+            width: 195px;
+            height: 460px;
+            overflow: auto;
+        }
+
+        .active {
+            border-bottom: 3px #39f solid;
+            font-weight: bold;
+        }
+
+        hr {
+            border-top: 1px solid #eee;
+            width: 203px;
+        }
+        .dropdown-menu inner{
+            background-color: white;
+        }
+        .popover fade bottom in{
+            height: 500px;
+        }
+        .datagrid-view2{
+            width: 470px;
+        }
+        .panel datagrid panel-htop{
+            width: 570px;
+        }
+        .datagrid-header-inner{
+            width: 470px;
+        }
+        .datagrid-header{
+            width: 450px;
+        }
+        .datagrid-row{
+            height: 40px;
+        }
+        .breadcrumb > li + li:before {
+            color: #CCCCCC;
+            content: "";
+            padding: 0 5px;
+        }
+        .pagination-info{
+            display: none;
+        }
+        .choosePanel{
+            font-size: 16px;
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+<div class="mvp-top">
+    <div class="logo-index">
+        <a href=""><img src="images/img/chinasoft-logo.jpg" style="margin-left: 65px;margin-top: 8px;"/></a>
+    </div>
+    <div id="welcome" class="daohang-index" style="float: right;">
+        <span style="line-height: 60px;margin-left: 20px;">您好,</span>
+        <!--<span id="userDept" style="font-size: 14px;line-height: 50px;">流程与IT管理部</span>-->
+        <span id='userName' style="line-height: 50px;"></span>
+        <span class="dropdown">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+					<span class="glyphicon glyphicon-cog" style="font-size: 20px;padding-left: 10px;"></span>
+				</a>
+				<ul class="dropdown-menu pull-right">
+					<li>
+						<div>
+							<a onclick="showIndex('messageTipsClone.html')" class="system-msg">
+								<span class="glyphicon glyphicon-bell" style="font-size: larger;"></span>通知
+								<div id="news" class="message-news" style="background-color: red"></div>
+							</a>
+						</div>
+					</li>
+					<li>
+						<div>
+							<a id="help" class="system-msg" onclick="changleper()">
+								<span class="glyphicon glyphicon-question-sign" style="font-size: larger;"></span>帮助
+							</a>
+						</div>
+					</li>
+					<li>
+						<div>
+							<a id="changleper" class="system-msg" onclick="changleper()">
+								<span class="glyphicon glyphicon-user" style="font-size: larger;"></span>角色切换
+							</a>
+						</div>
+					</li>
+					<li>
+						<div>
+							<a id="quit" class="system-msg">
+								<span class="glyphicon glyphicon-off" style="font-size: larger;"></span>退出
+							</a>
+						</div>
+					</li>
+				</ul>
+		</span>
+    </div>
+
+    <!--<div class="tab-index" id="topic"style="float:left;"></div>-->
+    <div class="tab-index" style="float:left;padding-left: 20px;font-size: large;padding-top: 17px;">度量平台集团版</div>
+</div>
+<div class="main">
+    <div class="left" id="leftDiv">
+        <div class="crumbs" id="areaDiv" style="display: none;">
+            <ul class="clear">
+                <li id="chinasoft"><a href="#" data-id="1">中软</a></li>
+                <li><a class="active" href="#" data-id="2">华为</a></li>
+                <li><a href="#" data-id="3">地域</a></li>
+            </ul>
+        </div>
+        <div class="list"></div>
+    </div>
+    <div class="fold" id="leftFold" style="display: none;"><p>〈</p></div>
+
+    <div class="right" id="sub-page" style="bottom: 0px;background-color: #ffffff;">
+        <!--菜单栏-->
+        <div class="container" style="width: 15%;float: left;padding: 0px;">
+            <div class="span6">
+                <!--一级-->
+                <ul class="nav nav-list" id="sub01-list" style="line-height: 30px;"></ul>
+
+                <!--二级-->
+                <ul class="panel-group" id="sub02-list" style="display: none;height: 550px;overflow: auto;">
+                </ul>
+
+                <!--三级-->
+                <ul class="nav nav-list" id="sub03-list" style="display: none"></ul>
+            </div>
+        </div>
+        <!--公共查询条件-->
+        <div  style="float: right;width: 85%;height: 100%;background-color: #eaebeb">
+            <div id="queryCondition" style="display: none;">
+                <ul class="breadcrumb" style="margin-bottom: 10px;">
+                    <li style="width: 10%">
+                        <span style="font-size:16px;font-weight: 600;letter-spacing: 1px;">当前项目</span><span class="glyphicon glyphicon-hand-right" style="color: #00c; font-size: 20px;padding-left: 10px"></span>
+                    </li>
+                    <li id="projectName" style="width:80%">
+                        <a  id="queryBtn" class="choosePanel" style="text-decoration:none"></a>
+                        <a onclick="clearProCookieInfo()" style="display: none" id="choseBtn">
+                            <span class="glyphicon glyphicon-remove" style="color: red; font-size: 20px;padding-left: 10px;"></span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!--动态页面-->
+            <iframe id="mainPage" src="newProjectSurvey.html" style="height:100%;border:none;padding-bottom: 35px"></iframe>
+        </div>
+    </div>
+</div>
+
+<!--公共查询条件-->
+<div class="modal fade" id="projectModal" width="800px" height = '920px' tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+    <div class="modal-dialog" style="width: 800px;height: 900px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    请选择项目
+                </h4>
+            </div>
+            <div class="modal-body" style="height:530px;">
+                <div class="ztree-wrap" style="float: left;"><ul id="organizaTree" class="ztree"></ul></div>
+                <div style="width: 550px;float: left;padding-left: 30px;height: 450px;overflow: auto">
+                    <input type="text" class="form-control" id="queryName" placeholder="请输入项目名称" style="width: 50%;margin-bottom: 10px">
+                    <table id="projectTable" style="table-layout: fixed;"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="foot" style="display:none;">
+    <table border="0" cellspacing="0" cellpadding="0"
+           style="width: 50%; color:  white; font-size: 14px; margin: 0 auto;">
+        <tr>
+            <td style="text-align: center;">版权所有 ©2013-2018中软国际科技服务有限公司</td>
+        </tr>
+    </table>
+</div>
+<div id="J_subMenus" class="sub-menus" style="top: 74px;" data-spm="201">
+    <div id="sub_menu_1" class="sub-menu" style="padding-left: 288px;"></div>
+    <div id="sub_menu_2" class="sub-menu" style="padding-left: 408px;">
+        <dl id="manages">
+            <dt>系统</dt>
+        </dl>
+        <dl id="manages2">
+            <dt>&emsp;</dt>
+        </dl>
+    </div>
+</div>
+<!-- 悬浮框 -->
+<div id="nav">
+    <div class="retop r_topicon" onclick="callback()" id="retop" title="返回顶部" style="cursor: pointer;"></div>
+    <div class="retop2 r_feedbackicon" id="feedback" title="问题反馈" style="cursor: pointer;"></div>
+</div>
+<!-- 意见反馈 -->
+<div class="modal fade" id="questionAndAnswer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width: 650px;margin-left: -50px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                <h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+                    意见（问题）反馈</h4>
+                <button type="button" id="cancel" data-dismiss="modal"
+                        style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">
+                    取消
+                </button>
+                <button type="button" id="saveQuestion"
+                        style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">
+                    提交
+                </button>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <table border="0" cellpadding="0" cellspacing="0" style="height: 150px;width:100%">
+                    <tr style="height: 30px;">
+                        <td style="width: 13%; text-align: left;"><font color="red">*</font> 姓名：</td>
+                        <td style="width: 37%;"><input type="text" id="memberName" class="form-control"
+                                                       style="width: 85%; height: 100%;"/></td>
+                        <td style="width: 13%; text-align: left;"><font color="red">*</font> 工号：</td>
+                        <td><input type="text" id="memberId" class="form-control" style="width: 85%; height: 100%;"/>
+                        </td>
+                    </tr>
+                    <tr style="height: 10px;">
+                        <th colspan="4"></th>
+                    </tr>
+                    <tr style="height: 30px;">
+                        <td style="width: 10%; text-align: left;"><font color="red">*</font> 电话：</td>
+                        <td><input type="text" id="memberPhone" class="form-control" style="width: 85%; height: 100%;"/>
+                        </td>
+                        <td style="text-align: left;"><font color="red">*</font> 邮箱：</td>
+                        <td><input type="text" id="memberMail" class="form-control" style="width: 85%; height: 100%;"/>
+                        </td>
+                    </tr>
+                    <tr style="height: 10px;">
+                        <th colspan="4"></th>
+                    </tr>
+                    <tr style="height: 30px;">
+                        <td style="text-align: left; padding-left: 9px;">反馈类型：</td>
+                        <td>
+                            <select id="questionType" class="form-control" style="width: 85%; height: 100%;">
+                                <option value="系统问题" selected="selected">系统问题</option>
+                                <option value="意见与建议">意见与建议</option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr style="height: 10px;">
+                        <th colspan="4"></th>
+                    </tr>
+                    <tr style="height: 150px;">
+                        <td style="text-align: left;"><font color="red">*</font> 意见/问题：</td>
+                        <td colspan="3"><textarea id="questionContent" class="form-control"
+                                                  style="width: 94%; height: 100%;"></textarea></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 权限切换弹窗 -->
+<div class="modal fade" id="changle" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 100px;width: 340px;margin-left: 147px;">
+            <div class="modal-header"
+                 style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px; height: 57px">
+                <h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right:91px;">角色切换</h4>
+                <button type="button" id="cancel" data-dismiss="modal"
+                        style="border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 19%; height: 32px; margin-right: 15px;outline: none;">
+                    取消
+                </button>
+                <button type="button" id="changlepermssion"
+                        style="border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 19%; height: 32px;outline: none;"
+                        onclick="updateper()">确定
+                </button>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+                <table border="0" cellpadding="0" cellspacing="0" style="height: 50px;width:100%">
+                    <tr>
+                        <td style="width: 28%; text-align: center;"><font color="red">*</font> 切换新角色</td>
+                        <td><select class="form-control input-xsm" id="newper" name="newper" style="width: 178px">
+                        </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="savetoop" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="top: 300px;">
+            <div class="modal-body" style="padding: 15px;">
+                <div style="text-align: center;">
+                    <span id="dataAcquisition" style="font-size: 14px;">保存成功</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var projNo;
+
+
+    //一级菜单点击事件
+    function subMenu_01(id, target, url) {
+        $("#queryCondition").css('display','none');//隐藏
+        /*① 按钮背景状态调整*/
+        background_view(id, "sub-");
+        /* ②打开二级菜单*/
+        if ("notRoot" == target) {
+            $("#sub01-list").css("display", "none");
+            $("#sub02-list").css("display", "");
+            /*子菜单动态填充*/
+            appendSubMenu02(id);
+            target = url;
+        }
+
+        $("#mainPage").attr("src", target);
+    }
+
+    /*返回首页*/
+    function backSub_01() {
+        $("#queryCondition").css('display','none');//隐藏
+        $("#sub01-list").css("display", "");
+        $("#sub02-list").css("display", "none");
+        background_view("sub-home", "sub-");
+        $("#mainPage").attr("src", "newProjectSurvey.html");
+    }
+
+    function backSub_02() {
+        subMenu_01('sub-project', 'notRoot', 'projectManagement.html?queryCriteria=1')
+    }
+
+    /*菜单背景设置*/
+    function background_view(id, head) {
+        $('a[id^="' + head + '"]').css("color", "");
+        $("#" + id).css("color", "#0091FE");
+    }
+
+    /*二级菜单*/
+    function appendSubMenu02(id) {
+        var subMenu = subMenus[id];
+        var tab = '';
+        if ("sub-projectDetails" == id) {
+            tab += '<li class="home-click" style="position: fixed;margin-top: 0;width: 15%;"><a id="back_sub01" onclick="backSub_02()" style="color: white;"><span class="glyphicon glyphicon-backward"></span>返回</a></li>';
+        } else if ("sub-board" == id) {
+            tab += '<li class="home-click"><a id="back_sub01" onclick="backSub_01()" style="color: white;"><span class="glyphicon glyphicon-backward"></span>返回首页</a></li>';
+        } else {
+            tab += '<li class="home-click" style="position: fixed;margin-top: 0;width: 15%;"><a id="back_sub01" onclick="backSub_01()" style="color: white;"><span class="glyphicon glyphicon-backward"></span>返回首页</a></li>';
+        }
+
+        if ("sub-project" == id) {
+            tab += '<li id="treeShape" style="float: left;margin-left: 10px;margin-top: 40px;height: 40px"><a><img id="treeShapeImage" src="images/xmgl1.png"/>&nbsp;&nbsp;树形</a></li>';
+            tab += '<li id="projectList" class="active" style="float: right;margin-right: 20px;margin-top: 40px;height: 40px"><a><img id="projectListImage" src="images/xmgl4.png"/>&nbsp;&nbsp;列表</a></li>';
+            tab += '<hr />';
+            tab += '<div class="ztree-wrap" style="margin-left: 10px;margin-top: -15px"><ul id="permissionTree" class="ztree"></ul></div>';
+        } else {
+            var index = '';
+            var indexId = '';
+            var Menus = getCookie('Menulist');
+            _.each(subMenu, function (dl, index) {
+
+                if (Menus.indexOf(dl.dtId) != -1) {
+                    if (dl.dtname) {
+                        index = index + 1;
+                        var href = "#" + dl.dtname;
+                        var url = dl.value[0].ddpath;
+                        var menuId01 = dl.value[0].menuId;
+                        if(dl.dtname=='资源'){
+                            url = "projectPersonnel.html";
+                            menuId01 = null;
+                        }
+                        if ("sub-projectDetails" == id) {
+                            url += "?projNo=" + projNo;
+                        }
+                        if (index == 1) {
+                            tab += '<div class="panel panel-default" style="box-shadow: 0 0px 0px;"><li class="menu-style" data-toggle="collapse" data-parent="#sub02-list" href= "' + href + '"><div class="div-shu" style="display: block"></div><a onclick="showIndex(\'' + url + '\',\'' + menuId01 + '\')">' + dl.dtname + '<span class="glyphicon1 glyphicon-chevron-down" ></span></a></li>';
+                        } else {
+                            tab += '<div class="panel panel-default" style="box-shadow: 0 0px 0px;"><li class="menu-style" data-toggle="collapse" data-parent="#sub02-list" href= "' + href + '"><div class="div-shu" style="display: none"></div><a onclick="showIndex(\'' + url + '\',\'' + menuId01 + '\')">' + dl.dtname + '<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+                        }
+                        if (index == 1) {
+                            tab += '<div id="' + dl.dtname + '"  class="panel-collapse collapse in" >';
+                        } else {
+                            tab += '<div id="' + dl.dtname + '"  class="panel-collapse collapse " >';
+                        }
+                        var subIndex = 0;
+                        _.each(dl.value, function (dd, index) {
+                            subIndex = subIndex + 1;
+                            if (Menus.indexOf(dd.ddId) != -1) {
+                                ddUrl = dd.ddpath;
+                                if ("sub-projectDetails" == id) {
+                                    ddUrl += "?projNo=" + projNo;
+                                }
+                                if (subIndex == 1) {
+                                    tab += '<li style="padding-left: 25px;margin-top: 5px" class="menu-style"><a style="color:#0091FE" id="' + dd.menuId + '" data-ga="' + dd.ddname + '"  href="#" onclick="showIndex(\'' + ddUrl + '\',\'' + dd.menuId + '\')">' + dd.ddname + '</a></li>';
+                                } else {
+                                    tab += '<li style="padding-left: 25px;margin-top: 5px" class="menu-style"><a  id="' + dd.menuId + '" data-ga="' + dd.ddname + '"  href="#" onclick="showIndex(\'' + ddUrl + '\',\'' + dd.menuId + '\')">' + dd.ddname + '</a></li>';
+                                }
+                            }
+                        });
+                        tab += '</div></div>';
+                        if (index == 1) {
+                            indexId = href;
+                        }
+                    }
+
+                } else if (Menus.indexOf(dl.ddId) != -1) {
+                    var dlUrl = dl.ddpath;
+                    if ("sub-projectDetails" == id) {
+                        dlUrl += "?projNo=" + projNo;
+                    }
+                    if(dl.ddId =="-15-"){
+                        tab += '<li class="menu-style"><a data-ga="' + dl.ddname + '" style="color:' + dl.menuColor + '" id="' + dl.menuId + '" href="#" ">' + dl.ddname + '</span></a></li>';
+                    }else {
+                        tab += '<li class="menu-style"><a data-ga="' + dl.ddname + '" style="color:' + dl.menuColor + '" id="' + dl.menuId + '" href="#" onclick="showIndex(\'' + dlUrl + '\',\'' + dl.menuId + '\',\'' + dl.condition + '\')">' + dl.ddname + '<span class="glyphicon1 glyphicon-chevron-right" ><span></span></a></li>';
+                    }
+                }
+            });
+        }
+
+        $("#sub02-list").html(tab);
+
+        //关闭
+        $('.collapse').on('shown.bs.collapse', function () {
+            $(this).prevAll().find('span').removeClass("glyphicon-chevron-right");
+            $(this).prevAll().find('span').addClass("glyphicon-chevron-down");
+            $(this).prevAll().find('div').css('display', 'block');
+        });
+        //展开
+        $('.collapse').on('hidden.bs.collapse', function () {
+            $(this).prevAll().find('span').removeClass("glyphicon-chevron-down");
+            $(this).prevAll().find('span').addClass("glyphicon-chevron-right");
+            $(this).prevAll().find('div').css('display', 'none');
+        });
+
+    }
+
+    /*树形列表查看项目*/
+    function projectTree() {
+
+    }
+
+    /*普通列表查看项目*/
+    function projectList() {
+        $("#mainPage").attr("src", "projectManagement.html?queryCriteria=1");
+    }
+
+    $(document).on("click", "#projectList", function () {
+        $("#treeShape").removeClass("active");
+        $("#projectList").addClass("active");
+        document.getElementById("treeShapeImage").src = "images/xmgl1.png";
+        document.getElementById("projectListImage").src = "images/xmgl4.png";
+    });
+    $(document).on("click", "#treeShape", function () {
+        $("#projectList").removeClass("active");
+        $("#treeShape").addClass("active");
+        document.getElementById("treeShapeImage").src = "images/xmgl2.png";
+        document.getElementById("projectListImage").src = "images/xmgl3.png";
+    });
+
+
+    function getOnsiteNews() {
+        $.ajax({
+            url: getRootPath() + '/projectOverview/getUnreadMessage',
+            type: 'post',
+            async: false,//是否异步，true为异步
+            success: function (data) {
+                if (data.code == "success" && data.data.length > 0) {
+                    var count = 0;
+                    for(var i = 0;i<data.data.length;i++){
+                        if(!data.data[i].receivingTime){
+                            count++;
+                        }
+                    }
+                    $('#news').text(count);
+                } else {
+                    $('#news').text(0);
+                }
+            }
+        })
+    }
+
+    //获取当前用户权限信息列表
+    function getPerInfos(name) {
+
+        if (name) {
+            name = name;
+        } else {
+            name = '';
+        }
+        $.ajax({
+            url: getRootPath() + '/sysRole/queryperlist',
+            type: 'post',
+            async: false,
+            data: {name: name},
+            success: function (data) {
+                if (0 == data.status) {
+                    for (var i = 0; i < data.data.length; i++) {
+                        $("#newper").append("<option>" + data.data[i].perName + "</option>");
+                    }
+                }
+            }
+        });
+    };
+
+    //    加载报表菜单
+    /*function infoSubMenu() {
+        var tab = '';
+        var Menus = getCookie('Menulist');
+        _.each(subMenus, function (dl, index) {
+            if (Menus.indexOf(dl.dtId) != -1) {
+                tab += '<dl><dt>' + dl.dtname + '</dt>';
+                if (dl.value) {
+                    _.each(dl.value, function (dd, index) {
+                        if (Menus.indexOf(dd.ddId) != -1) {
+                            if (dd.ddflag) {
+                                tab += '<dd><a id="' + dd.ddflag + '" data-ga="' + dd.ddname + '" class="highLight1" href="#" onclick="showIndex(\'' + dd.ddpath + '\')">' + dd.ddname + '</a></dd>';
+                            } else {
+                                tab += '<dd><a data-ga="' + dd.ddname + '" class="highLight1" href="#" onclick="showIndex(\'' + dd.ddpath + '\')">' + dd.ddname + '</a></dd>';
+                            }
+                        }
+                    });
+                }
+                tab += '</dl>';
+            }
+        });
+        $("#sub_menu_1").html(tab);
+    }*/
+
+    //打开反馈对话框
+    function takeQuestion() {
+        $("#feedback").click(function () {
+            $("#questionAndAnswer").modal('show');
+        })
+    }
+
+    function changleper() {
+        $('#newper').val(getCookie('Currentpername'));
+        $("#changle").modal('show');
+//	var Currentpername=getCookie('Currentpername');
+//	$("#changleper").click(function(){
+//		$('#newper').val(Currentpername);
+//		$("#changle").modal('show');
+//	})
+    }
+
+    //保存反馈内容
+    function saveQuestion() {
+        $("#saveQuestion").click(function () {
+            if ($("#memberName").val() == null || $("#memberName").val().trim() == "") {
+                alert("姓名不能为空");
+                return;
+            }
+            if ($("#memberId").val() == null || $("#memberId").val().trim() == "") {
+                alert("工号不能为空");
+                return;
+            }
+            if ($("#memberPhone").val() == null || $("#memberPhone").val().trim() == "") {
+                alert("电话不能为空");
+                return;
+            }
+            if ($("#memberMail").val() == null || $("#memberMail").val().trim() == "") {
+                alert("邮箱不能为空");
+                return;
+            }
+            if ($("#questionContent").val() == null || $("#questionContent").val().trim() == "") {
+                alert("意见/问题不能为空");
+                return;
+            }
+            $.ajax({
+                url: getRootPath() + '/questionFeedback/questionAdd',
+                type: 'post',
+                async: false,//是否异步，true为异步
+                data: {
+                    'name': $("#memberName").val(),
+                    'userId': $("#memberId").val(),
+                    'phone': $("#memberPhone").val(),
+                    'email': $("#memberMail").val(),
+                    'type': $("#questionType").val(),
+                    'content': $("#questionContent").val()
+                },
+                success: function (data) {
+                    $("#questionAndAnswer").modal('hide');
+                }
+            })
+        })
+    }
+
+    //权限切换
+    function updateper() {
+        var url, data;
+        var newpername = $("#newper").val();
+        if (newpername == null || newpername == "") {
+            alert("权限名称不能为空！")
+            return;
+        }
+        url = getRootPath() + '/sysRole/perchangle';
+        data = {"newpername": newpername,};
+
+        $.ajax({
+            url: url,
+            type: 'post',
+            async: false,
+            data: data,
+            success: function (data) {
+                if (0 == data.status) {
+                    showPopover(data.msg);
+                    $("#changle").modal('hide');
+                    window.location.reload();
+                } else {
+                    if (2 == data.status) {
+                        showPopover(data.msg);
+                        $("#changle").modal('hide');
+                    }
+                    if (1 == data.status) {
+                        showPopover(data.msg);
+                        $("#changle").modal('hide');
+                    }
+                }
+            }
+        });
+
+    }
+
+    function showPopover(msg) {
+        $('#dataAcquisition').text(msg);
+        $('#submitImportmodalfooter').css('display', 'none');
+        $('#savetoop').modal('show');
+        //2秒后消失提示框
+        var id = setTimeout(function () {
+            $('#savetoop').modal('hide');
+        }, 2000);
+    }
+
+    //回到顶部
+    function callback() {
+
+        $("iframe").contents().find("body,html").animate({scrollTop: 0}, 200);
+        if ($("iframe").contents().find("iframe").contents().find("body,html")) {
+            $("iframe").contents().find("iframe").contents().find("body,html").animate({scrollTop: 0}, 200);
+        }
+    };
+
+    function showSubMenu(id) {
+        $("#" + id).attr("class", "sub-menu show");
+    }
+
+    function hideSubMenu(id) {
+        $("#" + id).attr("class", "sub-menu");
+    }
+
+    function subMenu() {
+        $("div[id^='sub_menu']").mouseover(function () {
+            $(this).attr("class", "sub-menu show");
+        });
+        $("div[id^='sub_menu']").mouseout(function () {
+            $(this).attr("class", "sub-menu");
+        });
+    }
+
+    //首页跳转
+    function showHomePage() {
+        $("#mainPage").attr("src", "newProjectSurvey.html");
+        hideMenu();
+        loadLeftTree(1, null, null, true);
+        $("#leftFold").attr("style", "display:none");
+        $("#areaDiv").attr("style", "display:none");
+    }
+
+    function showIndex(name, menuId,condition) {
+        $("#queryCondition").css('display','none');//显示
+        if('1' == condition){
+            $("#queryCondition").css('display','block');//显示
+        }
+        $('a[id^="sub"]').css("color", "");
+        $("#" + menuId).css("color", "#0091FE");
+        $("#mainPage").attr("src", name);
+
+        if("messageTipsClone.html" === name){
+            $('#news').text(0);
+        }
+
+    }
+
+    function showIndexShowMenu(name) {
+        loadLeftTree();
+        $("#leftFold").attr("style", "display:");
+        $("#areaDiv").attr("style", "display:");
+        $("#mainPage").attr("src", name);
+        showMenu();
+        $("div[id^='sub_menu']").attr("class", "sub-menu");
+    }
+
+    //隐藏左侧菜单栏
+    function hideMenu() {
+        $(".fold").html("<p>〉</p>").addClass("active").animate({"left": "0px"}, 300).find("p").css("marginLeft", "2px");
+        $(".fold").siblings(".left").animate({"width": "0px"}, 300);
+        $(".fold").siblings(".right").animate({"left": "0px"}, 300).find("iframe").animate({"width": "100%"}, 300);
+        $("#leftDiv").attr("style", "display:none");
+        $("#leftFold").attr("style", "display:none");
+    }
+
+    //显示左侧菜单栏
+    function showMenu() {
+        $(".fold").html("<p>〈</p>").removeClass("active").animate({"left": "15%"}, 300).find("p").css("marginLeft", "-13px");
+        $(".fold").siblings(".left").animate({"width": "15%"}, 300);
+        $(".fold").siblings(".right").animate({"left": "15%"}, 300).find("iframe").animate({"width": "85%"}, 300);
+        $("#leftDiv").attr("style", "display:");
+        $("#leftFold").attr("style", "display:");
+    }
+
+    function clearBackGround() {
+        $("#leftDiv").attr("style", "background-color:#f7f8f8");
+    }
+
+    function clearType() {
+        document.getElementById("zonglan").className = "";
+        document.getElementById("zl").className = "";
+        document.getElementById("td").className = "";
+        document.getElementById("jd").className = "";
+        document.getElementById("mat").className = "";
+        document.getElementById("star").className = "";
+        document.getElementById("xmhg").className = "";
+    }
+
+    //左侧菜单栏跳转
+    function changePage(type) {
+        clearType();
+        var zonglan = document.getElementById("zonglan"); //总览
+        var zl = document.getElementById("zl"); //质量
+        var td = document.getElementById("td");//团队
+        var jd = document.getElementById("jd");//进度
+        var mat = document.getElementById("mat");//361
+        var star = document.getElementById("star");//星级评估
+        var lowloc = document.getElementById("lowloc");//星级评估
+        var srd = document.getElementById("srd");//星级评估
+        var xmhg = document.getElementById("xmhg");//目标总览
+        if (type == 0) {//总览页面
+            zonglan.className = "onsel";
+            mat.className = "onsel";
+            star.className = "";
+            $("#star").css("display", "block");
+            $("#mat").css("display", "block");
+            $("#lowloc").css("display", "none");
+            $("#srd").css("display", "none");
+            $("#mainPage").attr("src", "projectOverview.html");
+        } else if (type == 1) {//质量页面
+            zl.className = "onsel";
+            mat.className = "onsel";
+            star.className = "";
+            $("#star").css("display", "block");
+            $("#mat").css("display", "block");
+            $("#lowloc").css("display", "none");
+            $("#srd").css("display", "none");
+            $("#mainPage").attr("src", "homePage.html");
+        } else if (type == 2) {//效率
+            $("#star").css("display", "none");
+            $("#mat").css("display", "none");
+            $("#lowloc").css("display", "none");
+            $("#srd").css("display", "none");
+        } else if (type == 3) {//团队
+            td.className = "onsel";
+            srd.className = "onsel";
+            lowloc.className = "";
+            $("#star").css("display", "none");
+            $("#mat").css("display", "none");
+            $("#lowloc").css("display", "block");
+            $("#srd").css("display", "block");
+            $("#mainPage").attr("src", "teamShow.html");
+        } else if (type == 4) {//进度
+            jd.className = "onsel";
+            $("#star").css("display", "none");
+            $("#mat").css("display", "none");
+            $("#lowloc").css("display", "none");
+            $("#srd").css("display", "none");
+            $("#mainPage").attr("src", "scheduleShow.html");
+        } else if (type == 5) {//361
+            zl.className = "onsel";
+            mat.className = "onsel";
+            star.className = "";
+            $("#mainPage").attr("src", "homePage.html");
+        } else if (type == 6) {//星级评估
+            zl.className = "onsel";
+            star.className = "onsel";
+            mat.className = "";
+            $("#mainPage").attr("src", "starPage.html");
+        } else if (type == 7) {//低产出分析
+            td.className = "onsel";
+            lowloc.className = "onsel";
+            srd.className = "";
+            $("#mainPage").attr("src", "xiaolvPage.html");
+        } else if (type == 9) {//胜任度
+            td.className = "onsel";
+            srd.className = "onsel";
+            lowloc.className = "";
+            $("#mainPage").attr("src", "teamShow.html");
+        } else if (type == 10) {//目标总览
+            xmhg.className = "onsel";
+            $("#star").css("display", "none");
+            $("#mat").css("display", "none");
+            $("#lowloc").css("display", "none");
+            $("#srd").css("display", "none");
+            $("#mainPage").attr("src", "xiangmuhege.html");
+        }
+    }
+
+    //function getCookie(name){
+    //	var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
+    //	if(arr != null){
+    //    	return decodeURIComponent(arr[2]);
+    //   	}else{
+    //     	return null;
+    //   	}
+    //};
+
+    $('.list').on("click", ".inactive", function (e) {
+        e.preventDefault();
+        if ($(this).siblings('ul').css('display') == 'none') {
+            $(this).parent('li').siblings('a').removeClass('inactives');
+            $(this).addClass('inactives');
+            $(this).siblings('ul').slideDown(100).children('li');
+            $(this).parents('li').siblings('li').children('ul').parent('li').children('a').removeClass('inactives');
+            $(this).parents('li').siblings('li').children('ul').slideUp(100);
+            $(this).parents("li").addClass("active").siblings().removeClass("active");
+
+        } else {
+            //控制自身变成+号
+            $(this).removeClass('inactives');
+            //控制自身菜单下子菜单隐藏
+            $(this).siblings('ul').slideUp(100);
+            //控制自身子菜单变成+号
+            $(this).siblings('ul').children('li').children('ul').parent('li').children('a').addClass('inactives');
+            //控制自身菜单下子菜单隐藏
+            $(this).siblings('ul').children('li').children('ul').slideUp(100);
+
+            //控制同级菜单只保持一个是展开的（-号显示）
+            $(this).siblings('ul').children('li').children('a.inactive').removeClass('inactives');
+            $(this).parent().removeClass("active").siblings().removeClass("active");
+        }
+        $(this).siblings('ul').css('background', '#414467');
+        $(this).parent().siblings().find(".active").removeClass("active");
+        $(this).parent().find(".active").removeClass("active");
+        $("#mainPage").attr("src", ($("#mainPage").attr("src")));
+    });
+
+    $('.list').on("click", ".sanji .inactives", function (e) {
+        e.preventDefault();
+        if ($(this).siblings('ul').length == 0) {
+            $(this).parent().siblings().find('a').css('background', 'url(images/dot.png) no-repeat 80px center');
+        }
+        $(this).addClass("inactive").siblings().removeClass("inactive");
+        $(this).parents("li").addClass("active").siblings().removeClass("active");
+        $("#mainPage").attr("src", ($("#mainPage").attr("src")));
+    });
+
+    $('.list').on("click", ".siji .inactives", function (e) {
+        e.preventDefault();
+        if ($(this).siblings('ul').length == 0) {
+            $(this).parent().siblings().find('a').css('background', 'url(images/dot.png) no-repeat 80px center');
+        }
+        $(this).addClass("inactive").parent().siblings().find('a').removeClass("inactive");
+        $(this).parents("li").addClass("active").siblings().removeClass("active");
+        $("#mainPage").attr("src", ($("#mainPage").attr("src")));
+    });
+
+    $('.list').on("click", ".areaActive", function (e) {
+        e.preventDefault();
+        var id = $(this).parents("li").attr("data-id");
+        $(this).parents("li").addClass("active").siblings().removeClass("active");
+        $("#mainPage").attr("src", ($("#mainPage").attr("src")));
+    });
+
+    $(".crumbs").on("click", "a", function () {
+        $(this).addClass("active").parent().siblings().find("a").removeClass("active");
+        var dep = $(this).attr("data-id");
+        loadLeftTree(dep);
+    });
+
+    $('.list').on("click", ".newyiji", function (e) {
+        e.preventDefault();
+        var id = $(this).children("li").attr("data-id");
+        if (id == 1) {
+            $(this).children("li").attr("data-id", "2");
+            id = 2;
+        } else if (id == 2) {
+            $(this).children("li").attr("data-id", "1");
+            id = 1;
+        }
+        loadLeftTree(id, null, null, true);
+    });
+
+    //加载左侧导航树
+    function loadLeftTree(dep, pid, level, isLoadLeft) {
+        $(".list").html('');
+        if (!isLoadLeft) {
+            $(".left").attr("style", "");
+            if ("-1" == pid) {
+                return;
+            }
+            if (!pid) {
+                pid = 0;
+            }
+            if (!level) {
+                level = 1;
+            }
+            var url;
+            if (!dep) {
+                dep = 2;
+            }
+            if ("2" == dep) {
+                url = getRootPath() + "/sysHwdept/getSysHwdeptByPId";
+                depOPName(pid, url);
+            } else if ("3" == dep) {
+                url = getRootPath() + "/tblArea/getAllTblArea";
+                areaName(pid, url);
+            } else {
+                url = getRootPath() + "/opDepartment/getOpDepartmentByCurrentUser";
+                depOPName(pid, url);
+            }
+        } else {
+            $(".left").attr("style", "background:#f7f8f8;float: left;height:auto;width: 15%;overflow: auto;bottom:40px;top:50px;");
+            homeLeft(dep);
+        }
+    }
+
+    function homeLeft(id) {
+        var html = '';
+        html += "<ul class='newerji'>"
+            + "<li  onclick='changePage(0)'  data-id=1><a id='zonglan'     href='#'  class='onsel' title='总览'>总览</a>"
+            + "</li></ul>"
+            + "<ul class='newerji'>"
+            + "<li  onclick='changePage(1)'  data-id=1><a id='zl'     href='#'  class='onsel' title='质量总览'>质量总览</a>"
+            + "</li></ul>"
+            + "<ul class='newsanji'>"
+            + "<li  onclick='changePage(5)'  data-id=1><a id='mat'    href='#'  class='onsel' title='361成熟度'>361成熟度</a>"
+            + "<li  onclick='changePage(6)'  data-id=1><a id='star'   href='#'  title='星级评估'>星级评估</a>"
+            + "</li></ul>"
+            + "<ul class='newerji'>"
+            + "<li  onclick='changePage(3)'  data-id=3><a id='td'     href='#'  title='团队总览'>团队总览</a>"
+            + "</li></ul>"
+            + "<ul class='newsanji'>"
+            + "<li  onclick='changePage(9)'  data-id=3><a id='srd'    href='#'  style='display:none;' title='团队成员'>团队成员</a>"
+            + "<li  onclick='changePage(7)'  data-id=3><a id='lowloc' href='#'  style='display:none;'  title='低产出人员'>低产出人员</a>"
+            + "</li></ul>"
+            + "<ul class='newerji'>"
+            + "<li  onclick='changePage(4)'  data-id=4><a id='jd'     href='#'  title='进度总览'>进度总览</a>"
+            + "</li></ul>"
+            + "<ul class='newerji'>"
+            + "<li  onclick='changePage(10)'  data-id=5><a id='xmhg'  href='#'  title='目标总览'>目标总览</a>"
+            + "</li></ul>";
+        $(".list").html(html);
+    }
+
+    function depName(pid, url) {
+        var data = returnDep(pid, url);
+        if ('' == data) return
+        var html = '';
+        var className = 'inactive';
+        html += "<ul class='yiji'>";
+        $.each(data, function (i, obj) {
+            html += "<li data-id=" + obj.deptId + "><a href='#' class='first " + className + "' title='" + obj.deptName + "'>" + obj.deptName + "</a>";
+            var data1 = returnDep(obj.deptId, url);
+            html += "<ul style='display: none' class='erji'>";
+            $.each(data1, function (j, obj1) {
+                html += "<li data-id=" + obj1.deptId + "><a href='#' class='second " + className + "'  title='" + obj1.deptName + "'>" + obj1.deptName + "</a>";
+                var data2 = returnDep(obj1.deptId, url);
+                html += "<ul class='sanji'>";
+                $.each(data2, function (z, obj2) {
+                    html += "<li data-id=" + obj2.deptId + "><a href='#' class='third inactives'  title='" + obj2.deptName + "'>" + obj2.deptName + "</a>";
+                    html += "</li>";
+                });
+                html += "</ul>";
+                html += "</li>";
+            });
+            html += "</ul>";
+            html += "</li>";
+        });
+        html += "</ul>";
+        $(".list").html(html);
+    }
+
+    function depOPName(pid, url) {
+        var dataSys = returnDep(pid, url);
+        if ('' == dataSys) return
+        var html = '';
+        var className = 'inactive';
+        var data = [];
+        data.push(dataSys);
+        html += "<ul class='yiji'>";
+        $.each(data, function (i, obj) {
+            html += "<li data-id=" + obj.id + "><a href='#' class='first " + className + "' title='" + obj.name + "'>" + obj.name + "</a>";
+            var data1 = obj.children;
+            html += "<ul style='display: none' class='erji'>";
+            $.each(data1, function (j, obj1) {
+                html += "<li data-id=" + obj1.id + "><a href='#' class='second " + className + "'  title='" + obj1.name + "'>" + obj1.name + "</a>";
+                var data2 = obj1.children;
+                html += "<ul class='sanji' style='display: none'>";
+                $.each(data2, function (z, obj2) {
+                    html += "<li data-id=" + obj2.id + "><a href='#' class='third " + className + "'  title='" + obj2.name + "'>" + obj2.name + "</a>";
+                    var data3 = obj2.children;
+                    html += "<ul class='siji' style='display: none'>";
+                    $.each(data3, function (k, obj3) {
+                        html += "<li data-id=" + obj3.id + "><a href='#' class='forth inactives indot'  title='" + obj3.name + "'>" + obj3.name + "</a>";
+                        html += "</li>";
+                    });
+                    html += "</ul>";
+                    html += "</li>";
+                });
+                html += "</ul>";
+                html += "</li>";
+            });
+            html += "</ul>";
+            html += "</li>";
+        });
+        html += "</ul>";
+        $(".list").html(html);
+    }
+
+    function areaName(pid, url) {
+        var data = returnDep(pid, url);
+        if ('' == data) return
+        var html = '';
+        var className = 'areaActive';
+        html += "<ul class='yiji'>";
+        $.each(data, function (i, obj) {
+            html += "<li><a href='#' data-id=" + obj.areaCode + " class=" + className + ">" + obj.areaName + "</a>";
+            html += "</li>";
+        });
+        html += "</ul>";
+        $(".list").html(html);
+    }
+
+    function returnDep(pid, url) {
+        var dataMsg;
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {"pId": pid},
+            async: false,
+            success: function (data) {
+                if ([] != data.data && null != data.data) {
+                    dataMsg = data.data;
+                } else {
+                    dataMsg = '';
+                }
+            }
+        });
+        return dataMsg;
+    }
+
+    $("#quit").click(function () {
+        Ewin.confirm({ message: "确认退出当前登录吗？" }).on(function (e) {
+            if (!e) {
+                return;
+            } else {
+                $.ajax({
+                    url: getRootPath() + "/login/logout",
+                    type: 'POST',
+                    async: false,
+                    success: function (data) {
+                        if (data && data.succeed) {
+                            location.href = getRootPath() + "/view/login.html";
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    $('.fold').click(function () {
+        if ($(this).hasClass("active")) {
+            $(this).html("<p>〈</p>").removeClass("active").animate({"left": "15%"}, 300).find("p").css("marginLeft", "-13px");
+            $(this).siblings(".left").animate({"width": "15%"}, 300);
+            $(this).siblings(".right").animate({"left": "15%"}, 300).find("iframe").animate({"width": "85%"}, 300);
+        } else {
+            $(this).html("<p>〉</p>").addClass("active").animate({"left": "0px"}, 300).find("p").css("marginLeft", "2px");
+            $(this).siblings(".left").animate({"width": "0px"}, 300);
+            $(this).siblings(".right").animate({"left": "0px"}, 300).find("iframe").animate({"width": "100%"}, 300);
+        }
+    });
+    //高亮定位
+    $('.tab-index> a:eq(0)').addClass("current").siblings().removeClass("current");
+    $('.tab-index').on('click', '.highLight', function () {
+        $(this).addClass("current").siblings().removeClass("current");
+    });
+    $('.sub-menu').on('click', '.highLight1', function () {
+        $('.tab-index> span:eq(0)').addClass("current").siblings().removeClass("current");
+    });
+    $('.sub-menu').on('click', '.highLight2', function () {
+        $('.tab-index> span:eq(1)').addClass("current").siblings().removeClass("current");
+    });
+    var Menus;
+    $(document).ready(function () {
+
+        $("#popoverNews,#news").mouseleave(function () {
+            $("#popoverNews").css('display', 'none');
+        });
+        $("#popoverNews,#news").mouseover(function () {
+            $("#popoverNews").css('display', 'block');
+        });
+        getOnsiteNews();
+        // infoSubMenu();
+        Menus = getCookie('Menulist');
+        var name = getCookie('username');
+        var Currentpername = getCookie('Currentpername');
+        $("#loginer").val(name);
+        $("#permissionName").val(Currentpername);
+
+        if (Menus.indexOf("-2-") != -1) {
+            var tab = '<li><a id="sub-home" onclick="subMenu_01(\'sub-home\',\'newProjectSurvey.html\')" style="color: #0091FE;"><span class="glyphicon glyphicon-home" style="font-size: larger"></span> 首页<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab);
+        }
+        if (Menus.indexOf("-3-") != -1) {
+            var tab0 = '<li><a id="sub-work" onclick="subMenu_01(\'sub-work\',\'notRoot\',\'basic.html\')"><span class="glyphicon glyphicon-briefcase" style="font-size: larger"></span> 工作台<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab0);
+        }
+        if (Menus.indexOf("-4-") != -1) {
+            var tab1 = '<li><a id="sub-project" onclick="subMenu_01(\'sub-project\',\'notRoot\',\'projectManagement.html?queryCriteria=1\')"><span class="glyphicon glyphicon-list-alt" style="font-size: larger"></span> 项目管理<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab1);
+        }
+        if (Menus.indexOf("-5-") != -1) {
+            var tab2 = '<li><a id="sub-person" onclick="subMenu_01(\'sub-person\',\'personnelManagement.html\')"><span class="glyphicon glyphicon-user" style="font-size:larger"></span> 人员管理<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab2);
+        }
+        /*if (Menus.indexOf("-86-") != -1) {
+            var tab3 = '<li><a id="sub-item" onclick="subMenu_01(\'sub-report\',\'notRoot\',\'projectOverview.html\')"><span class="glyphicon glyphicon-adjust" style="font-size: larger"></span> 报表管理<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab3);
+        }*/
+        if (Menus.indexOf("-6-") != -1) {
+            var tab4 = '<li><a id="sub-board" onclick="subMenu_01(\'sub-board\', \'notRoot\', \'../HTML/board/groupOverview.html\')"><span class="glyphicon glyphicon-dashboard" style="font-size: large;"></span> 看板管理<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab4);
+        }
+        if (Menus.indexOf("-7-") != -1) {
+            var tab5 = '<li><a id="sub-question" onclick="subMenu_01(\'sub-question\',\'xx.html\')"><span class="glyphicon glyphicon-question-sign" style="font-size: large;"></span> 问题管理<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab5);
+        }
+        if (Menus.indexOf("-8-") != -1) {
+            var tab6 = '<li><a id="sub-service" onclick="subMenu_01(\'sub-service\',\'xx.html\')"><span class="glyphicon glyphicon-briefcase" style="font-size: large;"></span> 标椎化服务<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab6);
+        }
+        if (Menus.indexOf("-9-") != -1) {
+            var tab7 = '<li><a id="sub-system" onclick="subMenu_01(\'sub-system\',\'notRoot\',\'permissionManage.html\')"><span class="glyphicon glyphicon-sd-video" style="font-size: large;"></span> 系统设置<span class="glyphicon1 glyphicon-chevron-right" ></span></a></li>';
+            $("#sub01-list").append(tab7);
+        }
+        $('#userName').text(getCookie('realname'));
+
+        /*var url = getQueryString("url");
+        var gl = getQueryString("gl");
+        if (gl) {
+            if (gl == 1 || gl == 2) {
+                $('.tab-index> a:eq(' + gl + ')').addClass("current").siblings().removeClass("current");
+            } else if (gl == 3) {
+                $('.tab-index> span:eq(0)').addClass("current").siblings().removeClass("current");
+            } else if (gl == 4) {
+                $('.tab-index> span:eq(1)').addClass("current").siblings().removeClass("current");
+            } else {
+                $('.tab-index> a:eq(0)').addClass("current").siblings().removeClass("current");
+            }
+        }
+
+        function isDateFormat(str) {
+            var dateFormat = /^(\d{4})-(\d{2})-(\d{2})$/;
+            if (dateFormat.test(str)) {
+                return true;
+            } else {
+                return false;
+            }
+        }*/
+
+        projNo = getQueryString("projNo");
+        if (projNo) {
+            /*var zlyb = getQueryString("zlyb");
+            var bool = isDateFormat(zlyb);
+            if(zlyb == 1){
+                $("#mainPage").attr("src",url + '&zlyb=1&a='+Math.random());
+            }else if(bool == true){
+                $("#mainPage").attr("src",url + '&zlyb='+zlyb+'&a='+Math.random());
+            }else{
+                $("#mainPage").attr("src",url + '&a='+Math.random());
+            }*/
+            subMenu_01('sub-projectDetails', 'notRoot', 'gaikuang.html?projNo=' + projNo);
+        }
+
+        var xmcb = getQueryString("xmcb");
+        if (xmcb) {
+            $("#mainPage").attr("src", url + '&xmcb=' + Math.random());
+        }
+
+        var tips = getQueryString("tips");
+        if (tips == 'xq') {
+            $("#mainPage").attr("src", url + '&tips=xq');
+        } else if (tips == 'fx') {
+            $("#mainPage").attr("src", url + '&tips=fx');
+        } else if (tips == 'qms') {
+            $("#mainPage").attr("src", url + '&tips=qms');
+        }
+
+        getPerInfos(name);
+        hideMenu();
+        subMenu();
+        takeQuestion();
+        saveQuestion();
+
+    });
+
+    //项目管理树形
+    $(document).on("click", "#treeShape", function () {
+        getZNodes();
+        $("#mainPage").attr("src", "projectManagement.html");
+    });
+
+    $(document).on("click", "#projectList", function () {
+        zTreeObj = $.fn.zTree.init($("#permissionTree"), setting, null);
+        $("#mainPage").attr("src", "projectManagement.html?queryCriteria=1");
+    });
+
+    var zNodes = [];// 树节点数组
+    var setting = {
+        view: {
+            selectedMulti: false, // 设置是否能够同时选中多个节点
+            showIcon: false,      // 设置是否显示节点图标
+            showLine: true,      // 设置是否显示节点与节点之间的连线
+            showTitle: true     // 设置是否显示节点的title提示信息
+        },
+        data: {
+            simpleData: {
+                enable: true,   // 设置是否启用简单数据格式（zTree支持标准数据格式跟简单数据格式，上面例子中是标准数据格式）
+                idKey: "id",     // 设置启用简单数据格式时id对应的属性名称
+                pidKey: "pId"    // 设置启用简单数据格式时parentId对应的属性名称,ztree根据id及pid层级关系构建树结构
+            }
+        },
+        check: {
+            enable: false
+        },
+        callback: {
+            onClick: clickTree
+        }
+    };
+
+    var curLocation = "";//当前位置
+    function clickTree(event, treeId, treeNode) {
+        var treeObj = $.fn.zTree.getZTreeObj("permissionTree");
+
+        var nodes = treeObj.getSelectedNodes();
+        if (nodes.length > 0) {
+            var allNode = nodes[0]['id'];//获取当前选中节点
+            var node = nodes[0].getParentNode();
+            getParentNodes(node, allNode);
+        }
+        var nodeArrs = curLocation.split(">");
+        $("#mainPage").attr("src", "projectManagement.html?clickTreePath=" + treeNode.path + "&clickTreeId=" + curLocation + "&clickTreeLevel=" + treeNode.level);
+    }
+
+    function getZNodes() {
+        $.ajax({
+            url: getRootPath() + '/auth/getTree',
+            type: 'post',
+            async: false,
+            data: {},
+            success: function (data) {
+                zNodes = [];
+                // 注意数据获取
+                handleData(data);
+            }
+        });
+        console.log(zNodes);
+        zTreeObj = $.fn.zTree.init($("#permissionTree"), setting, zNodes);
+        fillter(zTreeObj);
+    }
+
+    function fillter(treeObj) {
+        //获得树形图对象
+        var nodeList = treeObj.getNodes();　　　　　　 //展开第一个根节点
+        for (var i = 0; i < nodeList.length; i++) { //设置节点展开第二级节点
+            treeObj.expandNode(nodeList[i], true, false, true);
+            // var nodespan = nodeList[i].children;
+            // for(var j = 0; j < nodespan.length; j++) { //设置节点展开第三级节点
+            // 	treeObj.expandNode(nodespan[j], true, false, true);
+            // }
+        }
+
+    }
+
+    function getParentNodes(node, allNode) {
+        if (node != null) {
+            allNode += ">" + node['id'];
+            var curNode = node.getParentNode();
+            getParentNodes(curNode, allNode);
+        } else {
+            //根节点
+            curLocation = allNode;
+        }
+    }
+
+    // 处理返回的树数据
+    function handleData(dataLise) {
+        if (null != dataLise && dataLise.length > 0) {
+            for (var i = 0; i < dataLise.length; i++) {
+                var dataPiece = dataLise[i];
+                zNodes.push({
+                    id: dataPiece.departmentId,
+                    pId: dataPiece.departmentParentId,
+                    name: dataPiece.departmentName,
+                    level: dataPiece.level,
+                    path: dataPiece.seq
+                });
+            }
+        }
+    }
+</script>
+</body>
+</html>

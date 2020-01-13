@@ -1,0 +1,121 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+	<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-select.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />   
+    <link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+	<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+    <style type="text/css">
+    .but1{
+    	float: right;
+	    width: 100px;
+	    height: 30px;
+	    background-color: #e41f2b;
+	    color: #ffffff;
+	    cursor: pointer;
+	    border: none;
+	    border-radius: 4px;
+	    font-size: 15px;
+	    margin-right: 0px;
+	    line-height: 30px;
+    }
+    .but1:hover{
+    	background-color: #ff0313;
+    }
+    .btn-default{
+    	height: 30px;
+    	line-height: 16px;
+    	border-radius: 0px;
+    }
+    .but2{
+    	width: 60px;
+    	text-decoration: underline;
+    	cursor: pointer;
+    }
+    #tableProject {
+		table-layout: fixed;		
+    }
+    #tableProject  td{
+		table-layout: fixed;
+		text-overflow:ellipsis;
+		overflow:hidden;
+		white-space:nowrap;
+    }
+    </style>
+</head>
+<body>
+	<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;width: 95%;">
+		<h4 class="modal-title"  style="display: inline; margin-right: 310px;">
+			PCB样本项目配置
+		</h4>
+		<button type="button" id="add_backBtn" data-dismiss="modal" style="float: right;border:1px #367FA9 solid; background-color: white; color: #367FA9; border-radius: 4px; width: 60px; height: 32px; margin-right: 15px;outline: none;">返回</button>
+		<button type="button" id="add_saveBtn"  style="float: right;border:1px #367FA9 solid; background-color: #367FA9; color: white; border-radius: 4px; width: 60px; height: 32px;outline: none;">保存</button>
+	</div>
+	<div class="modal-body" style="width: 95%;">			
+			<div  style="text-align:center;border: 0px #666 solid;margin-top:5px;">
+				
+				<a id="queryBtn" class="but1" style="margin-right: 0px;float: right;">查询</a>
+				<a  class="but2" style="margin-right: 30px;float: right;" >高级查询</a>
+				<div id="zrselect" style="display: none;">
+					<div class="col-sm-12" style="width:140px;float: right;padding-right: 10px;padding-left: 0px;text-align: left;">
+			        	<select  id="user_type8" name="user_type" title="请选择交付部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+						</select>
+					</div>
+					<div class="col-sm-12" style="width:140px;float: right;padding-right: 10px;padding-left: 0px;text-align: left;">
+				    	<select  id="user_type7" name="user_type" title="请选择事业部" class="selectpicker show-tick form-control" multiple data-live-search="false">
+						</select>
+					</div>
+					<div class="col-sm-12" style="width:140px;float: right;padding-right: 10px;padding-left: 0px;text-align: left;">
+		                <select  id="user_type6" name="user_type" title="请选择业务线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+						</select>
+					</div>
+					</div>
+					<div id="hwselect">
+					<div class="col-sm-12" style="width:140px;float: right;padding-right: 10px;padding-left: 0px;text-align: left;">
+				    	<select id="user_type5" name="user_type" title="请选择PDU/SPDT" class="selectpicker show-tick form-control" multiple data-live-search="false">
+						</select>
+					</div>
+					<div class="col-sm-12" style="width:140px;float: right;padding-right: 10px;padding-left: 0px;text-align: left;">
+			        	<select  id="user_type4" name="user_type" title="请选择子产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+						</select>
+					</div>
+					<div class="col-sm-12" style="width:140px;float: right;padding-right: 10px;padding-left: 0px;text-align: left;">
+						<select  id="user_type3" name="user_type" title="请选择华为产品线" class="selectpicker show-tick form-control" multiple data-live-search="false">
+						</select>
+					</div>
+					</div>
+					<div class="col-sm-12" style="width:90px;float: left;padding-left: 0px;padding-right: 10px;">
+			        	<select  id="zrOrhwselect" name="user_type" style="width: 90px;padding: 0px 12px;" class="btn dropdown-toggle bs-placeholder btn-default" title="中软 &华为" >
+							 <option value="0" selected>华为</option>
+							 <option value="1">中软</option>
+						</select>
+					</div>
+				</div>	
+		<div id="advancedQuery" style="text-align:center;border: 0px #666 solid;margin-top:5px;display: none;">     	
+            	<div style="height: 30px;margin-bottom: 20px;">
+            		<input name="projName" type="text" class="s3 form-control" placeholder="请输入项目名称" id="projName" style="width: 130px;float: left;margin-left: 0px;padding: 0px;height: 28px;"/>
+           			<input name="projMgmr" type="text" class="s3 form-control" placeholder="请输入项目经理" id="projMgmr" style="width: 110px;float: left;margin-left: 30px;padding: 0px;height: 28px;"/>   						
+					<div class="col-sm-12" style="width:95px;float: left;padding-left: 10px;margin-left: 30px;text-align: left;">
+			        	<select id="user_type2" name="user_type" title="请选择状态" class="selectpicker show-tick form-control" multiple data-live-search="false">
+							<option value="在行">在行</option>
+							<option value="关闭">关闭</option>
+						</select>
+					</div>					
+					<div class="col-sm-12" style="width:110px;z-index:999;float: left;padding-left: 5px;margin-left: 21px;text-align: left;">
+						<select id="user_type1" name="user_type" title="请选择地域" class="selectpicker show-tick form-control" multiple data-live-search="false">
+						</select>
+					</div>
+           		</div>
+         </div>     
+         <div style="width:100%; margin:10px auto 0 auto; background-color: #fafafa; ">
+         	<div style="display:block;width:100%;">
+            	<table id="tableProject" style="width:100%"  border="0" cellspacing="0" cellpadding="0">		                 
+			    </table>
+            </div> 
+        </div>	  	
+	</div>
+</body>
+</html>

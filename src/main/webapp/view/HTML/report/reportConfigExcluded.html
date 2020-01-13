@@ -1,0 +1,55 @@
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>报表裁剪</title>
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap.min.css" type="text/css"/>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../resources/js/comm/comm.js"></script>
+
+    <script type="text/javascript" src="../js/toastr.min.js"></script>
+    <link rel="stylesheet" href="../css/toastr.min.css" type="text/css"/>
+
+    <script type="text/javascript" src="reportConfigExcluded.js"></script>
+
+
+    <style type="text/css">
+        .row {
+            padding: 5px;
+        }
+
+        .row .description {
+            width: 300px;
+        }
+
+        .row .kpi-checkbox {
+            margin-right: 10px;
+        }
+
+        .excluded-label {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid cute-content" style="margin:10px;">
+    <form action="reportConfigExcluded.js>">
+        <div class="row">
+            <div class="pull-right">
+                <button id="btn_reset" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+                </button>
+                <button id="btn_save" type="button" class="btn btn-default">
+                    <span class="glyphicon glyphicon-save" aria-hidden="true"></span>保存
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+
+</html>

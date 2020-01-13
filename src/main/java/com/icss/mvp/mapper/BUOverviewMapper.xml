@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IBuOverviewDao">
+	<resultMap type="com.icss.mvp.entity.OrganizeMgmer" id="organize">
+		<result property="id" column="NODE_ID"/>
+		<result property="name" column="NODE_NAME"/>
+		<result property="level" column="LEVEL"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="creater" column="CREATOR"/>
+		<result property="updateDate" column="UPDATE_DATE"/>
+		<result property="updateUser" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<resultMap type="com.icss.mvp.entity.ProjectSummary" id="summary">
+		<result property="name" column="pdu"/>
+		<result property="addNum" column="addNum"/>
+		<result property="overNum" column="endNum"/>
+		<result property="fpNum" column="fpNum"/>
+		<result property="tmNum" column="tmNum"/>
+	</resultMap>
+	
+	<resultMap type="com.icss.mvp.entity.MonthSummary" id="monthSummary">
+		<result property="month" column="mon"/>
+		<result property="addNum" column="addNum"/>
+		<result property="overNum" column="endNum"/>
+		<result property="totalNum" column="totalNum"/>
+	</resultMap>
+	
+	<resultMap type="com.icss.mvp.entity.ProjectInfo" id="proj">
+		<result property="month" column="month"/>
+		<result property="no" column="no"/>
+		<result property="bu" column="bu"/>
+		<result property="du" column="pdu"/>
+	</resultMap>
+  	
+  	<select id="getBus"  parameterType="java.lang.String"  resultType="java.lang.String">
+  	select bu from project_info group by bu
+  	</select>
+  	<select id="getPus"  parameterType="java.lang.String"  resultType="java.lang.String">
+  		select a.node_name
+		from oranization_manager a, (select * from oranization_manager where node_name=#{bu} and parent_id is null)b
+		where a.parent_id = b.node_id
+		group by a.node_name
+  	</select>
+  	
+  	<select id="getProjCategory" resultType="com.icss.mvp.entity.ProjectInfo" parameterType="java.lang.String">
+  		select a.name, a.no, a.BU,a.PDU, DATE_FORMAT(a.start_date,'%Y-%m') as month
+		from project_info a
+		where bu = #{bu} and pdu = #{pdu}
+		order by month
+  	</select>
+
+	<select id="getBuOpts" resultMap="organize">
+		select NODE_ID, NODE_NAME, LEVEL, CREATE_DATE, CREATOR, UPDATE_DATE, UPDATE_USER 
+		from oranization_manager
+		where LEVEL = 0
+		group by NODE_NAME
+	</select>
+	
+	<select id="getProjectSummaries" parameterType = "java.lang.String" resultMap="summary">
+		  <![CDATA[
+		  select 
+	org.NODE_NAME as pdu,
+	count(case when DATE_FORMAT(pro.START_DATE, '%Y%M') = DATE_FORMAT(NOW(), '%Y%M') then 1 else null end ) as addNum,
+	count(case when DATE_FORMAT(pro.END_DATE, '%Y%M') = DATE_FORMAT(NOW(), '%Y%M') then 1 else null end ) as endNum,
+	count(case when pro.TYPE = 'FP' then 1 else null end ) as fpNum,
+	count(case when pro.TYPE = 'TM' then 1 else null end ) as tmNum
+from oranization_manager org
+LEFT JOIN project_info pro on pro.PDU = org.NODE_NAME
+	and (DATE_FORMAT(pro.START_DATE, '%Y%M') = DATE_FORMAT(NOW(), '%Y%M')
+	or DATE_FORMAT(pro.END_DATE, '%Y%M') = DATE_FORMAT(NOW(), '%Y%M'))
+where 
+	(select org1.NODE_NAME from oranization_manager org1 where org.PARENT_ID = org1.NODE_ID) = #{bu}
+group by org.NODE_NAME
+			]]>
+	</select>
+	
+	<sql id="union12Month">
+		UNION
+		SELECT '01' as mon,'0' as addNum
+		UNION
+		SELECT '02' as mon,'0' as addNum
+		UNION
+		SELECT '03' as mon,'0' as addNum
+		UNION
+		SELECT '04' as mon,'0' as addNum
+		UNION
+		SELECT '05' as mon,'0' as addNum
+		UNION
+		SELECT '06' as mon,'0' as addNum
+		UNION
+		SELECT '07' as mon,'0' as addNum
+		UNION
+		SELECT '08' as mon,'0' as addNum
+		UNION
+		SELECT '09' as mon,'0' as addNum
+		UNION
+		SELECT '10' as mon,'0' as addNum
+		UNION
+		SELECT '11' as mon,'0' as addNum
+		UNION
+		SELECT '12' as mon,'0' as addNum
+	</sql>
+	<select id="getMonthSummary"  parameterType = "java.lang.String" resultMap="monthSummary">
+	<![CDATA[
+	SELECT
+	SUBSTRING(mon.mon, 1,7) as mon,count(pro.NO) as totalNum,
+	count(case when DATE_FORMAT(pro.START_DATE, '%Y%M') = DATE_FORMAT(mon.mon, '%Y%M') then 1 else null end) as addNum,
+	count(case when DATE_FORMAT(pro.END_DATE, '%Y%M') = DATE_FORMAT(mon.mon, '%Y%M') then 1 else null end) as endNum
+from (
+select date_add(NOW(), interval -3 month) as mon
+union
+select date_add(NOW(), interval -2 month) as mon
+union
+select date_add(NOW(), interval -1 month) as mon
+union
+select date_add(NOW(), interval 0 month) as mon
+union
+select date_add(NOW(), interval 1 month) as mon
+union
+select date_add(NOW(), interval 2 month) as mon
+) as mon
+left join project_info pro on pro.BU = #{bu} 
+	and SUBSTRING(pro.START_DATE, 1,7) <= SUBSTRING(mon.mon, 1,7)
+	and SUBSTRING(pro.END_DATE, 1,7) >= SUBSTRING(mon.mon, 1,7)
+group by SUBSTRING(mon.mon, 1,7)
+ORDER BY SUBSTRING(mon.mon, 1,7)
+]]>
+	</select>
+	
+	<select id="getProjProductity" parameterType = "java.lang.String" resultType="com.icss.mvp.entity.ProjProductivity">
+			SELECT
+				ORM.NODE_NAME AS pdu,
+				AVG(CASE WHEN VAL.PARAMETER_ID =83 THEN IFNULL(VAL.VALUE,0) ELSE 0 END ) AS ydscl,
+				AVG(CASE WHEN VAL.PARAMETER_ID =84 THEN IFNULL(VAL.VALUE,0) ELSE 0 END ) AS e2escl,
+				AVG(CASE WHEN VAL.PARAMETER_ID =85 THEN IFNULL(VAL.VALUE,0) ELSE 0 END ) AS ddscl
+			FROM ORANIZATION_MANAGER ORM
+			LEFT JOIN PROJECT_INFO PRO ON PRO.PDU = ORM.NODE_NAME
+			LEFT JOIN PROJECT_PARAMETER_VALUE_NEW VAL ON VAL.NO = PRO.NO
+				AND VAL.PARAMETER_ID IN (83,84,85)
+				AND DATE_FORMAT(VAL.MONTH,'%Y%m') = DATE_FORMAT(NOW(),'%Y%m')
+			WHERE ORM.LEVEL = 1
+				AND EXISTS(
+					SELECT TMP.NODE_ID FROM ORANIZATION_MANAGER TMP WHERE TMP.NODE_ID=ORM.PARENT_ID
+						AND TMP.NODE_NAME = #{buName} AND TMP.LEVEL = 0
+				)
+			GROUP BY ORM.NODE_NAME
+	</select>
+	
+	<select id="getProjDetail" parameterType = "java.util.HashMap" resultType="com.icss.mvp.entity.MeasureInfo">
+		select
+		t1.no as NO,
+		t1.NAME as PROJECTNAME,
+		t2.NAME as PM,
+		t1.HWPDU as HWPDU,
+		t1.HWZPDU as HWZPDU,
+		t1.PDU_SPDT as PDUSPDT,
+		t1.BU as BU,
+		t1.PDU as PDU,
+		t1.DU as DU,
+		t1.AREA as AREA,
+		t1.TYPE as TYPE,
+		t1.PROJECT_STATE as PROJECTSTATE
+		from project_info t1
+		left join project_member t2 on t1.no = t2.no
+		where 1 = 1
+	    <if test="name!=null and name!=''">  
+	   		 AND t1.NAME like concat('%', #{name} ,'%')
+	    </if>
+	    <if test="pm!=null and pm!=''">  
+	   		 AND t2.NAME like concat('%',  #{pm} , '%')
+	    </if> 
+		<if test="area != null and area.size() != 0">
+			 AND t1.AREA IN (select area_name from tbl_area where 1=1 and area_code in
+			<foreach collection="area" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test="hwpdu != null and hwpdu.size() != 0">
+			 AND t1.HWPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=1 AND DEPT_ID IN
+			<foreach collection="hwpdu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" hwzpdu != null and hwzpdu.size() != 0">
+			 AND t1.HWZPDU IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=2 AND DEPT_ID IN
+			<foreach collection="hwzpdu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" pduSpdt != null and pduSpdt.size() != 0">
+			 AND t1.PDU_SPDT IN (SELECT DEPT_NAME FROM SYS_HWDEPT WHERE DEPT_LEVEL=3 AND DEPT_ID IN
+			<foreach collection="pduSpdt" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" bu != null and bu.size() != 0">
+			 AND t1.BU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=2 AND DEPT_ID IN
+			<foreach collection="bu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" pdu != null and pdu.size() != 0">
+			 AND t1.PDU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=3 AND DEPT_ID IN
+			<foreach collection="pdu" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" du != null and du.size() != 0">
+			 AND t1.DU IN (SELECT DEPT_NAME FROM OP_DEPARTMENT WHERE DEPT_LEVEL=4 AND DEPT_ID IN
+			<foreach collection="du" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+			)
+		</if>	
+		<if test=" projectState != null and projectState.size() != 0">
+			 AND t1.PROJECT_STATE IN
+			<foreach collection="projectState" item="item" separator="," open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		and t2.POSITION = 'PM'
+	</select>
+	
+<!-- 	<select id="getProjDetail" parameterType = "java.lang.String" resultType="com.icss.mvp.entity.MeasureInfo">
+		select month, pdu, area, type, no, projectName, pm, name, value
+		from(
+			SELECT
+				DATE_FORMAT(VAL.MONTH,'%Y-%m') AS MONTH,
+				PRO.PDU,PRO.AREA,PRO.TYPE,
+				PRO.NO,PRO.NAME as projectName,
+				(SELECT PROJECT_MEMBER.NAME FROM PROJECT_MEMBER WHERE PROJECT_MEMBER.NO = PRO.NO
+					AND PROJECT_MEMBER.POSITION = 'PM' LIMIT 1) AS PM,
+				INFO.NAME AS NAME,INFO.UNIT,MAX(VAL.VALUE) AS VALUE
+			FROM PROJECT_INFO PRO
+			LEFT JOIN PROJECT_PARAMETER_VALUE_NEW VAL ON VAL.NO = PRO.NO
+				AND VAL.PARAMETER_ID in (82,83,84,85,86,88,89,95,97,110)
+			LEFT JOIN PARAMETER_INFO INFO ON INFO.ID = VAL.PARAMETER_ID
+			
+			GROUP BY DATE_FORMAT(VAL.MONTH,'%Y%m'),PRO.PDU,PRO.AREA,PRO.TYPE,PRO.NO,PRO.NAME,INFO.NAME,INFO.UNIT
+		)b
+		where 1=1 
+		<if test="proj.month!=null and proj.month!=''">  
+	   		 AND month = #{proj.month}  
+	    </if>
+	   <if test="proj.pdu!=null and proj.pdu!=''">  
+	   		 AND PDU = #{proj.pdu}  
+	    </if>
+	    <if test="proj.area!=null and proj.area!=''">  
+	   		 AND AREA = #{proj.area}  
+	    </if>
+	     <if test="proj.type!=null and proj.type!=''">  
+	   		 AND TYPE = #{proj.type}  
+	    </if>
+	     <if test="proj.no!=null and proj.no!=''">  
+	   		 AND NO  like concat('%',  #{proj.no} , '%')
+	    </if>
+	    <if test="proj.name!=null and proj.name!=''">  
+	   		 AND projectName like concat('%', #{proj.name} ,'%')
+	    </if>
+	    <if test="proj.pm!=null and proj.pm!=''">  
+	   		 AND pm  like concat('%',  #{proj.pm} , '%')
+	    </if> 
+		
+	</select>
+ -->	
+	<select id="getProjIndicator"  parameterType = "java.lang.String" resultType="com.icss.mvp.entity.ProjProductivity">
+	<![CDATA[
+				SELECT
+					PRO.NO,PRO.NAME,IFNULL(VAL.VALUE,0) AS VALUE
+				FROM PROJECT_INFO PRO
+				LEFT JOIN PROJECT_PARAMETER_VALUE_NEW VAL ON VAL.NO = PRO.NO
+					AND DATE_FORMAT(VAL.MONTH,'%Y%m') = DATE_FORMAT(NOW(),'%Y%m')
+					AND EXISTS(
+						SELECT * FROM PARAMETER_INFO INFO 
+						WHERE INFO.NAME = #{col} AND INFO.ID = VAL.PARAMETER_ID
+					)
+				WHERE PRO.BU = #{buName}
+					AND SUBSTRING(PRO.START_DATE, 1,7) <= SUBSTRING(NOW(), 1,7)
+					AND SUBSTRING(PRO.END_DATE, 1,7) >= SUBSTRING(NOW(), 1,7)
+				ORDER BY IFNULL(VAL.VALUE,0) DESC
+				limit 5
+				]]>
+	</select>
+	
+	<select id="getSpecProjChartData" parameterType = "java.lang.String" resultType="com.icss.mvp.entity.ProjProductivity">
+		SELECT
+			DATE_FORMAT(VAL.MONTH,'%Y-%m') AS MONTH,
+			MAX(CASE WHEN VAL.PARAMETER_ID =83 THEN IFNULL(VAL.VALUE,0) ELSE 0 END ) AS ydscl,
+			MAX(CASE WHEN VAL.PARAMETER_ID =84 THEN IFNULL(VAL.VALUE,0) ELSE 0 END ) AS e2escl,
+			MAX(CASE WHEN VAL.PARAMETER_ID =85 THEN IFNULL(VAL.VALUE,0) ELSE 0 END ) AS ddscl,
+			MAX(CASE WHEN VAL.PARAMETER_ID =137 THEN IFNULL(VAL.VALUE,0) ELSE 0 END ) AS wtdwclxl,
+			MAX(CASE WHEN VAL.PARAMETER_ID =105 THEN IFNULL(VAL.VALUE,0) ELSE 0 END ) AS dmreviewqxm
+		FROM PROJECT_INFO PRO
+		LEFT JOIN PROJECT_PARAMETER_VALUE_NEW VAL ON VAL.NO = PRO.NO
+			AND VAL.PARAMETER_ID IN (83,84,85,137,105)
+		WHERE
+			PRO.NO = #{no}
+		GROUP BY DATE_FORMAT(VAL.MONTH,'%Y-%m')
+	</select>
+	
+	<select id="getMeasureResult" parameterType="java.lang.String" resultType="com.icss.mvp.entity.MeasureInfo">
+		<!-- SELECT INFO.NAME,PRO.UNIT,DATE_FORMAT(VAL.MONTH,'%Y-%m') AS MONTH,MAX(VAL.VALUE) AS VALUE
+		FROM CODE_MASTER_INFO CODE
+		INNER JOIN PARAMETER_INFO INFO ON INFO.SMALL_TYPE_VALUE = CODE.VALUE
+		INNER JOIN PROJECT_PARAMETER PRO ON PRO.PARAMETER_ID = INFO.ID
+		LEFT JOIN PROJECT_PARAMETER_VALUE_NEW VAL ON VAL.NO = PRO.NO
+			AND VAL.PARAMETER_ID = PRO.PARAMETER_ID
+		WHERE 
+			CODE.CODEKEY = 'SmallType'
+			AND CODE.NAME = #{smallType}
+			AND SUBSTR(CODE.VALUE,1,1) = 
+				(SELECT CODE2.VALUE FROM CODE_MASTER_INFO CODE2 WHERE CODE2.CODEKEY = 'BigType' AND CODE2.NAME = #{bigType} )
+			AND PRO.NO = #{projNo}
+			AND PRO.IS_DISPLAY = 1
+		GROUP BY INFO.NAME,PRO.UNIT,DATE_FORMAT(VAL.MONTH,'%Y-%m') -->
+		SELECT INFO.NAME,PRO.UNIT,DATE_FORMAT(VAL.MONTH,'%Y-%m') AS MONTH,MAX(VAL.VALUE) AS VALUE
+		FROM v_dictionary CODE
+		INNER JOIN PARAMETER_INFO INFO ON INFO.SMALL_TYPE_VALUE = CODE.value
+		INNER JOIN PROJECT_PARAMETER PRO ON PRO.PARAMETER_ID = INFO.ID
+		LEFT JOIN PROJECT_PARAMETER_VALUE_NEW VAL ON VAL.NO = PRO.NO
+			AND VAL.PARAMETER_ID = PRO.PARAMETER_ID
+		WHERE 
+			CODE.code = 'SmallType'
+			AND CODE.`key` = #{smallType}
+			AND SUBSTR(CODE.value,1,1) = 
+				(SELECT CODE2.value FROM v_dictionary CODE2 WHERE CODE2.code = 'BigType' AND CODE2.`key` = #{bigType})
+			AND PRO.NO = #{projNo}
+			AND PRO.IS_DISPLAY = 1
+		GROUP BY INFO.NAME,PRO.UNIT,DATE_FORMAT(VAL.MONTH,'%Y-%m')
+	</select>
+	
+	<select id="getProjOverview" parameterType="java.lang.String" resultType="com.icss.mvp.entity.MeasureInfo">
+		SELECT
+			DATE_FORMAT(VAL.MONTH,'%Y-%m') AS MONTH,
+			INFO.NAME AS NAME,PAR.UNIT AS UNIT,	MAX(VAL.VALUE) AS VALUE
+		FROM PROJECT_INFO PRO
+		LEFT JOIN PROJECT_PARAMETER_VALUE_NEW VAL ON VAL.NO = PRO.NO
+			AND VAL.PARAMETER_ID in (82,83,84,85,86,88,89,95,97,110)
+		LEFT JOIN PROJECT_PARAMETER PAR ON PAR.NO = PRO.NO
+			AND PAR.PARAMETER_ID = VAL.PARAMETER_ID
+		LEFT JOIN PARAMETER_INFO INFO ON INFO.ID = VAL.PARAMETER_ID
+		WHERE PRO.NO = #{no}
+		GROUP BY DATE_FORMAT(VAL.MONTH,'%Y-%m'),INFO.NAME,PAR.UNIT
+	</select>
+	
+	<select id="getGridTitles" parameterType="java.lang.String" resultType="com.icss.mvp.entity.MeasureInfo" >
+	SELECT
+		INFO.NAME AS NAME,INFO.UNIT AS UNIT
+	FROM 
+		PARAMETER_INFO INFO
+	WHERE
+		INFO.ID in (82)
+	</select>
+	
+	<select id="getAreas" resultType="java.lang.String">
+	<![CDATA[
+		SELECT AREA_NAME FROM TBL_AREA
+	]]>
+	</select>
+	
+	<select id="getZhongruanYWX" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT OPD.DEPT_ID AS YWXID,OPD.DEPT_NAME AS YWXNAME FROM OP_DEPARTMENT OPD WHERE OPD.DEPT_LEVEL=2
+	]]>
+	</select>
+	
+	<select id="getZhongruanSYB" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT OPD.DEPT_ID AS SYBID,OPD.DEPT_NAME AS SYBNAME FROM OP_DEPARTMENT OPD WHERE 1=1 
+	]]>
+	<if test="ywxval.size() != 0">
+		AND OPD.DEPT_LEVEL=3 AND OPD.PARENT_DEPT_ID IN 
+		<foreach collection="ywxval" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+
+	<select id="getZhongruanJFB" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT OPD.DEPT_ID AS JFBID,OPD.DEPT_NAME AS JFBNAME FROM OP_DEPARTMENT OPD WHERE 1=1 
+	]]>
+	<if test="sybval.size() != 0">
+		AND OPD.DEPT_LEVEL=4 AND OPD.PARENT_DEPT_ID IN 
+		<foreach collection="sybval" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+
+	<select id="getHWCPX" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT HWD.DEPT_ID AS HWCPXID,HWD.DEPT_NAME AS HWCPXNAME FROM SYS_HWDEPT HWD WHERE HWD.DEPT_LEVEL=1
+	]]>
+	</select>
+
+	<select id="getZCPX" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT HWD.DEPT_ID AS ZCPXID,HWD.DEPT_NAME AS ZCPXNAME FROM SYS_HWDEPT HWD WHERE 1=1 
+	]]>
+	<if test="hwcpxval.size() != 0">
+		AND HWD.DEPT_LEVEL=2 AND HWD.PARENT_ID IN 
+		<foreach collection="hwcpxval" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+
+	<select id="getPDUorSPDT" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	<![CDATA[
+		SELECT HWD.DEPT_ID AS PDUID,HWD.DEPT_NAME AS PDUNAME FROM SYS_HWDEPT HWD WHERE 1=1 
+	]]>
+	<if test="zcpxval.size() != 0">
+		AND HWD.DEPT_LEVEL=3 AND HWD.PARENT_ID IN 
+		<foreach collection="zcpxval" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+	</if>	
+	</select>
+
+	<select id="getAuthOpDepartment" parameterType="Map" resultType="java.lang.String">
+		select t2.role_auth from sys_user t1 left join sys_role t2 on t1.role_id = t2.role_id
+		where 1 = 1 and t1.USERID = #{username}
+	</select>
+
+	<select id="getHwdeptBylevel" resultType="java.util.HashMap">
+		select * from v_dept_triple_hw a
+		where  a.DEPT_LEVEL = #{level}
+		<if test="list != null and list.size() != 0">
+			AND a.branch_id in
+			<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+				#{id}
+			</foreach>
+		</if>
+	</select>
+	
+	<select id="getBm" resultType="java.lang.String">
+		SELECT
+		<choose>
+			<when test='"0" == client'>
+				t1.HWZPDUID
+			</when>
+			<otherwise>
+				t1.PDUID
+			</otherwise>
+		</choose>
+		FROM `project_info` t1
+		WHERE t1.PROJECT_STATE = '在行'
+		<if test=' "0" == client and (hwpduId == null or hwpduId.size() == 0)'>
+			AND t1.HWPDUID IN(1012, 1015)
+		</if>
+		<if test="(hwpduId != null and hwpduId.size() != 0) or 1 == client">
+			<include refid="sql_where"/>
+		</if>
+		<choose>
+			<when test='"0" == client'>
+				AND t1.`HWZPDUID` IS NOT NULL
+				GROUP BY  t1.HWZPDUID
+			</when>
+			<otherwise>
+				AND t1.`PDUID` IS NOT NULL
+				GROUP BY  t1.PDUID
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getDoubleCycleNO" resultType="java.lang.String">
+		SELECT t1.NO FROM `project_info` t1
+		WHERE t1.PROJECT_STATE = '在行'
+		<if test="0 == client">
+			AND t1.HWZPDUID=#{bm}
+		</if>
+		<if test="1 == client">
+			AND t1.PDUID=#{bm}
+		</if>
+	</select>
+	
+	<sql id="sql_where">
+        <if test="areas != null and areas.size() != 0">
+            AND `t1`.AREAID in
+            <foreach collection="areas" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="status != null and status.size() != 0">
+            AND `t1`.PROJECT_STATE IN
+            <foreach collection="status" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwpduId != null and hwpduId.size() != 0">
+            AND `t1`.`HWPDUID` IN
+            <foreach collection="hwpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="hwzpduId != null and hwzpduId.size() != 0">
+            AND `t1`.`HWZPDUID` IN
+            <foreach collection="hwzpduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduSpdtId != null and pduSpdtId.size() != 0">
+            AND `t1`.`PDU_SPDTID` IN
+            <foreach collection="pduSpdtId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="buId != null and buId.size() != 0">
+            AND `t1`.`BUID` IN
+            <foreach collection="buId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="pduId != null and pduId.size() != 0">
+            AND `t1`.`PDUID` IN
+            <foreach collection="pduId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="duId != null and duId.size() != 0">
+            AND `t1`.`DUID` IN
+            <foreach collection="duId" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+    </sql>
+</mapper>

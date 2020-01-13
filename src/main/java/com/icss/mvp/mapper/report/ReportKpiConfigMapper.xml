@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.report.IReportKpiConfigDao">
+
+    <resultMap id="reportKpiConfigMap" type="com.icss.mvp.entity.report.ReportKpiConfig">
+        <id column="id"  property="id" />
+        <result column="data_type"  property="dataType" />
+        <result column="expression"  property="expression" />
+        <result column="description"  property="description" />
+        <result column="kpi_type"  property="kpiType" />
+        <result column="kpi_name"  property="kpiName" />
+        <result column="format_pattern"  property="formatPattern" />
+        <result column="formatter"  property="formatter" />
+        <result column="manage_group"  property="manageGroup" />
+        <result column="light_up_rule"  property="lightUpRule" />
+        <result column="max_value"  property="maxValue" />
+        <result column="min_value"  property="minValue" />
+        <result column="read_only"  property="readOnly" />
+        <result column="target_value"  property="targetValue" />
+        <result column="width"  property="width" />
+    </resultMap>
+
+    <!-- 继承上面的reportKpiConfigMap -->
+    <resultMap type="com.icss.mvp.entity.report.MetricsItemConfig" id="kpiConfigMetricsItemResultMap" extends="reportKpiConfigMap">
+        <!-- roleList相关属性 -->
+        <collection property="metricsItemConfigs" resultMap="com.icss.mvp.dao.report.IReportKpiConfigDao.reportKpiConfigMap" columnPrefix="metric_">
+        </collection>
+    </resultMap>
+
+    <resultMap type="com.icss.mvp.entity.report.MetricsItemConfig" id="metricsItemConfig">
+        <result property="id" column="id"/>
+        <result property="field_alias" column="fieldAlias"/>
+        <result property="dataType" column="data_type"/>
+        <result property="fieldName" column="field_name"/>
+        <result property="idx" column="idx"/>
+        <result property="readOnly" column="read_only"/>
+        <result property="metricsTableConfigId" column="metrics_table_config_id"/>
+    </resultMap>
+
+    <select id="getKpiConfigsById" resultMap="kpiConfigMetricsItemResultMap" >
+        select k.id,k.data_type,k.description,k.expression,k.formatter,k.format_pattern,
+               k.group,k.kpi_name,k.light_up_rule,k.max_value,k.min_value,k.read_only,k.target_value,k.type,k.width,
+               m.id as metric_id,m.field_alias as metric_alias,m.data_type as metric_data_type,m.field_name as metric_field_name,
+               m.idx as metric_idx,m.metrics_table_config_id,m.read_only as metric_read_only
+             from report_kpi_config as k,
+                report_kpi_config_ref_mictrics_item_config as r,
+                metrics_item_config as m
+            where k.id = r.kpi_config_id and m.id = r.mictrics_item_config_id
+            and k.id = #{kpiConfigId}
+    </select>
+
+    <select id="getKpiConfigById" resultMap="reportKpiConfigMap" >
+        select k.id,k.data_type,k.description,k.expression,k.formatter,k.format_pattern,
+               k.manage_group,k.kpi_name,k.light_up_rule,k.max_value,k.min_value,k.read_only,k.target_value,k.kpi_type,k.width
+             from report_kpi_config as k
+            where  k.id = #{id}
+    </select>
+
+    <select id="getKpiConfigId" resultType="Integer">
+        select max(id) from report_kpi_config
+    </select>
+
+    <insert id="updateMestricItemConfigs" parameterType="com.icss.mvp.entity.report.ReportKpiConfig">
+        delete  from report_kpi_config_ref_mictrics_item_config where report_kpi_config_id = #{id};
+        <foreach collection ="metricsItemConfigs" item="vo" separator =";">
+            insert report_kpi_config_ref_mictrics_item_config
+            (report_kpi_config_id,
+            mictrics_item_config_id)
+            values
+            (#{id}, #{vo.id})
+        </foreach >
+    </insert>
+
+    <select id="getMetricsItemConfigs" resultMap="metricsItemConfig" >
+        <choose>
+            <when test="id!=null and id!=''">
+                SELECT it.id,it.field_alias,it.data_type,it.field_name,it.idx,it.read_only,it.metrics_table_config_id
+                from  metrics_item_config as it where not exists
+                (SELECT mictrics_item_config_id from report_kpi_config_ref_mictrics_item_config where kpi_config_id = #{id} and it.id=mictrics_item_config_id)
+            </when>
+            <otherwise>
+                SELECT it.id,it.field_alias,it.data_type,it.field_name,it.idx,it.read_only,it.metrics_table_config_id
+                from  metrics_item_config as it
+            </otherwise>
+        </choose>
+    </select>
+
+    <delete id="delKpiConfigs">
+           delete k,m  from report_kpi_config as k
+           left join report_kpi_config_ref_mictrics_item_config as m on m.report_kpi_config_id = k.id
+           where k.id in
+           <foreach collection="reportKpiConfigIds" item="id" open="(" close=")"  separator=",">
+                #{id}
+           </foreach>
+    </delete>
+
+    <select id="queryKpiConfigList" parameterType="java.lang.String" resultMap="reportKpiConfigMap">
+       select * from report_kpi_config
+        <if test="null != name and '' !=name">
+            where kpi_name like concat('%', #{name} ,'%')
+        </if>
+    </select>
+</mapper>

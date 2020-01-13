@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>可视化度量平台</title>
+    <link rel="stylesheet" href="../../resources/easyui/themes/default/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+    <script type="text/javascript" src="js/echarts.common.min.js"></script>
+    <script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="js/guocheng.js"></script>
+ <style>
+	.bigImageFont{
+	    width: 20%;
+    	float: left;
+    	line-height: 24px;
+    	font-family: Microsoft Yahei;
+    }
+	</style>
+</head>
+<body>
+    <table width="99%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+            	<!-- 新增问题 -->
+                   <div style="margin: 10px;border-color: #ddd;border-width: 1px;border-radius: 3px;border-style: solid;">
+                    	<div style="height: 45px;border-bottom: 5px #ddd solid;">
+                    		<div style="border-right: 1px #367FA9 solid;height: 40px;width: 98px;float: left;">
+                    			<span style="float: left;font-size: 16px;margin: 8px 10px 8px 20px;">新增问题</span>
+                    		</div>
+                    	</div>
+                    	<div style="display: flow-root;margin-top: 10px;">
+	                    	<table id="problemNew" class="tablenew" style="font-size: 14px;width:100%;text-align: center;float: left;border-spacing: 0px;">
+		                    	<div style="height: 230px; width: 99%">
+			                    	<div class="bigImageFont"><img src="images/zhimingwenti.png" /><div id="critNum" style="width: 50%;font-size:80px; position: relative;top:-85px;left: 20px;color: white;text-align: center; ">10</div></div>
+			                    	<div class="bigImageFont"><img src="images/yanzhongwenti.png" /><div id="majNum" style="width: 50%;font-size:80px; position: relative;top:-85px;left: 20px;color: white;text-align: center; ">2</div></div>
+			                    	<div class="bigImageFont"><img src="images/yibanwenti.png" /><div id="minNum" style="width: 50%;font-size:80px; position: relative;top:-85px;left: 20px;color: white;text-align: center; ">100</div></div>
+			                    	<div class="bigImageFont"><img src="images/tishiwenti.png" /><div id="sugNum" style="width: 50%;font-size:80px; position: relative;top:-85px;left: 20px;color: white;text-align: center; ">56</div></div>
+			                    	<div class="bigImageFont"><img src="images/yiliudi.png" /><div id="dtsLeaveDINum" style="width: 50%;font-size:70px; position: relative;top:-85px;left: 20px;color: white;text-align: center; ">99</div></div>
+	                    		</div>
+	                    	</table>
+                    	</div>
+                    </div>
+            	
+                <div >
+                    <div class="chart-title">
+                        <span>代码质量</span></div>
+                        <div style="padding-bottom:20px;display:block;">
+                            <div id="codeQualityGrid"></div>
+                        </div>
+                    <div class="selDiv">
+                  		      指标：<select id="quality-sel">
+                        </select>
+                    </div>
+                    <div class="chartDiv">
+                        <div id="Div1" style="width: 100%; height: 330px;">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-title">
+                        <span>迭代质量</span></div>
+                          <div style="padding-bottom:20px;display:block;">
+                            <div id="iterationQualityGird"></div>
+                        </div>
+                    <div class="selDiv">
+                        	指标：<select id="interation-sel">
+                        </select>
+                    </div>
+                    <div class="chartDiv">
+                        <div id="Div2" style="width: 100%; height: 330px;">
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 49.5%; float: left;">
+                    <div >
+                        <div class="chart-title">
+                            <span>测试质量</span></div>
+                            <div style="padding-bottom:20px;display:block;">
+                                <div id="testQualityGird"></div>
+                            </div>
+                        <div class="selDiv">
+                       	     指标：<select id='test-quality-sel'>
+                            </select>
+                        </div>
+                        <div class="chartDiv">
+                            <div id="Div3" style="width: 100%; height: 330px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 49.5%; float: right;">
+                    <div>
+                        <div class="chart-title">
+                            <span>资料质量</span></div>
+                             <div style="padding-bottom:20px;display:block;">
+                                <div id="docQualityGird"></div>
+                            </div>
+                        <div class="selDiv">
+                    	        指标：<select id='doc-quality-sel'>
+                            </select>
+                        </div>
+                        <div class="chartDiv">
+                            <div id="Div4" style="width: 100%; height: 330px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+
+        // 基于准备好的dom，初始化echarts实例
+        var myChart1 = echarts.init(document.getElementById('Div1'));
+        var myChart2 = echarts.init(document.getElementById('Div2'));
+        var myChart3 = echarts.init(document.getElementById('Div3'));
+        var myChart4 = echarts.init(document.getElementById('Div4'));
+
+        // 指定图表的配置项和数据
+        var option1 = {
+            tooltip: {},
+            legend: {
+                data: []
+            },
+            xAxis: {
+                data: []
+            },
+            yAxis: {},
+            series: [{
+                name: '',
+                type: 'bar',
+                data: []
+            }
+            ]
+        };
+        myChart1.setOption(option1);
+        myChart2.setOption(option1);
+        myChart3.setOption(option1);
+        myChart4.setOption(option1);
+    </script>
+</body>
+</html>

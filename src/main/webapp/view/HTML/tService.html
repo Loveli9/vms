@@ -1,0 +1,347 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+<script src="../../resources/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+ <script type="text/javascript" src="../../resources/jquery/jquery.form.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<script type="text/javascript" src="js/tService.js"></script>
+<style>
+	    	.back:hover{cursor: pointer;}
+	    	.fixed-table-toolbar .btn-group>.btn-group:last-child>.btn {
+			    border-top-right-radius: 0px;
+			    border-bottom-right-radius: 0px;
+			}
+			label{width:100px;}
+			.popup_de{
+				background-color:rgba(0,0,0,0.3);
+				width:100%;
+				height: 100%;
+				position:fixed;
+				z-index:999;
+				top:0;
+				left:0;
+				display:none;
+			}
+			.bbox{
+				display: -webkit-box;   /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+			    display: -moz-box;      /* 老版本语法: Firefox (buggy) */
+			    display: -ms-flexbox;   /* 混合版本语法: IE 10 */   
+				display: -webkit-flex;  /* 新版本语法: Chrome 21+ */
+				display: -moz-flex;
+			    display: flex;          /* 新版本语法: Opera 12.1, Firefox 22+ */
+			}
+			.bbox.xycenter{
+				-moz-box-pack: center; /*Firefox*/
+			    -webkit-box-pack: center; /*Safari,Opera,Chrome*/
+			    box-pack: center;
+			    -moz-justify-content: center;
+			    -webkit-justify-content: center;
+			    justify-content: center;
+				-moz-box-align: center; /*Firefox*/
+			    -webkit-box-align:center; /*Safari,Opera,Chrome*/
+			    box-align: center;
+				-moz-align-items: center;
+			    -webkit-align-items: center;
+				align-items:center;
+			}
+			.popup_de .popup_box{
+				width:300px;
+				height:150px;
+				font-family: '微软雅黑';
+				background-color: #fff;
+				border-radius:5px;
+				color:#333;
+			}
+			.popup_de .popup_btn{
+				display: inline-block;
+				width:100px;
+				height:30px;
+				border-radius: 3px;
+				border:1px solid #1ab394;
+				font-size:15px;
+				text-align: center;
+				line-height: 30px;
+				margin-right:15px;
+				cursor: pointer;
+			}
+			.popup_de .show_msg{
+				display: block;
+				width:100%;
+				text-align: center;
+				font-size:18px;
+				margin-top:40px;
+				margin-bottom: 20px;
+				padding:10px;
+			}
+			.popup_de .popup_close{
+				width:30px;
+				height:30px;
+				font-size:25px;
+				text-align: center;
+				display: inline-block;
+		        cursor:pointer;
+		        float: right;
+		        border-top-right-radius: 5px;
+				line-height:30px;
+			}
+			.popup_de .popup_close:hover{
+				background-color: #1ab394;
+				color:#fff;
+			}
+			.popup_de .btn_submit{
+				background-color: #1ab394;
+				color:#fff;
+			}
+			.popup_de .btn_box{
+				text-align: center;
+			}
+			.tableBody{
+				padding-top: 50px;
+			}
+			.breadcrumb {
+		    background-color: #fff;
+		    margin-left: 20px;
+		    margin-right: 20px;
+		    margin-bottom: 0px;
+		    padding: 8px 0px;
+		}
+.radio{
+    display: inline-block;
+    position: relative;
+    line-height: 18px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+.radio input{
+    display: none;
+}
+.radio .radio-bg{
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+    margin-right: 5px;
+    padding: 0;
+    background-color: #45bcb8;
+    border-radius: 100%;
+    vertical-align: top;
+    box-shadow: 0 1px 15px rgba(0, 0, 0, 0.1) inset, 0 1px 4px rgba(0, 0, 0, 0.1) inset, 1px -1px 2px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.radio .radio-on{
+    display: none;
+    margin-top: 7px;
+}
+.radio input:checked + span.radio-on{
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    border-radius: 100%;
+    background: #FFFFFF;
+    top: 4px;
+    left: 4px;
+    box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.3), 0 0 1px rgba(255, 255, 255, 0.4) inset;
+    background-image: linear-gradient(#ffffff 0, #e7e7e7 100%);
+    transform: scale(0, 0);
+    transition: all 0.2s ease;
+    transform: scale(1, 1);
+    display: inline-block;
+}
+ 
+  .table {table-layout:fixed;}   
+
+ .table tr td{ 		
+	 overflow: hidden; 
+     text-overflow:ellipsis;  
+     white-space: nowrap; 
+	}
+	.fixed-table-toolbar .columns label{
+		padding: 1px 0px 0px 11px;
+	}
+	.myTab{
+		padding-left: 20px;
+		padding-right: 20px;
+	}
+	.hover{
+		background-color: red;
+	}
+	.popover-content{
+	    height: 240px;
+	    overflow: scroll;
+	}
+	.fixed-table-container{
+	    background-color: #fff;
+	}
+</style>
+<script type="text/javascript">
+ $(function(){
+	//新增
+	$("#planStartTime").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+        $("#planStartTime").datetimepicker("setEndDate",$("#planEndTime").val());
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#planStartTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#planStartTime'));
+    });
+	
+    $("#planEndTime").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+    	$("#planEndTime").val('');
+        $("#planEndTime").datetimepicker("setStartDate",$("#planStartTime").val());
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#planEndTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#planEndTime'));
+    });
+	
+    
+    
+    //编辑
+    $("#editPlanStartTime").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+        $("#editPlanStartTime").datetimepicker("setEndDate",$("#editPlanEndTime").val());
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#editPlanStartTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#editPlanStartTime'));
+    });
+	
+    $("#editPlanEndTime").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+        $("#editPlanEndTime").datetimepicker("setStartDate",$("#editPlanStartTime").val());
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#editPlanEndTime'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#editPlanEndTime'));
+    });
+}); 
+</script>
+</head>
+<body class="mvp-body">
+   <div class="myTab">
+		<!-- <div class="panel panel-default" style="margin-bottom: 0px;"> -->
+		<div>
+			<!-- <div class="panel-heading" style="padding: 5px 15px;">需求信息列表</div> -->
+			<div style="margin-right: 20px;">
+				<div id="query-form" class=" pull-left" style="position: relative;top: 10px;width:600px;">
+					<div class="col-sm-3" style="padding-left: 0px;padding-right: 2px">
+						<input type="text" class="form-control" name="topic"
+							id="topic"placeholder="请输入服务名" />
+					</div>
+					
+					<div class="btn-group">
+						<button id="search_btn" type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+						</button>
+						<button id="clear_btn" type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+						</button>
+					</div>
+				</div>
+
+				<div class="btn-group" id="toolbar">
+					<button id="btn_refresh" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>刷新
+					</button>
+					<button id="btn_add" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					</button>
+					<button id="btn_delete" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					</button>
+				</div>
+			</div>
+			<table id="mytab" class="table text-nowrap"></table>
+		</div>
+	</div>
+        
+        <!-- 新增页面 -->
+		<div class="modal fade" id="iteAddPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
+		data-backdrop="static">
+			<div class="modal-dialog">
+			<div class="modal-content" style="top: 60px;width:800px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						新增服务
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="addForm" method="post" class="form-horizontal">
+						<input style="display: none" type="text" class="form-control" name="serviceId" id="serviceId"	/>
+						<input style="display: none" type="text" class="form-control" name="projectId" id="projectId"	/>
+		                   <div class="form-group">
+		                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>服务名称</label>
+		                        <div class="col-sm-10">
+		                            <input type="text" class="form-control" name="name" id="topic" placeholder="请输入服务名称"/>
+		                        </div>
+		                    </div>
+                        
+	                    <div class="form-group" style="padding-left: 150px">
+	                        <div class="col-sm-2 col-sm-offset-2">
+	                            <button type="button" class="btn btn-primary btn-block"  id="add_saveBtn">保存</button>
+	                        </div>
+	                        <div class="col-sm-2 col-sm-offset-1">
+	                            <button type="button" class="btn btn-default btn-block"  id="add_backBtn">返回</button>
+	                        </div>
+	                    </div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

@@ -1,0 +1,2510 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ProjectReportDao">
+	<resultMap id="MeasureValueMap"
+		type="com.icss.mvp.entity.MeasureValue">
+		<result property="title" column="title" />
+		<result property="name" column="name" />
+		<result property="month" column="month" />
+		<result property="value" column="value" />
+	</resultMap>
+
+	<resultMap id="ProjectAssessInfoMap"
+		type="com.icss.mvp.entity.ProjectAssessInfo">
+		<result property="name" column="NAME" />
+		<result property="hwzpdu" column="HWZPDU" />
+		<result property="pduSpdt" column="PDU_SPDT" />
+		<result property="du" column="DU" />
+		<result property="pdu" column="PDU" />
+		<result property="area" column="AREA" />
+		<result property="startDate" column="START_DATE" />
+		<result property="endDate" column="END_DATE" />
+		<result property="pm" column="PM" />
+		<result property="no" column="pno" />
+		<result property="projectCycle" column="project_cycle" />
+		<result property="shaftStability" column="shaft_stability" />
+		<result property="timelinessDelivery"
+			column="timeliness_delivery" />
+		<result property="deliveryQuality" column="delivery_quality" />
+		<result property="acceptanceQuality"
+			column="acceptance_quality" />
+		<result property="blackEvent" column="black_event" />
+		<result property="totalPoints" column="total_points" />
+		<result property="question" column="question" />
+		<result property="singleAnalysis" column="single_analysis" />
+		<result property="imprMeasure" column="impr_measure" />
+		<result property="progressDesc" column="progress_desc" />
+		<result property="state" column="state" />
+		<result property="finishTime" column="finish_time" />
+		<result property="actualFinishTime" column="actual_finish_time" />
+		<result property="personLiable" column="person_liable" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="is361" column="is_361" />
+		<result property="createTime" column="create_time" />
+		<result property="modifyTime" column="modify_time" />
+		<result property="version" column="version" />
+		<result property="iteId" column="ite_id" />
+	</resultMap>
+	<resultMap id="ProjectCommentsInfoMap"
+		type="com.icss.mvp.entity.ProjectCommentsInfo">
+		<result property="name" column="NAME" />
+		<result property="du" column="DU" />
+		<result property="pduSpdt" column="PDU_SPDT" />
+		<result property="area" column="AREA" />
+		<result property="startDate" column="START_DATE"/>
+		<result property="endDate" column="END_DATE" />
+		<result property="pm" column="PM" />
+		<result property="no" column="pno" />
+		<result property="open" column="OPEN" />
+		<result property="closed" column="closed" />
+		<result property="delay" column="delay" />
+		<result property="added" column="added" />
+		<result property="sum" column="num" />
+		<result property="assessment" column="assessment" />
+		<result property="aar" column="aar" />
+		<result property="audit" column="audit" />
+		<result property="quality" column="quality" />
+		<result property="is361" column="is_361" />
+		<result property="imprMeasure" column="impr_measure" />
+	</resultMap>
+	<resultMap id="QualityMonthlyReportMap"
+		type="com.icss.mvp.entity.QualityMonthlyReport">
+		<result property="name" column="NAME" />
+		<result property="hwzpdu" column="HWZPDU" />
+		<result property="pduSpdt" column="pduSpdt" />
+		<result property="du" column="DU" />
+		<result property="pdu" column="PDU" />
+		<result property="area" column="AREA" />
+		<result property="projectState" column="PROJECT_STATE" />
+		<result property="startDate" column="START_DATE" />
+		<result property="endDate" column="END_DATE" />
+		<result property="pm" column="PM" />
+		<result property="projectType" column="projectType" />
+		<result property="no" column="pno" />
+		<result property="peopleLamp" column="people_lamp" />
+		<result property="planLamp" column="plan_lamp" />
+		<result property="scopeLamp" column="scope_lamp" />
+		<result property="qualityLamp" column="quality_lamp" />
+		<result property="keyRoles" column="key_roles" />
+		<result property="keyRolesPass" column="key_roles_pass" />
+		<result property="notPassedNumber" column="not_pass_number" />
+		<result property="peopleDifferNumber"
+			column="peopleLamp_differ_number" />
+		<result property="rolesDifferNumber"
+			column="roles_differ_number" />
+		<result property="redLightNumber" column="red_light_number" />
+		<result property="yellowLightNumber"
+			column="yellow_light_number" />
+		<result property="greenLightNumber" column="green_light_number" />
+		<result property="demandTotal" column="demand_total" />
+		<result property="demandChangeNumber"
+			column="demand_change_number" />
+		<result property="developmentProgress"
+			column="development_progress" />
+		<result property="demandProgress" column="demand_progress" />
+		<result property="peopleLampTotal" column="peopleLamp_total" />
+		<result property="keyRolesTotal" column="key_roles_total" />
+		<result property="passNumber" column="pass_number" />
+		<result property="open361" column="OPEN361" />
+		<result property="closed361" column="closed361" />
+		<result property="delay361" column="delay361" />
+		<result property="added361" column="added361" />
+		<result property="sum361" column="num361" />
+		<result property="openAAR" column="OPENAAR" />
+		<result property="closedAAR" column="closedAAR" />
+		<result property="delayAAR" column="delayAAR" />
+		<result property="addedAAR" column="addedAAR" />
+		<result property="sumAAR" column="sumAAR" />
+		<result property="openAudit" column="OPENAudit" />
+		<result property="closedAudit" column="closedAudit" />
+		<result property="delayAudit" column="delayAudit" />
+		<result property="addedAudit" column="addedAudit" />
+		<result property="sumAudit" column="sumAudit" />
+		<result property="openQuality" column="OPENQuality" />
+		<result property="closedQuality" column="closedQuality" />
+		<result property="delayQuality" column="delayQuality" />
+		<result property="addedQuality" column="addedQuality" />
+		<result property="sumQuality" column="sumQuality" />
+		<result property="assessment" column="assessment" />
+		<result property="aar" column="aar" />
+		<result property="audit" column="audit" />
+		<result property="quality" column="quality" />
+		<result property="statusAssessment" column="project_status" />
+		<result property="qa" column="QA" />
+		<result property="isDeleted" column="IS_DELETED" />
+	</resultMap>
+	<resultMap id="getNunber" type="com.icss.mvp.entity.Nunber">
+		<result property="aJan" column="aJan" />
+		<result property="bFeb" column="bFeb" />
+		<result property="cMar" column="cMar" />
+		<result property="dApr" column="dApr" />
+		<result property="eMay" column="eMay" />
+		<result property="fJune" column="fJune" />
+		<result property="jJuly" column="jJuly" />
+		<result property="hAug" column="hAug" />
+		<result property="iSept" column="iSept" />
+		<result property="gOct" column="gOct" />
+		<result property="kNov" column="kNov" />
+		<result property="lDecember" column="lDecember" />
+	</resultMap>
+	<resultMap id="measureVo" type="com.icss.mvp.entity.MeasureVo">
+		<result property="id" column="measure_id" />
+		<result property="upper" column="upper" />
+		<result property="lower" column="lower" />
+		<result property="value" column="measure_value" />
+		<result property="color" column="measure_color" />
+		<result property="no" column="no" />
+		<result property="createTime" column="create_time" />
+		<result property="projectName" column="PROJECT_NAME" />
+		<result property="hwzpdu" column="HWZPDU" />
+		<result property="pduSpdt" column="PDU_SPDT" />
+	</resultMap>
+	<resultMap id="memberResourceReport" type="com.icss.mvp.entity.MemberResourceReport">
+		<result property="no" column="pno" />
+		<result property="projectName" column="NAME" />
+		<result property="pm" column="PM" />
+		<result property="hwzpdu" column="HWZPDU" />
+		<result property="pduSpdt" column="PDU_SPDT" />
+		<result property="du" column="DU" />
+		<result property="pdu" column="PDU" />
+		<result property="personnelStability" column="resources_lamp" />
+		<result property="keyManpowerDemand" column="keyRoleCount" />
+		<result property="keyOnduty" column="key_onDuty" />
+		<result property="keyReserve" column="key_reserve" />
+		<result property="keyTurnoverPerson" column="key_quit" />
+		<result property="keyPerson" column="key_person" />
+		<result property="manpowerDemand" column="headcount" />
+		<result property="onduty" column="on_duty" />
+		<result property="reserve" column="reserve" />
+		<result property="turnoverPerson" column="quit" />
+		<result property="collection" column="collection" />
+	</resultMap>
+
+	<resultMap id="projectMB" type="com.icss.mvp.entity.rank.ProjectMonthBudget">
+		<result property="no" column="NO" />
+		<result property="name" column="NAME" />
+		<result property="pm" column="PM" />
+		<result property="hwzpdu" column="HWZPDU" />
+		<result property="pduSpdt" column="PDU_SPDT" />
+		<result property="pdu" column="PDU" />
+		<result property="du" column="DU" />
+		<result property="projectBudget" column="PROJECT_BUDGET" />
+		<result property="collection" column="collection" />
+		<result property="startDate" column="START_DATE" />
+		<result property="endDate" column="END_DATE" />
+		<result property="attendMoney" column="attend_money" />
+		<result property="overMoney" column="over_money" />
+		<result property="normalOut" column="normal_out" />
+		<result property="costDate" column="cost_date" />
+		<result property="deviationLight" column="deviation_light" />
+		<result property="oldAttendMoney" column="oldAttend_money" />
+		<result property="oldOverMoney" column="oldOver_money" />
+		<result property="oldNormalOut" column="oldNormal_out" />
+	</resultMap>
+	<resultMap id="ReportQualityEntityMap"
+		type="com.icss.mvp.entity.ReportQualityEntity">
+		<result property="proNo" column="proNo" />
+		<result property="name" column="name" />
+		<result property="hwzpdu" column="hwzpdu" />
+		<result property="pduSpdt" column="pduSpdt" />
+		<result property="pdu" column="pdu" />
+		<result property="du" column="du" />
+		<result property="pm" column="pm" />
+		<result property="startDate" column="START_DATE" javaType="java.util.Date" />
+		<result property="projectType" column="projectType" />
+		<collection property="measureVoList"
+			ofType="com.icss.mvp.entity.MeasureVo">
+			<result property="id" column="measure_id" />
+			<result property="value" column="measure_value" />
+			<result property="color" column="measure_color" />
+		</collection>
+	</resultMap>
+	<select id="getMeasureValues" resultMap="MeasureValueMap">
+		SELECT
+		t3.title,
+		t5.name,
+		DATE_FORMAT(t6.copy_date, '%m') AS MONTH,
+		SUM(t6.value) VALUE
+		FROM project_info t1
+		LEFT JOIN project_label_config t2 ON t1.no = t2.project_id
+		LEFT JOIN label t3 ON t2.label_id = t3.ID
+		LEFT JOIN label_measure_config t4 ON t2.id = t4.PROJECT_LABLE_ID
+		LEFT JOIN measure t5 ON t4.MEASURE_ID = t5.ID
+		LEFT JOIN measure_value_history t6 ON t4.ID = t6.label_measure_config_id
+		WHERE 1 = 1 AND t1.NO = #{proNo}
+		AND t5.IS_DELETE = 0
+		AND t4.IS_DELETED = 0
+		AND t3.IS_DELETED = 0
+		AND t2.is_deleted = 0
+		AND (DATE_FORMAT(t6.copy_date, '%Y') = DATE_FORMAT(SYSDATE(), '%Y')
+		OR t6.copy_date IS NULL)
+		GROUP BY t3.TITLE, t5.name, t4.ID, month
+	</select>
+
+	<select id="getProjectAssessByNo"
+		resultMap="ProjectAssessInfoMap">
+		select pi.NAME,pi.NO as pno,pa.* from project_info pi left
+		join
+		project_assess pa on pi.`NO`=pa.`NO`
+		where pi.`NO` = #{proNo}
+	</select>
+
+	<!--质量月报列表 -->
+	<select id="getQualityonthlyReportList"
+		resultMap="QualityMonthlyReportMap">
+		select pi.NAME,pi.NO as pno,pa.* from project_info pi left
+		join
+		project_assess pa on pi.`NO`=pa.`NO`
+		where pi.`NO` = #{proNo} AND pa.`creation_date` = #{month}
+	</select>
+
+	<insert id="insertQualityMonthlyReport"	parameterType="com.icss.mvp.entity.QualityMonthlyReport">
+		REPLACE INTO project_assess
+		(no,people_lamp,plan_lamp,scope_lamp,quality_lamp,key_roles,key_roles_pass,not_pass_number,peopleLamp_differ_number,roles_differ_number,
+		development_progress,demand_progress,demand_total,demand_change_number,peopleLamp_total,green_light_number,yellow_light_number,
+		red_light_number,key_roles_total,pass_number,creation_date)
+		VALUE (
+		#{data.no},#{data.peopleLamp},#{data.planLamp},#{data.scopeLamp},#{data.qualityLamp},#{data.keyRoles},
+		#{data.keyRolesPass},#{data.notPassedNumber},#{data.peopleDifferNumber},#{data.rolesDifferNumber},#{data.developmentProgress},
+		#{data.demandProgress},#{data.demandTotal},#{data.demandChangeNumber},#{data.peopleLampTotal},#{data.greenLightNumber},#{data.yellowLightNumber},
+		#{data.redLightNumber},#{data.keyRolesTotal},#{data.passNumber},#{data.creationDate}
+		)
+	</insert>
+
+	<select id="getProjectAssessByNos" resultMap="QualityMonthlyReportMap">
+		SELECT * FROM(
+		(SELECT
+		pi.NAME,PI.`PROJECT_STATE`,pi.HWZPDU,pi.PDU_SPDT AS pduSpdt,pi.DU,pi.AREA,pi.START_DATE,pi.END_DATE,pi.PM,pa.NO
+		AS pno,pa.*
+		FROM project_assess pa LEFT JOIN project_info PI ON
+		pi.`NO`=pa.`NO` WHERE
+		pa.`NO` IN
+		${proNos}  AND DATE_FORMAT( pa.creation_date, '%Y%m') = DATE_FORMAT( CURDATE( ) , '%Y%m')
+		 ORDER BY
+		pa.quality_lamp DESC) AS a LEFT
+		JOIN (
+		SELECT
+		c.`create_time`,c.`actual_finish_time`,c.`finish_time`,is_361,state,is_deleted,
+		<if test="numb==1">
+			SUM(is_361=1 AND DATEDIFF(create_time,NOW())=0 AND
+			c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND
+			DATEDIFF(create_time,NOW())=0 AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND DATEDIFF(create_time,NOW())=0 AND c.`state`='Open')
+			AS audit,
+			SUM(is_361=4 AND DATEDIFF(create_time,NOW())=0 AND
+			c.`state`='Open') AS quality,
+		</if>
+		<if test="numb==2">
+			SUM(is_361=1 AND c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND c.`state`='Open') AS audit,
+			SUM(is_361=4 AND c.`state`='Open') AS quality,
+		</if>
+		<if test="numb==3">
+			SUM(is_361=1 AND c.`state`='Closed') AS assessment,
+			SUM(is_361=2 AND c.`state`='Closed') AS aar,
+			SUM(is_361=3 AND c.`state`='Closed') AS audit,
+			SUM(is_361=4 AND c.`state`='Closed') AS	quality,
+		</if>
+		<if test="numb==4">
+		<![CDATA[
+			SUM(is_361=1 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND DATEDIFF(finish_time,NOW())<0  AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS audit, 
+			SUM(is_361=4 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS quality,
+		]]>
+		</if>
+		SUM(c.state IS NOT NULL AND is_361=1) AS num361,
+		SUM(c.state='Closed'
+		AND is_361=1 ||c.state='关闭' AND is_361=1) AS closed361,
+		SUM(c.state='Open' AND is_361=1||c.state='在行' AND is_361=1) AS
+		OPEN361,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=1),0) AS delay361,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=1) AS added361,
+		SUM(c.state IS NOT NULL AND is_361=2)
+		AS sumAAR, SUM(c.state='Closed' AND
+		is_361=2 ||c.state='关闭' AND
+		is_361=2) AS closedAAR,
+		SUM(c.state='Open' AND is_361=2||c.state='在行'
+		AND is_361=2) AS OPENAAR,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=2),0) AS delayAAR,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=2) AS addedAAR,
+		SUM(c.state IS NOT NULL AND is_361=3)
+		AS sumAudit, SUM(c.state='Closed' AND
+		is_361=3 ||c.state='关闭' AND
+		is_361=3) AS closedAudit,
+		SUM(c.state='Open' AND is_361=3||c.state='在行'
+		AND is_361=3) AS
+		OPENAudit,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=3),0) AS delayAudit,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=3) AS addedAudit,
+		SUM(c.state IS NOT NULL AND is_361=4)
+		AS sumQuality, SUM(c.state='Closed' AND
+		is_361=4 ||c.state='关闭' AND
+		is_361=4) AS closedQuality,
+		SUM(c.state='Open' AND
+		is_361=4||c.state='在行' AND is_361=4) AS
+		OPENQuality,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=4),0) AS delayQuality,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=3) AS addedQuality,
+		NO FROM `project_maturity_comments`
+		AS c WHERE is_deleted='0' AND NO IN
+		${proNos}
+		GROUP BY NO) AS b ON
+		a.pno=b.no)
+		WHERE project_state='在行'
+		ORDER BY
+		(closed361/num361) DESC
+		<if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset},${page.pageSize}
+		</if>
+	</select>
+
+	<select id="getProjectAssessByNosQ"
+		resultMap="QualityMonthlyReportMap">
+		SELECT * FROM(
+		(SELECT
+		pi.NAME,PI.`PROJECT_STATE`,pi.HWZPDU,pi.PDU_SPDT AS pduSpdt,pi.DU,pi.AREA,pi.START_DATE,pi.END_DATE,pi.PM,pa.NO
+		AS pno,pa.*
+		FROM project_assess pa LEFT JOIN project_info PI ON
+		pi.`NO`=pa.`NO` WHERE
+		pa.`NO` IN
+		${proNos}
+		ORDER BY
+		pa.quality_lamp DESC) AS a LEFT
+		JOIN (
+		SELECT
+		c.`create_time`,c.`actual_finish_time`,c.`finish_time`,is_361,state,is_deleted,
+		<if test="numb==0">
+			SUM(is_361=1) AS assessment,
+			SUM(is_361=2) AS aar,
+			SUM(is_361=3) AS audit,
+			SUM(is_361=4) AS quality,
+		</if>
+		<if test="numb==1">
+			SUM(is_361=1 AND DATEDIFF(create_time,NOW())=0 AND
+			c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND
+			DATEDIFF(create_time,NOW())=0 AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND DATEDIFF(create_time,NOW())=0 AND c.`state`='Open')
+			AS audit,
+			SUM(is_361=4 AND DATEDIFF(create_time,NOW())=0 AND
+			c.`state`='Open') AS quality,
+		</if>
+		<if test="numb==2">
+			SUM(is_361=1 AND c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND c.`state`='Open') AS audit,
+			SUM(is_361=4 AND c.`state`='Open') AS quality,
+		</if>
+		<if test="numb==3">
+			SUM(is_361=1 AND c.`state`='Closed') AS assessment,
+			SUM(is_361=2 AND c.`state`='Closed') AS aar,
+			SUM(is_361=3 AND
+			c.`state`='Closed') AS audit,
+			SUM(is_361=4 AND c.`state`='Closed') AS
+			quality,
+		</if>
+		<if test="numb==4">
+		<![CDATA[
+			SUM(is_361=1 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND DATEDIFF(finish_time,NOW())<0  AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS audit, 
+			SUM(is_361=4 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS quality,
+		]]>
+		</if>
+		SUM(c.state IS NOT NULL AND is_361=1) AS num361,
+		SUM(c.state='Closed'
+		AND is_361=1 ||c.state='关闭' AND is_361=1) AS closed361,
+		SUM(c.state='Open' AND is_361=1||c.state='在行' AND is_361=1) AS
+		OPEN361,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=1),0) AS delay361,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=1) AS added361,
+		SUM(c.state IS NOT NULL AND is_361=2)
+		AS sumAAR, SUM(c.state='Closed' AND
+		is_361=2 ||c.state='关闭' AND
+		is_361=2) AS closedAAR,
+		SUM(c.state='Open' AND is_361=2||c.state='在行'
+		AND is_361=2) AS OPENAAR,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=2),0) AS delayAAR,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=2) AS addedAAR,
+		SUM(c.state IS NOT NULL AND is_361=3)
+		AS sumAudit, SUM(c.state='Closed' AND
+		is_361=3 ||c.state='关闭' AND
+		is_361=3) AS closedAudit,
+		SUM(c.state='Open' AND is_361=3||c.state='在行'
+		AND is_361=3) AS
+		OPENAudit,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=3),0) AS delayAudit,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=3) AS addedAudit,
+		SUM(c.state IS NOT NULL AND is_361=4)
+		AS sumQuality, SUM(c.state='Closed' AND
+		is_361=4 ||c.state='关闭' AND
+		is_361=4) AS closedQuality,
+		SUM(c.state='Open' AND
+		is_361=4||c.state='在行' AND is_361=4) AS
+		OPENQuality,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=4),0) AS delayQuality,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=3) AS addedQuality,
+		NO FROM `project_maturity_comments`
+		AS c WHERE is_deleted='0' AND NO IN
+		${proNos}
+		GROUP BY NO) AS b ON
+		a.pno=b.no)
+		WHERE project_state='在行'
+		<if test="numb!=0">
+		AND assessment IS NOT NULL AND aar IS NOT NULL AND
+		audit IS NOT NULL AND
+		quality IS NOT NULL AND assessment!=0 OR aar!=0 OR audit!=0 OR quality!=0
+		</if>
+		ORDER BY
+		(closed361/num361) DESC
+		<if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset},${page.pageSize}
+		</if>
+	</select>
+
+	<select id="getProjectAssessCount"
+		resultType="java.lang.Integer">
+	SELECT COUNT(*) FROM (
+		SELECT * FROM(
+		(SELECT
+		pi.NAME,PI.`PROJECT_STATE`,pi.HWZPDU,pi.PDU_SPDT,pi.DU,pi.AREA,pi.START_DATE,pi.END_DATE,pi.PM,pa.NO
+		AS pno,pa.*
+		FROM project_assess pa LEFT JOIN project_info PI ON
+		pi.`NO`=pa.`NO` WHERE
+		pa.`NO` IN
+		${proNos}   AND DATE_FORMAT( pa.creation_date, '%Y%m') = DATE_FORMAT( CURDATE( ) , '%Y%m')
+		 ORDER BY
+		pa.quality_lamp DESC) AS a LEFT
+		JOIN (
+		SELECT
+		c.`create_time`,c.`actual_finish_time`,c.`finish_time`,is_361,is_deleted,
+		SUM(is_361=1 AND c.`is_deleted`=0) AS assessment,
+			SUM(is_361=2 AND c.`is_deleted`=0) AS aar,
+			SUM(is_361=3 AND c.`is_deleted`=0) AS audit,
+			SUM(is_361=4 AND c.`is_deleted`=0) AS quality,
+		SUM(c.state IS
+		NOT NULL AND is_361=1) AS num361,
+		SUM(c.state='Closed' AND is_361=1
+		||c.state='关闭' AND is_361=1) AS closed361,
+		SUM(c.state='Open' AND
+		is_361=1||c.state='在行' AND is_361=1) AS
+		OPEN361,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=1),0) AS delay361,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=1) AS added361,
+		SUM(c.state IS NOT NULL AND is_361=2)
+		AS sumAAR, SUM(c.state='Closed' AND
+		is_361=2 ||c.state='关闭' AND
+		is_361=2) AS closedAAR,
+		SUM(c.state='Open' AND is_361=2||c.state='在行'
+		AND is_361=2) AS OPENAAR,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=2),0) AS delayAAR,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=2) AS addedAAR,
+		SUM(c.state IS NOT NULL AND is_361=3)
+		AS sumAudit, SUM(c.state='Closed' AND
+		is_361=3 ||c.state='关闭' AND
+		is_361=3) AS closedAudit,
+		SUM(c.state='Open' AND is_361=3||c.state='在行'
+		AND is_361=3) AS
+		OPENAudit,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=3),0) AS delayAudit,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=3) AS addedAudit,
+		SUM(c.state IS NOT NULL AND is_361=4)
+		AS sumQuality, SUM(c.state='Closed' AND
+		is_361=4 ||c.state='关闭' AND
+		is_361=4) AS closedQuality,
+		SUM(c.state='Open' AND
+		is_361=4||c.state='在行' AND is_361=4) AS
+		OPENQuality,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=4),0) AS delayQuality,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=3) AS addedQuality,
+		NO AS BNO FROM
+		`project_maturity_comments` AS c WHERE is_deleted='0' AND
+		NO IN
+		${proNos}
+		GROUP BY NO) AS b ON a.pno=b.BNO) WHERE PROJECT_STATE='在行'
+		ORDER BY
+		(closed361/num361) DESC
+		) AS D
+	</select>
+
+	<select id="getProjectDscCount" resultType="java.lang.Integer">
+		select count(*) from
+		project_assess pa left join project_info pi on
+		pi.`NO`=pa.`NO`
+		where
+		pa.`NO` in ${proNos}
+	</select>
+
+	<!-- 分页查询问题风险信息 -->
+	<select id="getProjectDscByNo" parameterType="java.util.Map" resultMap="ProjectAssessInfoMap">
+		SELECT pmc.* ,pif.name FROM project_maturity_comments pmc LEFT JOIN `project_info` pif ON pmc.no=pif.no
+		where `is_deleted` = 0
+		<if test="null != parameter.id">
+			and `id` = #{parameter.id}
+		</if>
+		<if test="null !=parameter.proNo">
+			and pif.`NO` = #{parameter.proNo}
+		</if>
+		<if test="null != parameter.is361">
+			and `is_361` = #{parameter.is361}
+		</if>
+		<if test="null != parameter.flag">
+			and `flag` = #{parameter.flag}
+		</if>
+		<if test="null != parameter.limit and  null != parameter.offset">
+			LIMIT ${parameter.offset},${parameter.limit}
+		</if>
+	</select>
+
+	<!-- 查询问题风险记录数 -->
+	<select id="getProjectDscByNoCount"	resultType="java.lang.Integer">
+		select count(*) from project_maturity_comments
+		where `is_deleted` = 0
+		<if test="null !=proNo">
+			and `NO` = #{proNo}
+		</if>
+		<if test="null != is361">
+			and `is_361` = #{is361}
+		</if>
+		<if test="null != flag">
+			and `flag` = #{flag}
+		</if>
+	</select>
+
+	<update id="deleteProjectDsc" parameterType="java.lang.String">
+		UPDATE
+		`project_maturity_comments` SET `is_deleted` = 1 WHERE id = #{id}
+	</update>
+
+	<update id="editProjectDsc">
+		UPDATE `project_maturity_comments` SET
+		<if test="null != date.question">
+			`question` = #{date.question},
+		</if>
+		<if test="null != date.imprMeasure">
+			`impr_measure` = #{date.imprMeasure},
+		</if>
+		<if test="null != date.progressDesc">
+			`progress_desc` = #{date.progressDesc},
+		</if>
+		<if test="null != date.actualFinishTime">
+			`actual_finish_time` = #{date.actualFinishTime},
+		</if>
+		<if test="null != date.finishTime">
+			`finish_time` = #{date.finishTime},
+		</if>
+		<if test="null != date.is361">
+			`is_361` = #{date.is361},
+		</if>
+		<if test="null != date.state">
+			`state` = #{date.state},
+		</if>
+		<if test="null != date.personLiable">
+			`person_liable` = #{date.personLiable},
+		</if>
+		<if test="null != date.version">
+			`version` = #{date.version},
+		</if>
+		<if test="null != date.topic">
+			`topic` = #{date.topic},
+		</if>
+		<if test="null != date.probability">
+			`probability` = #{date.probability},
+		</if>
+		<if test="null != date.speed">
+			`speed` = #{date.speed},
+		</if>
+		<if test="null != date.severity">
+			`severity` = #{date.severity},
+		</if>
+		<if test="null != date.prior">
+			`prior` = #{date.prior},
+		</if>
+		<if test="null != date.iteId">
+			`ite_id` = #{date.iteId},
+		</if>
+		`modify_time` = #{date.modifyTime}
+		WHERE id = #{date.id}
+	</update>
+
+	<!-- 保存问题列表仪表盘定制 -->
+	<update id="editProjectDscConfig">
+		UPDATE
+		`project_maturity_comments`
+		SET flag = #{flag}
+		WHERE id = #{id}
+	</update>
+	<!-- 需求总数查询 -->
+	<select id="queryTotalCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM
+		`iterative_work_manage` WHERE pro_no = #{proNo} and `is_deleted` = 0
+	</select>
+	<!-- 已关闭需求数查询 -->
+	<select id="queryTotalCountByStatus"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM `iterative_work_manage` WHERE pro_no =
+		#{proNo} and `status` = #{status}
+		and `is_deleted` = 0
+	</select>
+
+	<!-- 修改需求变更 -->
+	<update id="editQualityMonthlyReport"
+		parameterType="com.icss.mvp.entity.QualityMonthlyReport">
+		UPDATE `project_assess` SET `demand_total` =
+		#{qualityMonthlyReport.demandTotal},`scope_lamp` =
+		#{qualityMonthlyReport.scopeLamp},
+		`demand_change_number` =
+		#{qualityMonthlyReport.demandChangeNumber} WHERE NO =
+		#{qualityMonthlyReport.no} AND creation_date = #{qualityMonthlyReport.creationDate}
+	</update>
+	<!-- 需求进度查询 -->
+	<select id="getDemandProgress" resultType="java.lang.String">
+		SELECT demand_progress
+		FROM `project_assess` WHERE NO = #{proNo}
+	</select>
+	<!-- 修改需求进度 -->
+	<update id="editDemandProgress"
+		parameterType="com.icss.mvp.entity.QualityMonthlyReport">
+		UPDATE `project_assess` SET `demand_progress` =
+		#{qualityMonthlyReport.demandProgress},`plan_lamp` =
+		#{qualityMonthlyReport.planLamp}
+		WHERE NO = #{qualityMonthlyReport.no} AND creation_date = #{qualityMonthlyReport.creationDate}
+	</update>
+	<select id="getAssessmentNunber" resultMap="getNunber">
+		SELECT
+		SUM(a.MONTH=01) AS aJan ,
+		SUM(a.MONTH=02) AS bFeb ,
+		SUM(a.MONTH=03) AS cMar ,
+		SUM(a.MONTH=04) AS dApr ,
+		SUM(a.MONTH=05) AS
+		eMay ,
+		SUM(a.MONTH=06) AS fJune ,
+		SUM(a.MONTH=07) AS jJuly ,
+		SUM(a.MONTH=08) AS hAug ,
+		SUM(a.MONTH=09) AS iSept ,
+		SUM(a.MONTH=10) AS
+		gOCT ,
+		SUM(a.MONTH=11) AS kNov ,
+		SUM(a.MONTH=12) AS lDecember
+		FROM
+		(SELECT
+		* FROM (
+		<![CDATA[
+		(SELECT	DATE_FORMAT( @cdate := DATE_ADD( @cdate, INTERVAL + 1 MONTH ), '%m' ) AS month1 FROM
+		(SELECT @cdate := DATE_ADD( CURRENT_DATE, INTERVAL - 1 YEAR ) FROM `project_maturity_comments` LIMIT 12 ) t0 
+		WHERE DATE( @cdate ) <= DATE_ADD( CURRENT_DATE, INTERVAL - 1 DAY )	
+		]]>
+		) AS d LEFT JOIN (
+		SELECT DATE_FORMAT(create_time,'%m')AS MONTH,is_361
+		FROM(
+		(SELECT * FROM project_info
+		WHERE `NO` IN ${proNos}
+		AND
+		PROJECT_STATE='在行'
+		)AS c LEFT JOIN (
+		SELECT create_time,is_361,NO FROM
+		`project_maturity_comments`
+		WHERE NO IN ${proNos} AND is_deleted=0 AND
+		is_361=1
+		<if test="num==1">
+			AND DATEDIFF(create_time,NOW())=0 AND state='Open'
+		</if>
+		<if test="num==2">
+			AND state='Open'
+		</if>
+		<if test="num==3">
+			AND state='Closed'
+		</if>
+		<if test="num==4">
+		<![CDATA[
+			AND DATEDIFF(finish_time,NOW())<0  AND state='Open'
+		]]>
+		</if>
+		) AS b ON c.no=b.no)) AS
+		e ON d.month1=e.MONTH )
+		)AS a
+	</select>
+	<select id="getAARNunber" resultMap="getNunber">
+		SELECT
+		SUM(a.MONTH=01) AS aJan ,
+		SUM(a.MONTH=02) AS bFeb ,
+		SUM(a.MONTH=03) AS cMar ,
+		SUM(a.MONTH=04) AS dApr ,
+		SUM(a.MONTH=05) AS
+		eMay ,
+		SUM(a.MONTH=06) AS fJune ,
+		SUM(a.MONTH=07) AS jJuly ,
+		SUM(a.MONTH=08) AS hAug ,
+		SUM(a.MONTH=09) AS iSept ,
+		SUM(a.MONTH=10) AS
+		gOCT ,
+		SUM(a.MONTH=11) AS kNov ,
+		SUM(a.MONTH=12) AS lDecember
+		FROM
+		(SELECT
+		* FROM (
+		<![CDATA[
+		(SELECT	DATE_FORMAT( @cdate := DATE_ADD( @cdate, INTERVAL + 1 MONTH ), '%m' ) AS month1 FROM
+		(SELECT @cdate := DATE_ADD( CURRENT_DATE, INTERVAL - 1 YEAR ) FROM `project_maturity_comments` LIMIT 12 ) t0 
+		WHERE DATE( @cdate ) <= DATE_ADD( CURRENT_DATE, INTERVAL - 1 DAY )	
+		]]>
+		) AS d LEFT JOIN (
+		SELECT DATE_FORMAT(create_time,'%m')AS MONTH,is_361
+		FROM(
+		(SELECT * FROM project_info
+		WHERE `NO` IN ${proNos}
+		AND
+		PROJECT_STATE='在行'
+		)AS c LEFT JOIN (
+		SELECT create_time,is_361,NO FROM
+		`project_maturity_comments`
+		WHERE NO IN ${proNos} AND is_deleted=0 AND
+		is_361=2
+		<if test="num==1">
+			AND DATEDIFF(create_time,NOW())=0 AND state='Open'
+		</if>
+		<if test="num==2">
+			AND state='Open'
+		</if>
+		<if test="num==3">
+			AND state='Closed'
+		</if>
+		<if test="num==4">
+		<![CDATA[
+			AND DATEDIFF(finish_time,NOW())<0  AND state='Open'
+		]]>
+		</if>
+		) AS b ON c.no=b.no)) AS
+		e ON d.month1=e.MONTH )
+		)AS a
+	</select>
+	<select id="getAuditNunber" resultMap="getNunber">
+		SELECT
+		SUM(a.MONTH=01) AS aJan ,
+		SUM(a.MONTH=02) AS bFeb ,
+		SUM(a.MONTH=03) AS cMar ,
+		SUM(a.MONTH=04) AS dApr ,
+		SUM(a.MONTH=05) AS
+		eMay ,
+		SUM(a.MONTH=06) AS fJune ,
+		SUM(a.MONTH=07) AS jJuly ,
+		SUM(a.MONTH=08) AS hAug ,
+		SUM(a.MONTH=09) AS iSept ,
+		SUM(a.MONTH=10) AS
+		gOCT ,
+		SUM(a.MONTH=11) AS kNov ,
+		SUM(a.MONTH=12) AS lDecember
+		FROM
+		(SELECT
+		* FROM (
+		<![CDATA[
+		(SELECT	DATE_FORMAT( @cdate := DATE_ADD( @cdate, INTERVAL + 1 MONTH ), '%m' ) AS month1 FROM
+		(SELECT @cdate := DATE_ADD( CURRENT_DATE, INTERVAL - 1 YEAR ) FROM `project_maturity_comments` LIMIT 12 ) t0 
+		WHERE DATE( @cdate ) <= DATE_ADD( CURRENT_DATE, INTERVAL - 1 DAY )	
+		]]>
+		) AS d LEFT JOIN (
+		SELECT DATE_FORMAT(create_time,'%m')AS MONTH,is_361
+		FROM(
+		(SELECT * FROM project_info
+		WHERE `NO` IN ${proNos}
+		AND
+		PROJECT_STATE='在行'
+		)AS c LEFT JOIN (
+		SELECT create_time,is_361,NO FROM
+		`project_maturity_comments`
+		WHERE NO IN ${proNos} AND is_deleted=0 AND
+		is_361=3
+		<if test="num==1">
+			AND DATEDIFF(create_time,NOW())=0 AND state='Open'
+		</if>
+		<if test="num==2">
+			AND state='Open'
+		</if>
+		<if test="num==3">
+			AND state='Closed'
+		</if>
+		<if test="num==4">
+		<![CDATA[
+			AND DATEDIFF(finish_time,NOW())<0  AND state='Open'
+		]]>
+		</if>
+		) AS b ON c.no=b.no)) AS
+		e ON d.month1=e.MONTH )
+		)AS a
+	</select>
+	<select id="getQualityNunber" resultMap="getNunber">
+		SELECT
+		SUM(a.MONTH=01) AS aJan ,
+		SUM(a.MONTH=02) AS bFeb ,
+		SUM(a.MONTH=03) AS cMar ,
+		SUM(a.MONTH=04) AS dApr ,
+		SUM(a.MONTH=05) AS
+		eMay ,
+		SUM(a.MONTH=06) AS fJune ,
+		SUM(a.MONTH=07) AS jJuly ,
+		SUM(a.MONTH=08) AS hAug ,
+		SUM(a.MONTH=09) AS iSept ,
+		SUM(a.MONTH=10) AS
+		gOCT ,
+		SUM(a.MONTH=11) AS kNov ,
+		SUM(a.MONTH=12) AS lDecember
+		FROM
+		(SELECT
+		* FROM (
+		<![CDATA[
+		(SELECT	DATE_FORMAT( @cdate := DATE_ADD( @cdate, INTERVAL + 1 MONTH ), '%m' ) AS month1 FROM
+		(SELECT @cdate := DATE_ADD( CURRENT_DATE, INTERVAL - 1 YEAR ) FROM `project_maturity_comments` LIMIT 12 ) t0 
+		WHERE DATE( @cdate ) <= DATE_ADD( CURRENT_DATE, INTERVAL - 1 DAY )	
+		]]>
+		) AS d LEFT JOIN (
+		SELECT DATE_FORMAT(create_time,'%m')AS MONTH,is_361
+		FROM(
+		(SELECT * FROM project_info
+		WHERE `NO` IN ${proNos}
+		AND
+		PROJECT_STATE='在行'
+		)AS c LEFT JOIN (
+		SELECT create_time,is_361,NO FROM
+		`project_maturity_comments`
+		WHERE NO IN ${proNos} AND is_deleted=0 AND
+		is_361=4
+		<if test="num==1">
+			AND DATEDIFF(create_time,NOW())=0 AND state='Open'
+		</if>
+		<if test="num==2">
+			AND state='Open'
+		</if>
+		<if test="num==3">
+			AND state='Closed'
+		</if>
+		<if test="num==4">
+		<![CDATA[
+			AND DATEDIFF(finish_time,NOW())<0  AND state='Open'
+		]]>
+		</if>
+		) AS b ON c.no=b.no)) AS
+		e ON d.month1=e.MONTH )
+		)AS a
+	</select>
+
+	<select id="getProjectDscByNos"
+		resultMap="ProjectCommentsInfoMap">
+		SELECT c.*,
+		i.no AS pno,i.* FROM project_maturity_comments c
+		LEFT JOIN
+		project_info i ON i.no = c.no WHERE c.no IN
+		${proNos}
+		AND c.is_deleted =
+		0 AND c.state IS NOT NULL
+		<if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset},${page.pageSize}
+		</if>
+	</select>
+	<select id="projectStartTime" parameterType="String" resultType="String">
+    	SELECT START_DATE
+    	FROM project_info
+    	WHERE NO = #{proNo}
+    </select>
+
+	<!-- 消费者业务线质量指标 -->
+	<select id="getCousumerQualityIndex"
+		resultType="com.icss.mvp.entity.CousumerQuality">
+		SELECT m.m_id AS measureId,m.name AS measureName,m.unit ,
+		IFNULL(r.r_upper,m.m_upper) upper,
+		IFNULL(r.r_target,m.m_target) target,
+		IFNULL(r.r_lower,m.m_lower) lower ,
+		v.value as measureValue
+		FROM
+		(SELECT ID AS m_id, NAME, UNIT AS unit, UPPER AS m_upper,TARGET AS m_target,
+		LOWER AS m_lower
+		FROM in_tmpl_index) m
+		LEFT JOIN
+		(SELECT measure_id AS r_id, UPPER AS r_upper, target AS r_target,
+         				 LOWER AS r_lower, collect_type AS r_collect_type, challenge FROM
+        		 (SELECT * FROM measure_range WHERE NO = #{proNo}
+         			ORDER BY measure_id, update_time DESC) rr GROUP BY measure_id
+		) r ON r.r_id= m.m_id
+		LEFT JOIN
+		(
+		SELECT * FROM
+		( SELECT measure_id AS measure_id, measure_value AS VALUE
+		FROM measure_history_detail WHERE `NO` = #{proNo} ORDER BY
+		DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC) d GROUP BY
+		d.measure_id ) v ON v.measure_id = m.m_id
+		where m.m_id in
+		<foreach collection="idsList" open="(" close=")" separator=","
+			item="item">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getProjectAssessCountQ"
+		resultType="java.lang.Integer">
+		select count(*) from (
+		 SELECT * FROM(
+		(SELECT
+		pi.NAME,PI.`PROJECT_STATE`,pi.HWZPDU,pi.PDU_SPDT,pi.DU,pi.AREA,pi.START_DATE,pi.END_DATE,pi.PM,pa.NO
+		AS pno,pa.*
+		FROM project_assess pa LEFT JOIN project_info PI ON
+		pi.`NO`=pa.`NO` WHERE
+		pa.`NO` IN
+		${proNos}
+		ORDER BY
+		pa.quality_lamp DESC) AS a LEFT
+		JOIN (
+		SELECT
+		c.`create_time`,c.`actual_finish_time`,c.`finish_time`,is_361,is_deleted,
+		<if test="numb==0">
+			SUM(is_361=1) AS assessment,
+			SUM(is_361=2) AS aar,
+			SUM(is_361=3) AS audit,
+			SUM(is_361=4) AS quality,
+		</if>
+		<if test="numb==1">
+			SUM(is_361=1 AND DATEDIFF(create_time,NOW())=0 AND
+			c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND
+			DATEDIFF(create_time,NOW())=0 AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND DATEDIFF(create_time,NOW())=0 AND c.`state`='Open')
+			AS audit,
+			SUM(is_361=4 AND DATEDIFF(create_time,NOW())=0 AND
+			c.`state`='Open') AS quality,
+		</if>
+		<if test="numb==2">
+			SUM(is_361=1 AND c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND c.`state`='Open') AS audit,
+			SUM(is_361=4 AND c.`state`='Open') AS quality,
+		</if>
+		<if test="numb==3">
+			SUM(is_361=1 AND c.`state`='Closed') AS assessment,
+			SUM(is_361=2 AND c.`state`='Closed') AS aar,
+			SUM(is_361=3 AND
+			c.`state`='Closed') AS audit,
+			SUM(is_361=4 AND c.`state`='Closed') AS
+			quality,
+		</if>
+		<if test="numb==4">
+		<![CDATA[
+			SUM(is_361=1 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS assessment,
+			SUM(is_361=2 AND DATEDIFF(finish_time,NOW())<0  AND c.`state`='Open') AS aar,
+			SUM(is_361=3 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS audit, 
+			SUM(is_361=4 AND DATEDIFF(finish_time,NOW())<0 AND c.`state`='Open') AS quality,
+		]]>
+		</if>
+		SUM(c.state IS NOT NULL AND is_361=1) AS num361,
+		SUM(c.state='Closed'
+		AND is_361=1 ||c.state='关闭' AND is_361=1) AS closed361,
+		SUM(c.state='Open' AND is_361=1||c.state='在行' AND is_361=1) AS
+		OPEN361,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=1),0) AS delay361,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=1) AS added361,
+		SUM(c.state IS NOT NULL AND is_361=2)
+		AS sumAAR, SUM(c.state='Closed' AND
+		is_361=2 ||c.state='关闭' AND
+		is_361=2) AS closedAAR,
+		SUM(c.state='Open' AND is_361=2||c.state='在行'
+		AND is_361=2) AS OPENAAR,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=2),0) AS delayAAR,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=2) AS addedAAR,
+		SUM(c.state IS NOT NULL AND is_361=3)
+		AS sumAudit, SUM(c.state='Closed' AND
+		is_361=3 ||c.state='关闭' AND
+		is_361=3) AS closedAudit,
+		SUM(c.state='Open' AND is_361=3||c.state='在行'
+		AND is_361=3) AS
+		OPENAudit,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=3),0) AS delayAudit,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=3) AS addedAudit,
+		SUM(c.state IS NOT NULL AND is_361=4)
+		AS sumQuality, SUM(c.state='Closed' AND
+		is_361=4 ||c.state='关闭' AND
+		is_361=4) AS closedQuality,
+		SUM(c.state='Open' AND
+		is_361=4||c.state='在行' AND is_361=4) AS
+		OPENQuality,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) AND
+		is_361=4),0) AS delayQuality,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) AND is_361=3) AS addedQuality,
+		NO as bno  FROM `project_maturity_comments`
+		AS c WHERE is_deleted='0' AND NO IN
+		${proNos}
+		GROUP BY NO) AS b ON
+		a.pno=b.bno)
+		WHERE project_state='在行'
+		<if test="numb!=0">
+		AND assessment IS NOT NULL AND aar IS NOT NULL AND
+		audit IS NOT NULL AND
+		quality IS NOT NULL AND assessment!=0 OR aar!=0 OR audit!=0 OR quality!=0
+		</if>
+		ORDER BY
+		(closed361/num361) DESC
+		 )as d
+
+		</select>
+
+		<select id="getProjectAssessCountAll"
+		resultType="java.lang.Integer">
+		 select count(*) from (
+		  SELECT * FROM(
+		(SELECT
+		pi.NAME,PI.`PROJECT_STATE`,pi.HWZPDU,pi.PDU_SPDT,pi.DU,pi.AREA,pi.START_DATE,pi.END_DATE,pi.PM,pa.NO
+		AS pno,pa.*
+		FROM project_assess pa
+		LEFT JOIN project_info PI ON
+		pi.`NO`=pa.`NO`
+		WHERE pa.`NO` IN ${proNos} and DATE_FORMAT(pa.creation_date, '%Y%m') = DATE_FORMAT(CURDATE( ) , '%Y%m')
+		order by pa.quality_lamp+0
+		desc)
+		AS a LEFT JOIN (
+		SELECT SUM(is_361=1 and is_deleted=0) AS assessment,SUM(is_361=2 and is_deleted=0)
+		AS
+		aar,SUM(is_361=3 and is_deleted=0) AS audit,
+		SUM(is_361=4 and is_deleted=0) AS quality,
+		SUM(c.state IS
+		NOT
+		NULL and is_361=1) AS num361,
+		SUM(c.state='Closed' and is_361=1
+		||c.state='关闭' and is_361=1) AS closed361,
+		SUM(c.state='Open' and
+		is_361=1||c.state='在行' and is_361=1) AS OPEN361,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=1),0) AS delay361,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=1) AS added361,
+		SUM(c.state IS NOT NULL and is_361=2) AS
+		sumAAR,
+		SUM(c.state='Closed' and is_361=2
+		||c.state='关闭' and is_361=2) AS
+		closedAAR,
+		SUM(c.state='Open' and
+		is_361=2||c.state='在行' and is_361=2) AS
+		OPENAAR,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=2),0) AS delayAAR,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=2) AS addedAAR,
+		SUM(c.state IS NOT NULL and is_361=3) AS
+		sumAudit,
+		SUM(c.state='Closed' and is_361=3
+		||c.state='关闭' and is_361=3) AS
+		closedAudit,
+		SUM(c.state='Open' and
+		is_361=3||c.state='在行' and is_361=3) AS
+		OPENAudit,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=3),0) AS delayAudit,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=3) AS addedAudit,
+		SUM(c.state IS NOT NULL and is_361=4) AS
+		sumQuality,
+		SUM(c.state='Closed' and is_361=4
+		||c.state='关闭' and is_361=4) AS
+		closedQuality,
+		SUM(c.state='Open' and
+		is_361=4||c.state='在行' and is_361=4) AS
+		OPENQuality,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=4),0) AS delayQuality,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=3) AS addedQuality,
+		NO as bno FROM `project_maturity_comments` AS c
+		WHERE NO  IN ${proNos} GROUP BY
+		NO)
+		AS b ON a.pno=b.bno) 
+		 ) as d
+		</select>
+
+		<select id="getProjectAssessPageAll"
+		resultMap="QualityMonthlyReportMap">
+        SELECT * FROM(
+		(SELECT
+		pi.NAME,PI.`PROJECT_STATE`,pi.HWZPDU,pi.PDU_SPDT AS pduSpdt,pi.DU,pi.AREA,pi.START_DATE,pi.END_DATE,pi.PM,pa.NO
+		AS pno,pa.*
+		FROM project_assess pa
+		LEFT JOIN project_info PI ON
+		pi.`NO`=pa.`NO`
+		WHERE pa.`NO` IN ${proNos} and DATE_FORMAT( pa.creation_date, '%Y%m') = DATE_FORMAT( CURDATE( ) , '%Y%m')
+		order by pa.quality_lamp+0
+		desc)
+		AS a LEFT JOIN (
+		SELECT SUM(is_361=1 and is_deleted=0) AS assessment,SUM(is_361=2 and is_deleted=0)
+		AS
+		aar,SUM(is_361=3 and is_deleted=0) AS audit,
+		SUM(is_361=4 and is_deleted=0) AS quality,
+		SUM(c.state IS
+		NOT
+		NULL and is_361=1) AS num361,
+		SUM(c.state='Closed' and is_361=1
+		||c.state='关闭' and is_361=1) AS closed361,
+		SUM(c.state='Open' and
+		is_361=1||c.state='在行' and  is_361=1) AS OPEN361,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=1),0) AS delay361,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=1) AS added361,
+		SUM(c.state IS NOT NULL and is_361=2) AS
+		sumAAR,
+		SUM(c.state='Closed' and is_361=2
+		||c.state='关闭' and is_361=2) AS
+		closedAAR,
+		SUM(c.state='Open' and
+		is_361=2||c.state='在行' and is_361=2) AS
+		OPENAAR,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=2),0) AS delayAAR,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=2) AS addedAAR,
+		SUM(c.state IS NOT NULL and is_361=3) AS
+		sumAudit,
+		SUM(c.state='Closed' and is_361=3
+		||c.state='关闭' and is_361=3) AS
+		closedAudit,
+		SUM(c.state='Open' and
+		is_361=3||c.state='在行' and is_361=3) AS
+		OPENAudit,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=3),0) AS delayAudit,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=3) AS addedAudit,
+		SUM(c.state IS NOT NULL and is_361=4) AS
+		sumQuality,
+		SUM(c.state='Closed' and is_361=4
+		||c.state='关闭' and is_361=4) AS
+		closedQuality,
+		SUM(c.state='Open' and
+		is_361=4||c.state='在行' and is_361=4) AS
+		OPENQuality,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=4),0) AS delayQuality,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=3) AS addedQuality,
+		NO as bno FROM `project_maturity_comments` AS c
+		WHERE NO IN ${proNos} GROUP BY
+		NO)
+		AS b ON a.pno=b.bno)
+		<if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset},${page.pageSize}
+		</if>
+	</select>
+
+	<select id="getProjectOverview" resultMap="QualityMonthlyReportMap">
+        SELECT * FROM(
+		(SELECT
+		pi.NAME,PI.`PROJECT_STATE`,pi.HWZPDU,pi.PDU_SPDT AS pduSpdt,pi.DU,pi.AREA,pi.START_DATE,pi.END_DATE,pi.PM,pi.PROJECT_TYPE AS projectType,pa.NO
+		AS pno,pa.*
+		FROM project_assess pa
+		LEFT JOIN project_info PI ON
+		pi.`NO`=pa.`NO`
+		WHERE pa.`NO` IN ${proNos} and DATE_FORMAT( pa.creation_date, '%Y%m') = DATE_FORMAT( CURDATE( ) , '%Y%m')
+		order by pa.quality_lamp+0
+		desc)
+		AS a LEFT JOIN (
+		SELECT SUM(is_361=1 and is_deleted=0) AS assessment,SUM(is_361=2 and is_deleted=0)
+		AS
+		aar,SUM(is_361=3 and is_deleted=0) AS audit,
+		SUM(is_361=4 and is_deleted=0) AS quality,
+		SUM(c.state IS
+		NOT
+		NULL and is_361=1) AS num361,
+		SUM(c.state='Closed' and is_361=1
+		||c.state='关闭' and is_361=1) AS closed361,
+		SUM(c.state='Open' and
+		is_361=1||c.state='在行' and  is_361=1) AS OPEN361,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=1),0) AS delay361,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=1) AS added361,
+		SUM(c.state IS NOT NULL and is_361=2) AS
+		sumAAR,
+		SUM(c.state='Closed' and is_361=2
+		||c.state='关闭' and is_361=2) AS
+		closedAAR,
+		SUM(c.state='Open' and
+		is_361=2||c.state='在行' and is_361=2) AS
+		OPENAAR,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=2),0) AS delayAAR,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=2) AS addedAAR,
+		SUM(c.state IS NOT NULL and is_361=3) AS
+		sumAudit,
+		SUM(c.state='Closed' and is_361=3
+		||c.state='关闭' and is_361=3) AS
+		closedAudit,
+		SUM(c.state='Open' and
+		is_361=3||c.state='在行' and is_361=3) AS
+		OPENAudit,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=3),0) AS delayAudit,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=3) AS addedAudit,
+		SUM(c.state IS NOT NULL and is_361=4) AS
+		sumQuality,
+		SUM(c.state='Closed' and is_361=4
+		||c.state='关闭' and is_361=4) AS
+		closedQuality,
+		SUM(c.state='Open' and
+		is_361=4||c.state='在行' and is_361=4) AS
+		OPENQuality,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=4),0) AS delayQuality,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=3) AS addedQuality,
+		NO as bno FROM `project_maturity_comments` AS c
+		WHERE NO IN ${proNos} GROUP BY
+		NO)
+		AS b ON a.pno=b.bno)
+		<if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset},${page.pageSize}
+		</if>
+	</select>
+
+	<select id="getProjectOverviews" resultMap="QualityMonthlyReportMap">
+	SELECT p.NAME,p.`PROJECT_STATE`,p.HWZPDU,p.PDU_SPDT AS pduSpdt,p.DU,p.AREA,p.START_DATE,p.END_DATE,
+	p.PM,e.NAME AS QA,p.PROJECT_TYPE AS projectType,c.`NO` AS pno,r.*,ur.userId as people_lamp
+	FROM
+	(SELECT pro_no as `no` FROM project_parameter_record
+	WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{statisticalTime} AND
+	parameter_id=162 and parameter_value =0
+	and pro_no IN ${proNos}) c
+	LEFT JOIN `user_report_project` ur ON c.`NO` = ur.`no` AND ur.userId = #{username}
+	LEFT JOIN
+	(SELECT * FROM `project_review`
+	WHERE `statistical_time` = #{statisticalTime}
+	) r
+	ON c.`NO` = r.`pro_no`
+	LEFT JOIN
+	project_info p
+	ON c.`NO`=p.`NO`
+	LEFT JOIN
+	(
+	SELECT ps.NO, mb.NAME
+	FROM project_staff ps
+	LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+	WHERE ps.ROLE = "QA" AND ps.IS_DELETED = 0 AND ps.IS_KEY_STAFFS = 0
+	GROUP BY ps.NO) e
+	ON c.`NO` = e.`NO`
+	WHERE p.`HWZPDUID` IS NOT NULL
+	<if test="status == 0">
+		<![CDATA[
+				AND r.`pro_no` IS NULL
+			]]>
+	</if>
+	<if test="status == 1">
+		<![CDATA[
+        		AND r.`pro_no` IS NOT NULL
+				AND r.project_status >= 0 AND r.project_status < 70
+			]]>
+	</if>
+	<if test="status == 2">
+		<![CDATA[
+            	AND r.`pro_no` IS NOT NULL
+				AND r.project_status >= 70 AND r.project_status < 80
+			]]>
+	</if>
+	<if test="status == 4">
+		<![CDATA[
+				AND r.`pro_no` IS NOT NULL
+			]]>
+	</if>
+	<if test='coopType == "1"'>
+		<![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+	</if>
+	<if test='coopType == "2"'>
+		<![CDATA[
+				AND ur.userId IS NULL
+			]]>
+	</if>
+	<choose>
+		<when test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
+			ORDER BY ${sort} ${sortOrder}
+		</when>
+		<otherwise>
+			ORDER BY CAST(r.project_status AS DECIMAL) DESC, c.`NO`
+		</otherwise>
+	</choose>
+</select>
+<select id="getProjectAccess" resultMap="QualityMonthlyReportMap">
+	SELECT p.NAME, p.`PROJECT_STATE`, p.HWZPDU, p.PDU_SPDT AS pduSpdt, p.DU , p.AREA, p.START_DATE, p.END_DATE, p.PM, p.QANAME AS QA ,
+	p.PROJECT_TYPE AS projectType, p.`NO` AS pno, b.*
+	FROM project_info p
+	LEFT JOIN (
+	SELECT * FROM (
+	SELECT * FROM `project_review` ORDER BY `statistical_time` DESC ) t GROUP BY t.pro_no ORDER BY t.`statistical_time` DESC ) b
+	ON b.pro_no = p.`NO`
+	WHERE p.`NO` IN ${proNos}
+	<if test="null != page and null != page.page and  null != page.rows">
+		LIMIT ${page.page},${page.rows}
+	</if>
+</select>
+
+<select id="getProjectAccessCurrent" resultMap="QualityMonthlyReportMap">
+	SELECT p.NAME, p.`PROJECT_STATE`, p.HWZPDU, p.PDU_SPDT AS pduSpdt, p.DU
+	, p.AREA, p.START_DATE, p.END_DATE, p.PM, p.QANAME AS QA
+	, p.PROJECT_TYPE AS projectType, p.`NO` AS pno, b.*
+	FROM project_info p
+	LEFT JOIN (
+	SELECT a.*
+	FROM `project_review` a
+	WHERE (
+	SELECT COUNT(1)
+	FROM `project_review` b
+	WHERE (a.pro_no = b.pro_no
+	AND a.is_close = b.is_close
+	AND <![CDATA[ a.id < b.id)
+	) < 5 ]]>
+	ORDER BY a.pro_no ASC, a.id DESC
+	) b
+	ON b.pro_no = p.`NO`
+	WHERE p.`NO` IN ${proNos}
+</select>
+
+	<select id="queryQualityProjects" resultMap="QualityMonthlyReportMap">
+		SELECT p.NAME,p.`PROJECT_STATE`,p.HWZPDU,p.PDU_SPDT AS pduSpdt,
+		p.DU,p.AREA,p.START_DATE,p.END_DATE,
+		p.PM,t.`pro_no` AS pno,p.PROJECT_TYPE AS projectType,ur.userId AS people_lamp
+		FROM
+		(SELECT pro_no FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{date}
+		<if test="163 == id or 162 == id">
+			AND parameter_id = #{id}
+		</if>
+		<if test="164 == id">
+			AND parameter_id IN (164, 162)
+		</if>
+		AND parameter_value = 0
+		<if test="164 == id">
+			GROUP BY pro_no HAVING COUNT(pro_no) > 1
+		</if>
+		<!-- AND parameter_id=#{id} and parameter_value =0 -->
+		) t
+		LEFT JOIN `user_report_project` ur ON t.`pro_no` = ur.`no` AND ur.userId =
+		#{username}
+		LEFT JOIN
+		project_info p
+		ON t.`pro_no`=p.`NO`
+		where t.`pro_no` IN
+		<foreach collection="proNos" item="item" separator="," open="(" close=")">
+          	#{item}
+        </foreach>
+		<if test='coopType == "1"'>
+	    	AND ur.userId IS NOT NULL
+		</if>
+		<if test='coopType == "2"'>
+	    	AND ur.userId IS NULL
+		</if>
+		<choose>
+        	<when test="null != sort and '' !=sort and sortOrder != null and sortOrder != '' and flag == true">
+        		ORDER BY ${sort} ${sortOrder}
+        	</when>
+        	<otherwise>
+        		order by t.pro_no desc
+        	</otherwise>
+        </choose>
+	</select>
+
+	<select id="queryQualityProjectsCount" resultType="java.lang.Integer">
+		SELECT count(1)
+		FROM
+		(SELECT pro_no FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{date}
+		<if test="163 == id or 162 == id">
+			AND parameter_id = #{id}
+		</if>
+		<if test="164 == id">
+			AND parameter_id IN (164, 162)
+		</if>
+		AND parameter_value = 0
+		<if test="164 == id">
+			GROUP BY pro_no HAVING COUNT(pro_no) > 1
+		</if>
+		 <!-- AND parameter_id=#{id} and parameter_value =0 -->
+		) t
+		LEFT JOIN `user_report_project` ur ON t.`pro_no` = ur.`no` AND ur.userId = #{username}
+		LEFT JOIN project_info p
+		ON t.`pro_no`=p.`NO`
+		where t.`pro_no` IN
+		<foreach collection="proNos" item="proNo" separator="," open="(" close=")">
+          	#{proNo}
+        </foreach>
+		<if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+	</select>
+
+	<select id="getProjectMeasureIndex" resultType="java.util.HashMap">
+		<!-- SELECT mhd.*,m.VERSION FROM (SELECT t.* from (
+			SELECT no, measure_id, measure_value
+			FROM measure_history_detail
+			WHERE  measure_id in ${measureIds}
+				   AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startDate}
+				   AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endDate}
+				   AND NO = #{proNo}
+				ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC
+			) t
+		group by t.measure_id) mhd
+		LEFT JOIN measure m
+		LEFT JOIN in_tmpl_index m
+		ON mhd.measure_id = m.ID -->
+		SELECT a.NO, a.`measure_id`, a.`measure_value`,b.VERSION,pc.change_value,
+			IF(d.measure_id IS NULL,b.`CHALLENGE`,d.`challenge`) AS challenge,
+        	IF(d.measure_id IS NULL,b.`UPPER`,d.upper) AS upper,
+       		IF(d.measure_id IS NULL,b.`TARGET`,d.`target`) AS target,
+        	IF(d.measure_id IS NULL,b.`LOWER`,d.`lower`) AS lower,
+        	IF(d.measure_id IS NULL,b.`COMPUTE_RULE`,d.`compute_rule`) AS computeRule
+		FROM (SELECT NO, `measure_id`, `measure_value`
+		FROM (SELECT
+		NO,`measure_id`,`measure_value`
+		FROM (SELECT NO, `measure_id`, `measure_value`,create_time,update_time
+		FROM `measure_history_detail`
+		WHERE NO = #{proNo}
+		AND `measure_id` IN ${measureIds}
+		AND create_time BETWEEN #{startDate}
+		AND #{endDate}) t
+		ORDER BY t.create_time DESC,t.update_time DESC) mhd
+		GROUP BY measure_id) a
+		LEFT JOIN `in_tmpl_index` b
+		ON a.measure_id = b.id
+		LEFT JOIN (
+			SELECT c.measure_id,c.no,c.upper,c.challenge,c.target,c.lower,c.compute_rule FROM (
+				SELECT m.measure_id,m.no,m.upper,m.challenge,m.target,m.lower,m.compute_rule FROM measure_range m
+				 ORDER BY update_time DESC
+			) c
+			GROUP BY c.measure_id,c.no
+		) d
+		ON a.measure_id = d.measure_id AND a.no = d.no
+		LEFT JOIN comment_picture_change pc
+		ON a.measure_id = pc.measure_id AND a.no = pc.pro_no AND pc.change_date=DATE_FORMAT(#{endDate},'%y-%m-%d')
+	</select>
+
+	<select id="getCurrentMeasure" resultType="java.util.HashMap">
+		SELECT mhd.*,m.VERSION FROM (SELECT t.* FROM (
+			SELECT NO, measure_id, measure_value
+			FROM measure_history_detail
+			WHERE  measure_id IN ${measureIds}
+				   AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startDate}
+				   AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endDate}
+				   AND NO = #{proNo}
+				ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC
+			) t
+		GROUP BY t.measure_id) mhd
+<!-- 		LEFT JOIN measure m -->
+		LEFT JOIN in_tmpl_index m
+		ON mhd.measure_id = m.ID
+	</select>
+
+	<select id="getZongLanTopProject" resultMap="QualityMonthlyReportMap">
+		SELECT * FROM (SELECT
+		        pi.NAME,
+		        PI.`PROJECT_STATE`,
+		        pi.HWZPDU,
+		        pi.PDU_SPDT AS pduSpdt,
+		        pi.DU,
+		        pr.pro_no AS pno,
+		        pr.*
+		      FROM project_info PI
+		      RIGHT JOIN
+		      (SELECT
+                pro_no
+              	FROM project_parameter_record
+              	WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{statisticalTime}
+                AND parameter_id = 162
+                AND parameter_value = 0) t
+		        ON pi.NO = t.pro_no
+		        LEFT JOIN project_review pr
+		        ON pr.pro_no = pi.NO
+				where pi.`HWZPDUID` IS NOT NULL
+				<include refid="sql_status" />
+		        <if test="projectStatus == 0">
+				  <![CDATA[
+				     AND pr.project_status >= 0 AND pr.project_status < 70
+				     AND DATE_FORMAT(pr.statistical_time,'%Y-%m-%d') = #{statisticalTime}) mm
+				    ]]>
+				</if>
+				<if test="projectStatus == 1">
+				  <![CDATA[
+				    AND pr.project_status >= 70 AND pr.project_status < 80
+				    AND DATE_FORMAT(pr.statistical_time,'%Y-%m-%d') = #{statisticalTime}) mm
+				  ]]>
+				</if>
+				<if test="projectStatus == 4">
+				  <![CDATA[
+				    AND pr.project_status >= 80
+				    AND DATE_FORMAT(pr.statistical_time,'%Y-%m-%d') = #{statisticalTime}) mm
+				  ]]>
+				</if>
+				<if test="projectStatus == 2">
+				  <![CDATA[
+				    AND pr.project_status >= 0 AND pr.project_status < 70 AND (DATE_FORMAT(pr.statistical_time,'%Y-%m-%d') = #{statisticalTime} 
+					OR DATE_FORMAT(pr.statistical_time,'%Y-%m-%d') = #{lastWeek})
+					ORDER BY pr.statistical_time DESC) mm
+					GROUP BY pno HAVING COUNT(pno)>1
+				  ]]>
+				</if>
+				<if test="projectStatus == 3">
+				  <![CDATA[
+				    AND pr.project_status >= 70 AND pr.project_status < 80 AND (DATE_FORMAT(pr.statistical_time,'%Y-%m-%d') = #{statisticalTime} 
+					OR DATE_FORMAT(pr.statistical_time,'%Y-%m-%d') = #{lastWeek})
+					ORDER BY pr.statistical_time DESC) mm
+					GROUP BY pno HAVING COUNT(pno)>1
+				  ]]>
+				</if>
+				ORDER BY CAST(mm.project_status AS DECIMAL)
+	</select>
+
+	<select id="getProjectOverviewCount" resultType="java.lang.Integer">
+		 select count(*) from (
+		  SELECT * FROM(
+		(SELECT
+		pi.NAME,PI.`PROJECT_STATE`,pi.HWZPDU,pi.PDU_SPDT,pi.DU,pi.AREA,pi.START_DATE,pi.END_DATE,pi.PM,pi.PROJECT_TYPE,pa.NO
+		AS pno,pa.*
+		FROM project_assess pa
+		LEFT JOIN project_info PI ON
+		pi.`NO`=pa.`NO`
+		WHERE pa.`NO` IN ${proNos} and DATE_FORMAT(pa.creation_date, '%Y%m') = DATE_FORMAT(CURDATE( ) , '%Y%m')
+		order by pa.quality_lamp+0
+		desc)
+		AS a LEFT JOIN (
+		SELECT SUM(is_361=1 and is_deleted=0) AS assessment,SUM(is_361=2 and is_deleted=0)
+		AS
+		aar,SUM(is_361=3 and is_deleted=0) AS audit,
+		SUM(is_361=4 and is_deleted=0) AS quality,
+		SUM(c.state IS
+		NOT
+		NULL and is_361=1) AS num361,
+		SUM(c.state='Closed' and is_361=1
+		||c.state='关闭' and is_361=1) AS closed361,
+		SUM(c.state='Open' and
+		is_361=1||c.state='在行' and is_361=1) AS OPEN361,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=1),0) AS delay361,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=1) AS added361,
+		SUM(c.state IS NOT NULL and is_361=2) AS
+		sumAAR,
+		SUM(c.state='Closed' and is_361=2
+		||c.state='关闭' and is_361=2) AS
+		closedAAR,
+		SUM(c.state='Open' and
+		is_361=2||c.state='在行' and is_361=2) AS
+		OPENAAR,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=2),0) AS delayAAR,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=2) AS addedAAR,
+		SUM(c.state IS NOT NULL and is_361=3) AS
+		sumAudit,
+		SUM(c.state='Closed' and is_361=3
+		||c.state='关闭' and is_361=3) AS
+		closedAudit,
+		SUM(c.state='Open' and
+		is_361=3||c.state='在行' and is_361=3) AS
+		OPENAudit,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=3),0) AS delayAudit,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=3) AS addedAudit,
+		SUM(c.state IS NOT NULL and is_361=4) AS
+		sumQuality,
+		SUM(c.state='Closed' and is_361=4
+		||c.state='关闭' and is_361=4) AS
+		closedQuality,
+		SUM(c.state='Open' and
+		is_361=4||c.state='在行' and is_361=4) AS
+		OPENQuality,
+		IFNULL(SUM(DATE(c.actual_finish_time)>DATE(c.finish_time) and
+		is_361=4),0) AS delayQuality,
+		SUM(DATE(c.create_time)>=DATE_ADD(CURDATE(),INTERVAL -DAY(CURDATE())+1
+		DAY) and is_361=3) AS addedQuality,
+		NO as bno FROM `project_maturity_comments` AS c
+		WHERE NO  IN ${proNos} GROUP BY
+		NO)
+		AS b ON a.pno=b.bno) 
+		 ) as d
+		</select>
+		<select id="getProjectOverviewCounts" resultType="java.lang.Integer">
+			select count(*) from (
+			SELECT p.NAME,p.`PROJECT_STATE`,p.HWZPDU,p.PDU_SPDT,p.DU,p.AREA,p.START_DATE,p.END_DATE,
+        	p.PM,e.NAME AS QA,p.PROJECT_TYPE,c.`NO` AS pno,r.*
+			FROM
+			(SELECT pro_no as `no` FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{statisticalTime} AND
+		parameter_id=162 and parameter_value =0
+		and pro_no IN ${proNos}) c
+			LEFT JOIN
+			(SELECT * FROM `project_review`
+			<![CDATA[
+				WHERE DATE_FORMAT(`statistical_time`,'%Y-%m-%d')= #{statisticalTime}
+			]]>
+			) r
+			ON c.`NO` = r.`pro_no`
+			LEFT JOIN
+			project_info p
+			ON c.`NO`=p.`NO`
+			LEFT JOIN
+			(SELECT ps.NO, mb.NAME
+			FROM project_staff ps
+			LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+			WHERE ps.ROLE = "QA" AND ps.IS_DELETED = 0 AND ps.IS_KEY_STAFFS = 0
+			GROUP BY ps.NO) e
+			ON c.`NO` = e.`NO`
+			WHERE 1=1
+		    <if test="status == 0">
+	          <![CDATA[
+	          	AND r.`pro_no` IS NULL
+	      	  ]]>
+	        </if>
+	        <if test="status == 1">
+	          <![CDATA[
+	            AND r.`pro_no` IS NOT NULL
+	       		AND r.project_status >= 0 AND r.project_status < 70
+	      	  ]]>
+	        </if>
+	        <if test="status == 2">
+	          <![CDATA[
+	            AND r.`pro_no` IS NOT NULL
+	            AND r.project_status >= 70 AND r.project_status < 80
+	          ]]>
+	        </if>
+	        <if test="status == 4">
+	          <![CDATA[
+	        	AND r.`pro_no` IS NOT NULL
+	      	  ]]>
+	        </if>) a
+		</select>
+
+		<select id="getZhiLiangTopProject" resultMap="measureVo">
+			SELECT ppr.pro_no AS NO, qt.measure_id, DATE_FORMAT(qt.create_time, '%Y-%m-%d') AS create_time
+				, qt.measure_color, qt.measure_value, qt.upper, qt.lower, pi.NAME AS PROJECT_NAME
+				, pi.HWZPDU, pi.PDU_SPDT
+			FROM project_info PI
+			RIGHT JOIN (
+				SELECT pro_no
+				FROM project_parameter_record
+				WHERE create_time = DATE_FORMAT(#{endDate}, '%Y-%m-%d')
+				<if test=" '163'.equals(measureMark)">
+					AND parameter_id = #{measureMark}
+				</if>
+				<if test=" '164'.equals(measureMark)">
+					AND parameter_id IN (164, 162)
+				</if>
+				AND parameter_value = 0
+				<if test=" '164'.equals(measureMark)">
+					GROUP BY pro_no HAVING COUNT(pro_no) > 1
+				</if>
+           <!-- AND parameter_id=#{measureMark} and parameter_value =0 -->
+			) ppr
+			ON pi.NO = ppr.pro_no
+			<include refid="sql_status" />
+			LEFT JOIN quality_trend qt
+			ON pi.NO = qt.no
+			<!-- <if test=" '164'.equals(measureMark)">
+				left join code_gain_type cgt
+				on qt.`no`=cgt.`NO`
+			</if> -->
+			<if test=" '163'.equals(measureMark)">
+				AND qt.measure_id = #{measure}
+			</if>
+			<if test=" '164'.equals(measureMark)">
+<!-- 				AND qt.measure_id IN (SELECT ID FROM measure WHERE VERSION = #{measure}) -->
+				AND qt.measure_id = (SELECT ID FROM in_tmpl_index WHERE VERSION = #{measure})
+				<!-- and cgt.`TYPE`=0 -->
+			</if>
+			AND DATE_FORMAT(qt.create_time, '%Y-%m-%d') = #{endDate}
+			WHERE (qt.measure_color = #{redMeasure} OR qt.measure_color = #{yellowMeasure})
+			<!-- <if test=" '164'.equals(measureMark)">
+				and cgt.PARAMETER_ID=165
+			</if> -->
+			ORDER BY CAST(qt.measure_value AS DECIMAL)
+		</select>
+
+	<resultMap id="ProblemAnalysisMap" type="com.icss.mvp.entity.ReportProblemAnalysis">
+		<result property="no" column="NO" />
+		<result property="name" column="NAME" />
+		<result property="pm" column="PM" />
+		<result property="qa" column="QA" />
+		<result property="hwzpdu" column="HWZPDU" />
+		<result property="pduSpdt" column="PDU_SPDT" />
+		<result property="pdu" column="PDU" />
+		<result property="du" column="DU" />
+		<result property="projectType" column="PROJECT_TYPE" />
+		<result property="problem" column="problem" />
+		<result property="problemClosed" column="problemClosed" />
+		<result property="problemDelay" column="problemDelay" />
+		<result property="aar" column="AAR" />
+		<result property="aarClosed" column="AARClosed" />
+		<result property="aarDelay" column="AARDelay" />
+		<result property="back" column="back" />
+		<result property="backClosed" column="backClosed" />
+		<result property="backDelay" column="backDelay" />
+		<result property="audit" column="audit" />
+		<result property="auditClosed" column="auditClosed" />
+		<result property="auditDelay" column="auditDelay" />
+		<result property="finishTime" column="finish_time" />
+		<result property="actualTime" column="actual_finish_time" />
+		<result property="state" column="state" />
+		<result property="collection" column="collection" />
+	</resultMap>
+	<select id="queryProblemAnalysis" resultMap="ProblemAnalysisMap">
+        SELECT PI.*, mb.NAME AS QA, ur.userId AS collection
+        FROM project_info PI
+        RIGHT JOIN (SELECT DISTINCT(NO)
+        FROM `project_maturity_comments`
+        WHERE DATE_FORMAT(finish_time, '%Y-%m-%d') &gt;= #{startDate}
+        AND DATE_FORMAT(finish_time, '%Y-%m-%d') &lt;= #{endDate} AND is_deleted = '0'
+        ) m ON PI.no = m.NO
+        LEFT JOIN `user_report_project` ur ON m.NO = ur.`no` AND ur.userId = #{username}
+		LEFT JOIN project_staff ps
+		ON PI.NO = ps.NO AND ps.ROLE = 'QA' AND ps.IS_DELETED = 0
+		LEFT JOIN member_base mb
+		ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+        WHERE 1=1
+        <if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+		AND PI.PROJECT_STATE = '在行'
+		<include refid="sql_status" />
+	</select>
+
+	<select id="reportProblemAnalysis" resultMap="ProblemAnalysisMap">
+		<![CDATA[
+			SELECT NO,SUM(is_361=1) AS problem,SUM(is_361=1 AND (finish_time>=actual_finish_time OR (actual_finish_time IS NULL AND NOW()<=finish_time))) AS problemClosed,
+			SUM(is_361=1 AND (actual_finish_time>finish_time OR (actual_finish_time IS NULL AND NOW()>finish_time))) AS problemDelay,
+			SUM(is_361=2) AS AAR,SUM(is_361=2 AND (finish_time>=actual_finish_time OR (actual_finish_time IS NULL AND NOW()<=finish_time))) AS AARClosed,
+			SUM(is_361=2 AND (actual_finish_time>finish_time OR (actual_finish_time IS NULL AND NOW()>finish_time))) AS AARDelay,
+			SUM(is_361=4) AS back,SUM(is_361=4 AND (finish_time>=actual_finish_time OR (actual_finish_time IS NULL AND NOW()<=finish_time))) AS backClosed,
+			SUM(is_361=4 AND (actual_finish_time>finish_time OR (actual_finish_time IS NULL AND NOW()>finish_time))) AS backDelay,
+			SUM(is_361=3) AS audit,SUM(is_361=3 AND (finish_time>=actual_finish_time OR (actual_finish_time IS NULL AND NOW()<=finish_time))) AS auditClosed,
+			SUM(is_361=3 AND (actual_finish_time>finish_time OR (actual_finish_time IS NULL AND NOW()>finish_time))) AS auditDelay
+			FROM `project_maturity_comments` WHERE NO = #{no} AND DATE_FORMAT(finish_time, '%Y-%m-%d') >= #{startDate}
+			AND DATE_FORMAT(finish_time, '%Y-%m-%d') <= #{endDate} AND is_deleted = '0'
+        ]]>
+	</select>
+
+	<select id="kanbanProblemAnalysis" resultMap="ProblemAnalysisMap">
+		<![CDATA[
+			SELECT
+			c.NO,
+			SUM(c.is_361=1) AS problem,
+			SUM(c.is_361=1 AND (c.finish_time>=c.actual_finish_time OR (c.actual_finish_time IS NULL AND NOW()<c.finish_time))) AS problemClosed,
+			SUM(c.is_361=1 AND (c.actual_finish_time>c.finish_time OR (c.actual_finish_time IS NULL AND NOW()>c.finish_time))) AS problemDelay,
+			SUM(c.is_361=2) AS AAR,
+			SUM(c.is_361=2 AND (c.finish_time>=c.actual_finish_time OR (c.actual_finish_time IS NULL AND NOW()<finish_time))) AS AARClosed,
+			SUM(c.is_361=2 AND (c.actual_finish_time>c.finish_time OR (c.actual_finish_time IS NULL AND NOW()>c.finish_time))) AS AARDelay,
+			SUM(c.is_361=4) AS back,
+			SUM(c.is_361=4 AND (c.finish_time>=c.actual_finish_time OR (c.actual_finish_time IS NULL AND NOW()<finish_time))) AS backClosed,
+			SUM(c.is_361=4 AND (c.actual_finish_time>c.finish_time OR (c.actual_finish_time IS NULL AND NOW()>c.finish_time))) AS backDelay,
+			SUM(c.is_361=3) AS audit,
+			SUM(c.is_361=3 AND (c.finish_time>=c.actual_finish_time OR (c.actual_finish_time IS NULL AND NOW()<finish_time))) AS auditClosed,
+			SUM(c.is_361=3 AND (c.actual_finish_time>c.finish_time OR (c.actual_finish_time IS NULL AND NOW()>c.finish_time))) AS auditDelay
+			FROM project_maturity_comments c
+			LEFT JOIN `project_info` PI
+			ON PI.NO = c.NO
+			WHERE c.is_deleted = '0'
+			AND DATE_FORMAT(c.finish_time, '%Y-%m-%d') >= #{startDate}
+			AND DATE_FORMAT(c.finish_time, '%Y-%m-%d') <= #{endDate}
+			AND PI.`DU` = #{du}
+			AND PI.PROJECT_STATE = '在行'
+		]]>
+		<include refid="sql_status" />
+	</select>
+
+	<select id="statesProblem" resultMap="ProblemAnalysisMap">
+        SELECT c.actual_finish_time,c.finish_time,c.state FROM project_maturity_comments c
+        LEFT JOIN `project_info` i ON i.NO = c.NO
+        WHERE c.is_deleted = '0' AND DATE_FORMAT(c.finish_time, '%Y-%m-%d') &gt;= #{start} AND DATE_FORMAT(c.finish_time, '%Y-%m-%d') &lt;= #{end}
+        AND i.`DU` = #{du}
+        <if test='type!=null and type!= "0"'>
+            AND is_361 = #{type}
+        </if>
+    </select>
+
+	<sql id="sql_status">
+		<if test="areas != null and areas.size() != 0">
+			AND `PI`.`AREAID` in
+			<foreach collection="areas" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="status != null and status.size() != 0">
+			AND `PI`.`PROJECT_STATE` IN
+			<foreach collection="status" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="hwpduId != null and hwpduId.size() != 0">
+			AND `PI`.`HWPDUID` IN
+			<foreach collection="hwpduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="hwzpduId != null and hwzpduId.size() != 0">
+			AND `PI`.`HWZPDUID` IN
+			<foreach collection="hwzpduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="pduSpdtId != null and pduSpdtId.size() != 0">
+			AND `PI`.`PDU_SPDTID` IN
+			<foreach collection="pduSpdtId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="buId != null and buId.size() != 0">
+			AND `PI`.`BUID` IN
+			<foreach collection="buId" item="item" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="pduId != null and pduId.size() != 0">
+			AND `PI`.`PDUID` IN
+			<foreach collection="pduId" item="item" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="duId != null and duId.size() != 0">
+			AND `PI`.`DUID` IN
+			<foreach collection="duId" item="item" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+		</if>
+	</sql>
+
+	<select id="queryQualityTrendCount" resultType="java.lang.Integer">
+		select count(distinct q.no) from quality_trend q
+		inner join (
+		SELECT pro_no FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{date}
+		<if test=" '163'.equals(mark) or '162'.equals(mark)">
+			AND parameter_id = #{mark}
+		</if>
+		<if test=" '164'.equals(mark)">
+			AND parameter_id IN (164, 162)
+		</if>
+		AND parameter_value = 0
+		<if test=" '164'.equals(mark)">
+			GROUP BY pro_no HAVING COUNT(pro_no) > 1
+		</if>
+        <!--AND parameter_id=#{mark} and parameter_value =0-->
+        ) ppr
+		on q.no = ppr.pro_no
+		LEFT JOIN `user_report_project` ur ON q.no = ur.`no` AND ur.userId = #{username}
+		where q.create_time=#{date} and q.no in
+		<foreach collection="proNos" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		<if test='coopType == "1"'>
+			AND ur.userId IS NOT NULL
+        </if>
+        <if test='coopType == "2"'>
+			AND ur.userId IS NULL
+        </if>
+		<choose>
+			<when test=" '162'.equals(mark)">
+				AND q.measure_id in
+				<foreach collection="measureIds" item="item" separator=","
+					open="(" close=")">
+					#{item}
+				</foreach>
+			</when>
+			<otherwise>
+				and q.measure_mark = #{mark}
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="queryQualityTrendList"  resultMap="ReportQualityEntityMap">
+		select  q.`no` as proNo, q.measure_id, q.measure_value,q.measure_color, p.NAME as name,
+        		p.HWZPDU as hwzpdu, p.PDU_SPDT as pduSpdt, p.PDU as pdu, p.START_DATE,
+ 				p.DU as du, p.PM as pm, p.PROJECT_TYPE as projectType, m.VERSION,ur.userId AS collection
+		from quality_trend q left join project_info p on q.`no`=p.`NO`
+		LEFT JOIN `user_report_project` ur ON q.no = ur.`no` AND ur.userId = #{username}
+<!-- 		left join measure m  -->
+		left join in_tmpl_index m
+		on q.measure_id = m.ID
+		where q.create_time=#{date} and q.measure_id in
+		<foreach collection="measureIds" item="item" separator="," open="(" close=")">
+          	#{item}
+        </foreach>
+		and q.no in
+		<foreach collection="proNoList" item="no" separator="," open="(" close=")">
+          	#{no}
+        </foreach>
+		<if test='coopType == "1"'>
+			AND ur.userId IS NOT NULL
+        </if>
+        <if test='coopType == "2"'>
+			AND ur.userId IS NULL
+        </if>
+        <if test="null != sort and '' !=sort and sortOrder != null and sortOrder != '' and flag==false">
+        	<if test="'asc' != sortOrder">
+        		ORDER  BY IF (q.`measure_id` = ${sort}, CONVERT(`measure_value`,DECIMAL(10,4)), NULL) ${sortOrder},q.no
+        	</if>
+        	<if test="'asc' == sortOrder">
+        		ORDER  BY IF (q.`measure_id` = ${sort}, CONVERT(`measure_value`,DECIMAL(10,4)), 999999999) ${sortOrder},q.no
+        	</if>
+        </if>
+        <if test="null != sort and '' !=sort and sortOrder != null and sortOrder != '' and flag==true">
+        	ORDER BY ${sort} ${sortOrder}
+        </if>
+	</select>
+
+	<select id="getCredibleMeasureIds" parameterType="java.lang.String" resultType="java.lang.String">
+<!-- 		SELECT ID FROM measure WHERE LABLE_ID in ${credibleLableIds} -->
+		SELECT itli.index_id FROM in_tmpl_label_index itli
+		WHERE itli.label_id = #{credibleLableIds}
+	</select>
+
+	<select id="getHistoryMeasure" resultType="java.util.HashMap">
+		SELECT qt.*,m.VERSION FROM (
+			SELECT NO, measure_id, measure_value
+			FROM quality_trend
+			WHERE measure_id IN ${measureIds}
+		   	AND create_time &gt;= #{startDate}
+			AND create_time &lt;= #{endDate}
+			AND NO = #{proNo}
+		) qt
+<!-- 		LEFT JOIN measure m -->
+		LEFT JOIN in_tmpl_index m
+		ON qt.measure_id = m.ID
+	</select>
+
+	<select id="queryProNoList" resultType="java.lang.String">
+		select distinct q.no from quality_trend q
+		inner join(
+		SELECT pro_no FROM project_parameter_record
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') = #{date}
+		<if test=" '163'.equals(mark) or '162'.equals(mark)">
+			AND parameter_id = #{mark}
+		</if>
+		<if test=" '164'.equals(mark)">
+			AND parameter_id IN (164, 162)
+		</if>
+		AND parameter_value = 0
+		<if test=" '164'.equals(mark)">
+			GROUP BY pro_no HAVING COUNT(pro_no) > 1
+		</if>
+       <!-- AND parameter_id=#{mark} and parameter_value =0-->
+        ) ppr
+		on q.no = ppr.pro_no
+		LEFT JOIN `user_report_project` ur ON q.no = ur.`no` AND ur.userId = #{username}
+		where q.create_time=#{date} and q.no in
+		<foreach collection="proNos" item="item" separator="," open="(" close=")">
+			#{item}
+		</foreach>
+		<if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+		<choose>
+			<when test=" '162'.equals(mark)">
+				AND q.measure_id in
+				<foreach collection="measureIds" item="item" separator=","
+					open="(" close=")">
+					#{item}
+				</foreach>
+			</when>
+			<otherwise>
+				and q.measure_mark = #{mark}
+			</otherwise>
+		</choose>
+		order by q.no desc
+		<!-- <if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset},${page.pageSize}
+		</if> -->
+	</select>
+
+	<select id="queryResourceReportCount" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM (
+			SELECT pro_no
+			FROM project_parameter_record
+			WHERE create_time = #{date}
+			AND parameter_id = #{id}
+			AND parameter_value = 0
+		) t
+		LEFT JOIN `user_report_project` ur ON t.`pro_no` = ur.`no` AND ur.userId = #{username}
+		LEFT JOIN project_info p ON t.`pro_no` = p.`NO`
+		WHERE p.`HWZPDUID` IS NOT NULL
+		AND t.`pro_no` IN ${proNos}
+		<if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+	</select>
+
+	<select id="queryCurrentResourceReport" resultMap="memberResourceReport">
+        SELECT t.`pro_no` AS pno, p.NAME, mb.keyRoleCount, mb.headcount
+		, pk.key_onDuty, pk.key_quit, pk.key_reserve, pk.key_person, pml.on_duty, pml.quit, pml.reserve, p.HWZPDU
+		, p.PDU_SPDT, p.PDU, p.DU, p.PM, ur.userId AS collection,
+		<!-- (IF(IFNULL(mb.keyRoleCount,0)=0,0,(IFNULL(pk.key_onDuty,0)+IFNULL(pk.key_reserve,0))/mb.keyRoleCount)*15+
+		 IF(IFNULL(mb.headcount,0)=0,0,(IFNULL(pml.on_duty,0)+IFNULL(pml.reserve,0))/mb.headcount)*10
+		 ) AS stability -->
+		 (IF(IFNULL(mb.keyRoleCount,0)=0,0,IF((IFNULL(pk.key_onDuty,0)+IFNULL(pk.key_reserve,0))/mb.keyRoleCount >= 1 ,
+		 15, (IFNULL(pk.key_onDuty,0)+IFNULL(pk.key_reserve,0))/mb.keyRoleCount*15))+
+		 IF(IFNULL(mb.headcount,0)=0,0,IF((IFNULL(pml.on_duty,0)+IFNULL(pml.reserve,0))/mb.headcount >= 1,
+		 10, (IFNULL(pml.on_duty,0)+IFNULL(pml.reserve,0))/mb.headcount*10))
+		 ) AS stability
+		FROM (
+			SELECT pro_no, create_time
+			FROM project_parameter_record
+			WHERE create_time = #{date}
+			AND parameter_id = #{id}
+			AND parameter_value = 0
+		) t
+		LEFT JOIN `user_report_project` ur ON t.`pro_no` = ur.`no` AND ur.userId = #{username}
+		LEFT JOIN project_info p ON t.`pro_no` = p.`NO`
+		LEFT JOIN manpower_budget mb ON t.pro_no = mb.pro_no
+		LEFT JOIN (
+			SELECT NO, SUM(CASE WHEN (STATUS = '在岗' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS key_onDuty,
+			SUM(CASE WHEN (STATUS = '离职' AND END_DATE &gt; #{lastWeek}
+			AND END_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS key_quit,
+			SUM(CASE WHEN (STATUS = '后备' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS key_reserve,
+			COUNT(ZR_ACCOUNT) AS key_person
+			FROM project_staff
+			WHERE IS_KEY_STAFFS = 0
+			AND IS_DELETED = 0
+			GROUP BY NO
+		) pk
+		ON t.pro_no = pk.NO
+		LEFT JOIN (
+			SELECT NO, SUM(CASE WHEN (STATUS = '在岗' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS on_duty,
+			SUM(CASE WHEN (STATUS = '离职' AND END_DATE &gt; #{lastWeek}
+			AND END_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS quit,
+			SUM(CASE WHEN (STATUS = '后备' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS reserve
+			FROM project_staff
+			WHERE IS_DELETED = 0
+			GROUP BY NO
+		) pml
+		ON t.pro_no = pml.NO
+		where p.`HWZPDUID` IS NOT NULL
+		and t.`pro_no` IN ${proNos}
+		<if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+        ORDER BY stability DESC
+		<if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset},${page.pageSize}
+		</if>
+	</select>
+
+	<select id="queryHistoryResourceReport" resultMap="memberResourceReport">
+        SELECT t.`pro_no` AS pno, p.NAME, pr.resources_lamp, mb.keyRoleCount, mb.headcount
+		, pk.key_onDuty, pk.key_quit, pk.key_reserve, pk.key_person, pml.on_duty, pml.quit, pml.reserve, p.HWZPDU
+		, p.PDU_SPDT, p.PDU, p.DU, p.PM,ur.userId AS collection
+		FROM (
+			SELECT pro_no, create_time
+			FROM project_parameter_record
+			WHERE create_time = #{date}
+			AND parameter_id = #{id}
+			AND parameter_value = 0
+		) t
+		LEFT JOIN `user_report_project` ur ON t.`pro_no` = ur.`no` AND ur.userId = #{username}
+		LEFT JOIN project_info p ON t.`pro_no` = p.`NO`
+		LEFT JOIN manpower_budget mb ON t.pro_no = mb.pro_no
+		LEFT JOIN project_review pr
+		ON t.pro_no = pr.pro_no
+		AND t.create_time = pr.statistical_time
+		LEFT JOIN (
+			SELECT NO, SUM(CASE WHEN (STATUS = '在岗' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS key_onDuty,
+			SUM(CASE WHEN (STATUS = '离职' AND END_DATE &gt; #{lastWeek}
+			AND END_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS key_quit,
+			SUM(CASE WHEN (STATUS = '后备' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS key_reserve,
+			COUNT(ZR_ACCOUNT) AS key_person
+			FROM project_staff
+			WHERE IS_KEY_STAFFS = 0
+			AND IS_DELETED = 0
+			GROUP BY NO
+		) pk
+		ON t.pro_no = pk.NO
+		LEFT JOIN (
+			SELECT NO, SUM(CASE WHEN (STATUS = '在岗' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS on_duty,
+			SUM(CASE WHEN (STATUS = '离职' AND END_DATE &gt; #{lastWeek}
+			AND END_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS quit,
+			SUM(CASE WHEN (STATUS = '后备' AND START_DATE &lt;= #{date}) THEN 1 ELSE 0 END) AS reserve
+			FROM project_staff
+			WHERE IS_DELETED = 0
+			GROUP BY NO
+		) pml
+		ON t.pro_no = pml.NO
+		where p.`HWZPDUID` IS NOT NULL
+		and t.`pro_no` IN ${proNos}
+		<if test='coopType == "1"'>
+            <![CDATA[
+				AND ur.userId IS NOT NULL
+			]]>
+        </if>
+        <if test='coopType == "2"'>
+            <![CDATA[
+				AND ur.userId IS NULL
+			]]>
+        </if>
+		order by pr.resources_lamp desc
+		<if test="null != page.pageSize and  null != page.offset">
+			LIMIT ${page.offset},${page.pageSize}
+		</if>
+	</select>
+
+	<select id="queryEfficiencyProjectsCount" resultType="java.lang.Integer">
+		select count(distinct tt.pro_no)
+		from(select  t.pro_no, t.measure_id,t.`status`
+				from
+				(select p.* from pcb_project_config p
+				LEFT JOIN `user_report_project` ur ON p.`pro_no` = ur.`no` AND ur.userId = #{username}
+				where p.measure_id in
+				<foreach collection="measureIds" open="(" close=")" separator="," item="measureId">
+					#{measureId}
+				</foreach>
+				 	and p.pro_no in
+				<foreach collection="proNos" open="(" close=")" separator="," item="proNo">
+					#{proNo}
+				</foreach>
+				<if test='coopType == "1"'>
+                    <![CDATA[
+				        AND ur.userId IS NOT NULL
+			        ]]>
+                </if>
+                <if test='coopType == "2"'>
+                    <![CDATA[
+				        AND ur.userId IS NULL
+			        ]]>
+                </if>
+				AND DATE_FORMAT(p.create_time, '%Y-%m-%d') &lt;= #{date}
+				order by p.pro_no, p.measure_id,p.create_time desc) t
+			group by t.pro_no, t.measure_id) tt
+		where tt.status=0
+	</select>
+
+	<select id="queryEfficiencyProjectList" resultType="com.icss.mvp.entity.ProjectInfo">
+		select distinct tt.pro_no as no, pi.NAME as name, pi.HWPDU as hwpdu, pi.HWZPDU as hwzpdu, pi.PDU_SPDT as pduSpdt,
+			   pi.BU as bu, pi.PDU as pdu, pi.DU as du, pi.PROJECT_TYPE as projectType, pi.PM as pm,tt.userId as coopType
+		from(select  t.pro_no, t.measure_id,t.`status`,t.userId
+				from
+				(select p.*,ur.userId
+				from pcb_project_config p
+				LEFT JOIN `user_report_project` ur ON p.`pro_no` = ur.`no` AND ur.userId = #{username}
+				where p.measure_id in
+				<foreach collection="measureIds" open="(" close=")" separator="," item="measureId">
+					#{measureId}
+				</foreach>
+				 	and p.pro_no in
+				<foreach collection="proNos" open="(" close=")" separator="," item="proNo">
+					#{proNo}
+				</foreach>
+				<if test='coopType == "1"'>
+                    <![CDATA[
+				        AND ur.userId IS NOT NULL
+			        ]]>
+                </if>
+                <if test='coopType == "2"'>
+                    <![CDATA[
+				        AND ur.userId IS NULL
+			        ]]>
+                </if>
+				AND DATE_FORMAT(p.create_time, '%Y-%m-%d') &lt;= #{date}
+				order by p.pro_no, p.measure_id,p.create_time desc) t
+			group by t.pro_no, t.measure_id) tt, project_info pi
+		where  tt.pro_no=pi.no and tt.status=0
+		order by tt.pro_no
+	<if test="null != page.pageSize and  null != page.offset">
+		limit ${page.offset},${page.pageSize}
+	</if>
+	</select>
+
+	<select id="getEfficiencyMeasureIndex" resultType="java.util.HashMap">
+		SELECT t1.measure_id, t2.measure_value
+			FROM
+		(select  t.pro_no, t.measure_id,t.`status`
+			from
+			(select * from pcb_project_config
+				where pro_no=#{proNo} AND measure_id in
+				<foreach collection="measureIds" open="(" close=")" separator="," item="measureId">
+					#{measureId}
+				</foreach>
+				AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endDate}
+			order by pro_no, measure_id,create_time desc) t
+		group by t.pro_no, t.measure_id) t1
+		LEFT JOIN
+		(SELECT t.*
+			FROM (
+				SELECT measure_id, measure_value
+					FROM measure_history_detail
+				WHERE NO =#{proNo}
+					  AND DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startDate}
+				      AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endDate}
+				ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC
+				) t
+			GROUP BY t.measure_id) t2
+		ON t1.measure_id=t2.measure_id
+		where t1.status=0
+	</select>
+
+	<select id="queryProjectStabilityScore" resultType="java.lang.String">
+		SELECT
+		manual_value
+		FROM project_lamp_mode
+		WHERE pro_no = #{proNo}
+		AND statistical_time = #{date}
+		AND field = #{field}
+		AND lamp_mode = #{lampMode}
+	</select>
+
+	<select id="getMeasureIds" resultType="java.util.HashMap">
+		<!-- SELECT ID,name FROM measure
+		WHERE category = #{category}
+		AND ID IN -->
+		SELECT iti.ID, iti.name FROM in_tmpl_label itl
+		LEFT JOIN in_tmpl_label_index itli ON itl.ID = itli.label_id
+		LEFT JOIN in_tmpl_index iti ON itli.index_id = iti.ID
+		WHERE itl.category = #{category}
+		AND iti.ID IN
+		<foreach collection="measureIdList" open="(" close=")"
+			separator="," item="item">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getMeasureVale" resultType="java.util.HashMap">
+		SELECT t.measure_id, t.measure_value
+		FROM (
+		SELECT measure_id , measure_value
+		FROM measure_history_detail
+		WHERE DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= #{startDate1}
+		AND DATE_FORMAT(create_time, '%Y-%m-%d') &lt;= #{endDate1}
+		AND NO = #{proNo}
+		AND measure_id IN
+		<foreach collection="measureList" open="(" close=")" separator="," item="item">
+			#{item}
+		</foreach>
+		ORDER BY DATE_FORMAT(create_time, '%Y-%m-%d') DESC,update_time DESC) t
+		GROUP BY t.measure_id
+	</select>
+
+	<select id="queryCostReportCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM (
+			SELECT p.NO
+			FROM (SELECT DISTINCT(pro_no) FROM project_parameter_record
+			WHERE create_time IN
+			<if test="true == middleMark">
+				(#{startDate})
+			</if>
+			<if test="false == middleMark">
+				(#{startDate}, #{endDate})
+			</if>
+			AND parameter_id = 162
+			AND parameter_value = 0) ppr
+			INNER JOIN
+			(
+				SELECT *
+				FROM (
+					SELECT *
+					FROM project_month_budget mb
+					WHERE DATE_FORMAT(mb.cost_date, '%Y-%m') = #{month}
+					ORDER BY mb.update_time DESC
+				) t
+				WHERE t.attend_money > 0
+				GROUP BY t.no
+			) pmb ON ppr.pro_no = pmb.no
+			LEFT JOIN project_info p ON ppr.pro_no = p.NO
+			LEFT JOIN `user_report_project` ur ON ppr.pro_no = ur.`no` AND ur.userId = #{username}
+			WHERE p.NO IS NOT NULL
+			AND p.`HWZPDUID` IS NOT NULL
+			<if test='coopType == "1"'>
+             <![CDATA[
+				 AND ur.userId IS NOT NULL
+			 ]]>
+	        </if>
+	        <if test='coopType == "2"'>
+	             <![CDATA[
+					 AND ur.userId IS NULL
+				 ]]>
+	        </if>
+		) ppr
+		WHERE ppr.NO IN
+		<foreach collection="proNos" item="no" open="(" separator="," close=")">
+			#{no}
+		</foreach>
+	</select>
+
+	<select id="queryMonthCost" resultMap="projectMB">
+		SELECT p.NO, p.NAME, p.PM, p.HWZPDU, p.PDU_SPDT
+		, p.PDU, p.DU, pb.PROJECT_BUDGET, ur.userId AS collection, p.START_DATE
+		, p.END_DATE, pmb.attend_money, pmb.over_money, pmb.normal_out,
+		t2.oldAttend_money, t2.oldOver_money, t2.oldNormal_out,
+		IF(IFNULL(pb.PROJECT_BUDGET, 0) = 0, 0, (IFNULL(t2.oldAttend_money, 0) + IFNULL(t2.oldOver_money, 0))/pb.PROJECT_BUDGET)
+		- IF(IFNULL(p.START_DATE, 0) = 0 || IFNULL(p.END_DATE, 0) = 0, 0,
+		DATEDIFF(#{cycle}, DATE(p.START_DATE))/DATEDIFF(DATE(p.END_DATE), DATE(p.START_DATE))) AS deviation_light
+		FROM (SELECT DISTINCT(pro_no) FROM project_parameter_record
+		WHERE create_time IN
+		<if test="true == middleMark">
+			(#{startDate})
+		</if>
+		<if test="false == middleMark">
+			(#{startDate}, #{endDate})
+		</if>
+		AND parameter_id = 162
+		AND parameter_value = 0) ppr
+		INNER JOIN
+		(
+			SELECT *
+			FROM (
+				SELECT *
+				FROM project_month_budget mb
+				WHERE DATE_FORMAT(mb.cost_date, '%Y-%m') = #{month}
+				ORDER BY mb.update_time DESC
+			) t
+			WHERE t.attend_money > 0
+			GROUP BY t.no
+		) pmb ON ppr.pro_no = pmb.no
+		LEFT JOIN
+		(SELECT t1.NO,
+		IFNULL(SUM(t1.attend_money), 0) AS oldAttend_money,
+		IFNULL(SUM(t1.over_money), 0) AS oldOver_money,
+		IFNULL(SUM(t1.normal_out), 0) AS oldNormal_out
+		FROM (
+			SELECT *
+			FROM (
+				SELECT *
+				FROM project_month_budget mb
+				WHERE mb.cost_date &lt;= #{endDate}
+				ORDER BY mb.update_time DESC
+			) t
+			WHERE t.attend_money > 0
+			GROUP BY t.no, DATE_FORMAT(t.cost_date, '%Y-%m')
+		) t1
+		GROUP BY t1.no) t2 ON ppr.pro_no = t2.NO
+		LEFT JOIN project_info p ON ppr.pro_no = p.NO
+		LEFT JOIN `user_report_project` ur ON ppr.pro_no = ur.`no` AND ur.userId = #{username}
+		LEFT JOIN project_budget pb ON ppr.pro_no = pb.NO
+		WHERE p.NO IS NOT NULL
+		AND p.`HWZPDUID` IS NOT NULL
+		<if test='coopType == "1"'>
+             <![CDATA[
+				 AND ur.userId IS NOT NULL
+			 ]]>
+        </if>
+        <if test='coopType == "2"'>
+             <![CDATA[
+				 AND ur.userId IS NULL
+			 ]]>
+        </if>
+		AND p.NO IN
+		<foreach collection="proNos" item="no" open="(" separator="," close=")">
+			#{no}
+		</foreach>
+		ORDER BY ABS(deviation_light) DESC
+		<if test="null != page.pageSize and  null != page.offset">
+			limit ${page.offset}, ${page.pageSize}
+		</if>
+	</select>
+
+	<select id="getProjectCost" resultMap="projectMB">
+		SELECT mb.no, mb.cost_date, mb.attend_money, mb.over_money, mb.normal_out
+		FROM project_month_budget mb
+		WHERE mb.no = #{proNo}
+		AND mb.cost_date &gt;= #{beginDate} AND mb.cost_date &lt;= #{endDate}
+		ORDER BY mb.update_time DESC LIMIT 1
+	</select>
+
+	<insert id="addConcernItems" parameterType="Map">
+		replace into
+		`user_report_project` (userId, no)
+		VALUES
+		<foreach collection="list" item="item" index="index" separator=",">
+	        (#{item.username},#{item.proNo})
+	    </foreach>
+	</insert>
+
+	<delete id="deleteConcernItems" parameterType="Map">
+		delete
+		from
+		`user_report_project` where userId=#{username} and
+		no = #{proNo}
+	</delete>
+
+	<select id="getProjectEdit" parameterType="java.lang.String" resultMap="ProjectAssessInfoMap">
+		SELECT pmc.* ,pif.name FROM project_maturity_comments pmc LEFT JOIN `project_info` pif ON pmc.no=pif.no
+		where `is_deleted` = 0 and `id` = #{id}
+	</select>
+
+</mapper>

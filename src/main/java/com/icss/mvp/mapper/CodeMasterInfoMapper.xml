@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ICodeMasterInfoDao">
+	<resultMap id="CodeMasterMap" type="com.icss.mvp.entity.CodeMasterInfo">
+	  <result property="codekey" column="CODEKEY" />
+	  <result property="name" column="NAME"/>
+	  <result property="value" column="VALUE"/>
+	  <result property="note" column="NOTE"/>
+	</resultMap>
+	<select id="getList" resultMap="CodeMasterMap">
+		<!-- SELECT *
+		FROM code_master_info
+		WHERE 1=1 -->
+		SELECT v.code as CODEKEY, v.`key` as NAME, v.value as VALUE, v.name as NOTE 
+		from v_dictionary v WHERE 1=1;
+		<if test="codeM.codekey!=null and codeM.codekey!=''">  
+	   	 	AND v.code = #{codeM.codekey}  
+	    </if>
+	    <if test="codeM.name!=null and codeM.name!=''">  
+	   		AND v.`key` = #{codeM.name}  
+	    </if>
+	    <if test="codeM.value!=null and codeM.value!=''">  
+	   		AND v.value = #{codeM.value}  
+	    </if>
+	    <if test="codeM.note!=null and codeM.note!=''">  
+	   		AND v.name = #{codeM.note}  
+	    </if>
+	</select>
+	<select id="getCodeMasterOrderByValue" resultMap="CodeMasterMap">
+		<!-- SELECT *
+		FROM code_master_info
+		WHERE 1=1 -->
+		SELECT v.code as CODEKEY, v.`key` as NAME, v.value as VALUE, v.name as NOTE
+		from v_dictionary v WHERE 1=1
+		<if test="codeM.codekey!=null and codeM.codekey!=''">  
+	   	 	AND v.code = #{codeM.codekey}  
+	    </if>
+	    <if test="codeM.name!=null and codeM.name!=''">  
+	   		AND v.`key` = #{codeM.name}  
+	    </if>
+	    <if test="codeM.value!=null and codeM.value!=''">  
+	   		AND v.value = #{codeM.value}  
+	    </if>
+	    <if test="codeM.note!=null and codeM.note!=''">  
+	   		AND v.name = #{codeM.note}  
+	    </if>
+	    ORDER BY cast(`VALUE` as signed integer) 
+	</select>
+
+	<select id="getCodeMasterOrderByValues" resultType="java.util.HashMap">
+		SELECT  v.`key` as text, v.value as value
+		from v_dictionary v WHERE 1=1
+		<if test="codeM.codekey!=null and codeM.codekey!=''">
+			AND v.code = #{codeM.codekey}
+		</if>
+		<if test="codeM.name!=null and codeM.name!=''">
+			AND v.`key` = #{codeM.name}
+		</if>
+		<if test="codeM.value!=null and codeM.value!=''">
+			AND v.value = #{codeM.value}
+		</if>
+		<if test="codeM.note!=null and codeM.note!=''">
+			AND v.name = #{codeM.note}
+		</if>
+		ORDER BY cast(`VALUE` as signed integer)
+	</select>
+	
+	<!-- 职员状态-7 -->
+	<select id="getMemberStatusValue" resultType="java.util.HashMap">
+		SELECT NAME,val FROM sys_dict_item WHERE sys_dict_id = 7
+	</select>
+	
+	<select id="getTeamId" resultType="java.lang.String">
+		SELECT TEAMID FROM project_info WHERE NO = #{no}
+	</select>
+	
+	<select id="getProjectPOCodeByTeam" resultType="java.util.HashMap">
+		SELECT NO, NAME, PO FROM project_info WHERE TEAMID = #{teamId}
+	</select>
+	
+	<select id="getProjectPOCodeByProject" resultType="java.util.HashMap">
+		SELECT NO, NAME, PO FROM project_info WHERE NO = #{no}
+	</select>
+	
+	<select id="getMemberSVN" resultType="java.util.HashMap">
+		SELECT AUTHOR FROM svn_log WHERE NO = #{no} GROUP BY AUTHOR
+	</select>
+
+	<select id="getkeyByvalue" resultType="java.lang.String">
+		SELECT  v.`key` as NAME
+		from v_dictionary v WHERE v.code = 'role' AND v.value = #{value};
+	</select>
+	
+	<!-- 职员职级 -->
+	<select id="getMemberRankValue" resultType="java.util.HashMap">
+		SELECT rank_name, rank_name AS VALUE FROM rank GROUP BY rank_name ORDER BY rank_name + 0;
+	</select>
+
+	<!-- 职员职级 -->
+	<select id="getMemberRankValues" resultType="java.util.HashMap">
+		SELECT rank_name AS text, rank_name AS value FROM rank GROUP BY rank_name ORDER BY rank_name + 0;
+	</select>
+</mapper>

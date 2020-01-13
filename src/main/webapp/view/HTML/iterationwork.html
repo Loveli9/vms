@@ -1,0 +1,441 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>可视化度量平台</title>
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/animate.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+<link rel="stylesheet" href="../../resources/bootstrap/style.min.css" type="text/css" />
+<link rel="stylesheet" href="css/DefaultSkin.css" type="text/css" />
+<link rel="stylesheet" href="css/toastr.min.css" type="text/css" />
+<script type="text/javascript" src="js/jquery-1.11.1.min.js"></script> 
+<script type="text/javascript" src="../../resources/easyui/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/jquery.serializejson.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/moment-with-locales.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-table-editable.js"></script>
+<script type="text/javascript" src="../../resources/bootstrap/bootstrap-editable.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/datagrid-header-tooltip.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="../../resources/underscore/underscore.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/comm.js"></script>
+<script type="text/javascript" src="js/iterationwork.js"></script>
+<script type="text/javascript" src="../../resources/js/comm/bootstrap-message.js"></script>
+<style>
+	    	.back:hover{cursor: pointer;}
+	    	.fixed-table-toolbar .btn-group>.btn-group:last-child>.btn {
+			    border-top-right-radius: 0px;
+			    border-bottom-right-radius: 0px;
+			}
+			label{width:100px;}
+			.popup_de{
+				background-color:rgba(0,0,0,0.3);
+				width:100%;
+				height: 100%;
+				position:fixed;
+				z-index:999;
+				top:0;
+				left:0;
+				display:none;
+			}
+			.bbox{
+				display: -webkit-box;   /* 老版本语法: Safari, iOS, Android browser, older WebKit browsers. */
+			    display: -moz-box;      /* 老版本语法: Firefox (buggy) */
+			    display: -ms-flexbox;   /* 混合版本语法: IE 10 */   
+				display: -webkit-flex;  /* 新版本语法: Chrome 21+ */
+				display: -moz-flex;
+			    display: flex;          /* 新版本语法: Opera 12.1, Firefox 22+ */
+			}
+			.bbox.xycenter{
+				-moz-box-pack: center; /*Firefox*/
+			    -webkit-box-pack: center; /*Safari,Opera,Chrome*/
+			    box-pack: center;
+			    -moz-justify-content: center;
+			    -webkit-justify-content: center;
+			    justify-content: center;
+				-moz-box-align: center; /*Firefox*/
+			    -webkit-box-align:center; /*Safari,Opera,Chrome*/
+			    box-align: center;
+				-moz-align-items: center;
+			    -webkit-align-items: center;
+				align-items:center;
+			}
+			.popup_de .popup_box{
+				width:300px;
+				height:150px;
+				font-family: '微软雅黑';
+				background-color: #fff;
+				border-radius:5px;
+				color:#333;
+			}
+			.popup_de .popup_btn{
+				display: inline-block;
+				width:100px;
+				height:30px;
+				border-radius: 3px;
+				border:1px solid #1ab394;
+				font-size:15px;
+				text-align: center;
+				line-height: 30px;
+				margin-right:15px;
+				cursor: pointer;
+			}
+			.popup_de .show_msg{
+				display: block;
+				width:100%;
+				text-align: center;
+				font-size:18px;
+				margin-top:40px;
+				margin-bottom: 20px;
+				padding:10px;
+			}
+			.popup_de .popup_close{
+				width:30px;
+				height:30px;
+				font-size:25px;
+				text-align: center;
+				display: inline-block;
+		        cursor:pointer;
+		        float: right;
+		        border-top-right-radius: 5px;
+				line-height:30px;
+			}
+			.popup_de .popup_close:hover{
+				background-color: #1ab394;
+				color:#fff;
+			}
+			.popup_de .btn_submit{
+				background-color: #1ab394;
+				color:#fff;
+			}
+			.popup_de .btn_box{
+				text-align: center;
+			}
+			.tableBody{
+				padding-top: 50px;
+			}
+			.breadcrumb {
+			    background-color: #fff;
+			    margin-left: 20px;
+			    margin-right: 20px;
+			    margin-bottom: 0px;
+			    padding: 8px 0px;
+			}
+		  .table {table-layout:fixed;}  
+
+		 .table tr td{ 		
+			 overflow: hidden; 
+		      text-overflow:ellipsis;  
+		      white-space: nowrap; 
+		}
+		.fixed-table-toolbar .columns label{
+			padding: 1px 0px 0px 11px;
+		}
+		.myTab{
+			padding-left: 3px;
+			padding-right: 20px;
+		}
+		.fixed-table-container {
+			background-color: #fff;
+		}
+		.fixed-table-body {
+		    overflow-x: auto;
+		    overflow-y: auto;
+		    /* height: 648px; */
+		    background-color: white;
+		}
+</style>
+<script type="text/javascript">
+$(function(){
+	$("#planStartDate").datetimepicker({
+		minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+        $("#planStartDate").datetimepicker("setEndDate",$("#planEndDate").val());
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#planStartDate'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#planStartDate'));
+    });
+	
+    $("#planEndDate").datetimepicker({
+    	minView: "month", //选择日期后，不会再跳转去选择时分秒 
+	    language:  'zh-CN',
+	    format: 'yyyy-mm-dd',
+	    todayBtn:  1,
+	    autoclose: 1,
+	    todayHighlight:true
+    }).on("click",function(){
+        $("#planEndDate").datetimepicker("setStartDate",$("#planStartDate").val());
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#planEndDate'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#planEndDate'));
+    });
+    
+    $("#startDate").datetimepicker({//实际开始日期
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true,
+        startDate:$("#editplanStartDate").val()
+    }).on("click",function(){
+        $("#startDate").datetimepicker("setEndDate",$("#endDate").val());
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#startDate'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#startDate'));
+    });
+	
+    $("#endDate").datetimepicker({//实际jiesh日期
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true,
+        startDate:$("#planStartDate").val()
+    }).on("click",function(){
+        $("#endDate").datetimepicker("setStartDate",$("#startDate").val());
+    }).on('hide',function(e) {
+    	$('#addForm')
+        .bootstrapValidator('updateStatus', $('#endDate'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#endDate'));
+    });
+	
+    //编辑
+    $("#editstartDate").datetimepicker({//实际开始日期
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true,
+        startDate:$("#editplanStartDate").val()
+    }).on("click",function(){
+        $("#editstartDate").datetimepicker("setEndDate",$("#planEndDate").val());
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#editstartDate'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#editstartDate'));
+    });
+	
+    $("#editendDate").datetimepicker({//实际jiesh日期
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true,
+        startDate:$("#editplanStartDate").val()
+    }).on("click",function(){
+        $("#editendDate").datetimepicker("setStartDate",$("#editstartDate").val());
+    }).on('hide',function(e) {
+    	$('#editForm')
+        .bootstrapValidator('updateStatus', $('#editendDate'), 'NOT_VALIDATED')
+        .bootstrapValidator('validateField', $('#editendDate'));
+    });
+    
+    
+});
+/* Function overShow(obj, e) {//鼠标移入
+    var showDiv =document.getElementById('showDiv');
+    var theEvent =window.event|| e;
+    showDiv.style.left= theEvent.clientX +"px";
+    showDiv.style.top= theEvent.clientY +"px";
+    showDiv.style.display='block';
+    showDiv.innerHTML = obj.innerHTML;
+}
+Function outHide() {//鼠标移出
+    var showDiv =document.getElementById('showDiv');
+    showDiv.style.display='none';
+    showDiv.innerHTML ='';
+} */
+</script>
+</head>
+<body class="mvp-body">
+<div class="mvp-main">
+	<div id="showDiv"></div>
+    <div class='content' onmouseover="overShow(this,event)" onmouseout="outHide()"></div>
+    <div class="myTab">
+		<!-- <div class="panel panel-default" style="margin-bottom: 0px;"> -->
+		<div>
+			<!-- <div class="panel-heading" style="padding: 5px 15px;">迭代信息列表</div> -->
+			<div style="margin: -10px 20px 0px 0px;">
+				<div id="query-form" class=" pull-left" style="position: relative;top: 10px;width:400px;">
+					<div class="col-sm-7" style="padding-left: 0px;">
+						<input type="text" class="form-control" name="iteName" 
+							id="iteName"placeholder="请输入迭代名称" />
+					</div>
+					<div class="btn-group" style="padding-left: 0px;">
+						<button id="search_btn" type="button" class="btn btn-default"
+							>
+							<span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+						</button>
+						<button id="clear_btn" type="button" class="btn btn-default">
+							<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>重置
+						</button>
+					</div>
+				</div>
+
+				<div class="btn-group" id="toolbar">
+					<button id="btn_refresh" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>刷新
+					</button>
+					<button id="btn_add" type="button" class="btn btn-default">
+						<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					</button>
+					<button id="btn_edit" type="button" class="btn btn-default"
+						style=" border-radius: 0">
+						<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+					</button>
+					<button id="btn_delete" type="button" class="btn btn-default"
+						>
+						<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					</button>
+				</div>
+			</div>
+			<table id="mytab" class="table text-nowrap"></table>
+		</div>
+	</div>
+</div>
+        <!-- 新增页面 -->
+		<div class="modal fade" id="iteAddPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
+			data-backdrop="static">
+			<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:800px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						新增迭代信息
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="addForm" method="post" class="form-horizontal">
+						<input style="display: none" type="text" class="form-control" name="proNo" id="proNo"	/>
+		                    <div class="form-group">
+		                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>迭代名称</label>
+		                        <div class="col-sm-10">
+		                            <input type="text" class="form-control" name="iteName" id="iteName"/>
+		                        </div>
+		                    </div>
+		                 <div class="form-group">
+                            <label for="planStartDate" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划开始时间</label>
+                            <div class="col-md-4">
+                                <input  class="form-control form-filter yearpicker" type="text" id="planStartDate" name="planStartDate"
+                                style="background-color: white" readonly="readonly"/>
+                            </div>
+                            
+                            <label for="planEndDate" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划结束时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="planEndDate" name="planEndDate"  
+                                style="background-color: white" readonly="readonly"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="startDate" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>实际开始时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="startDate" name="startDate"
+                                style="background-color: white" readonly="readonly"/>
+                            </div>
+                            <label for="endDate" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>实际结束时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="endDate" name="endDate"  
+                                style="background-color: white" readonly="readonly"/>
+                            </div>
+                        </div>
+		                    <div class="form-group">
+		                        <label class="col-sm-2 control-label">迭代描述</label>
+		                        <div class="col-sm-10">
+		                        	<textarea class="form-control" name="describeInfo" id="describeInfo" rows="3"></textarea>
+		                        </div>
+		                    </div>
+		                    <div class="form-group" style="padding-left: 150px">
+		                        <div class="col-sm-2 col-sm-offset-2">
+		                            <button type="button" class="btn btn-primary btn-block"  id="add_saveBtn">保存</button>
+		                        </div>
+		                        <div class="col-sm-2 col-sm-offset-1">
+		                            <button type="button" class="btn btn-default btn-block"  id="add_backBtn">返回</button>
+		                        </div>
+		                    </div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	 	<!-- 编辑页面 -->
+		<div class="modal fade" id="iteEditPage" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" 
+			data-backdrop="static">
+			<div class="modal-dialog">
+			<div class="modal-content" style="top: 100px;width:800px;margin-left: -50px;">
+				<div class="modal-header" style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+					<h4 class="modal-title" id="uploadModalLabel" style="display: inline; margin-right: 310px;">
+						编辑迭代信息
+					</h4>
+				</div>
+				<div class="modal-body" style="width: 100%;">
+					<form id="editForm" method="post" class="form-horizontal">
+					<input  type="text" class="form-control" name="id" id="editId" style="display: none"	/>
+						<input  type="text" class="form-control" name="proNo" id="editproNo" style="display: none"	/>
+						<input  type="text" class="form-control" name="isDeleted" id="editisDeleted" style="display: none"	/>
+						<input  type="text" class="form-control" name="code" id="editcode" style="display: none"	/>
+		                    <div class="form-group">
+		                        <label class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>迭代名称</label>
+		                        <div class="col-sm-10">
+		                            <input type="text" class="form-control" name="iteName" id="editIteName"/>
+		                        </div>
+		                    </div>
+		                 <div class="form-group">
+                            <label for="planStartDate" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划开始时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" readonly="readonly" type="text" id="editplanStartDate" name="planStartDate"
+                                style="background-color: white" readonly="readonly"/>
+                            </div>
+                            <label for="planEndDate" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>计划结束时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" readonly="readonly" type="text" id="editplanEndDate" name="planEndDate"  
+                               style="background-color: white" readonly="readonly" />
+                            </div>
+                        </div>
+	                    
+	                    <div class="form-group">
+                            <label for="startDate" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>实际开始时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="editstartDate" name="startDate"
+                                style="background-color: white" readonly="readonly"/>
+                            </div>
+                            <label for="endDate" class="col-sm-2 control-label"><span style="color: red;padding-right: 5px;">*</span>实际结束时间</label>
+                            <div class="col-md-4">
+                                <input class="form-control form-filter yearpicker" type="text" id="editendDate" name="endDate"  
+                                style="background-color: white" readonly="readonly"/>
+                            </div>
+                        </div>
+		                   <!-- <div class="hr-line-dashed"></div>-->
+		                    <div class="form-group">
+		                        <label class="col-sm-2 control-label">迭代描述</label>
+		                        <div class="col-sm-10">
+		                        	<textarea class="form-control" name="describeInfo" id="editdescribeInfo" rows="3"></textarea>
+		                        </div>
+		                    </div>
+		                    <div class="form-group" style="padding-left: 150px">
+		                        <div class="col-sm-2 col-sm-offset-2">
+		                            <button type="button" class="btn btn-primary btn-block"  id="edit_saveBtn">保存</button>
+		                        </div>
+		                        <div class="col-sm-2 col-sm-offset-1">
+		                            <button type="button" class="btn btn-default btn-block"  id="edit_backBtn">返回</button>
+		                        </div>
+		                    </div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

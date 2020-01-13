@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.ScripInfoDao">
+	<!-- 新增错误消息 -->
+	<insert id = "insertErrorMessage" parameterType = "com.icss.mvp.entity.ScripInfo">
+		INSERT INTO scrip (CREATE_TIME,IS_DELETED,MESSAGE,EFFECTIVE_TIME,NO,MES_TYPE,TOKEN,MODIFY_TIME,RESULT) VALUES (#{info.createTime},#{info.isDeleted},
+		#{info.message},#{info.effectiveTime},#{info.no},#{info.mesType},#{info.token},#{info.modifyTime},#{info.result})
+	</insert>
+	<!-- 更新消息日志 -->
+	<update id="updateErrorMessage" parameterType = "com.icss.mvp.entity.ScripInfo">
+		UPDATE `scrip` SET `IS_DELETED` = 1 WHERE id = #{id}
+	</update>
+	
+	<!-- 获取错误消息日志 -->
+	<select id="getMessage" resultType = "java.util.HashMap" parameterType="java.lang.String">
+	SELECT * FROM scrip t WHERE t.IS_DELETED = 0 AND t.EXPIRED_TIME IS NULL
+		 <if test="proNo != null and proNo != '' ">
+     		AND t.NO = #{proNo}
+ 		 </if>
+ 		 <if test="token != null and token != '' ">
+     		AND t.TOKEN = #{token}
+ 		 </if>
+	</select>
+	<!-- 获取已完成采集任务数 -->
+	<select id="getCompleteCount"  resultType="java.util.HashMap">
+	select * from
+		(SELECT IFNULL(count(*),0) as suc FROM scrip t WHERE t.NO = #{proNo} AND t.TOKEN = #{token} AND t.RESULT = 'complete' and MES_TYPE = 'info') a,		
+		(SELECT IFNULL(count(*),0) as total FROM scrip t WHERE t.NO = #{proNo} AND t.TOKEN = #{token} AND t.RESULT = 'complete') b
+	</select>
+</mapper>

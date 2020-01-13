@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IParameterListDao">
+
+	<resultMap id="ParaListMap" type="com.icss.mvp.entity.ParameterInfo">
+	  <result property="id" column="ID" />
+	  <result property="name" column="NAME"/>
+	  <result property="unit" column="UNIT"/>
+	  <result property="big_type_value" column="BIG_TYPE_VALUE"/>
+	  <result property="small_type_value" column="SMALL_TYPE_VALUE"/>
+	  <result property="source_value" column="SOURCE_VALUE"/>
+	  <result property="parameter" column="PARAMETER"/>
+	  <result property="create_date" column="CREATE_DATE"/>
+	  <result property="creator" column="CREATOR"/>
+	  <result property="update_date" column="UPDATE_DATE"/>
+	  <result property="update_user" column="UPDATE_USER"/>
+	</resultMap>
+	
+	<select id="getList" resultMap="ParaListMap">
+		SELECT *
+		FROM parameter_info
+		WHERE 1=1
+		<if test="para.name!=null and para.name!=''">  
+	   	 	AND name like CONCAT('%',#{para.name},'%')  
+	    </if>
+	    <if test="para.big_type_value!=null and para.big_type_value!=''">  
+	   		AND big_type_value = #{para.big_type_value}  
+	    </if>
+	    <if test="para.small_type_value!=null and para.small_type_value!=''">  
+	   		AND small_type_value = #{para.small_type_value}  
+	    </if>
+	    <if test="para.source_value!=null and para.source_value!=''">  
+	   		AND source_value = #{para.source_value}  
+	    </if>
+	    <if test="para.parameter!=null and para.parameter!=''">  
+	   		AND parameter like CONCAT('%',#{para.parameter},'%')
+	    </if>
+	    <if test="para.unit!=null and para.unit!=''">  
+	   		AND unit like CONCAT('%',#{para.unit},'%')  ESCAPE '/'
+	    </if>
+	  	<if test="sort!=null and sort!='' and order!=null and order!=''">  
+	   		order by ${sort} ${order}
+	    </if>
+	</select>
+	
+	<insert id="addParameter" parameterType="com.icss.mvp.entity.ParameterInfo">
+		INSERT INTO parameter_info
+		(id, name, unit, big_type_value, small_type_value, source_value, parameter, create_date, creator, update_date, update_user) VALUES
+		(#{para.id}, #{para.name}, #{para.unit}, #{para.big_type_value}, #{para.small_type_value}, 
+		 #{para.source_value}, #{para.parameter}, #{para.create_date}, #{para.creator}, 
+		 #{para.create_date}, #{para.creator});
+	</insert>
+
+	<update id="updateParameter" parameterType="com.icss.mvp.entity.ParameterInfo">
+		UPDATE parameter_info SET
+		name=#{para.name}, unit=#{para.unit}, big_type_value=#{para.big_type_value}, small_type_value=#{para.small_type_value}, 
+		source_value=#{para.source_value}, parameter=#{para.parameter}, 
+		update_date=#{para.update_date}, update_user=#{para.update_user} WHERE
+		id=#{para.id};
+	</update>
+
+	<delete id="deleteParameter" parameterType="com.icss.mvp.entity.ParameterInfo">
+		DELETE FROM parameter_info WHERE
+		id=#{para.id};
+	</delete>
+</mapper>

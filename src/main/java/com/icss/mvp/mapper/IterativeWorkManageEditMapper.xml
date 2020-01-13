@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IterativeWorkManageEditDao">
+
+	<resultMap type="com.icss.mvp.entity.IterativeWorkManageEdit" id="IterativeWorkManageEdit">
+		<result property="id" column="id" />
+		<result property="iteType" column="ite_type" />
+		<result property="topic" column="topic" />
+		<result property="creator" column="creator" />
+		<result property="solver" column="solver" />
+		<result property="prior" column="prior" />
+		<result property="importance" column="importance" />
+		<result property="status" column="status" />
+		<result property="change" column="change" />
+		<result property="finalimit" column="finalimit" />
+		<result property="version" column="version" />
+		<result property="createTime" column="create_time" />
+		<result property="updateTime" column="update_time" />
+		<result property="iteId" column="ite_id" />
+		<result property="proNo" column="pro_no" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="describeInfo" column="describe_info" />
+		<result property="isDeleted" column="is_deleted" />
+		<result property="expectHours" column="expect_hours" />
+		<result property="actualHours" column="actual_hours" />
+		<result property="wrField" column="wr_field" />
+		<result property="planStartTime" column="plan_start_time" />
+		<result property="planEndTime" column="plan_end_time" />
+		<result property="codeAmount" column="code_amount" />
+		<result property="personLiable" column="person_liable" />
+		<result property="checkResult" column="check_result" />
+	</resultMap>
+	
+	<resultMap id="BaseResultMap" type="com.icss.mvp.entity.system.EntryItemEntity">
+        <result column="name" property="key"/>
+        <result column="val" property="value"/>
+    </resultMap>
+    
+    <resultMap id="MemberResult" type="com.icss.mvp.entity.ProjectMembersLocal">
+		<result property="name" column="NAME"/>
+		<result property="zrAccount" column="ZR_ACCOUNT"/>
+		<result property="hwAccount" column="HW_ACCOUNT"/>
+	</resultMap>
+	
+	<insert id="readyToCheck" parameterType="com.icss.mvp.entity.IterativeWorkManageEdit">
+		replace into iterative_work_manage_edit values(#{id},#{iteType},#{topic},#{creator},#{solver},#{prior},
+			#{importance},#{status},#{change},#{finalimit},#{version},#{createTime},#{updateTime},#{iteId},#{proNo},
+			#{startTime},#{endTime},#{describeInfo},#{isDeleted},#{expectHours},#{actualHours},#{wrField},
+			#{planStartTime},#{planEndTime},#{codeAmount},#{personLiable},#{checkResult})
+	</insert>
+	
+	<select id="queryIterativeWorkManageEdit" parameterType="java.lang.String" resultMap="IterativeWorkManageEdit">
+		select * from iterative_work_manage_edit where id=#{id}
+	</select>
+	
+	<select id="dataDictionary" parameterType="java.lang.String" resultType="java.lang.String">
+		select sdi.name from sys_dict_item sdi left join sys_dict sd on sdi.sys_dict_id=sd.id 
+			where sd.code=#{code} and sdi.val=#{val} and sd.is_deleted=0 and sdi.is_deleted=0
+	</select>
+	
+	<update id="checkResult" parameterType="java.lang.String">
+		update iterative_work_manage_edit set update_time=now(),check_result=#{result} where id=#{id}
+	</update>
+	
+	<update id="personLiable" parameterType="java.lang.String">
+		update iterative_work_manage set person_liable=#{person} where id=#{id}
+	</update>
+	
+	<update id="editIterativeWorkManage" parameterType="com.icss.mvp.entity.IterativeWorkManageEdit">
+		update iterative_work_manage set ite_type=#{iteType},topic=#{topic},prior=#{prior},importance=#{importance},`status`=#{status},
+			`change`=#{change},finalimit=#{finalimit},`version`=#{version},update_time=#{updateTime},ite_id=#{iteId},start_time=#{startTime},end_time=#{endTime},
+			describe_info=#{describeInfo},is_deleted=#{isDeleted},expect_hours=#{expectHours},actual_hours=#{actualHours},wr_field=#{wrField},plan_start_time=#{planStartTime},plan_end_time=#{planEndTime},
+			code_amount=#{codeAmount} where id=#{id}
+	</update>
+	
+	<select id="members" parameterType="java.lang.String" resultMap="MemberResult">
+		select mb.NAME,ps.ZR_ACCOUNT ,mb.HW_ACCOUNT from project_staff ps
+			LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT 
+			where ps.`NO` = #{no} AND ps.IS_DELETED = 0 and mb.IS_DELETED=0
+			<if test="zrAccount != null">
+				and ps.ZR_ACCOUNT=#{zrAccount} 
+			</if>
+			<if test="hwAccount != null">
+				and mb.HW_ACCOUNT=#{hwAccount}
+			</if>
+	</select>
+	
+	<delete id="deleteEdit" parameterType="java.lang.String">
+		delete from iterative_work_manage_edit where id=#{id}
+	</delete>
+
+
+	<select id="queryAllMembers" parameterType="java.lang.String" resultMap="MemberResult">
+		select * from (
+		select mb.NAME,ps.ZR_ACCOUNT ,mb.HW_ACCOUNT from project_staff ps
+		LEFT JOIN member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+		where ps.IS_DELETED = 0 and mb.IS_DELETED=0
+		) as a where 1=1
+		<if test="zrAccount != null">
+			and a.ZR_ACCOUNT=#{zrAccount}
+		</if>
+		<if test="hwAccount != null">
+			and a.HW_ACCOUNT=#{hwAccount}
+		</if>
+		group by a.`ZR_ACCOUNT`
+	</select>
+</mapper>

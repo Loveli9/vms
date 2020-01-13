@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.icss.mvp.dao.IJobPcbDao">
+
+	<!-- 总用例数 -->
+	<select id="testCaseCount" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT COUNT(*) as nums, NO FROM tbl_tmss_info
+		WHERE NO in ${proNos}
+		AND DATE_FORMAT(creation_date,'%Y-%m') <![CDATA[ <= ]]>
+		#{date}
+		group by NO order by NO
+	</select>
+	
+	<!-- HLT自动化率  总用例数 -->
+	<select id="countCaseByIteration" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM tbl_tmss_info WHERE NO = #{no}
+	         AND  DATE_FORMAT(start_time,'%Y-%m-%d') BETWEEN #{startDate} and #{endDate}
+	</select>
+
+	<!-- 自动化用例数 -->
+	<select id="autoTestCaseNum" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT COUNT(*) as nums, NO FROM tbl_tmss_info WHERE
+		auto_execution_type = 'True'
+		AND NO in ${proNos}
+		AND DATE_FORMAT(creation_date,'%Y-%m') <![CDATA[ <= ]]>
+		#{date}
+		group by NO order by NO
+	</select>
+    <!-- HLT自动化率  自动化用例数 -->
+    <select id="numCaseByIteration" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM tbl_tmss_info WHERE
+		auto_execution_type = 'True'
+		AND NO = #{no}
+		AND  DATE_FORMAT(start_time,'%Y-%m-%d') BETWEEN #{startDate} and #{endDate}
+	</select>
+	<!-- 代码检视发现缺陷个数（一般+严重） -->
+	<select id="codecheckDefectNum" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+	<![CDATA[
+		select count(*) from codecheck where criticalLevel in('一般','严重') 
+			and solution not in('拒绝','重复') and date_format(updateTime,'%Y%m')<=#{date}
+			and versionName=(select pbiName from smartide where no=#{no})
+	]]>
+	</select>
+
+	<!-- 根据项目，id，获取当前月前一月的参数 -->
+	<select id="getProjectParameterValue" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT * FROM project_parameter_value_new
+		WHERE NO = #{proNo}
+		AND PARAMETER_ID in ${parameterIds}
+		AND date_format( now() , '%Y%m' ) = date_format( MONTH, '%Y%m' )
+		order by PARAMETER_ID
+	</select>
+	<!-- 根据项目，id，获取当前月前一月的参数 -->
+	<select id="getProjectMeasure" resultType="java.util.HashMap">
+		SELECT * from (
+			SELECT no, measure_id, measure_value 
+			FROM measure_history_detail
+			WHERE no = #{proNo}
+			AND measure_id in
+			${measureIds}
+			order by create_time desc
+			) a
+		group by a.measure_id
+	</select>
+	<!-- 根据项目，id，获取每月的参数 -->
+	<select id="getParameterValueGroupMouth" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT * from (
+			SELECT no, measure_id, measure_value,create_time, DATE_FORMAT(create_time,'%Y-%m') AS month
+			FROM measure_history_detail
+			WHERE NO IN ${proNos} AND measure_id = #{parameterId}
+			AND YEAR(create_time)= YEAR(NOW())
+			order by create_time desc
+		) a
+		group by a.no,a.month
+	</select>
+	<!-- 根据项目，id，获取每月的参数 -->
+	<select id="getParameterValueGroup" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT * from (
+			SELECT no, measure_id, measure_value,create_time, DATE_FORMAT(create_time,'%Y-%m') AS month
+			FROM measure_history_detail
+			WHERE NO IN ${proNos} AND measure_id = #{parameterId}
+			<![CDATA[
+			and DATE_FORMAT(create_time,'%Y-%m') >= #{startDate}
+			and DATE_FORMAT(create_time,'%Y-%m') <= #{endDate}
+			]]>
+			order by create_time desc
+		) a
+		group by a.no,a.month
+	</select>
+	
+	<!-- 根据项目，id，获取每月的参数 -->
+	<select id="getParameterValueGroupMouthByNo" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT *,sum(VALUE) as valueSum, DATE_FORMAT(MONTH,
+		'%Y-%m') as date FROM project_parameter_value_new
+		WHERE NO = #{proNo}
+		AND PARAMETER_ID = #{parameterId}
+		AND YEAR(MONTH)=YEAR(NOW()) group by DATE_FORMAT(MONTH, '%Y-%m');
+	</select>
+	<!-- 根据项目，id，获取每月的参数 -->
+	<select id="getParameterValueByNoId" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT *, DATE_FORMAT(MONTH, '%Y-%m') as date FROM
+		project_parameter_value_new
+		WHERE NO = #{proNo}
+		AND PARAMETER_ID = #{parameterId}
+		AND DATE_FORMAT(MONTH,'%Y%m') <![CDATA[ >= ]]>
+		#{startDate}
+		AND DATE_FORMAT(MONTH,'%Y%m') <![CDATA[ <= ]]>
+		#{endDate}
+	</select>
+	<!-- 获取参数信息 -->
+	<select id="getParameterInfo" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT * FROM parameter_info_new
+		WHERE ID = #{id}
+	</select>
+	
+	<!-- 获取参数信息 -->
+	<select id="getMeasureInfo" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		<!-- SELECT * FROM measure
+		WHERE ID = #{id} -->
+		SELECT iti.ID, iti.CREATE_TIME, iti.MODIFY_TIME, iti.IS_DELETE, iti.name, iti.UNIT, 
+		iti.UPPER, iti.LOWER, iti.TARGET, iti.CHALLENGE, iti.CONTENT, itl.category AS CATEGORY,
+		iti.VERSION, iti.ITERATION, itl.ID, iti.COLLECT_TYPE, iti.COMPUTE_RULE FROM in_tmpl_label_index itli
+		LEFT JOIN in_tmpl_label itl ON itli.label_id = itl.ID
+		LEFT JOIN in_tmpl_index iti ON itli.index_id = iti.ID
+		WHERE iti.ID = #{id}
+	</select>
+	
+	<!-- 获取参数信息 -->
+	<select id="getParameterInfoIds" parameterType="java.lang.String"
+		resultType="java.util.HashMap">
+		SELECT * FROM parameter_info_new
+		WHERE ID in ${ids}
+	</select>
+
+	<update id="updateParameterInfoById" parameterType="com.icss.mvp.entity.ParameterInfoNew">
+		UPDATE parameter_info_new SET
+		<!-- 修改日期 -->
+		<if test="(modifyTime!=null)">MODIFY_TIME=#{modifyTime,jdbcType=TIMESTAMP},</if>
+		<!-- 上限值 -->
+		<if test="(upper!=null and upper!='')">UPPER=#{upper,jdbcType=VARCHAR},</if>
+		<!-- 下限值 -->
+		<if test="(lower!=null and lower!='')">LOWER=#{lower,jdbcType=VARCHAR},</if>
+		<!-- 指标目标值 -->
+		<if test="(target!=null and target!='')">TARGET=#{target,jdbcType=VARCHAR},</if>
+		ID=#{id,jdbcType=INTEGER}
+		WHERE
+		ID=#{id,jdbcType=INTEGER}
+
+	</update>
+
+	<!-- 获取java代码量 -->
+	<!-- <select id="queryCodeDTD" resultType="java.lang.Double">
+		SELECT IFNULL(SUM(C.FILE_MODIFYNUM),0) FROM (SELECT * FROM (SELECT 
+			* FROM `svn_log` WHERE NO = #{proNo})A LEFT JOIN (SELECT `FILE_TYPE`, `FILE_MODIFYNUM`,`SVN_LOG_ID` 
+			FROM `svn_log_file_modifynum`) B ON A.ID = B.SVN_LOG_ID ) C WHERE C.AUTHOR 
+			IN ${pList} AND DATE_FORMAT(C.COMMITTIME,'%Y-%m') = #{month} AND C.FILE_TYPE 
+			IN ${CodeType}
+		SELECT IFNULL(SUM(D.`FILE_MODIFYNUM`),0)
+		FROM
+		(SELECT A.*
+		FROM svn_log_file_modifynum A, svn_log B, `project_members_local` C
+		WHERE B.id = A.svn_log_id
+		AND B.NO = #{proNo}
+		AND b.NO = c.NO
+		AND c.role = '开发工程师'
+		AND c.`ZR_ACCOUNT` = A.AUTHOR
+		AND DATE_FORMAT( A.`COMMITTIME`,'%Y-%m') = #{month}
+		UNION
+		SELECT A.*
+		FROM svn_log_file_modifynum A, svn_log B, `project_members_local` C
+		WHERE B.id = A.svn_log_id
+		AND B.NO = #{proNo}
+		AND b.NO = c.NO
+		AND c.role = '开发工程师'
+		AND c.`svn_git_no` = A.AUTHOR
+		AND DATE_FORMAT( A.`COMMITTIME`,'%Y-%m') = #{month})D
+		WHERE D.`FILE_TYPE` IN ${CodeType}
+	</select> -->
+
+	<select id="getPcbValuesByIteration" resultType="java.util.HashMap">
+		select a.* from (
+		select
+		mhd.measure_id,mhd.measure_value,mhd.`no`,mhd.create_time,ic.*
+		from
+		iteration_cycle ic left join measure_history_detail mhd
+		on
+		mhd.`no`=ic.pro_no
+		and mhd.measure_id=#{measureId}
+		<![CDATA[
+		and date_format(mhd.create_time, '%Y-%m-%d') >= date_format(ic.plan_start_date,'%Y-%m-%d')
+		and date_format(mhd.create_time, '%Y-%m-%d') <= date_format(ic.plan_end_date,'%Y-%m-%d')
+		]]>
+		where ic.pro_no in ${proNos} and ic.is_deleted = 0
+		and
+		year(ic.plan_start_date) = year(curdate())
+		order By mhd.create_time
+		desc
+		) a
+		group By a.id
+		order By a.plan_start_date asc
+	</select>
+	
+	<select id="getPcbValuesByItera" resultType="java.util.HashMap">
+		select a.* from (
+		select
+		mhd.measure_id,mhd.measure_value,mhd.`no`,mhd.create_time,ic.*
+		from
+		iteration_cycle ic left join measure_history_detail mhd
+		on
+		mhd.`no`=ic.pro_no
+		and mhd.measure_id=#{measureId}
+		<![CDATA[
+		and date_format(mhd.create_time, '%Y-%m-%d') >= date_format(ic.plan_start_date,'%Y-%m-%d')
+		and date_format(mhd.create_time, '%Y-%m-%d') <= date_format(ic.plan_end_date,'%Y-%m-%d')
+		]]>
+		where ic.pro_no in ${proNos} and ic.is_deleted = 0
+		<![CDATA[
+		and DATE_FORMAT(create_time,'%Y-%m') >= #{startDate}
+		and DATE_FORMAT(create_time,'%Y-%m') <= #{endDate}
+		]]>
+		order By mhd.create_time
+		desc
+		) a
+		group By a.id
+		order By a.plan_start_date asc
+	</select>
+</mapper>
