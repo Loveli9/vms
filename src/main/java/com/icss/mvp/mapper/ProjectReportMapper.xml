@@ -1791,31 +1791,20 @@
 		<result property="state" column="state" />
 		<result property="collection" column="collection" />
 	</resultMap>
+
 	<select id="queryProblemAnalysis" resultMap="ProblemAnalysisMap">
-        SELECT PI.*, mb.NAME AS QA, ur.userId AS collection
+        SELECT PI.*, mb.NAME AS QA
         FROM project_info PI
         RIGHT JOIN (SELECT DISTINCT(NO)
         FROM `project_maturity_comments`
         WHERE DATE_FORMAT(finish_time, '%Y-%m-%d') &gt;= #{startDate}
         AND DATE_FORMAT(finish_time, '%Y-%m-%d') &lt;= #{endDate} AND is_deleted = '0'
         ) m ON PI.no = m.NO
-        LEFT JOIN `user_report_project` ur ON m.NO = ur.`no` AND ur.userId = #{username}
 		LEFT JOIN project_staff ps
 		ON PI.NO = ps.NO AND ps.ROLE = 'QA' AND ps.IS_DELETED = 0
 		LEFT JOIN member_base mb
 		ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
-        WHERE 1=1
-        <if test='coopType == "1"'>
-            <![CDATA[
-				AND ur.userId IS NOT NULL
-			]]>
-        </if>
-        <if test='coopType == "2"'>
-            <![CDATA[
-				AND ur.userId IS NULL
-			]]>
-        </if>
-		AND PI.PROJECT_STATE = '在行'
+        WHERE PI.PROJECT_STATE = '在行' AND PI.PMID = #{pm}
 		<include refid="sql_status" />
 	</select>
 

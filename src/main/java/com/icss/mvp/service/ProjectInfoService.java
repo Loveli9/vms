@@ -352,8 +352,4 @@ public class ProjectInfoService {
         map.put("pageSize", pageRequest.getPageSize());
         return projectInfoVoDao.queryProjectPDUInfos(map);
     }
-
-    public ProjectInfoVo getByProjectNo(String projectId) {
-        return projectInfoVoDao.fetchProjectInfoByKey(projectId);
-    }
 }

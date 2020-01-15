@@ -13,7 +13,9 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.icss.mvp.entity.ManpowerBudget;
 import com.icss.mvp.entity.PersonnelInfo;
+import com.icss.mvp.entity.PmdataTotal;
 import com.icss.mvp.entity.ProjectKeyroles;
 import com.icss.mvp.entity.common.response.PlainResponse;
 import com.icss.mvp.entity.member.MemberEntity;
@@ -1234,8 +1236,6 @@ public class UserManagerController {
 		map = userManagerService.getMemberinfoByZr(zr);
 		if (map != null && map.size()>0){
 			map.put("code","success");
-		}else {
-			map.put("code","fail");
 		}
 		return  map;
 	}
@@ -1247,5 +1247,22 @@ public class UserManagerController {
 		map = userManagerService.verifyHwAccount(zr,hwAccount);
 		return  map;
 	}
+
+    @RequestMapping(value = "/getMembersinfoBypm")
+    @ResponseBody
+    public Map<String, Object> getMembersinfoBypm(String userid) {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            PmdataTotal pmdataTotal = userManagerService.getMembersinfoBypm(userid);
+            map.put("data", pmdataTotal);
+            map.put("msg", "返回成功");
+            map.put("status", "0");
+        } catch (Exception e) {
+            logger.error("getMembersinfoBypm exception, error: "+e.getMessage());
+            map.put("msg", "返回失败");
+            map.put("status", "1");
+        }
+        return map;
+    }
 }
 

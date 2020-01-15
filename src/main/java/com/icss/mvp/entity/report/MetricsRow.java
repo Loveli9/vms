@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.icss.mvp.supports.entity.IEntity;
 
 import java.util.Date;
@@ -32,9 +33,11 @@ public class MetricsRow implements IEntity {
     private String periodName;
 
     @TableField("period_start_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date periodStartDate;
 
     @TableField(value = "period_end_date")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date periodEndDate;
     //工号或任务编号（根据报表类型决定）
     @TableField("code")

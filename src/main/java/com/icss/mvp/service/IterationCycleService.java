@@ -20,33 +20,43 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@SuppressWarnings("all") @Service public class IterationCycleService {
+@SuppressWarnings("all")
+@Service
+public class IterationCycleService {
 
     private final static Logger logger = Logger.getLogger(IterationCycleService.class);
 
-    @Autowired private IterationCycleDao iterationCycleDao;
+    @Autowired
+    private IterationCycleDao iterationCycleDao;
 
-    @Autowired private DeliverDao deliverDao;
+    @Autowired
+    private DeliverDao deliverDao;
 
-    @Autowired private MeasureRangeDao measurerangedao;
+    @Autowired
+    private MeasureRangeDao measurerangedao;
 
-    @Autowired private IterationMeasureIndexDao iterationMeasureIndexDao;
+    @Autowired
+    private IterationMeasureIndexDao iterationMeasureIndexDao;
 
-    @Autowired private IProjectListDao projectListDao;
-    @Autowired private CodeGainTypeDao codeGainTypeDao;
+    @Autowired
+    private IProjectListDao projectListDao;
+    @Autowired
+    private CodeGainTypeDao codeGainTypeDao;
 
-    @Autowired private InTmplDao inTmplDao;
+    @Autowired
+    private InTmplDao inTmplDao;
 
-    @Autowired private MeasureCommentDao measureCommentDao;
+    @Autowired
+    private MeasureCommentDao measureCommentDao;
 
     private final BigDecimal zero = new BigDecimal(0.00);
 
-    private final String[] INT_UNIT = { "个", "页", "次" };
+    private final String[] INT_UNIT = {"个", "页", "次"};
 
     public String insertIterationCycle(IterationCycle iterationCycle) throws Exception {
         // 判断当前迭代名称是否存在
         List<IterationCycle> list = iterationCycleDao.checkIteName(iterationCycle.getProNo(),
-                                                                   iterationCycle.getIteName());
+                iterationCycle.getIteName());
         if (list.size() > 0) {
             return "repeat";
         } else {
@@ -136,7 +146,7 @@ import java.util.*;
         } else if ("%".equals(unit)) {
             BigDecimal bigValue = safeConvertToDecimal(value);
             result = (bigValue.compareTo(new BigDecimal("100")) > 0) ? "100.00" : bigValue.setScale(2,
-                                                                                                    RoundingMode.HALF_UP).toString();
+                    RoundingMode.HALF_UP).toString();
         } else if ("KLOC".equals(unit)) {
             BigDecimal bigValue = safeConvertToDecimal(value);
             result = bigValue.setScale(1, RoundingMode.HALF_UP).toString();
@@ -168,7 +178,7 @@ import java.util.*;
         iterationMeasureIndex.setValue(value);
 
         int num = iterationMeasureIndexDao.checkIterationInfo(iterationMeasureIndex.getIterationId(),
-                                                              iterationMeasureIndex.getMeasureId());
+                iterationMeasureIndex.getMeasureId());
 
         if (num == 0) {
             iterationIndexAdd(iterationMeasureIndex);
@@ -181,17 +191,18 @@ import java.util.*;
     /**
      * @Description:分页查询迭代管理信息 @param @param request 参数 @return void 返回类型 @throws
      */
-    @SuppressWarnings("all") public TableSplitResult queryIteInfoByPage(TableSplitResult page, String sort,
-                                                                        String sortOrder) {
+    @SuppressWarnings("all")
+    public TableSplitResult queryIteInfoByPage(TableSplitResult page, String sort,
+                                               String sortOrder) {
         TableSplitResult data = new TableSplitResult();
-        if(null != page.getQueryMap().get("proNo") && "" !=page.getQueryMap().get("proNo")){
+        if (null != page.getQueryMap().get("proNo") && "" != page.getQueryMap().get("proNo")) {
             Integer total = iterationCycleDao.queryIterationTotals(page);
             if (total > 0) {
                 List<IterationCycle> resultList = iterationCycleDao.queryIteInfoByPage(page, sort, sortOrder);
                 data.setRows(resultList);
             }
             data.setTotal(total);
-        }else{
+        } else {
             if (page.getQueryMap().get("username").equals("admin")) {
                 List<IterationCycleResult> resultList = iterationCycleDao.queryAll(page, sort, sortOrder);
                 data.setRows(resultList);
@@ -381,7 +392,7 @@ import java.util.*;
             targets[i] = null == map.get("target") ? "" : map.get("target").toString();
             measureIds.add(map.get("measure_id").toString());
             measureNameId.put(map.get("name").toString() + map.get("measure_id").toString(),
-                              map.get("measure_id").toString());
+                    map.get("measure_id").toString());
             i++;
         }
         rows.add(titles);
@@ -406,12 +417,12 @@ import java.util.*;
             }
             if (null != iterationCycle.getStartDate() && null != iterationCycle.getEndDate()) {
                 List<IterationMeasureIndex> values = iterationMeasureIndexDao.measureIndexValues(iterationCycle.getId(),
-                                                                                                 measureIds,
-                                                                                                 format.format(
-                                                                                                         iterationCycle.getStartDate()),
-                                                                                                 format.format(
-                                                                                                         iterationCycle.getEndDate()),
-                                                                                                 iterationCycle.getProNo());
+                        measureIds,
+                        format.format(
+                                iterationCycle.getStartDate()),
+                        format.format(
+                                iterationCycle.getEndDate()),
+                        iterationCycle.getProNo());
                 iterationIds.add(iterationCycle.getId());
                 createDataRow(iterationCycle, values, measureIdIndexMap, rows);
             }
@@ -502,12 +513,12 @@ import java.util.*;
             }
             if (null != iterationCycle.getStartDate() && null != iterationCycle.getEndDate()) {
                 List<IterationMeasureIndex> values = iterationMeasureIndexDao.measureIndexValues(iterationCycle.getId(),
-                                                                                                 measureIds,
-                                                                                                 format.format(
-                                                                                                         iterationCycle.getStartDate()),
-                                                                                                 format.format(
-                                                                                                         iterationCycle.getEndDate()),
-                                                                                                 iterationCycle.getProNo());
+                        measureIds,
+                        format.format(
+                                iterationCycle.getStartDate()),
+                        format.format(
+                                iterationCycle.getEndDate()),
+                        iterationCycle.getProNo());
                 iterationIds.add(iterationCycle.getId());
                 createDataRows(iterationCycle, values, resultList);
             }
@@ -548,10 +559,23 @@ import java.util.*;
         long dt = Calendar.getInstance().getTime().getTime();
         iterationCycles.forEach(iterationCycle -> {
             Date idt = iterationCycle.getStartDate();
-            if (iterationCycle.getStartDate().getTime() < dt) {
+            if (iterationCycle.getStartDate().getTime() <= dt) {
                 pasts.add(iterationCycle);
             }
         });
         return pasts;
+    }
+
+    public IterationCycle getByProjectNoAndDatetime(String projectNo, Date dt) {
+        if (dt == null) {
+            dt = new Date();
+        }
+        List<IterationCycle> iterationCycles = listPastIteration(projectNo);
+        for (IterationCycle item : iterationCycles) {
+            if (item.getStartDate().getTime() <= dt.getTime() && item.getEndDate().getTime() >= dt.getTime()) {
+                return item;
+            }
+        }
+        return null;
     }
 }

@@ -25,6 +25,9 @@
                 "total": res.total
             }
         },
+        onDblClickRow: function () {
+            add_editBtn("editMsg")
+        },
         // showColumns: true,
         minimumCountColumns: 2, //最少允许的列数
         clickToSelect: true,//是否启用点击选中行
@@ -97,7 +100,8 @@
             item = {};
         })
         let params = {
-            "entity.parameters": JSON.stringify(parameters),
+            "entity.projectId": getCookie("projNo_comm"),
+            "entity.parameters": JSON.stringify(editMsg),
             "entity.id": select_ID ? select_ID.id : null,
             "entity.projectId": select_ID ? select_ID.projectId : null,
             "entity.name": $("#interface_name").val(),
@@ -115,14 +119,38 @@
                     if (res.success) {
                         $('#task_table').bootstrapTable('refresh')
                         $("#edit_interface").modal("hide");
-                        toastr.success('操作成功!');
+                        window.top.toastr.success('操作成功!');
                     }
                 }
             });
         } else {
-            toastr.error('接口为必填字段！');
+            window.top.toastr.error('接口为必填字段！');
         }
     });
+
+    // 立即执行
+    $("#btn_immediately").on("click", function () {
+        let select_ID = $('#task_table').bootstrapTable('getSelections')[0];
+        if (select_ID) {
+            $.ajax({
+                contentType: "application/x-www-form-urlencoded", //设置请求头信息
+                url: "http://192.168.0.11:8080/datacollection/collectionschedule/execute_once",
+                type: 'post',
+                method: 'post',
+                data: { executor: getCookie("username"), taskId: select_ID.id },
+                success: function (res) {
+                    if (res.success) {
+                        window.top.toastr.success('执行成功!');
+                    } else {
+                        window.top.toastr.error(res.message);
+                    }
+                }
+            });
+        } else {
+            window.top.toastr.error('请选择要执行的任务!');
+        }
+    });
+
     //删除
     $("#delete_table_item").on("click", function () {
         let select_ID = $('#task_table').bootstrapTable('getSelections')[0];
@@ -136,12 +164,12 @@
                 success: function (res) {
                     if (res.success) {
                         $('#task_table').bootstrapTable('refresh')
-                        toastr.success('删除成功!');
+                        window.top.toastr.success('删除成功!');
                     }
                 }
             });
         } else {
-            toastr.error('请选择要删除的数据!');
+            window.top.toastr.error('请选择要删除的数据!');
         }
     })
 })
@@ -180,9 +208,31 @@ function add_editBtn(message) {
             $("#interface_name").val(select_ID.name);
             $("#interface_type").val(select_ID.collectionInterface.parameters);
             $("#interface_des").val(select_ID.description);
-            table_data = JSON.parse(select_ID.parameters)
+            var select_table_data = JSON.parse(select_ID.parameters);
+            var select_parameters = JSON.parse(select_ID.collectionInterface.parameters);
+            for (let i = 0; i < select_parameters.length; i++) {
+                var flag = true;
+                var item = {};
+                for (let j = 0; j < select_table_data.length; j++) {
+                    if (select_parameters[i].name == select_table_data[j].name) {
+                        flag = false;
+                        item = select_table_data[j];
+                        break
+                    }
+                };
+                if (flag) {
+                    item = {
+                        name: select_parameters[i].name,
+                        value: "",
+                        inputType: "",
+                        required: ""
+                    };
+
+                }
+                table_data.push(item);
+            }
         } else {
-            toastr.error('请选择要编辑的数据!');
+            window.top.toastr.error('请选择要编辑的数据!');
         }
     } else if (message == "addMsg") {
         $('#task_table').bootstrapTable('uncheckAll');
@@ -232,18 +282,57 @@ function add_editBtn(message) {
                     type: "text",
                     title: '值',
                     emptytext: '&#12288',
-                }
+                },
             },
 
         ],
         locale: 'zh-CN',//中文支持,
     });
+    for (let i = 0; i < table_data.length; i++) {
+        if (table_data[i].required == "1") {
+            $(`#interface_parameter_table tr[data-index=${i}] a[data-name=value].editable`).editable("toggleDisabled", true);
+        } else {
+            $(`#interface_parameter_table tr[data-index=${i}] a[data-name=value].editable`).editable("toggleDisabled", false);
+        }
+    };
     //change事件
     $("#interface_type").on("change", function () {
-        table_data = JSON.parse($("#interface_type").val());
-        // table_data.forEach(e => {
-        //     e.value = "";
-        // })
-        $('#interface_parameter_table').bootstrapTable('load', table_data)
-    })
-}
+        let change_table_data = [];
+        let select_Msg = $('#task_table').bootstrapTable('getSelections')[0];
+        if (select_Msg && select_Msg.collectionInterface.id == $("#interface_type option:selected").attr("collectionInterfaceId")) {
+            var select_table_data = JSON.parse(select_Msg.parameters);
+            var select_parameters = JSON.parse(select_Msg.collectionInterface.parameters);
+            for (let i = 0; i < select_parameters.length; i++) {
+                var flag = true;
+                var item = {};
+                for (let j = 0; j < select_table_data.length; j++) {
+                    if (select_parameters[i].name == select_table_data[j].name) {
+                        flag = false;
+                        item = select_table_data[j];
+                        break
+                    }
+                };
+                if (flag) {
+                    item = {
+                        name: select_parameters[i].name,
+                        value: "",
+                        inputType: "",
+                        required: ""
+                    };
+
+                }
+                change_table_data.push(item);
+            }
+        } else {
+            change_table_data = JSON.parse($("#interface_type").val());
+        }
+        $('#interface_parameter_table').bootstrapTable('load', change_table_data)
+        for (let i = 0; i < change_table_data.length; i++) {
+            if (change_table_data[i].required == "1") {
+                $(`#interface_parameter_table tr[data-index=${i}] a[data-name=value].editable`).editable("toggleDisabled", true);
+            } else {
+                $(`#interface_parameter_table tr[data-index=${i}] a[data-name=value].editable`).editable("toggleDisabled", false);
+            }
+        };
+    });
+};

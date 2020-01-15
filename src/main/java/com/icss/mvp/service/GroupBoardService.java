@@ -429,16 +429,11 @@ public class GroupBoardService {
                     organizationMap.put("flag", "pdu");
                 }
 
-                GroupAcceptanceEntity groupAcceptanceSecondOrgEntity = new GroupAcceptanceEntity();
-                groupAcceptanceSecondOrgEntity.setHwzpdu(StringUtilsLocal.valueOf(secondOrganization.get("secondOrg")));
-                groupAcceptance.add(groupAcceptanceSecondOrgEntity);
+                setBoardDetail(projectInfo, groupAcceptance, secondOrganization, "secondOrg", groupBoardSort);
 
                 List<Map<String, Object>> thirdOrganizations = groupBoardDao.getThirdOrganizations(organizationMap);
-
-                if ("overview".equals(groupBoardSort)) {
-                    queryOverviewInfo(projectInfo, groupAcceptance, secondOrganization, thirdOrganizations);
-                } else {
-                    queryAcceptanceInfo(projectInfo, groupAcceptance, secondOrganization, thirdOrganizations);
+                for (Map<String, Object> thirdOrganization : thirdOrganizations) {
+                    setBoardDetail(projectInfo, groupAcceptance, thirdOrganization, "thirdOrg", groupBoardSort);
                 }
             }
             if ("0".equals(clientType)) {
@@ -450,113 +445,40 @@ public class GroupBoardService {
     }
 
     /**
-     * 获取组织看板总览表格所有列信息
-     *
-     * @param projectInfo
-     * @param groupAcceptance
-     * @param secondOrganization
-     * @param thirdOrganizations
-     */
-    private void queryOverviewInfo(ProjectInfo projectInfo, List<GroupAcceptanceEntity> groupAcceptance, Map<String, Object> secondOrganization, List<Map<String, Object>> thirdOrganizations) {
-        Integer riskProjectCount = 0;
-        Integer executionProjectCount = 0;
-
-        for (Map<String, Object> thirdOrganization : thirdOrganizations) {
-            Map<String, Object> map = queryOverviewDetail(projectInfo, groupAcceptance, thirdOrganization);
-            String risk = StringUtilsLocal.valueOf(map.get("riskCount"));
-            String execution = StringUtilsLocal.valueOf(map.get("executionCount"));
-
-            riskProjectCount += StringUtils.isNotBlank(risk) ? Integer.parseInt(risk) : 0;
-            executionProjectCount += StringUtils.isNotBlank(execution) ? Integer.parseInt(execution) : 0;
-        }
-
-        for (GroupAcceptanceEntity group : groupAcceptance) {
-            if (StringUtils.isNotBlank(group.getHwzpdu()) && group.getHwzpdu().equals(StringUtilsLocal.valueOf(secondOrganization.get("secondOrg")))) {
-                group.setRiskProject(riskProjectCount);
-                group.setExecutedProject(executionProjectCount);
-                break;
-            }
-        }
-    }
-
-    /**
-     * 获取组织看板验收表格所有列信息
-     *
-     * @param projectInfo
-     * @param groupAcceptance
-     * @param secondOrganization
-     * @param thirdOrganizations
-     */
-    private void queryAcceptanceInfo(ProjectInfo projectInfo, List<GroupAcceptanceEntity> groupAcceptance, Map<String, Object> secondOrganization, List<Map<String, Object>> thirdOrganizations) {
-        Integer orgKnotProjectCount = 0;
-
-        for (Map<String, Object> thirdOrganization : thirdOrganizations) {
-            orgKnotProjectCount += queryAcceptanceDetail(projectInfo, groupAcceptance, thirdOrganization);
-        }
-
-        for (GroupAcceptanceEntity group : groupAcceptance) {
-            if (StringUtils.isNotBlank(group.getHwzpdu()) && group.getHwzpdu().equals(StringUtilsLocal.valueOf(secondOrganization.get("secondOrg")))) {
-                group.setKnotProject(orgKnotProjectCount);
-                break;
-            }
-        }
-    }
-
-    /**
-     * 获取组织看板总览表格所有列详细信息
+     * 获取组织看板总览表和验收表所有列信息
      *
      * @param projectInfo
      * @param groupAcceptance
      * @param organization
-     * @return
+     * @param flag
+     * @param groupBoardSort
      */
-    private Map<String, Object> queryOverviewDetail(ProjectInfo projectInfo, List<GroupAcceptanceEntity> groupAcceptance, Map<String, Object> organization) {
-        Map<String, Object> reslutMap = new HashMap<>();
-        GroupAcceptanceEntity groupAcceptanceOrgEntity = new GroupAcceptanceEntity();
-        Integer riskProjectCount = 0;
+    private void setBoardDetail(ProjectInfo projectInfo, List<GroupAcceptanceEntity> groupAcceptance, Map<String, Object> organization, String flag, String groupBoardSort) {
+        String orgId = "secondOrg".equals(flag) ? StringUtilsLocal.valueOf(organization.get("secondOrgId")) : StringUtilsLocal.valueOf(organization.get("thirdOrgId"));
+        GroupAcceptanceEntity groupAcceptanceInfo = groupBoardDao.queryBoardInfo(projectInfo.getMonth(), orgId);
+        GroupAcceptanceEntity orgEntity = new GroupAcceptanceEntity();
 
-        groupAcceptanceOrgEntity.setPduSpdt(StringUtilsLocal.valueOf(organization.get("thirdOrg")));
-
-        List<String> riskRes = groupBoardDao.queryRiskProjectCount(StringUtilsLocal.valueOf(organization.get("thirdOrgId")),
-                projectInfo.getMonth(), "0".equals(projectInfo.getClientType()) ? "thirdOrgHw" : "thirdOrgZr");
-        Integer executionProjectCount = groupBoardDao.queryExecutionProjectCount(StringUtilsLocal.valueOf(organization.get("thirdOrgId")),
-                projectInfo.getMonth(), "0".equals(projectInfo.getClientType()) ? "thirdOrgHw" : "thirdOrgZr");
-
-        for (String s : riskRes) {
-            int isRisk = transformProjectStatus(s);
-
-            if (1 == isRisk) {
-                riskProjectCount++;
-            }
+        if ("secondOrg".equals(flag)) {
+            orgEntity.setHwzpdu(StringUtilsLocal.valueOf(organization.get("secondOrg")));
+        } else {
+            orgEntity.setPduSpdt(StringUtilsLocal.valueOf(organization.get("thirdOrg")));
         }
-        groupAcceptanceOrgEntity.setRiskProject(riskProjectCount);
-        groupAcceptanceOrgEntity.setExecutedProject(executionProjectCount);
-
-        groupAcceptance.add(groupAcceptanceOrgEntity);
-
-        reslutMap.put("riskCount", riskProjectCount);
-        reslutMap.put("executionCount", executionProjectCount);
-        return reslutMap;
-    }
-
-    /**
-     * 获取组织看板验收表格所有列详细信息
-     *
-     * @param projectInfo
-     * @param groupAcceptance
-     * @param organization
-     * @return
-     */
-    private Integer queryAcceptanceDetail(ProjectInfo projectInfo, List<GroupAcceptanceEntity> groupAcceptance, Map<String, Object> organization) {
-        GroupAcceptanceEntity groupAcceptanceOrgEntity = new GroupAcceptanceEntity();
-        groupAcceptanceOrgEntity.setPduSpdt(StringUtilsLocal.valueOf(organization.get("thirdOrg")));
-
-        Integer orgKnotProjectCount = groupBoardDao.queryKnotProjectCount(StringUtilsLocal.valueOf(organization.get("thirdOrgId")),
-                projectInfo.getMonth(), "0".equals(projectInfo.getClientType()) ? "thirdOrgHw" : "thirdOrgZr");
-        groupAcceptanceOrgEntity.setKnotProject(null != orgKnotProjectCount ? orgKnotProjectCount : 0);
-
-        groupAcceptance.add(groupAcceptanceOrgEntity);
-        return orgKnotProjectCount;
+        if ("overview".equals(groupBoardSort)) {
+            orgEntity.setCheckedProject(groupAcceptanceInfo.getCheckedProject());
+            orgEntity.setCustomerScoring(groupAcceptanceInfo.getCustomerScoring());
+            orgEntity.setExecutedProject(groupAcceptanceInfo.getExecutedProject());
+            orgEntity.setRiskProject(groupAcceptanceInfo.getRiskProject());
+            orgEntity.setIssueCloseLoop(groupAcceptanceInfo.getIssueCloseLoop());
+            orgEntity.setPersonnelArrival(groupAcceptanceInfo.getPersonnelArrival());
+            orgEntity.setPersonnelStable(groupAcceptanceInfo.getPersonnelStable());
+            orgEntity.setCredibleProject(groupAcceptanceInfo.getCredibleProject());
+        } else {
+            orgEntity.setKnotProject(groupAcceptanceInfo.getKnotProject());
+            orgEntity.setAcceptanceKPI(groupAcceptanceInfo.getAcceptanceKPI());
+            orgEntity.setKnotStarDistribution(groupAcceptanceInfo.getKnotStarDistribution());
+            orgEntity.setDeduction(groupAcceptanceInfo.getDeduction());
+        }
+        groupAcceptance.add(orgEntity);
     }
 
     /**
@@ -573,6 +495,10 @@ public class GroupBoardService {
         Map<String, Object> organizationMap = new HashMap<>();
 
         projectInfoService.setParamNew(projectInfo, null, organizationMap);
+
+        if (null == organizationMap.get("pm") || "" == organizationMap.get("pm")) {
+            return new TableSplitResult<>();
+        }
 
         try {
             String month = projectInfo.getMonth();
@@ -669,7 +595,7 @@ public class GroupBoardService {
      * @param value
      * @return
      */
-    private int transformProjectStatus(String value) {
+    public int transformProjectStatus(String value) {
         int res = 0;
         if (StringUtils.isBlank(value)) {
             return 4;
@@ -699,6 +625,10 @@ public class GroupBoardService {
         Map<String, Object> organizationMap = new HashMap<>();
 
         projectInfoService.setParamNew(projectInfo, null, organizationMap);
+
+        if (null == organizationMap.get("pm") || "" == organizationMap.get("pm")) {
+            return new TableSplitResult<>();
+        }
 
         try {
             if (StringUtils.isNotBlank(projectInfo.getMonth())) {

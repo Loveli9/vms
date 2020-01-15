@@ -20,6 +20,9 @@ var userid = getCookie("username");
 
 var rolekey = getSelectValueByType("position");
 
+var projectestartDate = "";
+var projectendDate = "";
+
 //加载下拉列表的值
 function getOPtion(){
 //	 getSelectValue('rdpmExam',"通过","#rdpmExam","RDPM考试");
@@ -99,8 +102,16 @@ function roleManage(){
  //                   	organizationalStructure();
 						initRenliData();
 						getProcessDtata();
-                    }else{
-                    	toastr.success('修改失败！');
+                    }else if(data.code == "error"){
+                        var pageNumber=$('#mytabs').bootstrapTable('getOptions').pageNumber;
+                        $('#mytabs').bootstrapTable('refresh',{pageNumber:pageNumber});
+                        $('#majorDuty').bootstrapTable('refresh');
+                    	toastr.warning("华为账号与中软账号匹配有误，请核实后重新修改！");
+                    }else {
+                        var pageNumber=$('#mytabs').bootstrapTable('getOptions').pageNumber;
+                        $('#mytabs').bootstrapTable('refresh',{pageNumber:pageNumber});
+                        $('#majorDuty').bootstrapTable('refresh');
+                        toastr.error('修改失败！');
                     }
                 }
             });
@@ -345,6 +356,27 @@ function roleManagement(){
 	                   	}
                    }
                },
+			   projects: {
+				   validators: {
+					   notEmpty:{
+						   message:'待入项目不能为空',
+					   },
+				   }
+			   },
+			   position: {
+				   validators: {
+					   notEmpty:{
+						   message:'角色不能为空',
+					   },
+				   }
+			   },
+			   status1: {
+				   validators: {
+					   notEmpty:{
+						   message:'状态不能为空',
+					   },
+				   }
+			   },
            }
      });
     $('#editForm').bootstrapValidator({
@@ -520,7 +552,22 @@ function roleManagement(){
      				}
      			});
     		}
-		})
+		});
+
+		$("#keyproject").blur(function() {
+			demoList=null;
+			$.ajax({
+				url:getRootPath() + '/bu/projOverviewDatas',
+				type : 'post',
+				data:{
+					reprname:$("#keyproject").val()
+				},
+				success:function(data){
+					projectestartDate = new Date(data.startDate).format('yyyy-MM-dd');
+					projectendDate = new Date(data.endDate).format('yyyy-MM-dd');
+				}
+			})
+		});
     });
     //隐藏新增页面f
     $('#add_backBtn').click(function(){
@@ -533,9 +580,15 @@ function roleManagement(){
     	$('#addForm').bootstrapValidator('validate');
         //如果表单验证正确，则请求后台添加用户
         if($("#addForm").data('bootstrapValidator').isValid()){
+			// 华为账号校验
+			if (!verifyHwAccount($("#zrAccountAdd").val(),$("#hwAccountAdd").val())) {
+				toastr.warning("华为账号与中软账号匹配有误，请核实后重新配置")
+				return ;
+			}
  			$.ajax({
  				url:getRootPath() + '/GeneralSituation/add',
  				type : 'post',
+				async:false,
 // 				dataType: "json",
 // 				contentType : 'application/json;charset=utf-8', //设置请求头信息
 // 				data:JSON.stringify($('#addForm').serializeJSON()),
@@ -551,6 +604,8 @@ function roleManagement(){
  					replyResults:$("#replyResults").val(),
  					proCompetence:$("#proCompetence").val(),
  					status:$("#statusAdd").val(),
+					startDate : projectestartDate,
+					endDate : projectendDate,
  				},
  				success:function(data){
  					//后台返回添加成功
@@ -586,6 +641,10 @@ function roleManagement(){
     $('#edit_saveBtn').click(function(){
     	$('#editForm').bootstrapValidator('validate');
     	if($("#editForm").data('bootstrapValidator').isValid()){
+			if (!verifyHwAccount($("#editZrAccount").val(),$("#editHwAccount").val())) {
+				toastr.warning("华为账号与中软账号匹配有误，请核实后重新修改")
+				return ;
+			}
     		$.ajax({
  				url:getRootPath()+"/GeneralSituation/edit",
  				type : 'post',
@@ -833,7 +892,7 @@ function getProcessDtata() {
 	var width1;
 	var width2;
 	$.ajax({
-		url : getRootPath() + "/manpowerBudget/getManpowerBudgetByPmid",
+		url : getRootPath() + "/user/getMembersinfoBypm",
 		type : 'POST',
 		async: false,//是否异步，true为异步
 		data : {
@@ -845,8 +904,8 @@ function getProcessDtata() {
 				kaifaCount = 0,
 					keyroleCount =0
 			}else{
-				kaifaCount = (data.data.headcount),
-					keyroleCount = (data.data.keyRoleCount)
+				kaifaCount = (data.data.rowsMembercount),
+					keyroleCount = (data.data.rowsRoleCount)
 			}
 		}
 	})

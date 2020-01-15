@@ -147,10 +147,10 @@
 		<if test="null != page.queryMap.zrAccount and '' !=page.queryMap.zrAccount"><!-- 中软工号 -->
 			and t.ZR_ACCOUNT = #{page.queryMap.zrAccount}
 		</if>
+		group by t.ZR_ACCOUNT
 		<if test="null != sort and '' !=sort and sortOrder != null and sortOrder != ''">
 			order by ${sort} ${sortOrder}
 		</if>
-		group by t.ZR_ACCOUNT
 		<if test="null != page.page and  null != page.rows">
 			LIMIT ${page.page},${page.rows}
 		</if>
@@ -687,21 +687,39 @@ WHERE  d.`code` = 'position'
 		SELECT RANK, STATUS FROM archive WHERE ZR_ACCOUNT = #{zrAccount}
 	</select>
 	
-	<select id="memberInfo" parameterType="java.lang.String" resultType="java.util.HashMap">   
-	    SELECT ts.ROLE, ts.SVN_GIT_NO FROM
-	    <if test=" 'project' == mark">
-	    	project_staff ts left join project_info p
-	    	on ts.NO = p.NO
-	    	WHERE p.PMID = #{id}
-	    </if>
+	<select id="memberInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+	SELECT ts.ROLE, ts.SVN_GIT_NO FROM
+	<if test=" 'project' == mark">
+		project_staff ts left join project_info p
+		on ts.NO = p.NO
+		WHERE p.PMID = #{id}
+	</if>
+	<if test=" 'projectRoleKey' == mark">
+		project_staff ts
+		WHERE ts.NO = #{id}
+	</if>
+	<if test=" 'team' == mark">
+		team_staff ts
+		WHERE ts.TEAM_ID = #{id}
+	</if>
+	AND ts.IS_DELETED = 0
+	AND ts.ZR_ACCOUNT = #{zrAccount}
+</select>
+	<select id="newmemberInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		SELECT ts.ROLE, ts.SVN_GIT_NO FROM
+		<if test=" 'project' == mark">
+			project_staff ts left join project_info p
+			on ts.NO = p.NO
+			WHERE p.PMID = #{id} AND p.NO = #{no}
+		</if>
 		<if test=" 'projectRoleKey' == mark">
 			project_staff ts
 			WHERE ts.NO = #{id}
 		</if>
-	    <if test=" 'team' == mark">
-	    	team_staff ts
-	    	WHERE ts.TEAM_ID = #{id}
-	    </if> 
+		<if test=" 'team' == mark">
+			team_staff ts
+			WHERE ts.TEAM_ID = #{id}
+		</if>
 		AND ts.IS_DELETED = 0
 		AND ts.ZR_ACCOUNT = #{zrAccount}
 	</select>

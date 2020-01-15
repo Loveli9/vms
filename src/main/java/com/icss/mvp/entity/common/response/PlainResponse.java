@@ -41,11 +41,11 @@ public class PlainResponse<T> extends BaseResponse {
         return plainResponse;
     }
 
-    public static PlainResponse fail(String errorMsg, String code) {
-        PlainResponse plainResponse = new PlainResponse<>();
-        plainResponse.setErrorMessage(CommonResultCode.INVALID_PARAMETER.code, errorMsg);
-        return plainResponse;
-    }
+//    public static PlainResponse fail(String errorMsg, String code) {
+//        PlainResponse plainResponse = new PlainResponse<>();
+//        plainResponse.setErrorMessage(CommonResultCode.INVALID_PARAMETER.code, errorMsg);
+//        return plainResponse;
+//    }
 
     public PlainResponse message(String message) {
         this.setMessage(message);

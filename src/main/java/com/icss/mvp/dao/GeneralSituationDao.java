@@ -164,6 +164,8 @@ public interface GeneralSituationDao {
 	Map<String, Object> importRank(@Param("zrAccount") String zrAccount);
 
 	Map<String, Object> memberInfo(@Param("id") String id, @Param("zrAccount") String zrAccount, @Param("mark") String mark);
+
+	Map<String, Object> newmemberInfo(@Param("no") String no ,@Param("id") String id, @Param("zrAccount") String zrAccount, @Param("mark") String mark);
 	
 	Map<String, Object> memberBasic(@Param("zrAccount") String zrAccount);
 

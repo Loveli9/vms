@@ -41,14 +41,6 @@
                 valign: 'middle',
             },
             {
-                title: '接口类型',
-                halign: 'center',
-                align: 'center',
-                field: 'type',
-                sortable: false,
-                width: 70,
-            },
-            {
                 title: '接口名称',
                 halign: 'center',
                 align: 'center',
@@ -57,7 +49,31 @@
                 width: 70,
             },
             {
-                title: '接口地址',
+                title: '采集器类型',
+                halign: 'center',
+                align: 'center',
+                field: 'type',
+                sortable: false,
+                width: 70,
+            },
+            {
+                title: '数据类型',
+                halign: 'center',
+                align: 'center',
+                field: 'dataType',
+                sortable: false,
+                width: 70,
+                formatter: function (v) {
+                    if (v == "collect_statistics") {
+                        return "统计数据";
+                    } else if (v == "collect_statistics") {
+                        return "详细数据";
+                    }
+                    return "";
+                }
+            },
+            {
+                title: '采集器地址',
                 halign: 'center',
                 align: 'center',
                 sortable: false,
@@ -78,7 +94,14 @@
                 sortable: false,
                 field: 'description',
                 width: 70,
-            },
+            },{
+                title: '描述',
+                halign: 'center',
+                align: 'center',
+                sortable: false,
+                field: 'jobClass',
+                width: 70,
+            }
 
         ],
         locale: 'zh-CN',//中文支持,
@@ -102,14 +125,16 @@
             item.required = e.required;
             parameters.push(item);
             item = {};
-        })
+        });
         let params = {
             "entity.baseUrl": $("#interface_URL").val(),
             "entity.description": $("#interface_des").val(),
+            "entity.jobClass": $("#jobClass").val(),
             "entity.id": select_ID ? select_ID.id : null,
             "entity.name": $("#interface_name").val(),
             "entity.parameters": JSON.stringify(parameters),
             "entity.type": $("#interface_type").val(),
+            "entity.dataType": $("#data_type").val()
         }
         $.ajax({
             contentType: "application/x-www-form-urlencoded", //设置请求头信息
@@ -121,7 +146,7 @@
                 if (res.success) {
                     $('#interface_table').bootstrapTable('refresh')
                     $("#edit_interface").modal("hide");
-                    toastr.success('操作成功!');
+                    window.top.toastr.success('操作成功!');
                 }
             }
         });
@@ -140,12 +165,12 @@
                 success: function (res) {
                     if (res.success) {
                         $('#interface_table').bootstrapTable('refresh')
-                        toastr.success('删除成功!');
+                        window.top.toastr.success('删除成功!');
                     }
                 }
             });
         } else {
-            toastr.error('请选择要删除的数据!');
+            window.top.toastr.error('请选择要删除的数据!');
         }
     })
 });
@@ -153,13 +178,15 @@
 function add_editBtn(message) {
     var readonly = [{ value: "0", text: "是" }, { value: "1", text: "否" }];
     var dataSource = [
-        { value: "enter_manually", text: "手动录入" },
-        { value: "Iteration_start_time", text: "迭代开始时间" },
-        { value: "Iteration_end_time", text: "迭代结束时间" },
-        { value: "project_name", text: "项目名称" },
-        { value: "project_start_time", text: "项目开始时间" },
-        { value: "project_end_time", text: "项目结束时间" },
-        { value: "project_member", text: "项目人员" },
+        { value: "手动录入", text: "手动录入" },
+        { value: "项目名称", text: "项目名称" },
+        { value: "项目开始时间", text: "项目开始时间" },
+        { value: "项目结束时间", text: "项目结束时间" },
+        { value: "项目人员", text: "项目人员" },
+        { value: "迭代名称", text: "迭代名称" },
+        { value: "迭代开始时间", text: "迭代开始时间" },
+        { value: "迭代结束时间", text: "迭代结束时间" },
+        { value: "当日", text: "当日" }
     ];
     var table_data = [];
     if (message == "editMsg") {
@@ -168,7 +195,9 @@ function add_editBtn(message) {
         if (select_ID) {
             $("#edit_interface").modal("show");
             $("#interface_type").val(`${select_ID.type}`);
+            $("#data_type").val(`${select_ID.dataType}`);
             $("#interface_name").val(`${select_ID.name}`);
+            $("#jobClass").val(`${select_ID.jobClass}`);
             $("#interface_URL").val(`${select_ID.baseUrl}`);
             $("#interface_des").val(`${select_ID.description ? select_ID.description : ""}`);
             table_data = JSON.parse(select_ID.parameters)
@@ -178,22 +207,24 @@ function add_editBtn(message) {
                 });
             }
         } else {
-            toastr.error('请选择要编辑的数据!');
+            window.top.toastr.error('请选择要编辑的数据!');
         }
     } else if (message == "addMsg") {
         $('#interface_table').bootstrapTable('uncheckAll')
         $('#add_edit_table').bootstrapTable('destroy');
         $("#edit_interface").modal("show");
         $("#interface_type").val("");
+        $("#data_type").val("");
         $("#interface_name").val("");
+        $("#jobClass").val("");
         $("#interface_URL").val("");
         $("#interface_des").val("");
         table_data = [{
             deleteId: Math.random(),
             name: "",
             value: "",
-            inputType: "",
-            required: "",
+            inputType: "enter_manually",
+            required: "1",
             select: undefined
         }];
     };
@@ -210,7 +241,7 @@ function add_editBtn(message) {
         clickToSelect: true,//是否启用点击选中行
         toolbarAlign: 'right',
         toolbar: '#interface_toolbar',//指定工作栏
-        buttonsAlign: 'right',//按钮对齐方式
+        buttonsAlign: 'right',//按钮对齐方式0
         columns: [
             {
                 title: '全选',
@@ -280,8 +311,8 @@ function add_editBtn(message) {
             deleteId: Math.random(),
             name: "",
             value: "",
-            inputType: "",
-            required: "",
+            inputType: "enter_manually",
+            required: "1",
             select: undefined
         }
         table_data.push(table_data_item);
@@ -297,7 +328,7 @@ function add_editBtn(message) {
             }
             $('#add_edit_table').bootstrapTable('load', table_data);
         } else {
-            toastr.error('请选择要移除的数据!');
+            window.top.toastr.error('请选择要移除的数据!');
         }
     });
 };

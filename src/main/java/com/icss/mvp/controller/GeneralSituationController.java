@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.icss.mvp.service.UserManagerService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -42,8 +43,8 @@ public class GeneralSituationController {
 
     @Autowired private GeneralSituationService service;
 
-    //	@Autowired
-    //	private  UserManagerService userService;
+    	@Autowired
+    	private UserManagerService userService;
 
     private static Logger logger = Logger.getLogger(GeneralSituationController.class);
 
@@ -289,9 +290,15 @@ public class GeneralSituationController {
 	@ResponseBody
 	public BaseResponse updateProjectKeyrolesOne( @RequestBody ProjectKeyroles projectKeyroles){
 		BaseResponse result = new BaseResponse();
+		Map<String,Object>map = new HashMap<>();
 		try {
-			service.updateProjectKeyroles(projectKeyroles);
-			result.setCode("success");
+			map = userService.verifyHwAccount(projectKeyroles.getZrAccount(),projectKeyroles.getHwAccount());
+			if (map.get("code").equals("fail")){
+				result.setCode("error");
+			}else {
+				service.updateProjectKeyroles(projectKeyroles);
+				result.setCode("success");
+			}
 		} catch (Exception e) {
 			logger.error("编辑失败：", e);
 			result.setCode("failure");

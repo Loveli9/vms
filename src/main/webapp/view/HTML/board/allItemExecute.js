@@ -50,7 +50,7 @@ function loadProjectExecute() {
                 'pdu': $("#usertype7").selectpicker("val") == null ? null : $("#usertype7").selectpicker("val").join(),//转换为字符串
                 'du': $("#usertype8").selectpicker("val") == null ? null : $("#usertype8").selectpicker("val").join(),//转换为字符串
                 'month': $("#dateSection").val(),
-                'pm': '0000105674' //getCookie('username')
+                'pm': '1' == getCookie('zrOrhwselect') ? zeroFill(getCookie('username'), 10) : getZRAccount()
             }
             return param;
         },

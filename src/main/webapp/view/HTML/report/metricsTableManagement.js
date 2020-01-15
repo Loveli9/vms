@@ -64,8 +64,25 @@ var projNo = getCookie("projNo_comm");
     });
 
     //数据收集
-    $("#btn_data_collect").click(function () {
-        console.log("数据收集")
+    $("#btn_data_collection").click(function () {
+        var selections = $('#dataItemManagement').bootstrapTable("getSelections");
+        if (selections.length == 0) {
+            toastr.error("请先选择数据。")
+            return;
+        }
+        $.ajax({
+            url: getRootPath() + '/report/metrics_row/data_collection',
+            data: {
+                id: selections[0].id
+            },
+            success: function (resp) {
+                if (resp.succeed) {
+                    toastr.success(resp.message);
+                } else {
+                    toastr.success(resp.message);
+                }
+            }
+        })
     });
 
     //数据补齐
@@ -78,6 +95,7 @@ var projNo = getCookie("projNo_comm");
             },
             success: function (resp) {
                 if (resp.succeed) {
+                    $('#dataItemManagement').bootstrapTable("refresh");
                     toastr.success(resp.message);
                 } else {
                     toastr.success(resp.message);
@@ -521,7 +539,7 @@ function submit_line_message() {
         paramsItem.metricsItemConfigId = submitVal[i].id;
         params.metricsItems.push(paramsItem);
     }
-    ;
+
     $.ajax({
         url: getRootPath() + '/report/metrics_row/save',
         type: 'post',

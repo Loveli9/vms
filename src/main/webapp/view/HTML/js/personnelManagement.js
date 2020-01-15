@@ -14,7 +14,6 @@ var guanjiannums ="";
 var no = "";
 var projectestartDateedit = "";
 var projectendDateedit = "";
-var code ="";
 $(function(){
 	 var projNo = window.parent.projNo;
 	 var username = getCookie('username');
@@ -805,7 +804,7 @@ $(function(){
 		var width1;
 		var width2;
 		$.ajax({
-			url : getRootPath() + "/manpowerBudget/getManpowerBudgetByPmid",
+			url : getRootPath() + "/user/getMembersinfoBypm",
 			type : 'POST',
 			async: false,//是否异步，true为异步
 			data : {
@@ -817,8 +816,8 @@ $(function(){
 					kaifaCount = 0,
 						keyroleCount =0
 				}else{
-					kaifaCount = (data.data.headcount),
-					keyroleCount = (data.data.keyRoleCount)
+					kaifaCount = (data.data.rowsMembercount),
+					keyroleCount = (data.data.rowsRoleCount)
 				}
 			}
 		})
@@ -945,8 +944,7 @@ $(function(){
 				return;
 			}
 			// 华为账号校验
-           verifyHwAccount($("#zrAccountAdds").val(),$("#hwAccountAdds").val());
-			if (code == "error") {
+			if (!verifyHwAccount($("#zrAccountAdds").val(),$("#hwAccountAdds").val())) {
                 toastr.warning("华为账号与中软账号匹配有误，请核实后重新配置")
                 return ;
             }
@@ -1010,6 +1008,11 @@ $(function(){
                 toastr.warning("离项时间不得早于入项日期！");
                 return;
             }
+
+			if (!verifyHwAccount($("#zrAccountedit").val(),$("#hwAccountedit").val())) {
+				toastr.warning("华为账号与中软账号匹配有误，请核实后重新修改")
+				return ;
+			}
 			$.ajax({
 				url:getRootPath()+"/user/saveedit",
 				type : 'post',
@@ -1371,7 +1374,6 @@ function restRank(rank,zrAccount) {
 }
 
 function verifyHwAccount(zrAccount,hwAccount) {
-
     $.ajax({
         url:getRootPath() + '/user/verifyHwAccount',
         type : 'post',
@@ -1380,9 +1382,10 @@ function verifyHwAccount(zrAccount,hwAccount) {
             hwAccount:hwAccount,
         },
         success:function(data){
-            if(data.code=='fail'){
-                code = "error";
+            if('success' === data.code){
+                return true;
             }
         }
     });
+	return false;
 }

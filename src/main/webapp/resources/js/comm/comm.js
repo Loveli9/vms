@@ -1,4 +1,5 @@
 var accountList = "";
+var zrAccount = "";
 
 function getAngularUrl() {
     var curWwwPath = window.document.location.href;
@@ -763,4 +764,24 @@ function projectBoardDisplayTransform(value) {
         res = "是";
     }
     return res;
+}
+
+/**
+ * 获取中软工号通过华为工号
+ * @returns {string}
+ */
+function getZRAccount() {
+    $.ajax({
+        url: getRootPath() + '/GeneralSituation/getPMZRAccountByHW',
+        type: 'post',
+        traditional: true,
+        data: {
+            'hwAccount': getCookie('username')
+        },
+        async: false,// 是否异步，true为异步
+        success: function (data) {
+            zrAccount = data;
+        }
+    });
+    return zrAccount;
 }

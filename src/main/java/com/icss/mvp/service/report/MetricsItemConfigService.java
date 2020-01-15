@@ -11,6 +11,7 @@ import com.icss.mvp.entity.common.request.PageRequest;
 import com.icss.mvp.entity.common.response.ListResponse;
 import com.icss.mvp.entity.common.response.PlainResponse;
 import com.icss.mvp.entity.report.MetricsItemConfig;
+import com.icss.mvp.entity.report.ReportKpiConfig;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -217,5 +218,21 @@ public class MetricsItemConfigService extends ServiceImpl<MetricsItemConfigDao, 
             }
         }
         return false;
+    }
+
+    //查询项目中所有引用了的度量项配置，过滤重复数据
+    public List<MetricsItemConfig> queryNeedCollectByProjectId(String projectId) {
+        List<MetricsItemConfig> metricsItemConfigs = new ArrayList<>(0);
+        //找出项目中所有需要的KPI
+        List<ReportKpiConfig> reportKpiConfigs = reportKpiConfigService.queryNeedCollectByProjectId(projectId);
+        for (ReportKpiConfig reportKpiConfig : reportKpiConfigs) {
+            for (MetricsItemConfig metricsItemConfig : reportKpiConfig.getMetricsItemConfigs()) {
+                //去重
+                if (!metricsItemConfigs.contains(metricsItemConfig)) {
+                    metricsItemConfigs.add(metricsItemConfig);
+                }
+            }
+        }
+        return metricsItemConfigs;
     }
 }

@@ -86,13 +86,13 @@ public class CalculateService {
         if (reportConfig.getPeriod().equals(ReportRow.PERIOD_TYPE_PERIOD)) {
             List<IterationCycle> iterationCycles = iterationCycleService.getMessage(proNo);
             for (IterationCycle iterationCycle : iterationCycles) {
-                if (iterationCycle.getStartDate() != null && System.currentTimeMillis() >= iterationCycle.getStartDate().getTime()) {
+                if (iterationCycle.getStartDate() != null && System.currentTimeMillis() >= iterationCycle.getStartDate().getTime() && iterationCycle.getEndDate() != null && System.currentTimeMillis() <= iterationCycle.getEndDate().getTime()) {
                     QueryWrapper condition = Wrappers.query().eq("period_id", iterationCycle.getId()).eq("report_Id", report.getId());
                     List<ReportRow> reportRows = reportRowService.list(condition);
                     if (reportRows.isEmpty()) {
                         Result<Integer> generateResult = generateAndCalculateReportRow(projectInfo, iterationCycle, reportConfig, report, false);
-                        if (generateResult.isSuccess() && generateResult.getData() != null && generateResult.getData() > 0) {
-                            count += generateResult.getData();
+                        if (generateResult.isSuccess() && generateResult.getData() != null) {
+                            count++;
                         }
                     }
                 }

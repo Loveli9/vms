@@ -10,28 +10,35 @@ import com.icss.mvp.entity.common.response.BaseResponse;
 import com.icss.mvp.entity.common.response.ListResponse;
 import com.icss.mvp.entity.common.response.PlainResponse;
 import com.icss.mvp.service.IterationCycleService;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.http.util.TextUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.util.*;
 
-@RequestMapping("/iteration") @RestController @SuppressWarnings("all") public class IterationCycleController {
+@RequestMapping("/iteration")
+@RestController
+@SuppressWarnings("all")
+public class IterationCycleController {
 
     private Logger logger = Logger.getLogger(IterationCycleController.class);
 
-    @Autowired private IterationCycleService iterationCycleService;
+    @Autowired
+    private IterationCycleService iterationCycleService;
 
     /**
      * @Description: 分页查询项目迭代信息 @param @param iterationCycle @param @return
      * 参数 @return BaseResponse 返回类型 @author chengchenhui @throws
      */
-    @RequestMapping(value = "/queryList", method = RequestMethod.POST, consumes = "application/json") @ResponseBody public TableSplitResult query(
+    @RequestMapping(value = "/queryList", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public TableSplitResult query(
             HttpServletRequest request) {
         String code = request.getParameter("code") == null ? "" : request.getParameter("code");
         String iteName = request.getParameter("iteName") == null ? "" : request.getParameter("iteName");
@@ -50,7 +57,7 @@ import java.util.Map;
         page.setRows(limit);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("code", code);
-        map.put("proNo",proNo);
+        map.put("proNo", proNo);
         map.put("iteName", iteName);
         map.put("username", request.getParameter("username"));
         page.setQueryMap(map);
@@ -87,7 +94,9 @@ import java.util.Map;
      * @param iterationCycle
      * @return
      */
-    @RequestMapping(value = "/add") @ResponseBody public BaseResponse add(@RequestBody IterationCycle iterationCycle) {
+    @RequestMapping(value = "/add")
+    @ResponseBody
+    public BaseResponse add(@RequestBody IterationCycle iterationCycle) {
         BaseResponse result = new BaseResponse();
         String mes = "";
         try {
@@ -108,7 +117,9 @@ import java.util.Map;
      * @param iterationCycle
      * @return
      */
-    @RequestMapping(value = "/edit", method = RequestMethod.POST) @ResponseBody public BaseResponse edit(
+    @RequestMapping(value = "/edit", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse edit(
             @RequestBody IterationCycle iterationCycle) {
         BaseResponse result = new BaseResponse();
         try {
@@ -126,7 +137,9 @@ import java.util.Map;
      * @Description:迭代编辑页面回显 @param @param iterationCycle @param @return 参数 @return
      * BaseResponse 返回类型 @throws
      */
-    @RequestMapping(value = "/editPage", method = RequestMethod.POST) @ResponseBody public Map<String, Object> editPage(
+    @RequestMapping(value = "/editPage", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> editPage(
             String id) {
         Map<String, Object> map = new HashMap<String, Object>();
         try {
@@ -144,7 +157,9 @@ import java.util.Map;
      * @Description:删除当前选中的迭代管理信息 @param @param ids @param @return 参数 @return
      * BaseResponse 返回类型 @throws
      */
-    @RequestMapping(value = "/delete", method = RequestMethod.POST) @ResponseBody public BaseResponse delete(
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse delete(
             @RequestBody String[] ids) {
         BaseResponse result = new BaseResponse();
         try {
@@ -163,7 +178,9 @@ import java.util.Map;
      * PlainResponse @throws @author chengchenhui @date 2019/5/16
      * 15:42
      */
-    @RequestMapping(value = "/measureReport", method = RequestMethod.POST) @ResponseBody public PlainResponse<JSONObject> measureReport(
+    @RequestMapping(value = "/measureReport", method = RequestMethod.POST)
+    @ResponseBody
+    public PlainResponse<JSONObject> measureReport(
             String no, String label, String category) {
         PlainResponse<JSONObject> result = new PlainResponse<>();
         try {
@@ -177,7 +194,9 @@ import java.util.Map;
         return result;
     }
 
-    @RequestMapping(value = "/iterationIndex/add", method = RequestMethod.POST) @ResponseBody public BaseResponse iterationIndexAdd(
+    @RequestMapping(value = "/iterationIndex/add", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse iterationIndexAdd(
             @RequestBody IterationMeasureIndex iterationMeasureIndex) {
         BaseResponse result = new BaseResponse();
         try {
@@ -189,7 +208,9 @@ import java.util.Map;
         return result;
     }
 
-    @RequestMapping(value = "/iterationIndex/edit", method = RequestMethod.POST) @ResponseBody public BaseResponse iterationIndexEdit(
+    @RequestMapping(value = "/iterationIndex/edit", method = RequestMethod.POST)
+    @ResponseBody
+    public BaseResponse iterationIndexEdit(
             @RequestBody IterationMeasureIndex iterationMeasureIndex, String proNo) {
         BaseResponse result = new BaseResponse();
         try {
@@ -207,7 +228,9 @@ import java.util.Map;
      * @param proNo
      * @return
      */
-    @RequestMapping(value = "/getMessage", method = RequestMethod.POST) @ResponseBody public PlainResponse<List<IterationCycle>> getMessage(
+    @RequestMapping(value = "/getMessage", method = RequestMethod.POST)
+    @ResponseBody
+    public PlainResponse<List<IterationCycle>> getMessage(
             String proNo) {
         PlainResponse<List<IterationCycle>> result = new PlainResponse<>();
         try {
@@ -223,7 +246,9 @@ import java.util.Map;
      * @Description: 加载迭代名称下拉列表值 @param @param iterationCycle @param @return
      * 参数 @return BaseResponse 返回类型 @author chengchenhui @throws
      */
-    @RequestMapping("/getIteNameSelect") @ResponseBody public ListResponse<Map<String, Object>> getIteNameSelect(
+    @RequestMapping("/getIteNameSelect")
+    @ResponseBody
+    public ListResponse<Map<String, Object>> getIteNameSelect(
             String proNo) {
         ListResponse result = new ListResponse();
         List<Map<String, Object>> list = new ArrayList<>();
@@ -249,7 +274,9 @@ import java.util.Map;
      * @Description: 校验迭代名称唯一性 @param @param iterationCycle @param @return
      * 参数 @return BaseResponse 返回类型 @author chengchenhui @throws
      */
-    @RequestMapping("/checkIteName") @ResponseBody public BaseResponse checkIteName(String proNo, String iteName) {
+    @RequestMapping("/checkIteName")
+    @ResponseBody
+    public BaseResponse checkIteName(String proNo, String iteName) {
         PlainResponse result = new PlainResponse();
         String flag = "";
         try {
@@ -266,7 +293,9 @@ import java.util.Map;
      * @Description: 保存页面截图，发邮件 @param imageDataB64 图片 @return BaseResponse
      * 返回类型 @throws
      */
-    @RequestMapping("/saveImage") @ResponseBody public BaseResponse saveImage(String imageDataB64, String proNo) {
+    @RequestMapping("/saveImage")
+    @ResponseBody
+    public BaseResponse saveImage(String imageDataB64, String proNo) {
         PlainResponse result = new PlainResponse();
         String flag = "";
         try {
@@ -283,7 +312,9 @@ import java.util.Map;
      * @Description: 校验迭代时间顺序 @param @param iterationCycle @param @return 参数 @return
      * BaseResponse 返回类型 @author chengchenhui @throws
      */
-    @RequestMapping("/checkStartTime") @ResponseBody public IterationCycle checkStartTime(String proNo) {
+    @RequestMapping("/checkStartTime")
+    @ResponseBody
+    public IterationCycle checkStartTime(String proNo) {
         IterationCycle iterationCycle = new IterationCycle();
         try {
             iterationCycle = iterationCycleService.checkStartTime(proNo);
@@ -299,7 +330,9 @@ import java.util.Map;
      * @param projNo
      * @return
      */
-    @RequestMapping("/getProjNoName") @ResponseBody public ProjectDetailInfo getProjNoName(String proNo) {
+    @RequestMapping("/getProjNoName")
+    @ResponseBody
+    public ProjectDetailInfo getProjNoName(String proNo) {
         return iterationCycleService.getProjNoName(proNo);
     }
 
@@ -309,7 +342,9 @@ import java.util.Map;
      * @param request
      * @return
      */
-    @RequestMapping(value = "/iterationIndexVlaue", method = RequestMethod.POST, consumes = "application/json") @ResponseBody public TableSplitResult iterationIndexVlaue(
+    @RequestMapping(value = "/iterationIndexVlaue", method = RequestMethod.POST, consumes = "application/json")
+    @ResponseBody
+    public TableSplitResult iterationIndexVlaue(
             HttpServletRequest request, String proNo) {
         String list = TextUtils.isEmpty(request.getParameter("list")) ? "" : request.getParameter("list");
         int limit =
@@ -328,7 +363,9 @@ import java.util.Map;
      * @author zhanghucheng
      * @date 2019/12/17
      */
-    @RequestMapping(value = "/measureReport1", method = RequestMethod.GET) @ResponseBody public TableSplitResult<List<Map<String, Object>>> measureReport1(
+    @RequestMapping(value = "/measureReport1", method = RequestMethod.GET)
+    @ResponseBody
+    public TableSplitResult<List<Map<String, Object>>> measureReport1(
             String no, String label, String category) {
         TableSplitResult<List<Map<String, Object>>> result = new TableSplitResult<List<Map<String, Object>>>();
         try {
@@ -337,6 +374,28 @@ import java.util.Map;
             logger.error(e.getMessage(), e);
         }
         return result;
+    }
+
+    @RequestMapping(value = "/list_by_project_no")
+    @ResponseBody
+    public ListResponse<List<Map<String, Object>>> listByProjectNo(String projectNo) {
+        List<IterationCycle> iterationCycles = iterationCycleService.getMessage(projectNo);
+        return ListResponse.ok(iterationCycles);
+    }
+
+    @RequestMapping(value = "/get_by_project_no_and_datetime")
+    @ResponseBody
+    public IterationCycle getByProjectNoAndDatetime(String projectNo, String dt) {
+        Date date = null;
+        try {
+            if (StringUtils.isNotEmpty(dt)) {
+                date = DateUtils.parseDate(dt, new String[]{"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd"});
+            }
+        } catch (ParseException e) {
+            return null;
+        }
+        IterationCycle iteration = iterationCycleService.getByProjectNoAndDatetime(projectNo, date);
+        return iteration;
     }
 
 }

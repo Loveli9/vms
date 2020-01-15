@@ -11,12 +11,15 @@ import com.icss.mvp.dao.report.IReportKpiConfigDao;
 import com.icss.mvp.entity.TableSplitResult;
 import com.icss.mvp.entity.common.request.PageRequest;
 import com.icss.mvp.entity.report.MetricsItemConfig;
+import com.icss.mvp.entity.report.ReportConfig;
 import com.icss.mvp.entity.report.ReportKpiConfig;
+import com.icss.mvp.entity.report.ReportKpiConfigRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -110,5 +113,31 @@ public class ReportKpiConfigService extends ServiceImpl<IReportKpiConfigDao, Rep
 
     public Integer countByMictricsItemConfigId(Integer mictricsItemConfigId) {
         return reportKpiConfigDao.countByMictricsItemConfigId(mictricsItemConfigId);
+    }
+
+    /**
+     * 获取项目中需要采集（KPI配置有数据源的）的KPI列表,去除重复
+     *
+     * @param pid
+     * @return
+     */
+    public List<ReportKpiConfig> queryNeedCollectByProjectId(String pid) {
+        List<ReportKpiConfig> reportKpiConfigs = new ArrayList<>(0);
+        List<Integer> flags = new ArrayList<>(0);
+        List<ReportConfig> reportConfigs = reportConfigService.listExcludedByProjectNo(pid);
+        for (ReportConfig reportConfig : reportConfigs) {
+            for (ReportKpiConfigRef reportKpiConfigRef : reportConfig.getKpiConfigRefs()) {
+                if (flags.contains(reportKpiConfigRef.getReportKpiConfig().getId())) {
+                    continue;
+                } else {
+                    List<MetricsItemConfig> metricsItemConfigs = reportKpiConfigRef.getReportKpiConfig().getMetricsItemConfigs();
+                    if (metricsItemConfigs != null && metricsItemConfigs.size() > 0 && reportKpiConfigRef.getReportKpiConfig().getExpression() != null) {
+                        reportKpiConfigs.add(reportKpiConfigRef.getReportKpiConfig());
+                        flags.add(reportKpiConfigRef.getReportKpiConfig().getId());
+                    }
+                }
+            }
+        }
+        return reportKpiConfigs;
     }
 }

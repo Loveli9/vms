@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.security.sasl.AuthenticationException;
 
+import com.icss.mvp.service.ProjectListService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -73,6 +74,8 @@ public class ProjectController extends BaseController {
     @Resource
     private BuOverviewService buOverviewService;
 
+    @Autowired
+    private ProjectListService projectListService;
 //    @Autowired
 //    ProjectCollectService          collectService;
 
@@ -366,5 +369,11 @@ public class ProjectController extends BaseController {
         }
 
         return result;
+    }
+
+    @RequestMapping("/get_by_no")
+    @ResponseBody
+    public ProjectInfo getByNo(String no) {
+        return projectListService.getByProNo(no);
     }
 }

@@ -1,4 +1,4 @@
-; $(function () {
+;$(function () {
     $('#interface_table').bootstrapTable({
         method: 'post',
         contentType: "application/x-www-form-urlencoded",
@@ -16,11 +16,11 @@
         sidePagination: 'server',
         queryParams: function (params) {
             var param = {
-                "params.status_in":1,
-                "params.status_in":2,
+                "params.status_in": 1,
+                "params.status_in": 2,
                 "pageable.size": params.limit, //页面大小
-                "pageable.start":params.limit*(params.pageNumber-1),
-                "pageable.page": params.pageNumber-1, //页码
+                "pageable.start": params.limit * (params.pageNumber - 1),
+                "pageable.page": params.pageNumber - 1, //页码
                 "pageable.sort": '[{"property":"startTime","direction":"DESC"}]' //排位命令（desc，asc）
             }
             return param;
@@ -104,4 +104,66 @@
         locale: 'zh-CN',//中文支持,
     });
 
+    //查询
+    $("#runing_search_btn").on("click", function () {
+        $('#interface_table').bootstrapTable('refresh');
+    });
+
+    //重置
+    $("#runing_clear_btn").on("click", function () {
+        $("#queryName").val("")
+        $('#interface_table').bootstrapTable('refresh');
+    })
+
+    //停止任务
+    $("#btn_stop").on("click", function () {
+        var selections = $('#interface_table').bootstrapTable('getSelections');
+        if (selections.length > 0) {
+            var id = selections[0].id
+            $.ajax({
+                url: 'http://10.28.1.252:8080/datacollection/collectionschedule/stop_job',
+                method: 'POST',
+                data: {taskInstanceId: id},
+                success: function (resp) {
+                    toastr.error(resp.data.result);
+                }
+            });
+        } else {
+            toastr.error("请先选择需要停止的任务！");
+        }
+    })
+
+    //查看日志
+    $("#btn_log").on("click", function () {
+        var selections = $('#interface_table').bootstrapTable('getSelections');
+        if (selections.length > 0) {
+            var id = selections[0].id
+            $.ajax({
+                url: 'http://10.28.1.252:8080/datacollection/executelog/query',
+                method: 'POST',
+                data: {taskInstanceId: id},
+                success: function (resp) {
+                    if (resp.success) {
+                        if (resp.data.length > 0) {
+                            var lines = [];
+                            for (var i = 0; i < resp.data.length; i++) {
+                                var value = resp.data[i];
+                                lines.push("【" + value.datetime.replace("T", " ") + "】 -> " + value.log);
+                            }
+
+                            $("#logs_dialog").modal("show");
+                            $(".execute-logs").val(lines.join("\r"))
+                        }
+                    } else {
+                        toastr.error(resp.data.result);
+                    }
+                }
+            });
+        } else {
+            toastr.error("请先选择需要查看日志的任务！");
+        }
+    })
+    $(".btn-log-close").click(function () {
+        $("#logs_dialog").modal("hide");
+    });
 })

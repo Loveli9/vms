@@ -31,7 +31,7 @@ public class MetricsTableController {
     @RequestMapping(value = "repair")
     public PlainResponse repair(String projectNo, Integer metricsTableConfigId) {
         if (StringUtils.isEmpty(projectNo) || metricsTableConfigId == null) {
-            return PlainResponse.fail("补齐数据错误，缺少必要参数！", CommonResultCode.INVALID_PARAMETER.code);
+            return PlainResponse.fail("补齐数据错误，缺少必要参数！");
         }
         PlainResponse response = service.repair(projectNo, metricsTableConfigId);
         return response;

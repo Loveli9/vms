@@ -409,4 +409,29 @@ SELECT t.* FROM  (SELECT
 		SELECT mb.NAME as NAME ,mb.HW_ACCOUNT as HW_ACCOUNT FROM member_base mb
 		WHERE mb.ZR_ACCOUNT = #{zr};
 	</select>
+
+	<select id="getMemberinfoByPm" parameterType="java.lang.String"
+			resultType="java.lang.Integer">
+SELECT COUNT(*)
+FROM (
+SELECT ps.`NO` AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT
+FROM project_staff ps
+LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+WHERE ps.IS_DELETED ='0'AND ps.STATUS IN ('在岗','后备','离职'))t
+LEFT JOIN project_info p ON t.NO = p.`NO`
+WHERE p.PMID = #{pmid} AND p.PROJECT_STATE = '在行';
+	</select>
+	<select id="getkeyRoleBypm" parameterType="java.lang.String"
+			resultType="java.lang.Integer">
+SELECT COUNT(*)
+FROM (
+SELECT ps.`NO` AS NO, mb.ZR_ACCOUNT AS ZR_ACCOUNT
+FROM project_staff ps
+LEFT JOIN
+		 member_base mb ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
+WHERE ps.IS_DELETED ='0'AND ps.IS_KEY_STAFFS = '0' AND ps.STATUS IN ('在岗','后备','离职'))t
+LEFT JOIN project_info p ON t.NO = p.`NO`
+WHERE p.PMID = #{pmid} AND p.PROJECT_STATE = '在行';
+	</select>
 </mapper>

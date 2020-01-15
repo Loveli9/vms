@@ -97,4 +97,61 @@ public interface IGroupBoardDao {
      * @return
      */
     Integer queryExecutionProjectCount(@Param("id") String id, @Param("month") String month, @Param("flag") String flag);
+
+    /**
+     * 获取第二、第三组织部门
+     *
+     * @param flag
+     * @param orgFlag
+     * @return
+     */
+    List<Map<String, Object>> getSecondAndThirdOrg(@Param("flag") int flag, @Param("orgFlag") String orgFlag);
+
+    /**
+     * 获取第二组织部门的人员到位率和稳定度信息
+     *
+     * @param parameter
+     * @return
+     */
+    Map<String, Object> querySecondOrgPersonnel(Map<String, Object> parameter);
+
+    /**
+     * 获取第三组织部门的人员到位率和稳定度信息
+     *
+     * @param parameter
+     * @return
+     */
+    Map<String, Object> queryThirdOrgPersonnel(Map<String, Object> parameter);
+
+    /**
+     * 获取第二组织部门的问题闭环率信息
+     *
+     * @param parameter
+     * @return
+     */
+    Map<String, Object> querySecondOrgIssue(Map<String, Object> parameter);
+
+    /**
+     * 获取第三组织部门的问题闭环率信息
+     *
+     * @param parameter
+     * @return
+     */
+    Map<String, Object> queryThirdOrgIssue(Map<String, Object> parameter);
+
+    /**
+     * 更新看板总览表和验收表信息
+     *
+     * @param groupAcceptance
+     */
+    void updateGroupOverview(@Param("groupAcc") GroupAcceptanceEntity groupAcceptance);
+
+    /**
+     * 获取看板总览表和验收表信息
+     *
+     * @param statisticalTime
+     * @param orgId
+     * @return
+     */
+    GroupAcceptanceEntity queryBoardInfo(@Param("statisticalTime") String statisticalTime, @Param("orgId") String orgId);
 }

@@ -77,17 +77,17 @@ var subMenus = {
     //二级菜单
     'sub-system': [
         {
-            ddId:'-36-',
-            ddname :'角色管理',
-            ddpath :'permissionManage.html',
-            menuId:'sub-sysRole',
-            menuColor:'#0091FE'
+            ddId: '-36-',
+            ddname: '角色管理',
+            ddpath: 'permissionManage.html',
+            menuId: 'sub-sysRole',
+            menuColor: '#0091FE'
         },
         {
-            ddId:'-37-',
-            ddname :'用户管理',
-            ddpath :'sysUserManage.html',
-            menuId:'sub-sysUser'
+            ddId: '-37-',
+            ddname: '用户管理',
+            ddpath: 'sysUserManage.html',
+            menuId: 'sub-sysUser'
         },
         /*{
             ddId:'-34-',
@@ -114,22 +114,22 @@ var subMenus = {
             menuId:'sub-dataManager'
         },*/
         {
-            ddId:'-38-',
-            ddname :'日志管理',
-            ddpath :'projectOperationClone.html',
-            menuId:'sub-logging'
+            ddId: '-38-',
+            ddname: '日志管理',
+            ddpath: 'projectOperationClone.html',
+            menuId: 'sub-logging'
         },
         {
-            ddId:'-39-',
-            ddname :'消息中心',
-            ddpath :'messageTipsClone.html',
-            menuId:'sub-message'
+            ddId: '-39-',
+            ddname: '消息中心',
+            ddpath: 'messageTipsClone.html',
+            menuId: 'sub-message'
         },
         {
-            ddId:'-40-',
-            ddname :'各类后台配置',
-            ddpath :'sysDictClone.html',
-            menuId:'sub-configuration'
+            ddId: '-40-',
+            ddname: '各类后台配置',
+            ddpath: 'sysDictClone.html',
+            menuId: 'sub-configuration'
         }
     ],
     'sub-work': [//condition:1-显示
@@ -152,21 +152,21 @@ var subMenus = {
             ddname: '需求配置',
             ddpath: 'demandworkNew.html',
             menuId: 'sub-demandwork',
-            condition:1
+            condition: 1
         },
         {
             ddId: '-12-',
             ddname: '交付件配置',
             ddpath: 'deliver.html',
             menuId: 'sub-deliver',
-            condition:1
+            condition: 1
         },
         {
             ddId: '-13-',
             ddname: '人员配置',
             ddpath: 'personnelManagement.html',
             menuId: 'sub-personnelManagement',
-            condition:1
+            condition: 1
         },
         {
             ddId: '-14-',
@@ -185,7 +185,7 @@ var subMenus = {
             ddname: '风险问题',
             ddpath: 'risk.html',
             menuId: 'sub-risk',
-            condition:1
+            condition: 1
         },
         {
             ddId: '-17-',
@@ -266,7 +266,28 @@ var subMenus = {
             ddpath: 'collection/task_instance-done.html',
             menuId: 'sub-interface2',
             condition: 1
-        }
+        },
+        {
+            ddId: '-91-',
+            ddname: '采集计划',
+            ddpath: 'collection/collection_plan.html',
+            menuId: 'sub-interface5',
+            condition: 1
+        },
+        {
+            ddId: '-91-',
+            ddname: '采集配置',
+            ddpath: 'collection/collection_config.html',
+            menuId: 'sub-interface5',
+            condition: 1
+        },
+        {
+            ddId: '-91-',
+            ddname: '采集配置',
+            ddpath: 'collection/collection_Configuration.html',
+            menuId: 'sub-interface5',
+            condition: 1
+        },
     ],
     'sub-project': [
         {
@@ -310,8 +331,8 @@ var subMenus = {
             dtname: '范围',
             menuId: 'sub-details-range',
             value: [
-                {ddId: '-59-', ddname: '需求', ddpath: 'projectDemand.html', menuId: 'sub-report-demand'},
-                {ddId: '-60-', ddname: '工作量', ddpath: 'gaikuang.html', menuId: 'sub-report-workload'}
+                { ddId: '-59-', ddname: '需求', ddpath: 'projectDemand.html', menuId: 'sub-report-demand' },
+                { ddId: '-60-', ddname: '工作量', ddpath: 'gaikuang.html', menuId: 'sub-report-workload' }
             ]
         },
         {
@@ -319,10 +340,10 @@ var subMenus = {
             dtname: '资源',
             menuId: 'sub-resources',
             value: [
-                {ddId: '-61-', ddname: '团队成员', ddpath: 'projectTeamMembers.html', menuId: 'sub-report-team'},
-                {ddId: '-62-', ddname: '关键角色', ddpath: 'projectKeyRole.html', menuId: 'sub-report-keyRole'},
-                {ddId: '-85-', ddname: '问题成员', ddpath: 'projectProblemMember.html', menuId: 'sub-report-problem'},
-                {ddId: '-86-', ddname: '出勤', ddpath: 'projectAttendance.html', menuId: 'sub-report-attendance'}
+                { ddId: '-61-', ddname: '团队成员', ddpath: 'projectTeamMembers.html', menuId: 'sub-report-team' },
+                { ddId: '-62-', ddname: '关键角色', ddpath: 'projectKeyRole.html', menuId: 'sub-report-keyRole' },
+                { ddId: '-85-', ddname: '问题成员', ddpath: 'projectProblemMember.html', menuId: 'sub-report-problem' },
+                { ddId: '-86-', ddname: '出勤', ddpath: 'projectAttendance.html', menuId: 'sub-report-attendance' }
             ]
         },
         {
@@ -330,9 +351,9 @@ var subMenus = {
             dtname: '效率',
             menuId: 'sub-efficiency',
             value: [
-                {ddId: '-63-', ddname: '代码产出', ddpath: 'codeOutPut.html', menuId: 'sub-report-output'},
-                {ddId: '-64-', ddname: '测试用例', ddpath: 'testCase.html', menuId: 'sub-report-testCase'},
-                {ddId: '-65-', ddname: '文档文件', ddpath: 'document.html', menuId: 'sub-report-documents'}
+                { ddId: '-63-', ddname: '代码产出', ddpath: 'codeOutPut.html', menuId: 'sub-report-output' },
+                { ddId: '-64-', ddname: '测试用例', ddpath: 'testCase.html', menuId: 'sub-report-testCase' },
+                { ddId: '-65-', ddname: '文档文件', ddpath: 'document.html', menuId: 'sub-report-documents' }
             ]
         },
         {
@@ -340,12 +361,12 @@ var subMenus = {
             dtname: '报表',
             menuId: 'sub-details-report',
             value: [
-                {ddId: '-66-', ddname: '过程跟踪', ddpath: 'processTrack.html', menuId: 'sub-report-process'},
-                {ddId: '-67-', ddname: '验收跟踪', ddpath: 'projectInspect.html', menuId: 'sub-report-acceptance'},
-                {ddId: '-68-', ddname: '人员跟踪', ddpath: 'personnelTrack.html', menuId: 'sub-report-people'},
-                {ddId: '-69-', ddname: '问题跟踪', ddpath: 'problemDscription.html', menuId: 'sub-report-problem'},
-                {ddId: '-70-', ddname: '可信跟踪', ddpath: 'developIndex.html', menuId: 'sub-report-credible'},
-                {ddId: '-71-', ddname: '自定义报表', ddpath: 'custom.html', menuId: 'sub-report-custom'}
+                { ddId: '-66-', ddname: '过程跟踪', ddpath: 'processTrack.html', menuId: 'sub-report-process' },
+                { ddId: '-67-', ddname: '验收跟踪', ddpath: 'projectInspect.html', menuId: 'sub-report-acceptance' },
+                { ddId: '-68-', ddname: '人员跟踪', ddpath: 'personnelTrack.html', menuId: 'sub-report-people' },
+                { ddId: '-69-', ddname: '问题跟踪', ddpath: 'problemDscription.html', menuId: 'sub-report-problem' },
+                { ddId: '-70-', ddname: '可信跟踪', ddpath: 'developIndex.html', menuId: 'sub-report-credible' },
+                { ddId: '-71-', ddname: '自定义报表', ddpath: 'custom.html', menuId: 'sub-report-custom' }
             ]
         },
         {
@@ -353,9 +374,9 @@ var subMenus = {
             dtname: '配置',
             menuId: 'sub-configuration',
             value: [
-                {ddId: '-72-', ddname: '交付', ddpath: 'deliver.html', menuId: 'sub-deliver'},
-                {ddId: '-73-', ddname: '人员', ddpath: 'personnelManagement.html', menuId: 'sub-personnelManagement'},
-                {ddId: '-74-', ddname: '工具', ddpath: 'tool.html', menuId: 'sub-tool'}
+                { ddId: '-72-', ddname: '交付', ddpath: 'deliver.html', menuId: 'sub-deliver' },
+                { ddId: '-73-', ddname: '人员', ddpath: 'personnelManagement.html', menuId: 'sub-personnelManagement' },
+                { ddId: '-74-', ddname: '工具', ddpath: 'tool.html', menuId: 'sub-tool' }
             ]
         }
     ],
@@ -366,12 +387,12 @@ var subMenus = {
             dtname: '组织看板',
             menuId: 'sub-group-board',
             value: [
-                {ddId: '-28-', ddname: '项目群总览', ddpath: 'board/groupOverview.html', menuId: 'sub-report-groupOverview'},
-                {ddId: '-28-', ddname: '项目群执行跟踪', ddpath: 'board/groupExecute.html', menuId: 'sub-report-groupExecute'},
-                {ddId: '-28-', ddname: '项目群验收跟踪', ddpath: 'board/groupAcceptance.html', menuId: 'sub-report-groupAcceptance'},
-                {ddId: '-28-', ddname: '项目群人员跟踪', ddpath: 'board/groupPerson.html', menuId: 'sub-report-groupPerson'},
-                {ddId: '-28-', ddname: '项目群问题跟踪', ddpath: 'board/groupIssue.html', menuId: 'sub-report-groupIssue'},
-                {ddId: '-28-', ddname: '项目群可信跟踪', ddpath: 'board/groupCredible.html', menuId: 'sub-report-groupCredible'}
+                { ddId: '-28-', ddname: '项目群总览', ddpath: 'board/groupOverview.html', menuId: 'sub-report-groupOverview' },
+                { ddId: '-28-', ddname: '项目群执行跟踪', ddpath: 'board/groupExecute.html', menuId: 'sub-report-groupExecute' },
+                { ddId: '-28-', ddname: '项目群验收跟踪', ddpath: 'board/groupAcceptance.html', menuId: 'sub-report-groupAcceptance' },
+                { ddId: '-28-', ddname: '项目群人员跟踪', ddpath: 'board/groupPerson.html', menuId: 'sub-report-groupPerson' },
+                { ddId: '-28-', ddname: '项目群问题跟踪', ddpath: 'board/groupIssue.html', menuId: 'sub-report-groupIssue' },
+                { ddId: '-28-', ddname: '项目群可信跟踪', ddpath: 'board/groupCredible.html', menuId: 'sub-report-groupCredible' }
             ],
             menuColor: '#0091FE'
         },
@@ -380,11 +401,11 @@ var subMenus = {
             dtname: '项目看板',
             menuId: 'sub-allItem-board',
             value: [
-                {ddId: '-29-', ddname: '项目执行跟踪', ddpath: 'board/allItemExecute.html', menuId: 'sub-report-allItemExecute'},
-                {ddId: '-29-', ddname: '项目验收跟踪', ddpath: 'board/allItemAcceptance.html', menuId: 'sub-report-allItemAcceptance'},
-                {ddId: '-29-', ddname: '项目人员跟踪', ddpath: 'board/allItemPerson.html', menuId: 'sub-report-allItemPerson'},
-                {ddId: '-29-', ddname: '项目问题跟踪', ddpath: 'board/allItemIssue.html', menuId: 'sub-report-allItemIssue'},
-                {ddId: '-29-', ddname: '项目可信跟踪', ddpath: 'board/allItemCredible.html', menuId: 'sub-report-allItemCredible'}
+                { ddId: '-29-', ddname: '项目执行跟踪', ddpath: 'board/allItemExecute.html', menuId: 'sub-report-allItemExecute' },
+                { ddId: '-29-', ddname: '项目验收跟踪', ddpath: 'board/allItemAcceptance.html', menuId: 'sub-report-allItemAcceptance' },
+                { ddId: '-29-', ddname: '项目人员跟踪', ddpath: 'board/allItemPerson.html', menuId: 'sub-report-allItemPerson' },
+                { ddId: '-29-', ddname: '项目问题跟踪', ddpath: 'board/allItemIssue.html', menuId: 'sub-report-allItemIssue' },
+                { ddId: '-29-', ddname: '项目可信跟踪', ddpath: 'board/allItemCredible.html', menuId: 'sub-report-allItemCredible' }
             ]
         }
     ]

@@ -34,11 +34,11 @@ public class MetricsRowController {
 
     /**
      * 度量表全表数据分页查询，暂时不使用该接口
-     * */
+     */
     @ResponseBody
     @RequestMapping("get_full_page_by_id")
     public ListResponse<MetricsRow> getFullPageById(Page page, Integer id) {
-        return service.getFullPageById(page,id);
+        return service.getFullPageById(page, id);
     }
 
     @ResponseBody
@@ -53,5 +53,18 @@ public class MetricsRowController {
     public PlainResponse<Boolean> deleteById(Integer id) {
         boolean val = service.removeById(id);
         return PlainResponse.ok(val);
+    }
+
+    @ResponseBody
+    @RequestMapping("data_collection")
+    public PlainResponse<Boolean> dataCollection(Integer id) {
+        boolean val = service.dataCollection(id);
+        PlainResponse response = PlainResponse.ok(val);
+        if (val) {
+            response.setMessage("采集请求已经提交！");
+        } else {
+            response.setMessage("采集请求提交失败！");
+        }
+        return response;
     }
 }

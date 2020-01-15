@@ -9,20 +9,23 @@
         <result property="qa" column="QA"/>
         <result property="hwzpdu" column="pdu"/>
         <result property="pduSpdt" column="pduspt"/>
+        <result property="statisticalTime" column="statistical_time"/>
+        <result property="org" column="organization"/>
+        <result property="orgId" column="organizationId"/>
 
-        <!--<result property="checkedProject" column=""/>
-        <result property="customerScoring" column=""/>
-        <result property="executedProject" column=""/>
-        <result property="riskProject" column=""/>
-        <result property="issueCloseLoop" column=""/>
-        <result property="personnelArrival" column=""/>
-        <result property="personnelStable" column=""/>
-        <result property="credibleProject" column=""/>-->
+        <result property="checkedProject" column="checkedProject"/>
+        <result property="customerScoring" column="customerScoring"/>
+        <result property="executedProject" column="executedProject"/>
+        <result property="riskProject" column="riskProject"/>
+        <result property="issueCloseLoop" column="issueCloseLoop"/>
+        <result property="personnelArrival" column="personnelArrival"/>
+        <result property="personnelStable" column="personnelStable"/>
+        <result property="credibleProject" column="credibleProject"/>
 
-        <!--<result property="checkedProject" column=""/>
-        <result property="customerScoring" column=""/>
-        <result property="executedProject" column=""/>
-        <result property="credibleProject" column=""/>-->
+        <result property="knotProject" column="knotProject"/>
+        <result property="acceptanceKPI" column="acceptanceKPI"/>
+        <result property="knotStarDistribution" column="knotStarDistribution"/>
+        <result property="deduction" column="deduction"/>
     </resultMap>
 
     <resultMap id="projectStateNumber" type="com.icss.mvp.entity.ProjectStateNumber">
@@ -88,6 +91,27 @@
         </if>
     </sql>
 
+    <sql id="three_organization">
+        <if test='"firstOrgHw" == flag'>
+            AND p.HWPDUID = #{id}
+        </if>
+        <if test='"firstOrgZr" == flag'>
+            AND p.BUID = #{id}
+        </if>
+        <if test='"secondOrgHw" == flag'>
+            AND p.HWZPDUID = #{id}
+        </if>
+        <if test='"secondOrgZr" == flag'>
+            AND p.PDUID = #{id}
+        </if>
+        <if test='"thirdOrgHw" == flag'>
+            AND p.PDU_SPDTID = #{id}
+        </if>
+        <if test='"thirdOrgZr" == flag'>
+            AND p.DUID = #{id}
+        </if>
+    </sql>
+
     <!--一级组织机构集合-->
     <select id="getFirstOrganizations" resultType="java.util.Map">
         SELECT
@@ -98,7 +122,7 @@
             PI.BU AS firstOrg, PI.BUID AS firstOrgId
         </if>
         FROM project_info PI
-        WHERE 1 = 1
+        WHERE PI.PROJECT_STATE = '在行'
         <if test=' "hwpdu" == flag and (hwpduId == null or hwpduId.size() == 0)'>
             AND PI.HWPDUID IN(1012, 1015)
         </if>
@@ -130,7 +154,7 @@
             PI.PDU AS secondOrg, PI.PDUID AS secondOrgId
         </if>
         FROM project_info PI
-        WHERE 1 = 1
+        WHERE PI.PROJECT_STATE = '在行'
         <if test='"hwpdu" == flag'>
             AND PI.HWZPDUID != '' AND PI.HWZPDU != ''
         </if>
@@ -156,7 +180,7 @@
             PI.DU AS thirdOrg, PI.DUID AS thirdOrgId
         </if>
         FROM project_info PI
-        WHERE 1 = 1
+        WHERE PI.PROJECT_STATE = '在行'
         <if test='"hwzpdu" == flag'>
             AND PI.PDU_SPDTID != '' AND PI.PDU_SPDT != ''
         </if>
@@ -212,8 +236,7 @@
 
     <!--项目看板执行表count-->
     <select id="queryProjectExecuteCount" resultType="java.lang.Integer">
-        SELECT
-        COUNT(PI.NO)
+        SELECT COUNT(PI.NO)
         FROM project_info PI
         WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行'
         <if test="(hwpduId == null or hwpduId.size() == 0) and 0 == client">
@@ -226,7 +249,7 @@
 
     <!--项目看板验收表-->
     <select id="queryProjectAcceptance" resultMap="groupAcceptance">
-        SELECT PI.NO, PI.NAME, PI.PM, mb.NAME AS QA,
+        SELECT PI.NO, PI.NAME, PI.PM, mb.NAME AS QA, pr.is_close AS knotProject,
         <if test="0 == client">
             PI.HWZPDU AS pdu, PI.PDU_SPDT AS pduspt
         </if>
@@ -234,11 +257,13 @@
             PI.PDU AS pdu, PI.DU AS pduspt
         </if>
         FROM project_info PI
+        LEFT JOIN project_review pr
+        ON PI.NO = pr.pro_no
         LEFT JOIN project_staff ps
         ON PI.NO = ps.NO AND ps.ROLE = 'QA' AND ps.IS_DELETED = 0
         LEFT JOIN member_base mb
         ON ps.ZR_ACCOUNT = mb.ZR_ACCOUNT
-        WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行'
+        WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行' AND pr.statistical_time = #{month}
         <if test="(hwpduId == null or hwpduId.size() == 0) and 0 == client">
             AND PI.HWPDUID IN (1012, 1015)
         </if>
@@ -252,10 +277,11 @@
 
     <!--项目看板验收表count-->
     <select id="queryProjectAcceptanceCount" resultType="java.lang.Integer">
-        SELECT
-        COUNT(PI.NO)
+        SELECT COUNT(PI.NO)
         FROM project_info PI
-        WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行'
+        LEFT JOIN project_review pr
+        ON PI.NO = pr.pro_no
+        WHERE PI.PMID = #{pm} AND PI.PROJECT_STATE = '在行' AND pr.statistical_time = #{month}
         <if test="(hwpduId == null or hwpduId.size() == 0) and 0 == client">
             AND PI.HWPDUID IN (1012, 1015)
         </if>
@@ -266,76 +292,256 @@
 
     <!--组织看板验收表结项项目个数-->
     <select id="queryKnotProjectCount" resultType="java.lang.Integer">
-        SELECT
-        COUNT(pr.is_close)
+        SELECT COUNT(pr.is_close)
         FROM project_review pr
         LEFT JOIN project_info p
         ON pr.pro_no = p.NO
         WHERE pr.statistical_time = #{month} AND pr.is_close = 1 AND p.PROJECT_STATE = '在行'
-        <if test='"secondOrgHw" == flag'>
-            AND p.HWZPDUID = #{id}
-        </if>
-        <if test='"secondOrgZr" == flag'>
-            AND p.PDUID = #{id}
-        </if>
-        <if test='"thirdOrgHw" == flag'>
-            AND p.PDU_SPDTID = #{id}
-        </if>
-        <if test='"thirdOrgZr" == flag'>
-            AND p.DUID = #{id}
-        </if>
+        <include refid="three_organization"/>
     </select>
 
     <!--组织看板总览表风险项目个数-->
     <select id="queryRiskProjectCount" resultType="java.lang.String">
-        SELECT
-        pr.project_status
+        SELECT pr.project_status
         FROM  project_info p
         LEFT JOIN project_review pr
         ON p.NO = pr.pro_no AND pr.statistical_time = #{month}
         WHERE p.PROJECT_STATE = '在行'
-        <if test='"firstOrgHw" == flag'>
-            AND p.HWPDUID = #{id}
-        </if>
-        <if test='"firstOrgZr" == flag'>
-            AND p.BUID = #{id}
-        </if>
-        <if test='"secondOrgHw" == flag'>
-            AND p.HWZPDUID = #{id}
-        </if>
-        <if test='"secondOrgZr" == flag'>
-            AND p.PDUID = #{id}
-        </if>
-        <if test='"thirdOrgHw" == flag'>
-            AND p.PDU_SPDTID = #{id}
-        </if>
-        <if test='"thirdOrgZr" == flag'>
-            AND p.DUID = #{id}
-        </if>
+        <include refid="three_organization"/>
     </select>
 
     <!--组织看板总览表执行项目个数-->
     <select id="queryExecutionProjectCount" resultType="java.lang.Integer">
-        SELECT COUNT(p.NO) FROM project_info p
+        SELECT COUNT(pr.pro_no)
+        FROM project_review pr
+        LEFT JOIN project_info p
+        ON pr.pro_no = p.NO
+        WHERE pr.statistical_time = #{month} AND p.PROJECT_STATE = '在行'
+        <include refid="three_organization"/>
+    </select>
+
+    <!--获取第二、第三组织部门-->
+    <select id="getSecondAndThirdOrg" resultType="java.util.Map">
+        SELECT
+        <if test='0 == flag and "secondOrg" == orgFlag'>
+            p.HWZPDU AS secondOrg, p.HWZPDUID AS secondOrgId
+        </if>
+        <if test='0 == flag and "thirdOrg" == orgFlag'>
+            p.PDU_SPDT AS thirdOrg, p.PDU_SPDTID AS thirdOrgId
+        </if>
+        <if test='1 == flag and "secondOrg" == orgFlag'>
+            p.PDU AS secondOrg, p.PDUID AS secondOrgId
+        </if>
+        <if test='1 == flag and "thirdOrg" == orgFlag'>
+            p.DU AS thirdOrg, p.DUID AS thirdOrgId
+        </if>
+        FROM project_info p
         WHERE p.PROJECT_STATE = '在行'
-        <if test='"firstOrgHw" == flag'>
-            AND p.HWPDUID = #{id}
+        <if test='0 == flag and "secondOrg" == orgFlag'>
+            AND p.HWPDUID IN (1012, 1015)
+            AND p.HWZPDU != '' AND p.HWZPDUID != ''
+            GROUP BY p.HWZPDUID
         </if>
-        <if test='"firstOrgZr" == flag'>
-            AND p.BUID = #{id}
+        <if test='0 == flag and "thirdOrg" == orgFlag'>
+            AND p.HWPDUID IN (1012, 1015)
+            AND p.PDU_SPDT != '' AND p.PDU_SPDTID != ''
+            GROUP BY p.PDU_SPDTID
         </if>
-        <if test='"secondOrgHw" == flag'>
-            AND p.HWZPDUID = #{id}
+        <if test='1 == flag and "secondOrg" == orgFlag'>
+            AND p.BUID = 100253
+            AND p.PDU != '' AND p.PDUID != ''
+            GROUP BY p.PDUID
         </if>
-        <if test='"secondOrgZr" == flag'>
-            AND p.PDUID = #{id}
+        <if test='1 == flag and "thirdOrg" == orgFlag'>
+            AND p.BUID = 100253
+            AND p.DU != '' AND p.DUID != ''
+            GROUP BY p.DUID
         </if>
-        <if test='"thirdOrgHw" == flag'>
-            AND p.PDU_SPDTID = #{id}
+    </select>
+
+    <!--获取第二组织部门的人员到位率和稳定度信息-->
+    <select id="querySecondOrgPersonnel" resultType="java.util.Map">
+        SELECT t.secondOrg, t.secondOrgId, SUM(t.personnel) AS personnel
+        <if test='"arrival" == personFlag'>
+            ,SUM(t.headcount) AS headCount
         </if>
-        <if test='"thirdOrgZr" == flag'>
-            AND p.DUID = #{id}
+        FROM (
+            SELECT
+            <if test='"secondOrgHw" == orgFlag'>
+                p.HWZPDU AS secondOrg, p.HWZPDUID AS secondOrgId,
+            </if>
+            <if test='"secondOrgZr" == orgFlag'>
+                p.PDU AS secondOrg, p.PDUID AS secondOrgId,
+            </if>
+            ps.NO, COUNT(ps.ZR_ACCOUNT) AS personnel
+            <if test='"arrival" == personFlag'>
+                ,mb.headcount
+            </if>
+            FROM project_info p
+            <if test='"arrival" == personFlag'>
+                LEFT JOIN manpower_budget mb
+                ON p.NO = mb.pro_no
+            </if>
+            LEFT JOIN project_staff ps
+            ON p.NO = ps.NO AND ps.IS_DELETED = 0
+            <if test='"arrival" == personFlag'>
+                AND ps.STATUS IN ('在岗', '后备')
+            </if>
+            <if test='"stable" == personFlag'>
+                AND ps.STATUS IN ('在岗', '后备', '离职')
+            </if>
+            AND (ps.START_DATE &lt;= #{statisticalTime} AND ps.END_DATE &gt; #{lastTime})
+            WHERE p.PROJECT_STATE = '在行'
+            <if test='"secondOrgHw" == orgFlag'>
+                AND p.HWZPDUID = #{orgId}
+            </if>
+            <if test='"secondOrgZr" == orgFlag'>
+                AND p.PDUID = #{orgId}
+            </if>
+            GROUP BY ps.NO ) t
+        GROUP BY t.secondOrgId
+    </select>
+
+    <!--获取第三组织部门的人员到位率和稳定度信息-->
+    <select id="queryThirdOrgPersonnel" resultType="java.util.Map">
+        SELECT t.thirdOrg, t.thirdOrgId, SUM(t.personnel) AS personnel
+        <if test='"arrival" == personFlag'>
+            ,SUM(t.headcount) AS headCount
         </if>
+        FROM (
+            SELECT
+            <if test='"thirdOrgHw" == orgFlag'>
+                p.PDU_SPDT AS thirdOrg, p.PDU_SPDTID AS thirdOrgId,
+            </if>
+            <if test='"thirdOrgZr" == orgFlag'>
+                p.DU AS thirdOrg, p.DUID AS thirdOrgId,
+            </if>
+            ps.NO, COUNT(ps.ZR_ACCOUNT) AS personnel
+            <if test='"arrival" == personFlag'>
+                ,mb.headcount
+            </if>
+            FROM project_info p
+            <if test='"arrival" == personFlag'>
+                LEFT JOIN manpower_budget mb
+                ON p.NO = mb.pro_no
+            </if>
+            LEFT JOIN project_staff ps
+            ON p.NO = ps.NO AND ps.IS_DELETED = 0
+            <if test='"arrival" == personFlag'>
+                AND ps.STATUS IN ('在岗', '后备')
+            </if>
+            <if test='"stable" == personFlag'>
+                AND ps.STATUS IN ('在岗', '后备', '离职')
+            </if>
+            AND (ps.START_DATE &lt;= #{statisticalTime} AND ps.END_DATE &gt; #{lastTime})
+            WHERE p.PROJECT_STATE = '在行'
+            <if test='"thirdOrgHw" == orgFlag'>
+                AND p.PDU_SPDTID = #{orgId}
+            </if>
+            <if test='"thirdOrgZr" == orgFlag'>
+                AND p.DUID = #{orgId}
+            </if>
+            GROUP BY ps.NO ) t
+        GROUP BY t.thirdOrgId
+    </select>
+
+    <!--获取第二组织部门的问题闭环率信息-->
+    <select id="querySecondOrgIssue" resultType="java.util.Map">
+        SELECT t.secondOrg, t.secondOrgId, SUM(t.issueCount) AS issueCount
+        FROM (SELECT
+                <if test='"secondOrgHw" == orgFlag'>
+                    p.HWZPDU AS secondOrg, p.HWZPDUID AS secondOrgId,
+                </if>
+                <if test='"secondOrgZr" == orgFlag'>
+                    p.PDU AS secondOrg, p.PDUID AS secondOrgId,
+                </if>
+                COUNT(pmc.id) AS issueCount
+                FROM project_info p
+                <if test='"closed" == issueFlag'>
+                    LEFT JOIN project_maturity_comments pmc
+                    ON p.NO = pmc.NO AND pmc.is_deleted = 0
+                    AND (pmc.state = 'Closed' AND pmc.actual_finish_time BETWEEN #{lastTime} AND #{statisticalTime})
+                </if>
+                <if test='"all" == issueFlag'>
+                    LEFT JOIN project_maturity_comments pmc
+                    ON p.NO = pmc.NO AND pmc.is_deleted = 0
+                    AND (pmc.state IN('Closed', 'Open') AND pmc.actual_finish_time BETWEEN #{lastTime} AND #{statisticalTime})
+                </if>
+                WHERE p.PROJECT_STATE = '在行'
+                <if test='"secondOrgHw" == orgFlag'>
+                    AND p.HWZPDUID = #{orgId}
+                </if>
+                <if test='"secondOrgZr" == orgFlag'>
+                    AND p.PDUID = #{orgId}
+                </if>
+                GROUP BY pmc.NO) t
+        GROUP BY t.secondOrgId
+    </select>
+
+    <!--获取第三组织部门的问题闭环率信息-->
+    <select id="queryThirdOrgIssue" resultType="java.util.Map">
+        SELECT t.thirdOrg, t.thirdOrgId, SUM(t.issueCount) AS issueCount
+        FROM (SELECT
+        <if test='"thirdOrgHw" == orgFlag'>
+            p.PDU_SPDT AS thirdOrg, p.PDU_SPDTID AS thirdOrgId,
+        </if>
+        <if test='"thirdOrgZr" == orgFlag'>
+            p.DU AS thirdOrg, p.DUID AS thirdOrgId,
+        </if>
+        COUNT(pmc.id) AS issueCount
+        FROM project_info p
+        <if test='"closed" == issueFlag'>
+            LEFT JOIN project_maturity_comments pmc
+            ON p.NO = pmc.NO AND pmc.is_deleted = 0
+            AND (pmc.state = 'Closed' AND pmc.actual_finish_time BETWEEN #{lastTime} AND #{statisticalTime})
+        </if>
+        <if test='"all" == issueFlag'>
+            LEFT JOIN project_maturity_comments pmc
+            ON p.NO = pmc.NO AND pmc.is_deleted = 0
+            AND (pmc.state IN('Closed', 'Open') AND pmc.actual_finish_time BETWEEN #{lastTime} AND #{statisticalTime})
+        </if>
+        WHERE p.PROJECT_STATE = '在行'
+        <if test='"thirdOrgHw" == orgFlag'>
+            AND p.PDU_SPDTID = #{orgId}
+        </if>
+        <if test='"thirdOrgZr" == orgFlag'>
+            AND p.DUID = #{orgId}
+        </if>
+        GROUP BY pmc.NO) t
+        GROUP BY t.thirdOrgId
+    </select>
+
+    <!--将组织看板总览和验收表信息存到board_org_info表-->
+    <insert id="updateGroupOverview">
+        REPLACE INTO board_org_info
+        (create_time, modify_time, statistical_time, organization, organizationId, checkedProject, customerScoring,
+        executedProject, riskProject, issueCloseLoop, personnelArrival, personnelStable, credibleProject, knotProject,
+        acceptanceKPI, knotStarDistribution, deduction)
+        VALUES(NOW(), NOW(), #{groupAcc.statisticalTime}, #{groupAcc.org}, #{groupAcc.orgId}, #{groupAcc.checkedProject},
+        #{groupAcc.customerScoring}, #{groupAcc.executedProject}, #{groupAcc.riskProject}, #{groupAcc.issueCloseLoop},
+        #{groupAcc.personnelArrival}, #{groupAcc.personnelStable}, #{groupAcc.credibleProject}, #{groupAcc.knotProject},
+        #{groupAcc.acceptanceKPI}, #{groupAcc.knotStarDistribution}, #{groupAcc.deduction})
+    </insert>
+
+    <!--获取看板总览表和验收表信息-->
+    <select id="queryBoardInfo" resultMap="groupAcceptance">
+        SELECT
+        boi.organization,
+        boi.organizationId,
+        boi.checkedProject,
+        boi.customerScoring,
+        boi.executedProject,
+        boi.riskProject,
+        boi.issueCloseLoop,
+        boi.personnelArrival,
+        boi.personnelStable,
+        boi.credibleProject,
+        boi.knotProject,
+        boi.acceptanceKPI,
+        boi.knotStarDistribution,
+        boi.deduction
+        FROM board_org_info boi
+        WHERE boi.statistical_time = #{statisticalTime} AND boi.organizationId = #{orgId}
     </select>
 
 </mapper>

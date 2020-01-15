@@ -253,6 +253,8 @@ public class GeneralSituationService {
 				? StringUtilsLocal.clearSpaceAndLine(projectKeyroles.getHwAccount()) : null);
 		projectKeyroles.setName(StringUtils.isNotBlank(projectKeyroles.getName())
 				? StringUtilsLocal.clearSpaceAndLine(projectKeyroles.getName()) : null);
+		projectKeyroles.setStartofdate(	DateUtils.parseDate(projectKeyroles.getStartDate(),"yyyy-MM-dd"));
+		projectKeyroles.setEndofdate(DateUtils.parseDate(projectKeyroles.getEndDate(),"yyyy-MM-dd"));
 		//projectKeyroles.setRole(generalSituationDao.getvalueBykey(projectKeyroles.getRole()));
 	//	Map<String, Object> map = dao.queryProjectDate(projectKeyroles.getPmid());
 		Map<String, Object> rankMap = projectMemberEcho(projectKeyroles.getPmid(), projectKeyroles.getZrAccount());
@@ -661,7 +663,7 @@ public class GeneralSituationService {
 				}
 			}
 			ProjectKeyroles pk = dao.queryMemberEchoDisplay(no,pmid, StringUtils.isNotBlank(zr) ? zr : zrAccount);
-			Map<String, Object> rankMap = projectMemberEcho(pmid, zr);
+			Map<String, Object> rankMap = newprojectMemberEcho(no,pmid, zr);
 			
 			if (null != pk) {
 				projectKeyroles.setUserid(userid);
@@ -951,6 +953,11 @@ public class GeneralSituationService {
 
 		return basicAndInfo(pmid, zrAccount, map, "project");
 	}
+    public Map<String, Object> newprojectMemberEcho(String no ,String pmid, String zrAccount) {
+        Map<String, Object> map = new HashMap<>();
+
+        return newbasicAndInfo(no ,pmid, zrAccount, map, "project");
+    }
 	public Map<String, Object> projectRoleKey(String proNo, String zrAccount) {
 		Map<String, Object> map = new HashMap<>();
 
@@ -964,33 +971,60 @@ public class GeneralSituationService {
 	}
 	
 	private Map<String, Object> basicAndInfo(String pmid, String zrAccount, Map<String, Object> map, String mark) {
-		if (StringUtils.isNotBlank(pmid) && StringUtils.isNotBlank(zrAccount)) {
-			try {
-				Map<String, Object> selfRank = dao.selfRank(StringUtilsLocal.zeroFill(zrAccount, 10));
-				Map<String, Object> importRank = dao.importRank(StringUtilsLocal.zeroFill(zrAccount, 10));
+        if (StringUtils.isNotBlank(pmid) && StringUtils.isNotBlank(zrAccount)) {
+            try {
+                Map<String, Object> selfRank = dao.selfRank(StringUtilsLocal.zeroFill(zrAccount, 10));
+                Map<String, Object> importRank = dao.importRank(StringUtilsLocal.zeroFill(zrAccount, 10));
 
-				map.put("STATUS",
-						null != selfRank && StringUtils.isNotBlank(StringUtilsLocal.valueOf(selfRank.get("STATUS")))
-								? selfRank.get("STATUS") : null != importRank ? importRank.get("STATUS") : null);
-				map.put("RANK", null != selfRank && StringUtils.isNotBlank(
+                map.put("STATUS",
+                        null != selfRank && StringUtils.isNotBlank(StringUtilsLocal.valueOf(selfRank.get("STATUS")))
+                                ? selfRank.get("STATUS") : null != importRank ? importRank.get("STATUS") : null);
+                map.put("RANK", null != selfRank && StringUtils.isNotBlank(
                         StringUtilsLocal.valueOf(selfRank.get("RANK")))
-						? selfRank.get("RANK") : null != importRank ? importRank.get("RANK") : null);
-				Map<String, Object> mb = dao.memberBasic(StringUtilsLocal.zeroFill(zrAccount, 10));
-				Map<String, Object> mi = dao.memberInfo(pmid, StringUtilsLocal.zeroFill(zrAccount, 10), mark);
+                        ? selfRank.get("RANK") : null != importRank ? importRank.get("RANK") : null);
+                Map<String, Object> mb = dao.memberBasic(StringUtilsLocal.zeroFill(zrAccount, 10));
+                Map<String, Object> mi = dao.memberInfo(pmid, StringUtilsLocal.zeroFill(zrAccount, 10), mark);
 
-				map.put("ROLE", null != mi ? mi.get("ROLE") : null);
-				map.put("SVN_GIT_NO", null != mi ? mi.get("SVN_GIT_NO") : null);
+                map.put("ROLE", null != mi ? mi.get("ROLE") : null);
+                map.put("SVN_GIT_NO", null != mi ? mi.get("SVN_GIT_NO") : null);
 
-				map.put("HW_ACCOUNT", null != mb ? mb.get("HW_ACCOUNT") : null);
-				map.put("NAME", null != mb ? mb.get("NAME") : null);
+                map.put("HW_ACCOUNT", null != mb ? mb.get("HW_ACCOUNT") : null);
+                map.put("NAME", null != mb ? mb.get("NAME") : null);
 
-			} catch (Exception e) {
-				logger.error("GeneralSituationService basicAndInfo failed:" + e.getMessage());
-			}
-		}
-		return map;
-	}
+            } catch (Exception e) {
+                logger.error("GeneralSituationService basicAndInfo failed:" + e.getMessage());
+            }
+        }
+        return map;
+    }
 
+    private Map<String, Object> newbasicAndInfo(String no,String pmid, String zrAccount, Map<String, Object> map, String mark) {
+        if (StringUtils.isNotBlank(pmid) && StringUtils.isNotBlank(zrAccount)) {
+            try {
+                Map<String, Object> selfRank = dao.selfRank(StringUtilsLocal.zeroFill(zrAccount, 10));
+                Map<String, Object> importRank = dao.importRank(StringUtilsLocal.zeroFill(zrAccount, 10));
+
+                map.put("STATUS",
+                        null != selfRank && StringUtils.isNotBlank(StringUtilsLocal.valueOf(selfRank.get("STATUS")))
+                                ? selfRank.get("STATUS") : null != importRank ? importRank.get("STATUS") : null);
+                map.put("RANK", null != selfRank && StringUtils.isNotBlank(
+                        StringUtilsLocal.valueOf(selfRank.get("RANK")))
+                        ? selfRank.get("RANK") : null != importRank ? importRank.get("RANK") : null);
+                Map<String, Object> mb = dao.memberBasic(StringUtilsLocal.zeroFill(zrAccount, 10));
+                Map<String, Object> mi = dao.newmemberInfo(no ,pmid, StringUtilsLocal.zeroFill(zrAccount, 10), mark);
+
+                map.put("ROLE", null != mi ? mi.get("ROLE") : null);
+                map.put("SVN_GIT_NO", null != mi ? mi.get("SVN_GIT_NO") : null);
+
+                map.put("HW_ACCOUNT", null != mb ? mb.get("HW_ACCOUNT") : null);
+                map.put("NAME", null != mb ? mb.get("NAME") : null);
+
+            } catch (Exception e) {
+                logger.error("GeneralSituationService basicAndInfo failed:" + e.getMessage());
+            }
+        }
+        return map;
+    }
 	public BaseResponse resetRank(String zrAccount, String rank) {
 		BaseResponse response = new BaseResponse();
 		Map<String, Object> rankMap = null;

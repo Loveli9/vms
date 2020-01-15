@@ -1,19 +1,19 @@
 <!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>已完成</title>
-    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-table.min.css" type="text/css" />
-    <link rel="stylesheet" href="../../../resources/bootstrap/animate.min.css" type="text/css" />
-    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrapValidator.min.css" type="text/css" />
-    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
-    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
-    <link rel="stylesheet" href="../../../resources/bootstrap/style.min.css" type="text/css" />
-    <link rel="stylesheet" href="../css/DefaultSkin.css" type="text/css" />
-    <link rel="stylesheet" href="../css/toastr.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-table.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/animate.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrapValidator.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-editable.css" type="text/css"/>
+    <link rel="stylesheet" href="../../../resources/bootstrap/style.min.css" type="text/css"/>
+    <link rel="stylesheet" href="../css/DefaultSkin.css" type="text/css"/>
+    <link rel="stylesheet" href="../css/toastr.min.css" type="text/css"/>
     <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="../../../resources/easyui/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="../js/toastr.min.js"></script>
@@ -41,11 +41,49 @@
 </head>
 
 <body class="mvp-body">
-    <div style="margin-top: 20px;">
-        <div style="margin: -10px 20px 0px 0px;">
+<div style="margin-top: 20px;">
+    <div id="query-form" class=" pull-left" style="position: relative;width:540px;">
+        <div class="col-sm-3" style="padding-left: 0px;padding-right: 2px;">
+            <input type="text" class="form-control" name="queryName" id="queryName" placeholder="请输入指标名称"/>
         </div>
-        <table id="interface_table" class="table text-nowrap" style="background-color: #fff;"></table>
+        <div class="btn-group" style="margin-left:-20px;">
+            <button id="done_search_btn" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>查询
+            </button>
+            <button id="done_clear_btn" type="button" class="btn btn-default">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>重置
+            </button>
+        </div>
     </div>
+    <div class="btn-group pull-right" id="toolbar" style="margin-right: 20px;">
+        <button id="btn_log" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>日志
+        </button>
+    </div>
+    <table id="interface_table" class="table text-nowrap" style="background-color: #fff;"></table>
+
+
+    <div class="modal fade" id="logs_dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content" style="top: 60px;width:900px;margin-left: 20px;">
+                <div class="modal-header"
+                     style="border-bottom-width: 5px;padding-top: 10px;padding-bottom: 10px; line-height: 100%;padding: 16px;">
+                    <h4 class="modal-title" style="display: inline; margin-right: 310px;">执行日志</h4>
+                </div>
+                <div class="modal-body" style="width: 100%;">
+                    <textarea class="execute-logs" rows="16"
+                              style="white-space:nowrap;overflow:scroll;width: 100%"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-sm-2 col-sm-offset-10">
+                        <button type="button" class="btn btn-primary btn-block btn-log-close">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 
 </html>

@@ -13,6 +13,10 @@ public class GroupAcceptanceEntity {
     private String hwzpdu;
     private String pduSpdt;
 
+    private String statisticalTime;
+    private String org;
+    private String orgId;
+
     //组织看板业务群总览表字段
     private int checkedProject;
     private String customerScoring;
@@ -75,6 +79,30 @@ public class GroupAcceptanceEntity {
 
     public void setPduSpdt(String pduSpdt) {
         this.pduSpdt = pduSpdt;
+    }
+
+    public String getStatisticalTime() {
+        return statisticalTime;
+    }
+
+    public void setStatisticalTime(String statisticalTime) {
+        this.statisticalTime = statisticalTime;
+    }
+
+    public String getOrg() {
+        return org;
+    }
+
+    public void setOrg(String org) {
+        this.org = org;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
     public int getCheckedProject() {

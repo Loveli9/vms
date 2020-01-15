@@ -193,6 +193,17 @@ function getColor(name) {
     return color;
 }
 
+function toPercent(value) {
+    var str = value;
+
+    if (null != value) {
+        value = Number(value) > 1 ? 1 : value;
+        str = Number(value * 100).toFixed(1);
+        str += "%";
+    }
+    return str;
+}
+
 /*业务群总览表*/
 function loadGroupOverview() {
     $('#groupOverviewTable').bootstrapTable('destroy');
@@ -252,13 +263,22 @@ function loadGroupOverview() {
                     title: '风险项目', field: 'riskProject', align: 'center', valign: 'middle'
                 },
                 {
-                    title: '问题闭环率', field: 'issueCloseLoop', align: 'center', valign: 'middle'
+                    title: '问题闭环率', field: 'issueCloseLoop', align: 'center', valign: 'middle',
+                    formatter: function (value, row, index) {
+                        return toPercent(value);
+                    }
                 },
                 {
-                    title: '人员到位率', field: 'personnelArrival', align: 'center', valign: 'middle'
+                    title: '人员到位率', field: 'personnelArrival', align: 'center', valign: 'middle',
+                    formatter: function (value, row, index) {
+                        return toPercent(value);
+                    }
                 },
                 {
-                    title: '人员稳定度', field: 'personnelStable', align: 'center', valign: 'middle'
+                    title: '人员稳定度', field: 'personnelStable', align: 'center', valign: 'middle',
+                    formatter: function (value, row, index) {
+                        return toPercent(value);
+                    }
                 }
             ]
         ],

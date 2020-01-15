@@ -7,10 +7,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.icss.mvp.dao.report.MetricsRowDao;
 import com.icss.mvp.entity.IterationCycle;
+import com.icss.mvp.entity.ProjectInfo;
 import com.icss.mvp.entity.common.response.ListResponse;
 import com.icss.mvp.entity.common.response.PageResponse;
+import com.icss.mvp.entity.datacollection.config.CollectionField;
 import com.icss.mvp.entity.member.MemberEntity;
 import com.icss.mvp.entity.report.*;
+import com.icss.mvp.service.ProjectListService;
+import com.icss.mvp.service.datacollection.config.CollectionFieldService;
 import com.icss.mvp.service.member.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,10 @@ public class MetricsRowService extends ServiceImpl<MetricsRowDao, MetricsRow> im
     private MetricsItemService metricsItemService;
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private ProjectListService projectListService;
+    @Autowired
+    private CollectionFieldService collectionFieldService;
 
     /**
      * 根据度量表ID查询关联的所有行
@@ -114,24 +122,43 @@ public class MetricsRowService extends ServiceImpl<MetricsRowDao, MetricsRow> im
     }
 
     public int reportProjectMetricsRow(MetricsTable metricsTable, Integer metricsTableId, List<MetricsItemConfig> mics) {
-        ListResponse<MemberEntity> members = memberService.getProjectMembers(metricsTable.getProjectId(), new HashSet<>(0));
-        if (members.getData() != null && !members.getData().isEmpty()) {
-            for (MemberEntity member : members.getData()) {
-                MetricsRow row = new MetricsRow();
-                row.setMetricsTableId(metricsTableId);
-                row.setMetricsItems(new ArrayList<>());
-                mics.forEach(mic -> {
-                    MetricsItem mi = new MetricsItem();
-                    mi.setMetricsItemConfigId(mic.getId());
-                    row.getMetricsItems().add(mi);
-                });
-                row.setCode(member.getAccount());
-                row.setName(member.getName());
-                //TODO 发起采集任务
-                merge(row);
+        List<MetricsRow> rows = new ArrayList<>();
+        ProjectInfo projectInfo = projectListService.getByProNo(metricsTable.getProjectId());
+        if ("人员".equalsIgnoreCase(metricsTable.getType())) {
+            ListResponse<MemberEntity> members = memberService.getProjectMembers(metricsTable.getProjectId(), new HashSet<>(0));
+            if (members.getData() != null && !members.getData().isEmpty()) {
+                for (MemberEntity member : members.getData()) {
+                    MetricsRow row = createProjectMetricRow(metricsTableId, mics, projectInfo);
+                    row.setCode(member.getAccount());
+                    row.setName(member.getName());
+                    rows.add(row);
+                }
             }
+
+        } else if ("需求".equalsIgnoreCase(metricsTable.getType())) {
+            //TODO 加载项目迭代内的需求列表，按需求列表生成row
+        } else {
+            MetricsRow row = createProjectMetricRow(metricsTableId, mics, projectInfo);
+            rows.add(row);
         }
-        return 1;
+        for (MetricsRow row : rows) {
+            merge(row);
+        }
+        return rows.size();
+    }
+
+    private MetricsRow createProjectMetricRow(Integer metricsTableId, List<MetricsItemConfig> mics, ProjectInfo projectInfo) {
+        MetricsRow row = new MetricsRow();
+        row.setMetricsTableId(metricsTableId);
+        row.setMetricsItems(new ArrayList<>());
+        mics.forEach(mic -> {
+            MetricsItem mi = new MetricsItem();
+            mi.setMetricsItemConfigId(mic.getId());
+            row.getMetricsItems().add(mi);
+        });
+        row.setPeriodStartDate(projectInfo.getStartDate());
+        row.setPeriodEndDate(projectInfo.getEndDate());
+        return row;
     }
 
     public int reportIterationMetricsRows(MetricsTable metricsTable, Integer metricsTableId, List<MetricsRow> existedMetricsRows, List<MetricsItemConfig> metricsItemConfigs, List<IterationCycle> iterationCycles) {
@@ -182,6 +209,8 @@ public class MetricsRowService extends ServiceImpl<MetricsRowDao, MetricsRow> im
         row.setPeriod(MetricsTableConfig.PERIOD_ITERATION);
         row.setPeriodId(iteration.getId());
         row.setPeriodName(iteration.getIteName());
+        row.setPeriodStartDate(iteration.getStartDate());
+        row.setPeriodEndDate(iteration.getEndDate());
         row.setMetricsItems(new ArrayList<>());
         metricsItemConfigs.forEach(mic -> {
             MetricsItem mi = new MetricsItem();
@@ -189,5 +218,11 @@ public class MetricsRowService extends ServiceImpl<MetricsRowDao, MetricsRow> im
             row.getMetricsItems().add(mi);
         });
         return row;
+    }
+
+    public boolean dataCollection(Integer id) {
+        MetricsRow row = getFullById(id);
+        //List<CollectionField> fields = collectionFieldService.listByMetricsRowId(row.getId());
+        return false;
     }
 }

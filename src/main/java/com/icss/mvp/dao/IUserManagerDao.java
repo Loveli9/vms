@@ -84,4 +84,6 @@ public interface IUserManagerDao {
 	void updatmemberlocalToProjectStaff(@Param("membersLocal") ProjectMembersLocal membersLocal);
 	void deleteProjectStaff(@Param("projNo") String projNo, @Param("zrAccount") String zrAccount);
 	Map<String, Object> getMemberinfoByZr(@Param("zr") String zrAccount);
+	Integer getMemberinfoByPm(@Param("pmid")String pmid);
+	Integer getkeyRoleBypm(@Param("pmid")String pmid);
 }

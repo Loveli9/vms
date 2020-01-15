@@ -832,13 +832,15 @@ public class ProjectOverviewService {
 																			  PageRequest pageRequest, String date) throws ParseException {
 		TableSplitResult<List<ReportProblemAnalysis>> result = new TableSplitResult<List<ReportProblemAnalysis>>();
 		Map<String, Object> maps = new HashMap<>();
-		String username = CookieUtils.getCookie(request, CookieUtils.COOKIE_KEY_USERNAME);
 		projectInfoService.setParamNew(projectInfo, null, maps);
+
+		if (null == maps.get("pm") || "" == maps.get("pm")) {
+			return new TableSplitResult<>();
+		}
+
 		maps.put("endDate", date);
 		String startDate = DateUtils.getThisClcyeStart(date);
 		maps.put("startDate", startDate);
-		maps.put("username", username);
-		maps.put("coopType", projectInfo.getCoopType());
 		com.github.pagehelper.Page page = PageHelper.startPage(
 				(pageRequest.getPageNumber() == null ? 0 : (pageRequest.getPageNumber() - 1)) + 1,
 				pageRequest.getPageSize());

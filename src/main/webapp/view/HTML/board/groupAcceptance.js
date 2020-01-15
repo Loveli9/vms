@@ -41,7 +41,7 @@ function loadGroupAcceptance() {
                 'bu': $("#usertype6").selectpicker("val") == null ? null : $("#usertype6").selectpicker("val").join(),//转换为字符串
                 'pdu': $("#usertype7").selectpicker("val") == null ? null : $("#usertype7").selectpicker("val").join(),//转换为字符串
                 'du': $("#usertype8").selectpicker("val") == null ? null : $("#usertype8").selectpicker("val").join(),//转换为字符串
-                'month': "2019-07-31" //$("#dateSection").val()
+                'month': $("#dateSection").val()
             };
             return param;
         },

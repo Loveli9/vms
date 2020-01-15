@@ -1,6 +1,7 @@
 package com.icss.mvp.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class ProjectKeyroles implements Serializable{
 	
@@ -25,8 +26,25 @@ public class ProjectKeyroles implements Serializable{
     private String superior;//上级领导
     private String startDate;
     private String endDate;
-    private String rank;
+	private Date startofdate;
+    private Date endofdate;
+    private String rank ;
 
+	public Date getStartofdate() {
+		return startofdate;
+	}
+
+	public void setStartofdate(Date startofdate) {
+		this.startofdate = startofdate;
+	}
+
+	public Date getEndofdate() {
+		return endofdate;
+	}
+
+	public void setEndofdate(Date endofdate) {
+		this.endofdate = endofdate;
+	}
 	public String getReproject() {
 		return reproject;
 	}

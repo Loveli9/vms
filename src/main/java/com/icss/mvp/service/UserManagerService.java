@@ -13,10 +13,12 @@ import com.icss.mvp.dao.ProjectLableDao;
 import com.icss.mvp.dao.SysRoleDao;
 import com.icss.mvp.dao.index.InTmplDao;
 import com.icss.mvp.entity.Label;
+import com.icss.mvp.entity.ManpowerBudget;
 import com.icss.mvp.entity.OpDepartment;
 import com.icss.mvp.entity.Page;
 import com.icss.mvp.entity.Permission;
 import com.icss.mvp.entity.PersonnelInfo;
+import com.icss.mvp.entity.PmdataTotal;
 import com.icss.mvp.entity.ProjectDetailInfo;
 import com.icss.mvp.entity.ProjectLabelConfig;
 import com.icss.mvp.entity.ProjectMembersLocal;
@@ -446,7 +448,7 @@ public class UserManagerService {
 				}
 			}
 			ProjectMembersLocal ml = UserManagerDao.queryMemberinfoDisplay(no ,pmid, StringUtils.isNotBlank(zr) ? zr : zrAccount);
-			//Map<String, Object> rankMap = generalSituationService.projectMemberEcho(pmid, StringUtils.isNotBlank(zr) ? zr : zrAccount);
+			Map<String, Object> rankMap = generalSituationService.newprojectMemberEcho(no ,pmid, StringUtils.isNotBlank(zr) ? zr : zrAccount);
 
 			if (null != ml) {
 				membersLocal.setNo(ml.getNo()==null? "" : ml.getNo());
@@ -463,9 +465,14 @@ public class UserManagerService {
 				membersLocal.setEndDatestr(ml.getEndDate()==null? "":DateUtils.SHORT_FORMAT_GENERAL .format(ml.getEndDate()));
 				membersLocal.setStatus(ml.getStatus()==null? "" : ml.getStatus());
 			}
-			/**if (null != rankMap){
-
-			}*/
+			if (null != rankMap){
+				membersLocal.setName(StringUtilsLocal.valueOf(rankMap.get("NAME")));
+				membersLocal.setHwAccount(StringUtilsLocal.valueOf(rankMap.get("HW_ACCOUNT")));
+				membersLocal.setStatus(StringUtilsLocal.valueOf(rankMap.get("STATUS")));
+				membersLocal.setRank(StringUtilsLocal.valueOf(rankMap.get("RANK")));
+				membersLocal.setSvnGitNo(StringUtilsLocal.valueOf(rankMap.get("SVN_GIT_NO")));
+				membersLocal.setRole(StringUtilsLocal.valueOf(rankMap.get("ROLE")));
+			}
 
 		}
 		return membersLocal ;
@@ -1274,5 +1281,29 @@ public class UserManagerService {
 			}
 		}
 		return map;
+	}
+
+	public PmdataTotal getMembersinfoBypm(String userid) {
+		UserInfo user = UserManagerDao.getUserInfoByName(userid);
+		String pmid = "";
+		if ("2".equals(user.getUsertype())) {
+			pmid = generalSituationDao.getPMZRAccountByHW(user.getUSERID());
+		} else if ("1".equals(user.getUsertype())) {
+			pmid = StringUtilsLocal.formatMakeUp(StringUtilsLocal.clearSpaceAndLine(user.getUSERID()), "0", 10);
+		}
+		PmdataTotal pmdataTotal = new PmdataTotal();
+		Integer rowsMembercount = UserManagerDao.getMemberinfoByPm(pmid);
+		if (null==rowsMembercount){
+			pmdataTotal.setRowsMembercount(0);
+		}else{
+			pmdataTotal.setRowsMembercount(rowsMembercount);
+		}
+		Integer rowsRoleCount = UserManagerDao.getkeyRoleBypm(pmid);
+		if (null==rowsRoleCount){
+			pmdataTotal.setRowsRoleCount(0);
+		}else{
+			pmdataTotal.setRowsRoleCount(rowsRoleCount);
+		}
+		return pmdataTotal;
 	}
 }

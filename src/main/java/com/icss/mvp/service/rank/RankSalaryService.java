@@ -37,6 +37,7 @@ public class RankSalaryService {
             put("04", 20);
             put("05", 22);
             put("06", 20);
+
             put("07", 22);
             put("08", 23);
             put("09", 21);

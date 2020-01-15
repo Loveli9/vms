@@ -972,20 +972,19 @@ public class MeasureCommentService {
 
     public List<ReportProblemAnalysis> kanbanProblemAnalysis(String currentDate, ProjectInfo projectInfo) throws ParseException {
         List<ReportProblemAnalysis> data = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> organizationMap = new HashMap<>();
         String startDate = DateUtils.getThisClcyeStart(currentDate);
         String endDate = currentDate;
-        map.put("startDate", startDate);
-        map.put("endDate", endDate);
-        Map<String, Object> organizationMap = new HashMap<>();
+        organizationMap.put("startDate", startDate);
+        organizationMap.put("endDate", endDate);
 
         projectInfoService.setParamNew(projectInfo, null, organizationMap);
 
-        if ((null == organizationMap.get("hwpduId") || 0 == ((ArrayList) (organizationMap.get("hwpduId"))).size())) {
-            map.put("hwpduId", new ArrayList<>(Arrays.asList("1012")));
-            map.put("hwzpduId", new ArrayList<>(Arrays.asList("1069")));
+        if ("0".equals(projectInfo.getClientType()) && (null == organizationMap.get("hwpduId") || 0 == ((ArrayList) (organizationMap.get("hwpduId"))).size())) {
+            organizationMap.put("hwpduId", new ArrayList<>(Arrays.asList("1012")));
+            organizationMap.put("hwzpduId", new ArrayList<>(Arrays.asList("1069")));
         }
-        Set<String> list = projectInfoVoDao.projectStatesProblem(map);// 本周期交付部
+        Set<String> list = projectInfoVoDao.projectStatesProblem(organizationMap);// 本周期交付部
 
         for (String string : list) {
             organizationMap.put("du", string);

@@ -1675,7 +1675,15 @@ Makes editable any HTML element on the page. Applied as jQuery method.
         Toggles enabled / disabled state of editable element
         @method toggleDisabled()
         **/
-        toggleDisabled: function() {
+        toggleDisabled: function(bool) {
+            if(bool!=undefined){
+                if(bool){
+                    this.enable();
+                }else{
+                    this.disable();
+                }
+                return
+            }
             if(this.options.disabled) {
                 this.enable();
             } else {

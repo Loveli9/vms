@@ -45,7 +45,7 @@ function loadProjectIssue() {
                 'pdu': $("#usertype7").selectpicker("val") == null ? null : $("#usertype7").selectpicker("val").join(),//转换为字符串
                 'du': $("#usertype8").selectpicker("val") == null ? null : $("#usertype8").selectpicker("val").join(),//转换为字符串
                 'clientType': $("#selectBig").selectpicker("val") == "2" ? "0" : "1",
-                'coopType': 0
+                'pm': '1' == getCookie('zrOrhwselect') ? zeroFill(getCookie('username'), 10) : getZRAccount()
             }
             return param;
         },
