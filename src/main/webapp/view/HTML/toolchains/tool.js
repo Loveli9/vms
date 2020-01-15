@@ -11,7 +11,7 @@ $(function () {
     });
 
     //报表配置列表初始化
-    $('#reportTable').bootstrapTable({
+    $('#toolTable').bootstrapTable({
         method: 'get',
         contentType: "application/x-www-form-urlencoded",
         url: getRootPath() + "/toolchains/tool/get_by_name",
@@ -22,7 +22,7 @@ $(function () {
         sidePagination: 'server',
         clickToSelect: true,//是否启用点击选中行
         onDblClickRow: function () {
-            editReportHandler();
+            edittoolHandler();
         },
         responseHandler: function (res) {
             return {
@@ -30,7 +30,7 @@ $(function () {
                 "total": res.totalCount
             }
         },
-        toolbar: '#reportToolbar',
+        toolbar: '#toolToolbar',
         toolbarAlign: 'right',
         pageSize: 10, //单页记录数
         pageList: [5, 10, 20, 40], //分页步进值
@@ -121,12 +121,12 @@ $(function () {
     });
     //报表配置模糊查询
     $('#tool_search_btn').click(function () {
-        $('#reportTable').bootstrapTable('refresh');
+        $('#toolTable').bootstrapTable('refresh');
     });
 
     /*********************************  编辑页面   *******************************/
 
-    function initReportEditPage(data) {
+    function inittoolEditPage(data) {
         if (data.code == '200') {
             if (data.data) {
                 $("#id").val(data.data.id);
@@ -151,33 +151,33 @@ $(function () {
 
     //新增
     $('#tool_add_btn').click(function () {
-        document.getElementById("reportEditForm").reset();
-        $("#reportEditPage").modal('show');
+        document.getElementById("toolEditForm").reset();
+        $("#toolEditPage").modal('show');
     });
 
-    $('#reportEditPage').on('hidden.bs.modal', function () {
-        $("#reportEditForm").data('bootstrapValidator').destroy();
-        $('#reportEditForm').data('bootstrapValidator', null);
+    $('#toolEditPage').on('hidden.bs.modal', function () {
+        $("#toolEditForm").data('bootstrapValidator').destroy();
+        $('#toolEditForm').data('bootstrapValidator', null);
     });
     //点击返回隐藏添加弹出框
     $('#tool_back_btn').click(function () {
-        $("#reportEditPage").modal('hide');
+        $("#toolEditPage").modal('hide');
     });
     //打开报表配置修改页面
     $('#tool_edit_btn').click(function () {
-        editReportHandler();
+        edittoolHandler();
     });
     //打开修改页面
-    var editReportHandler = function () {
-        var id = $('#reportTable').bootstrapTable('getSelections')[0];
+    var edittoolHandler = function () {
+        var id = $('#toolTable').bootstrapTable('getSelections')[0];
         if (id) {
             $.ajax({
                 url: getRootPath() + '/toolchains/tool/get_by_id?id=' + id.id,
                 type: 'get',
                 dataType: "json",
                 success: function (resp) {
-                    initReportEditPage(resp);
-                    $("#reportEditPage").modal('show');
+                    inittoolEditPage(resp);
+                    $("#toolEditPage").modal('show');
                 }
             });
         } else {
@@ -188,14 +188,14 @@ $(function () {
 
     //删除
     $('#tool_delete_btn').click(function () {
-        var id = $('#reportTable').bootstrapTable('getSelections')[0];
+        var id = $('#toolTable').bootstrapTable('getSelections')[0];
         if (id) {
             $.ajax({
                 url: getRootPath() + '/toolchains/tool/delete?id=' + id.id,
                 dataType: "json",
                 success: function (data) {
                     if (data.code == 200) {
-                        $('#reportTable').bootstrapTable('refresh');
+                        $('#toolTable').bootstrapTable('refresh');
                         toastr.success('删除成功！');
                     } else {
                         toastr.error('删除失败!');
@@ -209,11 +209,11 @@ $(function () {
 
     //报表配置保存
     $('#tool_save_btn').click(function () {
-        reportFormValidator();//保存时检查输入的参数
-        $('#reportEditForm').bootstrapValidator('validate');
+        toolFormValidator();//保存时检查输入的参数
+        $('#toolEditForm').bootstrapValidator('validate');
         //如果表单验证正确，则请求后台添加用户
-        if ($("#reportEditForm").data('bootstrapValidator').isValid()) {
-            var formJSON = $('#reportEditForm').bootstrapTable('getData').serializeJSON();
+        if ($("#toolEditForm").data('bootstrapValidator').isValid()) {
+            var formJSON = $('#toolEditForm').bootstrapTable('getData').serializeJSON();
             $.ajax({
                 url: getRootPath() + '/toolchains/tool/save',
                 type: 'post',
@@ -224,8 +224,8 @@ $(function () {
                     //后台返回添加成功
                     if (data.code == '200') {
                         toastr.success('保存成功！');
-                        $('#reportTable').bootstrapTable('refresh');
-                        $("#reportEditPage").modal('hide');
+                        $('#toolTable').bootstrapTable('refresh');
+                        $("#toolEditPage").modal('hide');
                     } else {
                         toastr.error('保存失败！' + data.message);
                     }
@@ -234,8 +234,8 @@ $(function () {
         }
     });
 
-    function reportFormValidator() {
-        $('#reportEditForm').bootstrapValidator({
+    function toolFormValidator() {
+        $('#toolEditForm').bootstrapValidator({
             feedbackIcons: {
                 valid: 'glyphicon glyphicon-ok',
                 invalid: 'glyphicon glyphicon-remove',
