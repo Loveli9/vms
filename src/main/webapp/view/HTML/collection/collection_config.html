@@ -1,0 +1,71 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>采集配置</title>
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-datetimepicker.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../resources/bootstrap/bootstrap-editable.css" type="text/css" />
+    <link rel="stylesheet" href="../../../resources/bootstrap/style.min.css" type="text/css" />
+    <link rel="stylesheet" href="../css/DefaultSkin.css" type="text/css" />
+    <link rel="stylesheet" href="../css/toastr.min.css" type="text/css" />
+    <script type="text/javascript" src="../js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="../../../resources/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="../js/toastr.min.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap.min.js"></script>
+    <!-- <script type="text/javascript" src="../../../resources/bootstrap/bootstrap-select.min.js"></script> -->
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/jquery.serializejson.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/moment-with-locales.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap-table-editable.js"></script>
+    <script type="text/javascript" src="../../../resources/bootstrap/bootstrap-editable.js"></script>
+    <script type="text/javascript" src="../../../resources/js/comm/comm.js"></script>
+    <script type="text/javascript" src="interface.js"></script>
+    <style>
+        .myTab {
+            padding-left: 3px;
+            padding-right: 15px;
+        }
+
+        .fixed-table-container tbody .selected td {
+            background-color: #EEE8AA
+        }
+
+        .mtm-tabs {
+            height: 40px;
+        }
+
+        .mtm-tabs li a {
+            height: 36px;
+            padding-left: 20px;
+            padding-right: 20px;
+            line-height: 20px;
+        }
+
+        .mtm-tabs .active a {
+            height: 40px;
+        }
+    </style>
+</head>
+
+<body class="mvp-body">
+    <ul class="nav nav-tabs mtm-tabs">
+        <li class="active" id="task"> <a href="#">采集任务</a></li>
+        <li id="collection_plan"><a href="#">采集计划</a></li>
+        <li id="task_instance-runing"><a href="#">进行中</a></li>
+        <li id="task_instance-done"><a href="#">已完成</a></li>
+    </ul>
+    <iframe style="width: 100%;height: 95%; border: none;" src="./task.html"></iframe>
+    <script>
+        $(".mtm-tabs").on("click", "li", function () {
+            $(this).addClass("active").siblings('li').removeClass("active");
+            $("iframe").attr("src", `./${$(".active").attr("id")}.html`)
+        });
+    </script>
+</body>
+
+</html>
