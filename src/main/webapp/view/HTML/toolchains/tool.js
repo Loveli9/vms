@@ -12,29 +12,29 @@ $(function () {
 
     //报表配置列表初始化
     $('#toolTable').bootstrapTable({
-        method: 'get',
-        contentType: "application/x-www-form-urlencoded",
-        url: getRootPath() + "/toolchains/tool/get_by_name",
+        method: 'get',//服务器数据的请求方式 ‘get’ or ‘post’
+        contentType: "application/x-www-form-urlencoded",//发送到服务器的数据编码类型，如：post： ‘application/json’
+        url: getRootPath() + "/toolchains/tool/get_by_name",//服务器数据的加载地址
         striped: true, //是否显示行间隔色
         pageNumber: 1, //初始化加载第一页，默认第一页
         pagination: true, //是否分页
-        queryParamsType: 'limit',
-        sidePagination: 'server',
+        queryParamsType: 'limit',//设置为 ‘limit’ 则会发送符合 RESTFul 格式的参数
+        sidePagination: 'server',//设置在哪里进行分页，可选值为 ‘client’ 或者 ‘server’。设置 ‘server’时，必须设置 服务器数据地址（url）或者重写ajax方法
         clickToSelect: true,//是否启用点击选中行
-        onDblClickRow: function () {
+        onDblClickRow: function () {//当用户双击某一行的时候触发
             edittoolHandler();
         },
-        responseHandler: function (res) {
+        responseHandler: function (res) {//加载服务器数据之前的处理程序，可以用来格式化数据。
             return {
                 "rows": res.data,
                 "total": res.totalCount
             }
         },
-        toolbar: '#toolToolbar',
-        toolbarAlign: 'right',
+        toolbar: '#toolToolbar',//一个jQuery 选择器，指明自定义的toolbar 例如:#toolbar, .toolbar.
+        toolbarAlign: 'right',//指定 toolbar 水平方向的位置。’left’ or ‘right’
         pageSize: 10, //单页记录数
         pageList: [5, 10, 20, 40], //分页步进值
-        queryParams: function (params) {
+        queryParams: function (params) {//请求服务器数据时，你可以通过重写参数的方式添加一些额外的参数
             var param = {
                 'size': params.limit,
                 'current': params.pageNumber,
@@ -42,20 +42,20 @@ $(function () {
             }
             return param;
         },
-        columns: [
+        columns: [//列配置项,详情请查看 列参数 表格.
             {
-                radio: true  //第一列显示单选框
+                radio: true  //第一列显示单选框，是否显示单选radio
             },
             {
-                filed: 'id',
-                visible: false
+                filed: 'id',//该列映射的data的参数名
+                visible: false //该列是否可见
             },
             {
-                title: '名称',
-                field: 'name',
-                align: "center",
-                width: 100,
-                valign: 'middle'
+                title: '名称',//该列的表头名
+                field: 'name',//该列映射的data的参数名
+                align: "center",//设置该列数据如何对齐，’left’, ‘right’, ‘center’
+                width: 100,//列的宽度，可以使用像素或者百分比，不带单位则默认为px
+                valign: 'middle'//单元格（cell）对齐方式. ‘top’, ‘middle’, ‘bottom’
             },
             {
                 title: '版本',
@@ -91,6 +91,7 @@ $(function () {
                 align: "center",
                 width: 100,
                 valign: 'middle',
+                //格式化单元格内容，function(value, row, index), value：该cell本来的值，row：该行数据，index：该行序号（从0开始）
                 formatter: function (value, row, index) {
                     return (value == true || value == "true") ? "是" : "否";
                 }
@@ -121,7 +122,7 @@ $(function () {
     });
     //报表配置模糊查询
     $('#tool_search_btn').click(function () {
-        $('#toolTable').bootstrapTable('refresh');
+        $('#toolTable').bootstrapTable('refresh');//刷新远程服务器数据
     });
 
     /*********************************  编辑页面   *******************************/
