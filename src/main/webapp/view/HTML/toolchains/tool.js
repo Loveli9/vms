@@ -120,7 +120,7 @@ $(function () {
         locale: 'zh-CN'//中文支持
     });
     //报表配置模糊查询
-    $('#report_search_btn').click(function () {
+    $('#tool_search_btn').click(function () {
         $('#reportTable').bootstrapTable('refresh');
     });
 
@@ -150,7 +150,7 @@ $(function () {
     }
 
     //新增
-    $('#report_add_btn').click(function () {
+    $('#tool_add_btn').click(function () {
         document.getElementById("reportEditForm").reset();
         $("#reportEditPage").modal('show');
     });
@@ -160,11 +160,11 @@ $(function () {
         $('#reportEditForm').data('bootstrapValidator', null);
     });
     //点击返回隐藏添加弹出框
-    $('#report_back_btn').click(function () {
+    $('#tool_back_btn').click(function () {
         $("#reportEditPage").modal('hide');
     });
     //打开报表配置修改页面
-    $('#report_edit_btn').click(function () {
+    $('#tool_edit_btn').click(function () {
         editReportHandler();
     });
     //打开修改页面
@@ -187,7 +187,7 @@ $(function () {
     }
 
     //删除
-    $('#report_delete_btn').click(function () {
+    $('#tool_delete_btn').click(function () {
         var id = $('#reportTable').bootstrapTable('getSelections')[0];
         if (id) {
             $.ajax({
@@ -208,7 +208,7 @@ $(function () {
     });
 
     //报表配置保存
-    $('#report_save_btn').click(function () {
+    $('#tool_save_btn').click(function () {
         reportFormValidator();//保存时检查输入的参数
         $('#reportEditForm').bootstrapValidator('validate');
         //如果表单验证正确，则请求后台添加用户
