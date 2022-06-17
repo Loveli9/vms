@@ -18,7 +18,7 @@
         <!--<datasource.version>1.4</datasource.version>-->
         <dom4j.version>1.6.1</dom4j.version>
         <druid.version>1.0.26</druid.version>
-        <fastjson_version>1.2.60</fastjson_version>
+        <fastjson_version>1.2.83</fastjson_version>
         <!--<httpcomponents.version>4.5.2</httpcomponents.version>-->
         <!--<jackson.version>1.7.1</jackson.version>-->
         <javax.servlet.version>3.1.0</javax.servlet.version>
